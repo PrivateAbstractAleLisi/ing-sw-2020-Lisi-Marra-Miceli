@@ -1,4 +1,4 @@
-package gamemap;
+package model.gamemap;
 
 public class Island {
     private CellCluster[][] grid;

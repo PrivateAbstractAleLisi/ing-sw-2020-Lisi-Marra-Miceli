@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a8b0356b-4537-47f6-a489-b59720e509f2" name="Default Changelist" comment="" />
+    <list default="true" id="a8b0356b-4537-47f6-a489-b59720e509f2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Worker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/exception/InvalidBuildException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/exception/InvalidBuildException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gamemap/BlockTypeEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/BlockTypeEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gamemap/CellCluster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/CellCluster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gamemap/Island.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Island.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,7 +24,11 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="ProjectId" id="1Zcilbp4vEiYSOwHTeSusQSqJ6c" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -23,8 +36,10 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -37,6 +52,7 @@
       <option name="presentableId" value="Default" />
       <updated>1585144934289</updated>
       <workItem from="1585144936904" duration="2370000" />
+      <workItem from="1585147867457" duration="965000" />
     </task>
     <servers />
   </component>
@@ -44,9 +60,13 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="533" y="173" key="#com.intellij.ide.util.MemberChooser" timestamp="1585147139337">
+    <state x="533" y="173" key="#com.intellij.ide.util.MemberChooser" timestamp="1585148505959">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="533" y="173" key="#com.intellij.ide.util.MemberChooser/0.0.1440.900@0.0.1440.900" timestamp="1585147139337" />
+    <state x="533" y="173" key="#com.intellij.ide.util.MemberChooser/0.0.1440.900@0.0.1440.900" timestamp="1585148505959" />
+    <state x="519" y="382" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1585148399445">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="519" y="382" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1440.900@0.0.1440.900" timestamp="1585148399445" />
   </component>
 </project>

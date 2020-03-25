@@ -1,4 +1,4 @@
-package gamemap;
+package model.gamemap;
 
 public enum BlockTypeEnum {
     LEVEL1,
