@@ -2,14 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a8b0356b-4537-47f6-a489-b59720e509f2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Worker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/exception/InvalidBuildException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/exception/InvalidBuildException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gamemap/BlockTypeEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/BlockTypeEnum.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gamemap/CellCluster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/CellCluster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gamemap/Island.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Island.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/gamemap/CellCluster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/CellCluster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/gamemap/Island.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Island.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/gamemap/Worker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Worker.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,6 +50,11 @@
       <updated>1585144934289</updated>
       <workItem from="1585144936904" duration="2370000" />
       <workItem from="1585147867457" duration="965000" />
+      <workItem from="1585149133222" duration="172000" />
+      <workItem from="1585165955113" duration="15000" />
+      <workItem from="1585218318210" duration="782000" />
+      <workItem from="1585225294774" duration="419000" />
+      <workItem from="1585326432057" duration="31000" />
     </task>
     <servers />
   </component>
@@ -68,5 +70,9 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="519" y="382" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1440.900@0.0.1440.900" timestamp="1585148399445" />
+    <state x="397" y="282" key="com.intellij.ide.util.TipDialog" timestamp="1585326432645">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="397" y="282" key="com.intellij.ide.util.TipDialog/0.0.1440.900@0.0.1440.900" timestamp="1585326432645" />
   </component>
 </project>

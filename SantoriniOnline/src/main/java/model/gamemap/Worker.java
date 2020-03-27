@@ -13,7 +13,7 @@ public class Worker {
 
     //in cluster cosa sarebbe??!
 
-    private int posX, posY;
+    private int[] position;
 
     /**
      *  Costruttore per la classe worker
@@ -23,36 +23,20 @@ public class Worker {
     public Worker(IDs workerID, String playerUsername) {
         this.workerID = workerID;
         this.playerUsername = playerUsername;
+        position = new int [2];
     }
-
-    //1D
-
-    public int getPositionX() {
-        return posX;
-    }
-
-    public void setPositionX(int posX) {
-        this.posX = posX;
-    }
-
-    public int getPositionY() {
-        return posY;
-    }
-
-    public void setPositionY(int posY) {
-        this.posY = posY;
-    }
+//Changed: vettore posizione unico, no getter x, getter y
 
     //2D
     public void setPosition (int posX, int posY) {
-        setPositionX(posX);
-        setPositionY(posY);
+        position[0] = posX;
+        position[1] = posY;
     }
 
     public int[] getPosition () {
         int [] vector2 = new int[2];
-        vector2[0] =  posX;
-        vector2[1] =  posY;
+        vector2[0] =  position[0];
+        vector2[1] =  position[1];
 
         return vector2;
     }

@@ -8,6 +8,7 @@ import java.util.List;
 public class CellCluster {
     private List<BlockTypeEnum> costruction; //generics su list?
     private boolean isComplete, isFree;
+    private Worker worker;
 
     public CellCluster() {
         costruction = new ArrayList<BlockTypeEnum>();
