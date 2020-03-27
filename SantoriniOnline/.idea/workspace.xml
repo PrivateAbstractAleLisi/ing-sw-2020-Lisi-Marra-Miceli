@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a8b0356b-4537-47f6-a489-b59720e509f2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/model/exception/InvalidMovementException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/model/gamemap/CellCluster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/CellCluster.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/model/gamemap/Island.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Island.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/gamemap/Worker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Worker.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +37,11 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="model.exception" />
+    </key>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -53,7 +59,7 @@
       <workItem from="1585218318210" duration="782000" />
       <workItem from="1585225294774" duration="419000" />
       <workItem from="1585326432057" duration="31000" />
-      <workItem from="1585327540942" duration="1213000" />
+      <workItem from="1585327540942" duration="2436000" />
     </task>
     <servers />
   </component>

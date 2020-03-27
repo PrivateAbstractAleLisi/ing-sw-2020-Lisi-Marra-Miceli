@@ -4,7 +4,7 @@ package model.gamemap;
 public class Worker {
 
 
-    enum IDs {
+    public enum IDs {
         A, B;
     }
 
