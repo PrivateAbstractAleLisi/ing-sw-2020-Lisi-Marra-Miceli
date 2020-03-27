@@ -9,6 +9,7 @@ public class CellCluster {
     private List<BlockTypeEnum> costruction;
     private boolean isComplete, isFree;
     private Worker worker;
+//    private final int x,y;
 
     public CellCluster() {
         costruction = new ArrayList<BlockTypeEnum>();
@@ -61,17 +62,16 @@ public class CellCluster {
         return isFree;
     }
 
-    public void addWorker(Worker worker) {
-
-        if (!isComplete) {
+    public void addWorker(Worker worker) throws InvalidMovementException {
+        if (this.worker != null) {
+            throw new InvalidMovementException("WorkerAlreadyOnTop");
+        } else if (isComplete) {
+            throw new InvalidMovementException("DomeOnTop");
+        } else {
             this.worker = worker;
-        }
-        else {
-            //lancia eccezione
         }
 
         isFree = false;
-
     }
     /*
     public Worker removeWorker () {
@@ -80,17 +80,15 @@ public class CellCluster {
         return this.worker;
     } */
 
-    public void removeWorker () {
+    public void removeWorker() {
         worker = null;
-
     }
 
 
     public boolean hasWorkerOnTop() {
         if (worker != null) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

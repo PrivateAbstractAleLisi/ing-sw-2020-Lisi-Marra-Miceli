@@ -7,3 +7,4 @@
 # Mac
 .DS_Store
 SantoriniOnline/.idea/workspace.xml
+SantoriniOnline/src/main/java/model/NaiveTesting.java

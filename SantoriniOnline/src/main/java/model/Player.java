@@ -1,11 +1,12 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 import model.gamemap.Worker;
 
 public class Player {
     private String username;
-    private List<Worker> workersList = new List<Worker>();
+    private ArrayList<Worker> workersList = new ArrayList<Worker>();
     private WorkerColors color;
     private Object card;
 
