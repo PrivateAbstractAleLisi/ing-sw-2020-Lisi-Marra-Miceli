@@ -6,5 +6,7 @@
 
 # Mac
 .DS_Store
-SantoriniOnline/.idea/workspace.xml
+SantoriniOnline/.idea/**
 SantoriniOnline/src/main/java/model/NaiveTesting.java
+SantoriniOnline/SantoriniOnline.iml
+SantoriniOnline/target/**
