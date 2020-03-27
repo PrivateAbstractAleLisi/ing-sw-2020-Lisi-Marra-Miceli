@@ -1,5 +1,7 @@
 package model.gamemap;
 
+import model.exception.InvalidBuildException;
+
 public class Island {
 
     private CellCluster[][] grid;
@@ -19,17 +21,33 @@ public class Island {
         }
     }
 
-    public void placeWorker (Worker w, int x, int y) {
-        grid[x][y].
+    public void placeWorker(Worker w, int x, int y) {
+        grid[x][y].addWorker(w); //implementare in add worker l'update della posizione per non
+        w.setPosition(x, y); //RIPETERE CODICE
     }
-    public void moveWorker (Worker w, int x, int y) {
+
+
+
+    public void moveWorker(Worker w, int x, int y) {
+
+        int oldX = w.getPosition()[0];
+        int oldY = w.getPosition()[1];
+        grid[oldX][oldY].removeWorker();
+        grid[x][y].addWorker(w);
+        w.setPosition(x, y); //RIPETERE CODICE
 
     }
-    public void buildBlock (BuildingBlock b, int x, int y) {
 
+    public void buildBlock(BlockTypeEnum b, int x, int y) {
+        try {
+            grid[x][y].build(b);
+        } catch (InvalidBuildException e) {
+            System.err.println("TEST FALLITO");
+        }
     }
+
     public CellCluster getClusterAtPosition(int x, int y) {
-
+        return grid[x][y];
     }
 
 }

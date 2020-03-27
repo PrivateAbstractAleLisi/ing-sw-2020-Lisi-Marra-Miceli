@@ -18,7 +18,7 @@ public class CellCluster {
     }
 
 
-    public void build (BlockTypeEnum block) throws InvalidBuildException {
+    public void build(BlockTypeEnum block) throws InvalidBuildException {
         isFree = false;
         //Build:
         if (!isComplete) {
@@ -28,8 +28,7 @@ public class CellCluster {
             if (costruction.contains(BlockTypeEnum.DOME)) {
                 isComplete = true;
             }
-        }
-        else {
+        } else {
             throw new InvalidBuildException("Beware, you cannot build here, this cell is full.");
         }
     }
@@ -42,8 +41,7 @@ public class CellCluster {
     public int getCostructionHeight() {
         if (isFree && costruction.isEmpty()) {
             return 0;
-        }
-        else {
+        } else {
             return costruction.size();
         }
 
@@ -61,5 +59,39 @@ public class CellCluster {
      */
     public boolean isFree() {
         return isFree;
+    }
+
+    public void addWorker(Worker worker) {
+
+        if (!isComplete) {
+            this.worker = worker;
+        }
+        else {
+            //lancia eccezione
+        }
+
+        isFree = false;
+
+    }
+    /*
+    public Worker removeWorker () {
+        Worker r = this.worker;
+        worker = null;
+        return this.worker;
+    } */
+
+    public void removeWorker () {
+        worker = null;
+
+    }
+
+
+    public boolean hasWorkerOnTop() {
+        if (worker != null) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

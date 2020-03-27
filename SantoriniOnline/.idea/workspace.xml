@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a8b0356b-4537-47f6-a489-b59720e509f2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/model/gamemap/CellCluster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/CellCluster.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/model/gamemap/Island.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/gamemap/Island.java" afterDir="false" />
@@ -54,6 +53,7 @@
       <workItem from="1585218318210" duration="782000" />
       <workItem from="1585225294774" duration="419000" />
       <workItem from="1585326432057" duration="31000" />
+      <workItem from="1585327540942" duration="1213000" />
     </task>
     <servers />
   </component>
