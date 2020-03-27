@@ -6,11 +6,12 @@ public class Island {
     /*Game Manager TODO*/ private Object match;
 
     /**
-     * Costruttore, inizializza tutte le celle dell'isola
+     * Constructor, initialize all the island's cells
      */
     public Island() {
         grid = new CellCluster[5][5];
-        //inizializzo tutte le celle con un doppio foreach
+
+        //initialize all cells wit a double foreach
         for (CellCluster[] cellClusters : grid) {
             for (CellCluster cellCluster : cellClusters) {
                 cellCluster = new CellCluster();

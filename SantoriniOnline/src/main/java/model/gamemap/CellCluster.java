@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CellCluster {
-    private List<BlockTypeEnum> costruction; //generics su list?
+    private List<BlockTypeEnum> costruction;
     private boolean isComplete, isFree;
     private Worker worker;
 
@@ -20,7 +20,7 @@ public class CellCluster {
 
     public void build (BlockTypeEnum block) throws InvalidBuildException {
         isFree = false;
-        //Costruisci:
+        //Build:
         if (!isComplete) {
 
             costruction.add(block);
@@ -37,8 +37,7 @@ public class CellCluster {
     //GETTERS
 
     /**
-     *
-     * @return l'altezza attuale della costruzione, 0 se la cella è libera
+     * @return the actual height of construction, 0 if the cell is free
      */
     public int getCostructionHeight() {
         if (isFree && costruction.isEmpty()) {
@@ -51,16 +50,14 @@ public class CellCluster {
     }
 
     /**
-     *
-     * @return true se la casella ha una costruzione completa con la cupola come ultimo elemento
+     * @return true if the cell has a complete construction (with the dome)
      */
     public boolean isComplete() {
         return isComplete;
     }
 
     /**
-     *
-     * @return true se la casella è libera (nessun giocatore, nessuna costruzione)
+     * @return true if the cell is free (no player, no constructions)
      */
     public boolean isFree() {
         return isFree;
