@@ -1,88 +1,139 @@
 package model.gamemap;
 
-import model.exception.InvalidBuildException;
-import model.exception.InvalidMovementException;
+
+import auxiliary.Range;
+import model.exception.*;
 
 public class Island {
-//todo BLOCCARE COSTRURIONE E MOVIMENTO QUANDO LA CELLA Eà COMPLETED (DOME ON TOP), BLOCCARE QUANDO PROVI A COSTRUIRE SOPRA LA TESTA DI QUALCUNO
+    //todo BLOCCARE COSTRURIONE E MOVIMENTO QUANDO LA CELLA Eà COMPLETED (DOME ON TOP), BLOCCARE QUANDO PROVI A COSTRUIRE SOPRA LA TESTA DI QUALCUNO
 //
 //
+    //public costants
+    public final int ISLAND_SIZE = 5;
+    public final int NUM_OF_CELLS = 25;
+
+    private Range indexRange;
 
     private CellCluster[][] grid;
     /*Game Manager TODO*/ private Object match;
 
     /**
-     * Constructor, initialize all the island's cells
+     * Constructor, initialize all the island's cells using a for loop
      */
 
     public Island() {
         grid = new CellCluster[5][5];
 
         //initialize all cells with a double for
-        for (int i=0; i<5; i++) {
-            for (int j=0; j<5; j++) {
-                grid [i][j] = new CellCluster();
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                grid[i][j] = new CellCluster();
             }
         }
+
+        indexRange = new Range(0, 4);
         System.out.println("DEBUG: Island has been initialized");
     }
 
     /**
      *
-     * @param i an integer that represents an offset (x or y axis) in the island grid
-     * @return true if the offset is inside the island, false if it's outside (Invalid).
+     * @param x index of the cell (x)
+     * @param y index of the cell (x)
+     * @return true if the index are correct, otherwise false.
      */
-    private boolean inRange(int i) {
-        if (i>= 0 && i<5) {
+    private boolean inRange(int x, int y) {
+        if (indexRange.contains(x) && indexRange.contains(y)) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public void placeWorker(Worker w, int x, int y) {
-        try {
-            grid[x][y].addWorker(w);
-            w.setPosition(x, y); //RIPETERE CODICE§!§!§!
-        } catch (InvalidMovementException e) {
-            System.err.println(e.toString());
-        }
+    /**
+     * @param w Worker that has to be placed
+     * @param x index of the cell (x) where the worker will be placed
+     * @param y index of the cell (y) where the worker will be placed
+     * @throws InvalidMovementException when you try to place a worker in a cell the has already a worker on top
+     */
+    public void placeWorker(Worker w, int x, int y) throws InvalidMovementException {
 
-        System.out.println("DEBUG: Island: worker placed at index " + x +","+ y );
+        grid[x][y].addWorker(w);
+        w.setPosition(x, y);
+
+        System.out.println("DEBUG: Island: worker placed at index " + x + "," + y);
     }
 
+    /**
+     * @param w Worker that has to be placed
+     * @param x index of the cell (x) where the worker will be placed
+     * @param y index of the cell (y) where the worker will be placed
+     * @throws InvalidMovementException when you try to move a worker in a cell the has already a worker on top
+     */
+    public void moveWorker(Worker w, int x, int y) throws InvalidMovementException {
 
-    public void moveWorker(Worker w, int x, int y) {
-
+        if (!inRange(x, y)) {
+            throw new IndexOutOfBoundsException("Index out of island bounds");
+        }
         int oldX = w.getPosition()[0];
         int oldY = w.getPosition()[1];
         grid[oldX][oldY].removeWorker(); //TODO gestire (forse conviene internamente) il caso dove non posso rimuovere nessuno
-        try {
-            grid[x][y].addWorker(w);
-            w.setPosition(x, y); //RIPETERE CODICE
-        } catch (InvalidMovementException e) {
-            System.err.println(e.toString());
+        grid[x][y].addWorker(w);
+        w.setPosition(x, y); //RIPETERE CODICE
+
+
+        System.out.println("DEBUG: Island: worker successfully moved from position " + oldX + "," + oldY + "to position " +
+                +x + "," + y);
+
+    }
+
+    /**
+     * @param b the block you want to build over the cell
+     * @param x index of the cell (x)
+     * @param y index of the cell (y)
+     * @throws InvalidBuildException when you try to build in the wrong order or if the cell is full
+     */
+    public void buildBlock(BlockTypeEnum b, int x, int y) throws InvalidBuildException {
+
+
+        if (!inRange(x, y)) {
+            throw new IndexOutOfBoundsException("Index out of island bounds");
         }
 
-        System.out.println("DEBUG: Island: worker successfully moved from position " + oldX +","+ oldY +  "to position " +
-                 + x + "," + y );
+        CellCluster xy = grid[x][y];
 
-    }
-
-    public void buildBlock(BlockTypeEnum b, int x, int y) {
-
-        try {
-            grid[x][y].build(b);
-        } catch (InvalidBuildException e) {
-            System.err.println("TEST FALLITO");
+        if (xy.checkBuildingBlockOrder(b)) { //Checks if this block is inserted the order is legal
+            //System.out.println("DEBUG: Island: placing block " +  b.toString() + " Block order is right");
+            xy.build(b);
+            // System.out.println("DEBUG: Island: block placed");
+        } else {
+            //System.err.println("DEBUG: Island: after placing block " + b.toString() + " Block order is wrong");
+            throw new InvalidBuildException("By inserting this block the costruction order is invalid.");
         }
-
-        System.out.println("DEBUG: Island: block build on position" + x + "," + y + " block type: " + b.toString());
+        //System.out.println("DEBUG: Island: block build on position" + x + "," + y + " block type: " + b.toString());
     }
 
-    public CellCluster getClusterAtPosition(int x, int y) {
-        return grid[x][y];
+    /**
+     *
+     * @param x index of the cell (x)
+     * @param y index of the cell (y)
+     * @return a copy of the CellCluster at position (x,y)
+     */
+    public CellCluster getCellCluster(int x, int y) {
+
+        if (!inRange(x, y)) {
+            throw new IndexOutOfBoundsException("Index out of island bounds");
+        }
+        
+        CellCluster real = grid[x][y];
+        CellCluster copy = null;
+        try {
+            copy = (CellCluster) real.clone();
+            return copy;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
 
 }

@@ -5,7 +5,9 @@ import model.exception.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CellCluster {
+import static model.gamemap.BlockTypeEnum.*; //Controllare che cosa significa, generato automaticamente
+
+public class CellCluster implements Cloneable{
     private List<BlockTypeEnum> costruction;
     private boolean isComplete, isFree;
     private Worker worker;
@@ -18,7 +20,44 @@ public class CellCluster {
         isComplete = false;
     }
 
+    /**
+     * Checks if the construction inside this cell has a valid CostructionBlock order
+     * @return: true if the order is valid, false otherwise
+     */
+    public boolean checkBuildingBlockOrder (BlockTypeEnum toBeAdded) {
+        List <BlockTypeEnum> costructionAfter = new ArrayList<BlockTypeEnum>();
+        costructionAfter.addAll(costruction);
+        costructionAfter.add(toBeAdded);
 
+        int[] array = new int[costructionAfter.size()]; //Auxiliary array
+        for (int i = 0; i< array.length; i++) { //Converts the costruction into an integer array
+
+            switch (costructionAfter.get(i)) {
+                case LEVEL1:
+                    array[i] = 1;
+                    break;
+                case LEVEL2:
+                    array[i] = 2;
+                    break;
+                case LEVEL3:
+                    array[i] = 3;
+                    break;
+                case DOME:
+                    array[i] = 4;
+                    break;
+            }
+
+        }
+
+        for (int i = 0; i < array.length -1 ; i++) { //checks if it's ascending order
+            if (array[i] >= array[i+1]) {
+                return false;
+            }
+        }
+
+        return true;
+
+    }
     public void build(BlockTypeEnum block) throws InvalidBuildException {
         isFree = false;
         //Build:
@@ -26,7 +65,7 @@ public class CellCluster {
 
             costruction.add(block);
 
-            if (costruction.contains(BlockTypeEnum.DOME)) {
+            if (costruction.contains(DOME)) {
                 isComplete = true;
             }
         } else {
@@ -91,5 +130,11 @@ public class CellCluster {
         } else {
             return false;
         }
+    }
+
+    public Object clone() throws
+            CloneNotSupportedException
+    {
+        return super.clone();
     }
 }
