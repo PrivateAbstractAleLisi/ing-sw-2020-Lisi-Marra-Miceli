@@ -9,7 +9,7 @@ public class Player {
     private ArrayList<Worker> workersList = new ArrayList<Worker>();
     private WorkerColors color;
     private Card card;
-    private GameManager match;
+    protected GameManager match;
 
     /**
      * Constructor of the player class
