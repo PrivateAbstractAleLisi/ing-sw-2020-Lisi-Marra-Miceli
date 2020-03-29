@@ -40,4 +40,10 @@ public class Worker {
 
         return vector2;
     }
+
+    public IDs getWorkerID(){
+        IDs id;
+        id= worker.workerID;
+        return id;
+    }
 }

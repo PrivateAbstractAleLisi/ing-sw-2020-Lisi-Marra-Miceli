@@ -22,9 +22,9 @@ public class CellCluster implements Cloneable{
 
     /**
      * Checks if the construction inside this cell has a valid CostructionBlock order
-     * @return: true if the order is valid, false otherwise
+     * @return true if the order is valid, false otherwise
      */
-    public boolean checkBuildingBlockOrder (BlockTypeEnum toBeAdded) {
+    public boolean checkBuildingBlockOrder(BlockTypeEnum toBeAdded) {
         List <BlockTypeEnum> costructionAfter = new ArrayList<BlockTypeEnum>();
         costructionAfter.addAll(costruction);
         costructionAfter.add(toBeAdded);
