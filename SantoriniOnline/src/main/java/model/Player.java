@@ -10,6 +10,7 @@ public class Player {
     private WorkerColors color;
     private Card card;
     protected GameManager match;
+    protected BehaviourManager behaviour;
 
     /**
      * Constructor of the player class
