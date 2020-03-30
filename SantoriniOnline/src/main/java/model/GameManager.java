@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Player;
@@ -7,6 +8,7 @@ import model.gamemap.BlockTypeEnum;
 import model.gamemap.Island;
 import model.gamemap.Worker;
 import model.Card;
+import java.lang.IllegalArgumentException;
 
 public class GameManager {
 
@@ -38,12 +40,11 @@ public class GameManager {
 
         island=new Island();
 
-        playersList = new List<Player>();
+        playersList = new ArrayList<>();
 
-        cardsList =new List<Card>();
-        initializeCardList();
-        cardsSelected =new List<Card>();
-        cardsTaken =new List<Card>();
+        cardsList = new ArrayList<Card>();
+        cardsSelected =new ArrayList<Card>();
+        cardsTaken =new ArrayList<Card>();
     }
 
     /**
@@ -51,7 +52,7 @@ public class GameManager {
      * @param blockType type of the block you want to know the amount
      * @return the number of blockTypeEnum remaining
      */
-    public int getNumberOfBlocksRemaining(BlockTypeEnum blockType){
+    public int getNumberOfBlocksRemaining(BlockTypeEnum blockType) {
         switch(blockType) {
             case LEVEL1: return blocksL1;
             case LEVEL2: return blocksL2;
@@ -85,10 +86,19 @@ public class GameManager {
 
     /**
      *
-     * @return the actual reference of the island
+     * @param player that should be removed from the game
      */
-    public Island getIsland(){
-        return island;
+    public void removePlayer(Player player) {
+        playersList.remove(player);
+    }
+
+    /**
+     *
+     * @param player the player that you would know is the playersList
+     * @return true if the player is present, false otherwise
+     */
+    public boolean isPlayerConnected(Player player){
+        return playersList.contains(player);
     }
 
 
@@ -105,7 +115,7 @@ public class GameManager {
      */
     public void selectCard(Card card){
         if (cardsSelected.size() < 3){
-            cardsSelected.add(Card card);
+            cardsSelected.add(card);
         }
     }
 
@@ -120,13 +130,4 @@ public class GameManager {
         }
     }
 
-
-    //win and lose functions to implement later
-    public void win(Player player){
-
-    }
-
-    public void lose(Player player) {
-
-    }
 }
