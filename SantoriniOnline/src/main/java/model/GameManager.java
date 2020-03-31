@@ -8,6 +8,7 @@ import model.gamemap.BlockTypeEnum;
 import model.gamemap.Island;
 import model.gamemap.Worker;
 import model.Card;
+import java.lang.IllegalArgumentException;
 
 public class GameManager {
 
@@ -39,10 +40,13 @@ public class GameManager {
 
         island=new Island();
 
-        playersList = new ArrayList<Player>();
 
-        cardsList =new ArrayList<Card>();
+
         initializeCardList();
+
+        playersList = new ArrayList<>();
+
+        cardsList = new ArrayList<Card>();
         cardsSelected =new ArrayList<Card>();
         cardsTaken =new ArrayList<Card>();
     }
@@ -52,7 +56,7 @@ public class GameManager {
      * @param blockType type of the block you want to know the amount
      * @return the number of blockTypeEnum remaining, -1 if error
      */
-    public int getNumberOfBlocksRemaining(BlockTypeEnum blockType){
+    public int getNumberOfBlocksRemaining(BlockTypeEnum blockType) {
         switch(blockType) {
             case LEVEL1: return blocksL1;
             case LEVEL2: return blocksL2;
@@ -88,10 +92,19 @@ public class GameManager {
 
     /**
      *
-     * @return the actual reference of the island
+     * @param player that should be removed from the game
      */
-    public Island getIsland(){
-        return island;
+    public void removePlayer(Player player) {
+        playersList.remove(player);
+    }
+
+    /**
+     *
+     * @param player the player that you would know is the playersList
+     * @return true if the player is present, false otherwise
+     */
+    public boolean isPlayerConnected(Player player){
+        return playersList.contains(player);
     }
 
 
@@ -123,13 +136,4 @@ public class GameManager {
         }
     }
 
-
-    //win and lose functions to implement later
-    public void win(Player player){
-
-    }
-
-    public void lose(Player player) {
-
-    }
 }

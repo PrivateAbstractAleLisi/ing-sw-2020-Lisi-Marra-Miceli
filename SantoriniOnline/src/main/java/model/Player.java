@@ -75,4 +75,13 @@ public class Player {
     public void setColor (WorkerColors color){
         color= color;
     }
+
+    /**
+     *
+     * @return the color of the workers of the player
+     */
+    public WorkerColors getColor() {
+        WorkerColors colorCopy= color;
+        return colorCopy;
+    }
 }
