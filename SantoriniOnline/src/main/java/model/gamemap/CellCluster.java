@@ -8,13 +8,13 @@ import java.util.List;
 import static model.gamemap.BlockTypeEnum.*; //Controllare che cosa significa, generato automaticamente
 
 public class CellCluster implements Cloneable{
-    private List<BlockTypeEnum> costruction;
+    private List<BlockTypeEnum> construction;
     private boolean isComplete, isFree;
     private Worker worker;
 //    private final int x,y;
 
     public CellCluster() {
-        costruction = new ArrayList<BlockTypeEnum>();
+        construction = new ArrayList<BlockTypeEnum>();
         isComplete = false;
         isFree = true;
         isComplete = false;
@@ -25,14 +25,26 @@ public class CellCluster implements Cloneable{
      * @return true if the order is valid, false otherwise
      */
     public boolean checkBuildingBlockOrder(BlockTypeEnum toBeAdded) {
-        List <BlockTypeEnum> costructionAfter = new ArrayList<BlockTypeEnum>();
-        costructionAfter.addAll(costruction);
-        costructionAfter.add(toBeAdded);
+        List <BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
+        constructionAfter.addAll(construction);
+        constructionAfter.add(toBeAdded);
 
-        int[] array = new int[costructionAfter.size()]; //Auxiliary array
-        for (int i = 0; i< array.length; i++) { //Converts the costruction into an integer array
+        int [] array=toIntArray(constructionAfter);
 
-            switch (costructionAfter.get(i)) {
+        for (int i = 0; i < array.length -1 ; i++) { //checks if it's ascending order
+            if (array[i] >= array[i+1]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private int [] toIntArray (List <BlockTypeEnum> construction ){
+        int[] array = new int[construction.size()]; //Auxiliary array
+        for (int i = 0; i< array.length; i++) { //Converts the construction into an integer array
+
+            switch (construction.get(i)) {
                 case LEVEL1:
                     array[i] = 1;
                     break;
@@ -46,26 +58,18 @@ public class CellCluster implements Cloneable{
                     array[i] = 4;
                     break;
             }
-
         }
 
-        for (int i = 0; i < array.length -1 ; i++) { //checks if it's ascending order
-            if (array[i] >= array[i+1]) {
-                return false;
-            }
-        }
-
-        return true;
-
+        return array;
     }
     public void build(BlockTypeEnum block) throws InvalidBuildException {
         isFree = false;
         //Build:
         if (!isComplete) {
 
-            costruction.add(block);
+            construction.add(block);
 
-            if (costruction.contains(DOME)) {
+            if (construction.contains(DOME)) {
                 isComplete = true;
             }
         } else {
@@ -79,10 +83,10 @@ public class CellCluster implements Cloneable{
      * @return the actual height of construction, 0 if the cell is free
      */
     public int getCostructionHeight() {
-        if (isFree && costruction.isEmpty()) {
+        if (isFree && construction.isEmpty()) {
             return 0;
         } else {
-            return costruction.size();
+            return construction.size();
         }
 
     }

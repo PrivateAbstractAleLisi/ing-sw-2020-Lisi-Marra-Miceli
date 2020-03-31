@@ -71,8 +71,9 @@ public class Island {
      */
     public void moveWorker(Worker w, int x, int y) throws InvalidMovementException {
 
+
         if (!inRange(x, y)) {
-            throw new IndexOutOfBoundsException("Index out of island bounds");
+            throw new IndexOutOfBoundsException();
         }
         int oldX = w.getPosition()[0];
         int oldY = w.getPosition()[1];
@@ -123,7 +124,7 @@ public class Island {
         if (!inRange(x, y)) {
             throw new IndexOutOfBoundsException("Index out of island bounds");
         }
-        
+
         CellCluster real = grid[x][y];
         CellCluster copy = null;
         try {

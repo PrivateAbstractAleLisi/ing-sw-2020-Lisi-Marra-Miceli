@@ -32,6 +32,9 @@ public class IslandPrinter {
                     break;
 
             }
+            if (xy.hasWorkerOnTop()) {
+                //TODO STAMPA IL PLAYER come ♦︎ del relativo colore (usare costanti ASCII)
+            }
         }
     }
     public void displayIsland(){

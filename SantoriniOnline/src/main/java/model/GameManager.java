@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Player;
@@ -28,7 +29,7 @@ public class GameManager {
     private List<Card> cardsTaken;
 
     /**
-     * Constructor initialize the game creating the island
+     * Constructor: initialize the game creating the island
      */
     public GameManager(){
         blocksL1=22;
@@ -38,18 +39,18 @@ public class GameManager {
 
         island=new Island();
 
-        playersList = new List<Player>();
+        playersList = new ArrayList<Player>();
 
-        cardsList =new List<Card>();
+        cardsList =new ArrayList<Card>();
         initializeCardList();
-        cardsSelected =new List<Card>();
-        cardsTaken =new List<Card>();
+        cardsSelected =new ArrayList<Card>();
+        cardsTaken =new ArrayList<Card>();
     }
 
     /**
      *
      * @param blockType type of the block you want to know the amount
-     * @return the number of blockTypeEnum remaining
+     * @return the number of blockTypeEnum remaining, -1 if error
      */
     public int getNumberOfBlocksRemaining(BlockTypeEnum blockType){
         switch(blockType) {
@@ -57,7 +58,9 @@ public class GameManager {
             case LEVEL2: return blocksL2;
             case LEVEL3: return blocksL3;
             case DOME: return blocksDome;
+
         }
+        return -1;
     }
 
     /**
@@ -78,7 +81,7 @@ public class GameManager {
      * @param player the player to add in playersList
      */
     public void addPlayer(Player player){
-        if (playersList.size() < 3) {
+        if (playersList.size() < 3) { //TODO eccezione?
             playersList.add(player);
         }
     }
@@ -105,7 +108,7 @@ public class GameManager {
      */
     public void selectCard(Card card){
         if (cardsSelected.size() < 3){
-            cardsSelected.add(Card card);
+            cardsSelected.add(card);
         }
     }
 

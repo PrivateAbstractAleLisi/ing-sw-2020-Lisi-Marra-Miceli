@@ -9,9 +9,8 @@ public class Worker {
     }
 
     private IDs workerID;
-    private String playerUsername; //
+    private String playerUsername;
 
-    //in cluster cosa sarebbe??!
 
     private int[] position;
 
@@ -23,16 +22,25 @@ public class Worker {
     public Worker(IDs workerID, String playerUsername) {
         this.workerID = workerID;
         this.playerUsername = playerUsername;
-        position = new int [2];
+        position = null;
     }
 //Changed: vettore posizione unico, no getter x, getter y
 
     //2D
+
+    /**
+     * @author: Ale Lisi
+     * @param posX
+     * @param posY
+     */
     public void setPosition (int posX, int posY) {
+        position = new int[2];
         position[0] = posX;
         position[1] = posY;
     }
-
+    /**
+     * @author: Ale Lisi
+     */
     public int[] getPosition () {
         int [] vector2 = new int[2];
         vector2[0] =  position[0];
@@ -42,8 +50,10 @@ public class Worker {
     }
 
     public IDs getWorkerID(){
-        IDs id;
-        id= worker.workerID;
-        return id;
+        return this.workerID;
+    }
+
+    public String getPlayerUsername() {
+        return playerUsername;
     }
 }

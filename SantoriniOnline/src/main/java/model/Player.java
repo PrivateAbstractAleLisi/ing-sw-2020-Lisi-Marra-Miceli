@@ -41,7 +41,7 @@ public class Player {
      * @return the card the player is using
      */
     public Card getCard(){
-
+    return null; //PLACEHOLDER
     }
 
     /**
@@ -58,7 +58,7 @@ public class Player {
      * @return the worker of the id passed by parameter
      */
     public Worker getWorker(Worker.IDs id){
-        Worker w;
+        Worker w = null;
         for (Worker x : workersList){
             //needed method getWorkerID in class Worker
             if (x.getWorkerID() == id){
