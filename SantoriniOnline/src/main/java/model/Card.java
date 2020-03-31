@@ -169,7 +169,7 @@ public abstract class Card {
     /**
      * Check if the construction can be done from the actual position of the {@link Worker}.
      *
-     * @param block    level of construction player wants to build
+     * @param block    level of construction {@link Player} wants to build
      * @param actualX  Actual X Position of the worker
      * @param actualY  Actual Y Position of the worker
      * @param desiredX X Position where the player wants to place the worker
@@ -200,11 +200,42 @@ public abstract class Card {
         if (distance(actualX, actualY, desiredX, desiredY) >= 2) {
             return false;
         }
-        //todo verificare la possibilità di mettere quel preciso blocco
 
+        //genero un array contenente la struttura del cellcluster (e il nuovo blocco) e l'analizzo nella funzione successiva
+        int[] desiredConstruction = desiredCellCluster.toIntArrayWithAdding(block);
+        if (!isValidBlockPlacement(block, desiredConstruction)) {
+            return false;
+        }
 
-        //decrementa il numero di blocchi da costruire rimasti
+        //decrementa il numero di blocchi da costruire rimasti e ritorno true
         playedBy.behaviour.setBlockPlacementLeft(playedBy.behaviour.getBlockPlacementLeft() - 1);
+        return true;
+    }
+
+    /**
+     * Check if the desired block can be added to the selected {@link CellCluster}.
+     *
+     * @param block               level of construction {@link Player} wants to build
+     * @param desiredConstruction Array of int that represent the current {@link CellCluster} with the addition of the desired block
+     * @return true if the block order and placement is valid, false otherwise
+     */
+    private boolean isValidBlockPlacement(BlockTypeEnum block, int[] desiredConstruction) {
+        int[] longArray = new int[desiredConstruction.length + 1];
+        longArray[0] = 0;
+
+        for (int i = 0; i < desiredConstruction.length; i++) {
+            longArray[i + 1] = desiredConstruction[i];
+        }
+
+        for (int i = 0; i < longArray.length; i++) {
+            longArray[i] -= desiredConstruction[i];
+            if (longArray[i] < -1) {
+                if (block != BlockTypeEnum.DOME && !playedBy.behaviour.isCanBuildDomeEverywhere()) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 

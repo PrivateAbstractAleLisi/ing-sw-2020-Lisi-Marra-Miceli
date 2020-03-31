@@ -62,6 +62,15 @@ public class CellCluster implements Cloneable{
 
         return array;
     }
+
+    public int[] toIntArrayWithAdding(BlockTypeEnum toBeAdded){
+        List <BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
+        constructionAfter.addAll(construction);
+        constructionAfter.add(toBeAdded);
+
+        return toIntArray(constructionAfter);
+    }
+
     public void build(BlockTypeEnum block) throws InvalidBuildException {
         isFree = false;
         //Build:
