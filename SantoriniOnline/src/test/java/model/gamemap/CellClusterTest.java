@@ -217,4 +217,35 @@ public class CellClusterTest {
         assertEquals(original.checkBuildingBlockOrder(BlockTypeEnum.LEVEL3), cloned.checkBuildingBlockOrder(BlockTypeEnum.LEVEL3));
 
     }
+
+    @Test
+    public void toIntArrayWithHypo() throws InvalidBuildException {
+        int[] res = istance.toIntArrayWithHypo(BlockTypeEnum.LEVEL1);
+        int [] resExpected = {1};
+        assertArrayEquals(resExpected, res);
+        assertEquals(istance.getCostructionHeight(), 0);
+        istance.build(BlockTypeEnum.LEVEL1);
+
+        res = istance.toIntArrayWithHypo(BlockTypeEnum.LEVEL2);
+        resExpected = new int[]{1, 2};
+        assertArrayEquals(resExpected, res);
+        assertEquals(istance.getCostructionHeight(), 1);
+        istance.build(BlockTypeEnum.LEVEL2);
+
+        res = istance.toIntArrayWithHypo(BlockTypeEnum.LEVEL3);
+        resExpected = new int[]{1, 2, 3};
+        assertArrayEquals(resExpected, res);
+        assertEquals(istance.getCostructionHeight(), 2);
+        istance.build(BlockTypeEnum.LEVEL3);
+
+        res = istance.toIntArrayWithHypo(BlockTypeEnum.DOME);
+        resExpected = new int[]{1, 2, 3, 4};
+        assertArrayEquals(resExpected, res);
+        assertEquals(istance.getCostructionHeight(), 3);
+        istance.build(BlockTypeEnum.DOME);
+
+       assertEquals(istance.getCostructionHeight(), 4);
+
+    }
+
 }

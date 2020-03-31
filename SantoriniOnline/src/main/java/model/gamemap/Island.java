@@ -24,7 +24,7 @@ public class Island {
     public Island() {
         grid = new CellCluster[5][5];
 
-        //initialize all cells with a double for
+        //initialize *all cells* with a double for
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 grid[i][j] = new CellCluster();
@@ -56,6 +56,10 @@ public class Island {
      * @throws InvalidMovementException when you try to place a worker in a cell the has already a worker on top
      */
     public void placeWorker(Worker w, int x, int y) throws InvalidMovementException {
+
+        if (!inRange(x, y)) {
+            throw new IndexOutOfBoundsException();
+        }
 
         grid[x][y].addWorker(w);
         w.setPosition(x, y);

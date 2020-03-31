@@ -63,7 +63,7 @@ public class CellCluster implements Cloneable{
         return array;
     }
 
-    public int[] toIntArrayWithAdding(BlockTypeEnum toBeAdded){
+    public int[] toIntArrayWithHypo(BlockTypeEnum toBeAdded){
         List <BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
         constructionAfter.addAll(construction);
         constructionAfter.add(toBeAdded);

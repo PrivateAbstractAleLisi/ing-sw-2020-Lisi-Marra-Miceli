@@ -202,7 +202,7 @@ public abstract class Card {
         }
 
         //genero un array contenente la struttura del cellcluster (e il nuovo blocco) e l'analizzo nella funzione successiva
-        int[] desiredConstruction = desiredCellCluster.toIntArrayWithAdding(block);
+        int[] desiredConstruction = desiredCellCluster.toIntArrayWithHypo(block);
         if (!isValidBlockPlacement(block, desiredConstruction)) {
             return false;
         }

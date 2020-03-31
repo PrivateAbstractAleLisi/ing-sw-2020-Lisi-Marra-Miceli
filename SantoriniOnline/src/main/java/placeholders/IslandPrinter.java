@@ -10,7 +10,7 @@ public class IslandPrinter {
         islandDecorated = i;
     }
 
-    private void printCellCluster (int x, int y) {
+    private void printCellCluster (int x, int y) throws CloneNotSupportedException {
         if(islandDecorated.getCellCluster(x, y).isFree()) {
             System.out.print("| " + " " + " ");
         }
@@ -37,7 +37,7 @@ public class IslandPrinter {
             }
         }
     }
-    public void displayIsland(){
+    public void displayIsland() throws CloneNotSupportedException {
         System.out.println("ISLAND: ");
         for (int row = 0; row < 5; row++)
         {

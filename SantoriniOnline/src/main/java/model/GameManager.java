@@ -24,6 +24,8 @@ public class GameManager {
     //Island of the game
     protected Island island;
 
+    private Island newIsland;
+
     //Aspettare implementazione di Card
     private List<Card> cardsList;
     private List<Card> cardsSelected;
