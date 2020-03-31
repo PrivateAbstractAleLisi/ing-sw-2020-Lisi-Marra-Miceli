@@ -12,21 +12,21 @@ public class GameManagerTest {
         game.getNumberOfBlocksRemaining(block);
         assertEquals(22, game.getNumberOfBlocksRemaining(block));
     }
-
+/*
     @org.junit.Test
     public void getNumberOfBlocksRemaining_blockLevel2_shouldReturnNormally() {
         GameManager game= new GameManager();
         BlockTypeEnum block= BlockTypeEnum.LEVEL1;
         game.getNumberOfBlocksRemaining(block);
         assertEquals(18, game.getNumberOfBlocksRemaining(block));
-    }
+    } */
 
     @org.junit.Test
     public void getNumberOfBlocksRemaining_blockLevel3_shouldReturnNormally() {
         GameManager game= new GameManager();
         BlockTypeEnum block= BlockTypeEnum.LEVEL2;
         game.getNumberOfBlocksRemaining(block);
-        assertEquals(14, game.getNumberOfBlocksRemaining(block));
+        assertEquals(18, game.getNumberOfBlocksRemaining(block));
     }
 
     @org.junit.Test
@@ -34,7 +34,7 @@ public class GameManagerTest {
         GameManager game= new GameManager();
         BlockTypeEnum block= BlockTypeEnum.LEVEL3;
         game.getNumberOfBlocksRemaining(block);
-        assertEquals(18, game.getNumberOfBlocksRemaining(block));
+        assertEquals(14, game.getNumberOfBlocksRemaining(block));
     }
 
 
@@ -67,7 +67,7 @@ public class GameManagerTest {
         GameManager game=new GameManager();
         BlockTypeEnum block= BlockTypeEnum.LEVEL3;
         game.drawBlock(block);
-        assertEquals(17, game.getNumberOfBlocksRemaining(block));
+        assertEquals(13, game.getNumberOfBlocksRemaining(block));
     }
 
 

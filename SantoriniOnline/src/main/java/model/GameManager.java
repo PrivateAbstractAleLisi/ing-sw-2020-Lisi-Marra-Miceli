@@ -35,7 +35,7 @@ public class GameManager {
     public GameManager(){
         blocksL1=22;
         blocksL2=18;
-        blocksL2=14;
+        blocksL3=14;
         blocksDome=18;
 
         island=new Island();

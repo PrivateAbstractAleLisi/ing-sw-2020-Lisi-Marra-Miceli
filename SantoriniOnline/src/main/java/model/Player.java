@@ -17,7 +17,7 @@ public class Player {
      * @param username the name of the player
      */
     public Player(String username) {
-        username= username;
+        this.username= username;
     }
 
     /**
@@ -73,7 +73,7 @@ public class Player {
      * @param color the color representative of the player
      */
     public void setColor (WorkerColors color){
-        color= color;
+        this.color= color;
     }
 
     /**
