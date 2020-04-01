@@ -1,17 +1,19 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import model.exception.InvalidWorkerException;
 import model.gamemap.Worker;
-import model.Card;
 
 public class Player {
 
     private String username;
 
-    private ArrayList<Worker> workersList = new ArrayList<Worker>();
+    private ArrayList<Worker> workers = new ArrayList<Worker>();
     private WorkerColors color;
 
+    private BoardManager boardManager;
     private Card card;
     private BehaviourManager behaviour;
 
@@ -20,6 +22,12 @@ public class Player {
      *
      * @param username the name of the player
      */
+    public Player(String username, BoardManager boardManager) {
+        this.username = username;
+        this.boardManager = boardManager;
+        behaviour = new BehaviourManager();
+    }
+
     public Player(String username) {
         this.username = username;
         behaviour = new BehaviourManager();
@@ -29,7 +37,7 @@ public class Player {
      * @return the username of the player
      */
     public String getUsername() {
-        return new String(username);
+        return username;
     }
 
     /**
@@ -46,8 +54,8 @@ public class Player {
         this.card = card;
     }
 
-    public void setCard(Card card){
-        this.card=card;
+    public void setCard(Card card) {
+        this.card = card;
     }
 
     /**
@@ -65,10 +73,17 @@ public class Player {
     }
 
     /**
-     * @param worker the worker to be added in the workersList
+     * @param worker the worker to be added in the workers
+     * @throws InvalidWorkerException if there are already two workers or there is already one with the same ID
      */
-    public void setWorker(Worker worker) {
-        workersList.add(worker);
+    public void setWorker(Worker worker) throws InvalidWorkerException {
+        if (workers.size() == 2)
+            throw new InvalidWorkerException("Already two workers for this player");
+        for (Worker w : workers) {
+            if (w.getWorkerID() == worker.getWorkerID())
+                throw new InvalidWorkerException("Already a worker with the same ID");
+        }
+        workers.add(worker);
     }
 
     /**
@@ -77,7 +92,7 @@ public class Player {
      */
     public Worker getWorker(Worker.IDs id) {
         Worker w = null;
-        for (Worker x : workersList) {
+        for (Worker x : workers) {
             if (x.getWorkerID() == id) {
                 w = x;
             }
@@ -100,5 +115,12 @@ public class Player {
     public WorkerColors getColor() {
         WorkerColors colorCopy = color;
         return colorCopy;
+    }
+
+    /**
+     * @return the list of the players
+     */
+    public List<Player> getPlayers() {
+        return boardManager.getPlayers();
     }
 }

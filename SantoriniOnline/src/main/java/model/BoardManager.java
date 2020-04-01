@@ -5,15 +5,18 @@ import java.util.Collections;
 import java.util.List;
 
 import model.Player;
+import model.exception.AlreadyExistingPlayer;
 import model.exception.InvalidCardException;
+import model.exception.InvalidWorkerRemovalException;
 import model.exception.NoRemainingBlockException;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.Island;
+import model.gamemap.Worker;
 
 import javax.naming.LimitExceededException;
 import java.lang.IllegalArgumentException;
 
-public class GameManager {
+public class BoardManager {
 
     // Number and type of block available
     private int blocksL1;
@@ -35,7 +38,7 @@ public class GameManager {
     /**
      * Constructor: initialize the game creating the island
      */
-    public GameManager() {
+    public BoardManager() {
         blocksL1 = 22;
         blocksL2 = 18;
         blocksL3 = 14;
@@ -76,63 +79,77 @@ public class GameManager {
 
 
     /**
+     *
      * @param blockType type of the block to decrement from the remaining blocks
+     * @throws NoRemainingBlockException if there are no block of blockType remaining
      */
     public void drawBlock(BlockTypeEnum blockType) throws NoRemainingBlockException {
         switch (blockType) {
             case LEVEL1:
-                if(blocksL1 >0) {blocksL1--;}
-                else throw new NoRemainingBlockException("No blocksL1 remaining");
+                if (blocksL1 > 0) {
+                    blocksL1--;
+                } else throw new NoRemainingBlockException("No blocksL1 remaining");
             case LEVEL2:
-                if(blocksL2 >0) {blocksL2--;}
-                else throw new NoRemainingBlockException("No blocksL2 remaining");
+                if (blocksL2 > 0) {
+                    blocksL2--;
+                } else throw new NoRemainingBlockException("No blocksL2 remaining");
             case LEVEL3:
-                if(blocksL3 >0) {blocksL3--;}
-                else throw new NoRemainingBlockException("No blocksL3 remaining");
+                if (blocksL3 > 0) {
+                    blocksL3--;
+                } else throw new NoRemainingBlockException("No blocksL3 remaining");
             case DOME:
-                if(blocksDome >0) {blocksDome--;}
-                else throw new NoRemainingBlockException("No blocksDome remaining");
+                if (blocksDome > 0) {
+                    blocksDome--;
+                } else throw new NoRemainingBlockException("No blocksDome remaining");
         }
     }
 
     /**
-     *
      * @param player the player to add
      * @throws LimitExceededException if there are already three player in the game
      */
-    public void addPlayer(Player player) throws LimitExceededException {
+    public void addPlayer(Player player) throws LimitExceededException, AlreadyExistingPlayer {
         if (players.size() < 3) {
-            players.add(player);
+            if (players.contains(player)) throw new AlreadyExistingPlayer("Player already existing");
+            else players.add(player);
         } else throw new LimitExceededException("Exceeded number of players");
     }
 
     /**
-     *
      * @param username the username of the player to add
      * @throws LimitExceededException if there are already three player in the game
      */
-    public void addPlayer(String username) throws LimitExceededException {
+    public void addPlayer(String username) throws LimitExceededException, AlreadyExistingPlayer {
         if (players.size() < 3) {
-            Player newPlayer = new Player(username);
-            players.add(newPlayer);
+            if (players.contains(username)) throw new AlreadyExistingPlayer("Player already existing");
+            else {
+                Player newPlayer = new Player(username);
+                players.add(newPlayer);
+            }
         } else throw new LimitExceededException("Exceeded number of players");
     }
 
     /**
+     *
      * @param player that should be removed from the game
+     * @throws InvalidWorkerRemovalException
      */
-    public void removePlayer(Player player) {
+    public void removePlayer(Player player) throws InvalidWorkerRemovalException {
         players.remove(player);
+        Worker worker1 = player.getWorker(Worker.IDs.A);
+        //come gestisco eccezione?
+        island.removeWorker(worker1);
+        Worker worker2 = player.getWorker(Worker.IDs.B);
+        island.removeWorker(worker2);
     }
 
     /**
-     *
      * @param username the username of the player that should be removed from the game
      */
-    public void removePlayer(String username){
-        Player toRemove= null;
-        for(Player p: players){
-            if(p.getUsername().equals(username)) toRemove=p;
+    public void removePlayer(String username) {
+        Player toRemove = null;
+        for (Player p : players) {
+            if (p.getUsername().equals(username)) toRemove = p;
         }
         players.remove(toRemove);
     }
@@ -164,7 +181,6 @@ public class GameManager {
     }
 
     /**
-     *
      * @param username the username of the player to get
      * @return the player with the input username
      */
@@ -194,20 +210,16 @@ public class GameManager {
     }
 
     /**
-     *
      * @param card the card selected by the user
      * @throws InvalidCardException if the card is not in the card list
      */
     public void selectCard(String card) throws InvalidCardException, LimitExceededException {
         if (selectedCards.size() < 3) {
-            if (cards.contains(card))
-            {
+            if (cards.contains(card)) {
                 selectedCards.add(card);
                 cards.remove(card);
-            }
-            else throw new InvalidCardException("Card is not in the cards list");
-        }
-        else {
+            } else throw new InvalidCardException("Card is not in the cards list");
+        } else {
             throw new LimitExceededException();
         }
     }
@@ -220,7 +232,6 @@ public class GameManager {
     }
 
     /**
-     *
      * @param card the card chosen by one player that should be added to the list selectedCards
      * @throws InvalidCardException if the card passed as input is not in the card list
      */

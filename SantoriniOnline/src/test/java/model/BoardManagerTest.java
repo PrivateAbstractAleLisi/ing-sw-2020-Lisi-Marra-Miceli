@@ -13,13 +13,13 @@ import javax.naming.LimitExceededException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameManagerTest {
+public class BoardManagerTest {
 
-    private GameManager game = null;
+    private BoardManager game = null;
 
     @Before
     public void setup(){
-        game = new GameManager();
+        game = new BoardManager();
     }
 
     @After
