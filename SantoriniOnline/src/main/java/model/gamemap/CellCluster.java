@@ -63,6 +63,28 @@ public class CellCluster implements Cloneable{
         return array;
     }
 
+    public int[] toIntArray() {
+        int[] array = new int[construction.size()]; //Auxiliary array
+        for (int i = 0; i< array.length; i++) { //Converts the construction into an integer array
+
+            switch (construction.get(i)) {
+                case LEVEL1:
+                    array[i] = 1;
+                    break;
+                case LEVEL2:
+                    array[i] = 2;
+                    break;
+                case LEVEL3:
+                    array[i] = 3;
+                    break;
+                case DOME:
+                    array[i] = 4;
+                    break;
+            }
+        }
+
+        return array;
+    }
     public int[] toIntArrayWithHypo(BlockTypeEnum toBeAdded){
         List <BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
         constructionAfter.addAll(construction);
@@ -128,7 +150,7 @@ public class CellCluster implements Cloneable{
 
 
     public void removeWorker() {
-        worker.setPosition(-1, -1);
+        //worker.setPosition(-1, -1);
         worker = null;
     }
 

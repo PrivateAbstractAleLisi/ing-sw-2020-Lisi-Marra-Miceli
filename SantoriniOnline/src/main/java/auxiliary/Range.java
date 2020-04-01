@@ -4,11 +4,12 @@ public class Range {
     private int low;
     private int high;
 
-    private final Range ISLAND_OFFSET_RANGE = new Range(0, 4);
+
 
     public Range(int low, int high) {
         this.low = low;
         this.high = high;
+
     }
 
     public boolean contains(int number) {
@@ -23,11 +24,11 @@ public class Range {
      * @param y y index of a cell
      * @return true if is in range, false otherwise
      */
+
+    private final int lower = 0;
+    private final int upper = 4;
     public boolean isIndexOfCellInRange(int x, int y) {
-        if (ISLAND_OFFSET_RANGE.contains(x) && ISLAND_OFFSET_RANGE.contains(y)) {
-            return true;
-        }
-        return false;
+        return (x >= lower && x <= upper) && (y >= lower && y <= upper);
     }
 
 }
