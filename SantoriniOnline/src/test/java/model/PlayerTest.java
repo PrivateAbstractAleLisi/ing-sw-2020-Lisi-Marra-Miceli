@@ -1,11 +1,24 @@
 package model;
 
 import model.gamemap.Worker;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class PlayerTest {
+    private Player player;
+
+    @Before
+    public void setup(){
+        player = new Player("matteo");
+    }
+
+    @After
+    public void tearDown(){
+        player = null;
+    }
 
     @Test
     public void getUsername_normalUsername_shouldReturnNormally() {
@@ -14,11 +27,10 @@ public class PlayerTest {
     }
 
     @Test
-    public void setCard() {
-    }
-
-    @Test
-    public void getCard() {
+    public void setCard_normalCard_shouldReturnNormally() {
+        Card card= new Card(player);
+        player.setCard(card);
+        assertEquals(card, player.getCard());
     }
 
     @Test
@@ -31,7 +43,7 @@ public class PlayerTest {
 
     @Test
     public void setWorker_withTwoWorker_shouldReturnNormally() {
-        Player player = new Player("matteo");
+
         Worker worker = new Worker(Worker.IDs.A, "matteo");
         player.setWorker(worker);
         assertEquals(worker, player.getWorker(Worker.IDs.A));
@@ -45,4 +57,8 @@ public class PlayerTest {
         player.setColor(color);
         assertEquals(color, player.getColor());
     }
+
+
+
+
 }

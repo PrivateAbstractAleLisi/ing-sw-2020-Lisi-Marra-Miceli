@@ -8,36 +8,46 @@ import model.Card;
 public class Player {
 
     private String username;
+
     private ArrayList<Worker> workersList = new ArrayList<Worker>();
     private WorkerColors color;
-    private Card card;
 
+    private Card card;
     private BehaviourManager behaviour;
 
     /**
      * Constructor of the player class
      *
      * @param username the name of the player
-     * @param creator
      */
-    public Player(String username, GameManager creator) {
+    public Player(String username) {
         this.username = username;
         behaviour = new BehaviourManager();
     }
-
 
     /**
      * @return the username of the player
      */
     public String getUsername() {
-        return username;
+        return new String(username);
     }
 
     /**
-     * @param card the card chosen by the player
+     * Creates the card from the input string and link it to the player
+     *
+     * @param cardToSet the card chosen by the player
      */
-    public void setCard(Card card) {
+    public void setCard(String cardToSet) {
+        try {
+            Class<? extends Card> card = Class.forName("model.cards." + cardToSet).asSubclass(Card.class);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         this.card = card;
+    }
+
+    public void setCard(Card card){
+        this.card=card;
     }
 
     /**
@@ -68,7 +78,6 @@ public class Player {
     public Worker getWorker(Worker.IDs id) {
         Worker w = null;
         for (Worker x : workersList) {
-            //needed method getWorkerID in class Worker
             if (x.getWorkerID() == id) {
                 w = x;
             }
