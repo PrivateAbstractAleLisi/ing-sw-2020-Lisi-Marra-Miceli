@@ -1,13 +1,14 @@
 package model;
 
 import auxiliary.Range;
-import model.exception.InvalidBuildException;
-import model.exception.InvalidMovementException;
-import model.exception.WinningException;
+import model.exception.*;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.CellCluster;
 import model.gamemap.Island;
 import model.gamemap.Worker;
+import placeholders.IslandPrinter;
+
+import java.util.concurrent.ExecutionException;
 
 import static java.lang.StrictMath.sqrt;
 
@@ -18,7 +19,7 @@ import static java.lang.StrictMath.sqrt;
  * <br>Each method of this class implements the standard rules of the game, not modified by the God Powers.
  * </p>
  * <p>
- * To define what action is valid or not, the methods analise the {@link Island} and the moves that any {@link Player} can do (accessing to {@link GameManager} object in {@link Player}).
+ * To define what action is valid or not, the methods analise the {@link Island} and the moves that any {@link Player} can do (accessing to {@link BoardManager} object in {@link Player}).
  */
 public /*abstract*/ class Card {
     private String name;
@@ -36,17 +37,18 @@ public /*abstract*/ class Card {
      * @param worker   A worker of the actual player
      * @param desiredX X Position where the player wants to place the worker
      * @param desiredY Y Position where the player wants to place the worker
+     * @param island   The current board of game
      * @throws InvalidMovementException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
      */
-    public void placeWorker(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException {
-        if (!isValidPlacement(desiredX, desiredY, island)) {
+    public void placeWorker(Worker worker, int desiredX, int desiredY, Island island) throws MoveExecutionException, CloneNotSupportedException, InvalidMovementException {
+        if (!isValidWorkerPlacement(worker, desiredX, desiredY, island)) {
             throw new InvalidMovementException("Invalid move for this card");
         }
 
         island.placeWorker(worker, desiredX, desiredY);
 
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
-            throw new InvalidMovementException("The move is valid there was an error applying desired changes");
+            throw new MoveExecutionException("The move is valid there was an error applying desired changes");
         }
     }
 
@@ -56,6 +58,7 @@ public /*abstract*/ class Card {
      * @param worker   A worker of the actual player
      * @param desiredX X Position where the player wants to move the worker
      * @param desiredY Y Position where the player wants to move the worker
+     * @param island   The current board of game
      * @throws InvalidMovementException Exception thrown when the coordinates are not valid
      */
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
@@ -71,8 +74,7 @@ public /*abstract*/ class Card {
             throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
         } else {
             //Memorizzo l'altitudine del worker per poi controllare se è effettivamente salito
-            CellCluster oldCellCluster = island.getCellCluster(actualX, actualY);
-            int oldAltitudeOfPlayer = oldCellCluster.getCostructionHeight();
+            int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();
             checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);
         }
     }
@@ -84,17 +86,26 @@ public /*abstract*/ class Card {
      * @param block    level of block desired to build
      * @param desiredX X Position where the player wants to build the block
      * @param desiredY Y Position where the player wants to build the block
+     * @param island   The current board of game
      * @throws InvalidBuildException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
      */
-    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException {
+    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
         int actualX = worker.getPosition()[0];
         int actualY = worker.getPosition()[1];
+        int[] oldCellCluster = null;
+
+        CellCluster old = island.getCellCluster(desiredX, desiredY);
+        if (old.getCostructionHeight() != 0) {
+            oldCellCluster = old.toIntArray();
+        } else {
+            oldCellCluster = new int[1];
+        }
 
         if (!isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {
             throw new InvalidBuildException("Invalid build for this worker");
         }
         island.buildBlock(block, desiredX, desiredY);
-        if (!checkBlockPosition(island, block, desiredX, desiredY)) {
+        if (!checkBlockPosition(island, block, desiredX, desiredY, oldCellCluster)) {
             throw new InvalidBuildException("The build is valid but there was an error applying desired changes");
         }
     }
@@ -117,17 +128,16 @@ public /*abstract*/ class Card {
      * @param actualY  Actual Y Position of the worker
      * @param desiredX X Position where the player wants to place the worker
      * @param desiredY Y Position where the player wants to place the worker
-     * @param island
+     * @param island   The current board of game
      * @return true when the destination is reachable from the actual position, false otherwise
      */
-    public boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+    protected boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
-//        Controllo se l'indice della destinazione è valido (0<index<5)
-        Range indexOk = new Range(0, 4);
-        if (!(indexOk.contains(desiredX) && indexOk.contains(desiredY))) {
+        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+        if (actualX == desiredX && actualY == desiredY) {
             return false;
         }
         //verifica il behaviour permette di muoversi
@@ -166,17 +176,22 @@ public /*abstract*/ class Card {
     /**
      * Check if the desired location is free and not complete for a {@link Worker} Placement.
      *
+     *
+     * @param worker A worker of the actual player
      * @param desiredX X Position where the player wants to place the worker
      * @param desiredY Y Position where the player wants to place the worker
-     * @param island
+     * @param island   The current board of game
      * @return true if the the desired location is free and not complete, false otherwise
      */
-    public boolean isValidPlacement(int desiredX, int desiredY, Island island) {
+    protected boolean isValidWorkerPlacement(Worker worker, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException{
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         if (desiredCellCluster.hasWorkerOnTop()) {
             return false;
         }
         if (desiredCellCluster.isComplete()) {
+            return false;
+        }
+        if(worker.isPlacedOnIsland()){
             return false;
         }
         return true;
@@ -190,19 +205,14 @@ public /*abstract*/ class Card {
      * @param actualY  Actual Y Position of the worker
      * @param desiredX X Position where the player wants to place the worker
      * @param desiredY Y Position where the player wants to place the worker
-     * @param island
+     * @param island   The current board of game
      * @return true when the construction can be done from the actual position, false otherwise
      */
-    public boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) {
+    protected boolean isValidConstruction (BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
         //        CellCluster actualCellCluster = islandRef.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
-        //Controllo se l'indice della costruzione è valido (0<index<5)
-        Range indexOk = new Range(0, 4);
-        if (!(indexOk.contains(desiredX) && indexOk.contains(desiredY))) {
-            return false;
-        }
         //verifica il behaviour permette di costruire
         if (behaviour.getBlockPlacementLeft() <= 0) {
             return false;
@@ -234,10 +244,10 @@ public /*abstract*/ class Card {
      *
      * @param block               level of construction {@link Player} wants to build
      * @param desiredConstruction Array of int that represent the current {@link CellCluster} with the addition of the desired block
-     * @param behaviour
+     * @param behaviour           behaviour of the {@link Card}
      * @return true if the block order and placement is valid, false otherwise
      */
-    public boolean isValidBlockPlacement(BlockTypeEnum block, int[] desiredConstruction, BehaviourManager behaviour) {
+    protected boolean isValidBlockPlacement(BlockTypeEnum block, int[] desiredConstruction, BehaviourManager behaviour) {
         int[] longArray = new int[desiredConstruction.length + 1];
         longArray[0] = 0;
 
@@ -245,10 +255,10 @@ public /*abstract*/ class Card {
             longArray[i + 1] = desiredConstruction[i];
         }
 
-        for (int i = 0; i < longArray.length; i++) {
+        for (int i = 0; i < desiredConstruction.length; i++) {
             longArray[i] -= desiredConstruction[i];
             if (longArray[i] < -1) {
-                if (block != BlockTypeEnum.DOME && !behaviour.isCanBuildDomeEverywhere()) {
+                if (block != BlockTypeEnum.DOME || !(behaviour.isCanBuildDomeEverywhere())) {
                     return false;
                 }
             }
@@ -279,7 +289,7 @@ public /*abstract*/ class Card {
      * @param y      The y Coordinate where the {@code Worker} should be
      * @return true if the {@code Worker} is on the right position, false if the {@code CellCluster}  doesn't have a player on Top or the position of worker is different.
      */
-    public boolean checkWorkerPosition(Island island, Worker worker, int x, int y) {
+    protected boolean checkWorkerPosition(Island island, Worker worker, int x, int y) {
         CellCluster cellCluster = island.getCellCluster(x, y);
         if (!cellCluster.hasWorkerOnTop()) {
             return false;
@@ -295,17 +305,46 @@ public /*abstract*/ class Card {
     }
 
     /**
-     *
      * NOT IMPLEMENTED - The {@code checkBlockPosition method} check if the selected {@code block} is one the right place in the right {@link CellCluster}.
      *
-     * @param island The current board of game
-     * @param block  The {@code block} is needed to check the position
-     * @param x      The X Coordinate where the {@code block} should be
-     * @param y      The Y Coordinate where the {@code block} should be
+     * @param island         The current board of game
+     * @param block          The {@code block} is needed to check the position
+     * @param x              The X Coordinate where the {@code block} should be
+     * @param y              The Y Coordinate where the {@code block} should be
+     * @param oldCellCluster The CellCluster before the building of the block
      * @return true if the {@code block} is on the right position, false otherwise
      */
-    public boolean checkBlockPosition(Island island, BlockTypeEnum block, int x, int y) {
-        return true; //PLACEHOLDER
+    protected boolean checkBlockPosition(Island island, BlockTypeEnum block, int x, int y, int[] oldCellCluster) {
+        int[] actualCellCluster = island.getCellCluster(x, y).toIntArray();
+
+        int blockToAdd = 0;
+
+        switch (block) {
+            case LEVEL1:
+                blockToAdd = 1;
+                break;
+            case LEVEL2:
+                blockToAdd = 2;
+                break;
+            case LEVEL3:
+                blockToAdd = 3;
+                break;
+            case DOME:
+                blockToAdd = 4;
+                break;
+        }
+
+        int[] subCellCluster = actualCellCluster.clone();
+
+        for (int i = 0; i < oldCellCluster.length; i++) {
+            subCellCluster[i] -= oldCellCluster[i];
+        }
+        for (int i = 0; i < subCellCluster.length; i++) {
+            if (subCellCluster[i] != 0 && subCellCluster[i] == blockToAdd) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -317,7 +356,7 @@ public /*abstract*/ class Card {
      * @param oldAltitudeOfPlayer The altitude of worker before the move
      * @throws WinningException The {@code WinningException} is thrown when the Player triggered one of the Win check
      */
-    public void checkWin(Island island, int x, int y, int oldAltitudeOfPlayer) throws WinningException {
+    protected void checkWin(Island island, int x, int y, int oldAltitudeOfPlayer) throws WinningException {
         CellCluster cellCluster = island.getCellCluster(x, y);
         //The Worker must increase its Altitude to win
         if (cellCluster.hasWorkerOnTop() && cellCluster.getCostructionHeight() == 3 && cellCluster.getCostructionHeight() > oldAltitudeOfPlayer) {
