@@ -56,6 +56,22 @@ public class CellClusterTest {
         assertTrue(istance.isComplete());
     }
 
+    public void toIntArray() throws InvalidBuildException {
+        istance.build(BlockTypeEnum.LEVEL1);
+        int[] expected = new int[]{1};
+        assertArrayEquals(expected, istance.toIntArray());
+        istance.build(BlockTypeEnum.LEVEL2);
+        expected = new int[]{1,2};
+        assertArrayEquals(expected, istance.toIntArray());
+        istance.build(BlockTypeEnum.LEVEL3);
+        expected = new int[]{1,2,3};
+        assertArrayEquals(expected, istance.toIntArray());
+        istance.build(BlockTypeEnum.DOME);
+        expected = new int[]{1,2,3,4};
+        assertArrayEquals(expected, istance.toIntArray());
+
+    }
+
 
 
     @Test
@@ -174,7 +190,6 @@ public class CellClusterTest {
         Worker w1 = new Worker(Worker.IDs.A, "elettra");
         Worker w2 = new Worker(Worker.IDs.A, "filippo");
         istance.build(BlockTypeEnum.LEVEL1);
-        istance.removeWorker();
         istance.addWorker(w1);
         istance.removeWorker();
         istance.addWorker(w2);

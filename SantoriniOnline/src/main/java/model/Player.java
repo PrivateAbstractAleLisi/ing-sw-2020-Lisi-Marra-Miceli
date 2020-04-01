@@ -18,9 +18,8 @@ public class Player {
      * Constructor of the player class
      *
      * @param username the name of the player
-     * @param creator
      */
-    public Player(String username, GameManager creator) {
+    public Player(String username) {
         this.username = username;
         behaviour = new BehaviourManager();
     }
