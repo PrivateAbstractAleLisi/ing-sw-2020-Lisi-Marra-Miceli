@@ -118,6 +118,22 @@ public class Island {
     }
 
     /**
+     * finds the worker and removes it from the board
+     * @param w worker that will be removed
+     */
+    public void removeWorker(Worker w) throws InvalidWorkerRemovalException {
+        int[] pos = w.getPosition();
+        CellCluster hasWorkerIn = grid[pos[0]] [pos[1]];
+        if (hasWorkerIn.hasWorkerOnTop()) {
+            hasWorkerIn.removeWorker();
+        }
+        else {
+            throw new InvalidWorkerRemovalException("DEBUG: worker position x,y fetched but there is no worker in x,y");
+        }
+
+    }
+
+    /**
      *
      * @param x index of the cell (x)
      * @param y index of the cell (y)

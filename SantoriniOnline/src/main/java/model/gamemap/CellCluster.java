@@ -125,14 +125,10 @@ public class CellCluster implements Cloneable{
 
         isFree = false;
     }
-    /*
-    public Worker removeWorker () {
-        Worker r = this.worker;
-        worker = null;
-        return this.worker;
-    } */
+
 
     public void removeWorker() {
+        worker.setPosition(-1, -1);
         worker = null;
     }
 

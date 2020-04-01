@@ -2,6 +2,7 @@ package model.gamemap;
 
 import model.exception.InvalidBuildException;
 import model.exception.InvalidMovementException;
+import model.exception.InvalidWorkerRemovalException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -148,7 +149,28 @@ public class IslandTest {
         assertTrue(gcc.hasWorkerOnTop());
 
     }
+    @Test//(expected = InvalidWorkerRemovalException.class)
+    public void removeWorker() throws InvalidMovementException, InvalidWorkerRemovalException {
+        isla1.placeWorker(wa, 2,1);
+        isla1.removeWorker(wa);
+        assertTrue(!isla1.getCellCluster(2,4).hasWorkerOnTop());
+        isla1.placeWorker(wb,1,1);
+        assertTrue(isla1.getCellCluster(1,1).hasWorkerOnTop());
+        isla1.moveWorker(wb, 4,1);
+        isla1.placeWorker(wa,3, 3);
+        assertTrue(isla1.getCellCluster(4,1).hasWorkerOnTop());
+        assertTrue(isla1.getCellCluster(3,3).hasWorkerOnTop());
+        isla1.removeWorker(wb);
+        assertFalse(isla1.getCellCluster(4,1).hasWorkerOnTop());
+        isla1.removeWorker(wa);
+        assertFalse(isla1.getCellCluster(3,3).hasWorkerOnTop());
 
+    }
+    @Test (expected = InvalidWorkerRemovalException.class)
+    public void removeWorker_no_Worker_in_cell() throws InvalidWorkerRemovalException {
+        wb.setPosition(3, 4); //cosi non è null e non crasha per null pointer su position
+        isla1.removeWorker(wb);
+    }
     @Test (expected = IndexOutOfBoundsException.class)
     public void getCellCluster_error_oob() throws InvalidBuildException, InvalidMovementException, CloneNotSupportedException {
 
