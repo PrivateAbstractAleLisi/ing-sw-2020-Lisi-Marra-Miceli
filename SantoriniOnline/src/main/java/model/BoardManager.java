@@ -30,7 +30,6 @@ public class BoardManager {
     //Island of the game
     private Island island;
 
-    //Aspettare implementazione di Card
     private List<String> cards;
     private List<String> selectedCards;
     private List<String> takenCards;
@@ -55,8 +54,10 @@ public class BoardManager {
     }
 
     /**
-     * @param blockType type of the block you want to know the amount
-     * @return the number of blockTypeEnum remaining, -1 if error
+     *
+     * @param blockType type of the block that you what to know the amount
+     * @return the number of the blocks of the blockType remaining
+     * @throws IllegalArgumentException if there are no more blocks of blockType remaining
      */
     public int getNumberOfBlocksRemaining(BlockTypeEnum blockType) throws IllegalArgumentException {
         int result = 0;
@@ -135,23 +136,40 @@ public class BoardManager {
      * @throws InvalidWorkerRemovalException
      */
     public void removePlayer(Player player) throws InvalidWorkerRemovalException {
+        if(player.getWorker(Worker.IDs.A)!= null){
+            Worker worker1 = player.getWorker(Worker.IDs.A);
+            island.removeWorker(worker1);
+            player.removeWorker(Worker.IDs.A);
+        }
+        if (player.getWorker(Worker.IDs.B)!= null){
+            Worker worker2 = player.getWorker(Worker.IDs.B);
+            island.removeWorker(worker2);
+            player.removeWorker(Worker.IDs.B);
+        }
         players.remove(player);
-        Worker worker1 = player.getWorker(Worker.IDs.A);
-        //come gestisco eccezione?
-        island.removeWorker(worker1);
-        Worker worker2 = player.getWorker(Worker.IDs.B);
-        island.removeWorker(worker2);
     }
 
     /**
+     *
      * @param username the username of the player that should be removed from the game
+     * @throws InvalidWorkerRemovalException
      */
-    public void removePlayer(String username) {
-        Player toRemove = null;
+    public void removePlayer(String username) throws InvalidWorkerRemovalException {
+        Player player = null;
         for (Player p : players) {
-            if (p.getUsername().equals(username)) toRemove = p;
+            if (p.getUsername().equals(username)) player = p;
         }
-        players.remove(toRemove);
+        if(player.getWorker(Worker.IDs.A)!= null){
+            Worker worker1 = player.getWorker(Worker.IDs.A);
+            player.removeWorker(Worker.IDs.A);
+            island.removeWorker(worker1);
+        }
+        if (player.getWorker(Worker.IDs.B)!= null){
+            Worker worker2 = player.getWorker(Worker.IDs.B);
+            player.removeWorker(Worker.IDs.A);
+            island.removeWorker(worker2);
+        }
+        players.remove(player);
     }
 
     /**
@@ -210,8 +228,10 @@ public class BoardManager {
     }
 
     /**
+     *
      * @param card the card selected by the user
      * @throws InvalidCardException if the card is not in the card list
+     * @throws LimitExceededException if there already three cards selected
      */
     public void selectCard(String card) throws InvalidCardException, LimitExceededException {
         if (selectedCards.size() < 3) {

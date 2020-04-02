@@ -2,9 +2,10 @@ package model;
 
 import static org.junit.Assert.*;
 
-import model.exception.InvalidCardException;
-import model.exception.NoRemainingBlockException;
+import model.exception.*;
 import model.gamemap.BlockTypeEnum;
+
+import model.gamemap.Worker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,218 +16,266 @@ import java.util.List;
 
 public class BoardManagerTest {
 
-    private BoardManager game = null;
+    private BoardManager boardManager = null;
 
     @Before
     public void setup(){
-        game = new BoardManager();
+        boardManager = new BoardManager();
     }
 
     @After
     public void tearDown(){
-        game = null;
+        boardManager = null;
     }
 
     @Test
     public void getNumberOfBlocksRemaining_blockLevel1_shouldReturnNormally() {
         BlockTypeEnum block= BlockTypeEnum.LEVEL1;
-        game.getNumberOfBlocksRemaining(block);
-        assertEquals(22, game.getNumberOfBlocksRemaining(block));
+        boardManager.getNumberOfBlocksRemaining(block);
+        assertEquals(22, boardManager.getNumberOfBlocksRemaining(block));
     }
 
     @Test
     public void getNumberOfBlocksRemaining_blockLevel2_shouldReturnNormally() {
 
         BlockTypeEnum block= BlockTypeEnum.LEVEL2;
-        game.getNumberOfBlocksRemaining(block);
-        assertEquals(18, game.getNumberOfBlocksRemaining(block));
+        boardManager.getNumberOfBlocksRemaining(block);
+        assertEquals(18, boardManager.getNumberOfBlocksRemaining(block));
     }
 
     @Test
     public void getNumberOfBlocksRemaining_blockLevel3_shouldReturnNormally() {
         BlockTypeEnum block= BlockTypeEnum.LEVEL3;
-        game.getNumberOfBlocksRemaining(block);
-        assertEquals(14, game.getNumberOfBlocksRemaining(block));
+        boardManager.getNumberOfBlocksRemaining(block);
+        assertEquals(14, boardManager.getNumberOfBlocksRemaining(block));
     }
 
     @Test
     public void getNumberOfBlocksRemaining_blockDome_shouldReturnNormally() {
         BlockTypeEnum block= BlockTypeEnum.DOME;
-        game.getNumberOfBlocksRemaining(block);
-        assertEquals(18, game.getNumberOfBlocksRemaining(block));
+        boardManager.getNumberOfBlocksRemaining(block);
+        assertEquals(18, boardManager.getNumberOfBlocksRemaining(block));
     }
 
     @Test
     public void drawBlock_blockLevel1_shouldReturnNormally() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.LEVEL1;
-        game.drawBlock(block);
-        assertEquals(21, game.getNumberOfBlocksRemaining(block));
+        boardManager.drawBlock(block);
+        assertEquals(21, boardManager.getNumberOfBlocksRemaining(block));
     }
 
     @Test (expected = NoRemainingBlockException.class)
     public void drawBlock_blockLevel1_shouldThrowException() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.LEVEL1;
         for (int i = 0; i<=23; i ++){
-            game.drawBlock(block);
+            boardManager.drawBlock(block);
         }
     }
 
     @Test
     public void drawBlock_blockLevel2_shouldReturnNormally() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.LEVEL2;
-        game.drawBlock(block);
-        assertEquals(17, game.getNumberOfBlocksRemaining(block));
+        boardManager.drawBlock(block);
+        assertEquals(17, boardManager.getNumberOfBlocksRemaining(block));
     }
 
     @Test (expected = NoRemainingBlockException.class)
     public void drawBlock_blockLevel2_shouldThrowException() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.LEVEL2;
         for (int i = 0; i<=19; i ++){
-            game.drawBlock(block);
+            boardManager.drawBlock(block);
         }
     }
 
     @Test
     public void drawBlock_blockLevel3_shouldReturnNormally() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.LEVEL3;
-        game.drawBlock(block);
-        assertEquals(13, game.getNumberOfBlocksRemaining(block));
+        boardManager.drawBlock(block);
+        assertEquals(13, boardManager.getNumberOfBlocksRemaining(block));
     }
 
     @Test (expected = NoRemainingBlockException.class)
     public void drawBlock_blockLevel3_shouldThrowException() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.LEVEL3;
         for (int i = 0; i<=15; i ++){
-            game.drawBlock(block);
+            boardManager.drawBlock(block);
         }
     }
 
     @Test
     public void drawBlock_blockDome_shouldReturnNormally() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.DOME;
-        game.drawBlock(block);
-        assertEquals(17, game.getNumberOfBlocksRemaining(block));
+        boardManager.drawBlock(block);
+        assertEquals(17, boardManager.getNumberOfBlocksRemaining(block));
     }
 
     @Test (expected = NoRemainingBlockException.class)
     public void drawBlock_blockDome_shouldThrowException() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.DOME;
         for (int i = 0; i<=19; i ++){
-            game.drawBlock(block);
+            boardManager.drawBlock(block);
         }
     }
 
     @Test
-    public void addPlayer_withString_shouldReturnNormally() throws LimitExceededException {
-        game.addPlayer("matteo");
-        assertTrue(game.isPlayerConnected("matteo"));
+    public void addPlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer {
+        boardManager.addPlayer("matteo");
+        assertTrue(boardManager.isPlayerConnected("matteo"));
     }
 
 
     @Test (expected = LimitExceededException.class)
-    public void addPlayer_withString_shouldThrowException() throws LimitExceededException {
+    public void addPlayer_withString_shouldThrowException() throws LimitExceededException, AlreadyExistingPlayer {
 
-        game.addPlayer("matteo");
-        game.addPlayer("gabriele");
-        game.addPlayer("alessandro");
-        game.addPlayer("mattia");
+        boardManager.addPlayer("matteo");
+        boardManager.addPlayer("gabriele");
+        boardManager.addPlayer("alessandro");
+        boardManager.addPlayer("mattia");
     }
 
     @Test
-    public void addPlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException {
+    public void addPlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer {
         Player p1 = new Player("matteo");
-        game.addPlayer(p1);
-        assertTrue(game.isPlayerConnected(p1));
+        boardManager.addPlayer(p1);
+        assertTrue(boardManager.isPlayerConnected(p1));
     }
 
     @Test (expected = LimitExceededException.class)
-    public void addPlayer_withPlayerClass_shouldThrowException() throws LimitExceededException {
+    public void addPlayer_withPlayerClass_shouldThrowException() throws LimitExceededException, AlreadyExistingPlayer {
         Player p1=new Player("matteo");
         Player p2=new Player("gabriele");
         Player p3=new Player("alessandro");
         Player p4=new Player("mattia");
-        game.addPlayer(p1);
-        game.addPlayer(p2);
-        game.addPlayer(p3);
-        game.addPlayer(p4);
+        boardManager.addPlayer(p1);
+        boardManager.addPlayer(p2);
+        boardManager.addPlayer(p3);
+        boardManager.addPlayer(p4);
     }
 
 
     @Test
-    public void removePlayer_withString_shouldReturnNormally() throws LimitExceededException {
-        game.addPlayer("matteo");
-        assertTrue( game.isPlayerConnected("matteo"));
-        game.removePlayer("matteo");
-        assertFalse(game.isPlayerConnected("matteo"));
+    public void removePlayer_withStringWorkerA_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
+        Player player = new Player("matteo", boardManager);
+        Worker worker = new Worker(Worker.IDs.A,player.getUsername());
+        boardManager.getIsland().placeWorker(worker,2,2);
+        worker.setPosition(2,2);
+        player.setWorker(worker);
+        boardManager.addPlayer(player);
+        assertTrue( boardManager.isPlayerConnected("matteo"));
+        boardManager.removePlayer("matteo");
+        assertTrue(!boardManager.isPlayerConnected("matteo"));
     }
 
     @Test
-    public void removePlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException {
+    public void removePlayer_withPlayerWorkerA_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
+        Player player = new Player("matteo", boardManager);
+        Worker worker = new Worker(Worker.IDs.A,player.getUsername());
+        boardManager.getIsland().placeWorker(worker,2,2);
+        worker.setPosition(2,2);
+        player.setWorker(worker);
+        boardManager.addPlayer(player);
+        assertTrue( boardManager.isPlayerConnected("matteo"));
+        boardManager.removePlayer(player);
+        assertTrue(!boardManager.isPlayerConnected("matteo"));
+    }
+
+    @Test
+    public void removePlayer_withStringWorkerB_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
+        Player player = new Player("matteo", boardManager);
+        Worker worker = new Worker(Worker.IDs.B,player.getUsername());
+        boardManager.getIsland().placeWorker(worker,2,2);
+        worker.setPosition(2,2);
+        player.setWorker(worker);
+        boardManager.addPlayer(player);
+        assertTrue( boardManager.isPlayerConnected("matteo"));
+        boardManager.removePlayer("matteo");
+        assertTrue(!boardManager.isPlayerConnected("matteo"));
+    }
+
+    @Test
+    public void removePlayer_withPlayerWorkerB_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
+        Player player = new Player("matteo", boardManager);
+        Worker worker = new Worker(Worker.IDs.B,player.getUsername());
+        boardManager.getIsland().placeWorker(worker,2,2);
+        worker.setPosition(2,2);
+        player.setWorker(worker);
+        boardManager.addPlayer(player);
+        assertTrue( boardManager.isPlayerConnected("matteo"));
+        boardManager.removePlayer(player);
+        assertTrue(!boardManager.isPlayerConnected("matteo"));
+    }
+
+
+
+    @Test
+    public void removePlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException {
         Player p1 = new Player("matteo");
-        game.addPlayer(p1);
-        assertTrue( game.isPlayerConnected(p1));
-        game.removePlayer(p1);
-        assertFalse(game.isPlayerConnected(p1));
+        boardManager.addPlayer(p1);
+        assertTrue( boardManager.isPlayerConnected(p1));
+        boardManager.removePlayer(p1);
+        assertFalse(boardManager.isPlayerConnected(p1));
     }
 
     @Test
-    public void getPlayer_withString_shouldReturnNormally() throws LimitExceededException {
+    public void getPlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer {
         Player p1= new Player("matteo");
-        game.addPlayer(p1);
-        assertEquals(game.getPlayer("matteo"),p1);
+        boardManager.addPlayer(p1);
+        assertEquals(boardManager.getPlayer("matteo"),p1);
     }
 
 
     @Test
-    public void getPlayers_normalPlayers_shouldReturnNormally() throws LimitExceededException {
+    public void getPlayers_normalPlayers_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer {
         Player p1=new Player("matteo");
         Player p2=new Player("gabriele");
         Player p3=new Player("alessandro");
-        game.addPlayer(p1);
-        game.addPlayer(p2);
-        game.addPlayer(p3);
+        boardManager.addPlayer(p1);
+        boardManager.addPlayer(p2);
+        boardManager.addPlayer(p3);
         List<Player> players = new ArrayList<>();
         players.add(p1);
         players.add(p2);
         players.add(p3);
-        assertEquals(players, game.getPlayers());
+        assertEquals(players, boardManager.getPlayers());
     }
 
     @Test
     public void selectCard_normalCard_shouldReturnNormally() throws InvalidCardException, LimitExceededException {
-        game.selectCard("Apollo");
+        boardManager.selectCard("Apollo");
         List<String> c= new ArrayList<String>();
         c.add("Apollo");
-        assertEquals(game.getSelectedCards(),c);
+        assertEquals(boardManager.getSelectedCards(),c);
     }
 
     @Test (expected = InvalidCardException.class)
     public void selectCard_wrongCard_shouldThrowException() throws InvalidCardException, LimitExceededException {
-        game.selectCard("Apollo");
-        game.selectCard("matteo");
+        boardManager.selectCard("Apollo");
+        boardManager.selectCard("matteo");
     }
 
     @Test (expected = LimitExceededException.class)
     public void selectCard_toManyCards_shouldThrowException() throws InvalidCardException, LimitExceededException {
-        game.selectCard("Apollo");
-        game.selectCard("Atlas");
-        game.selectCard("Athena");
-        game.selectCard("Demeter");
+        boardManager.selectCard("Apollo");
+        boardManager.selectCard("Atlas");
+        boardManager.selectCard("Athena");
+        boardManager.selectCard("Demeter");
     }
 
 
     @Test
     public void takeCard_normalCard_shouldReturnNormally() throws InvalidCardException, LimitExceededException {
-        game.selectCard("Apollo");
-        game.takeCard("Apollo");
+        boardManager.selectCard("Apollo");
+        boardManager.takeCard("Apollo");
         List<String> c= new ArrayList<String>();
         c.add("Apollo");
-        assertEquals(game.getTakenCards(),c);
+        assertEquals(boardManager.getTakenCards(),c);
     }
 
     @Test (expected = InvalidCardException.class)
     public void takeCard_wrongCard_shouldThrowException() throws InvalidCardException, LimitExceededException {
-        game.selectCard("Apollo");
-        game.takeCard("Athena");
+        boardManager.selectCard("Apollo");
+        boardManager.takeCard("Athena");
     }
+
+
 }

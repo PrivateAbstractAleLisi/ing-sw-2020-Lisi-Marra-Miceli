@@ -34,6 +34,14 @@ public class Player {
     }
 
     /**
+     *
+     * @param boardManager the boardManager the player is connected to
+     */
+    public void setBoardManager(BoardManager boardManager) {
+        this.boardManager = boardManager;
+    }
+
+    /**
      * @return the username of the player
      */
     public String getUsername() {
@@ -98,6 +106,20 @@ public class Player {
             }
         }
         return w;
+    }
+
+    /**
+     *
+     * @param id the worker id of the worker to delete from the worker list of this player
+     */
+    public void removeWorker(Worker.IDs id){
+        Worker worker = null;
+        for (Worker w: workers){
+            if(w.getWorkerID()==id) {
+                worker = w;
+            }
+        }
+        workers.remove(worker);
     }
 
     /**
