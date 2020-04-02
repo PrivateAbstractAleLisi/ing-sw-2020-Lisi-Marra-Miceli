@@ -22,10 +22,10 @@ import static java.lang.StrictMath.sqrt;
  * To define what action is valid or not, the methods analise the {@link Island} and the moves that any {@link Player} can do (accessing to {@link BoardManager} object in {@link Player}).
  */
 public /*abstract*/ class Card {
-    private String name;
-    private String description;
+    protected String name;
+    protected String description;
     private Object avatarImage;
-    private Player playedBy;
+    protected Player playedBy;
 
     public Card(Player p) {
         playedBy = p;

@@ -37,9 +37,9 @@ public class WorkerTest {
 
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void getPosition_NotSet () {
-        wo.getPosition();
+        Assert.assertNull(wo.getPosition());
 
     }
     @org.junit.Test

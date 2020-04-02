@@ -163,6 +163,13 @@ public class CellCluster implements Cloneable{
         }
     }
 
+    public String getWorkerOwnerUsername () {
+        return worker.getPlayerUsername();
+    }
+    public Worker.IDs getWorkerID () {
+        return worker.getWorkerID();
+    }
+
     public Object clone() throws
             CloneNotSupportedException
     {

@@ -1,12 +1,12 @@
 package auxiliary;
 
 public class Range {
+
     private int low;
     private int high;
 
-
-
     public Range(int low, int high) {
+
         this.low = low;
         this.high = high;
 
@@ -27,6 +27,7 @@ public class Range {
 
     private final int lower = 0;
     private final int upper = 4;
+
     public boolean isIndexOfCellInRange(int x, int y) {
         return (x >= lower && x <= upper) && (y >= lower && y <= upper);
     }

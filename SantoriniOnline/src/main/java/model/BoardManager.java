@@ -262,6 +262,11 @@ public class BoardManager {
         } else throw new InvalidCardException("Card is not a selected one");
     }
 
+    public void resetAllPlayerBehaviour () {
+        for (Player p : players) {
+            p.getCard().resetBehaviour();
+        }
+    }
     /**
      * @return a copy of the list of the cards taken
      */

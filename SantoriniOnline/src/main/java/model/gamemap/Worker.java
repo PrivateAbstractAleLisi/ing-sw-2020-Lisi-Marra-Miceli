@@ -10,7 +10,7 @@ public class Worker {
 
     private IDs workerID;
     private String playerUsername;
-
+    private boolean isPlacedOnIsland;
 
     private int[] position;
 
@@ -23,6 +23,7 @@ public class Worker {
         this.workerID = workerID;
         this.playerUsername = playerUsername;
         position = null;
+        isPlacedOnIsland = false;
     }
 //Changed: vettore posizione unico, no getter x, getter y
 
@@ -40,20 +41,40 @@ public class Worker {
     }
     /**
      * @author: Ale Lisi
+     * @return a 2D vector [X component, Y component], null if worker isn't  placed already
      */
     public int[] getPosition () {
-        int [] vector2 = new int[2];
-        vector2[0] =  position[0];
-        vector2[1] =  position[1];
 
-        return vector2;
+        if (position == null) {
+            return null;
+        }
+        else {
+            int[] vector2 = new int[2];
+            vector2[0] = position[0];
+            vector2[1] = position[1];
+            return vector2;
+        }
+
+
     }
 
+    /**
+     *
+     * @return returns worker ID
+     */
     public IDs getWorkerID(){
         return this.workerID;
     }
 
     public String getPlayerUsername() {
         return playerUsername;
+    }
+
+    public boolean isPlacedOnIsland() {
+        return isPlacedOnIsland;
+    }
+
+    public void setPlacedOnIsland(boolean placedOnIsland) {
+        isPlacedOnIsland = placedOnIsland;
     }
 }

@@ -5,9 +5,7 @@ import auxiliary.Range;
 import model.exception.*;
 
 public class Island {
-    //todo BLOCCARE COSTRURIONE E MOVIMENTO QUANDO LA CELLA Eà COMPLETED (DOME ON TOP), BLOCCARE QUANDO PROVI A COSTRUIRE SOPRA LA TESTA DI QUALCUNO
-//
-//
+
     //public costants
     public final int ISLAND_SIZE = 5;
     public final int NUM_OF_CELLS = 25;
@@ -15,7 +13,6 @@ public class Island {
     private Range indexRange;
 
     private CellCluster[][] grid;
-    /*Game Manager TODO*/ private Object match;
 
     /**
      * Constructor, initialize all the island's cells using a for loop
@@ -50,6 +47,7 @@ public class Island {
     }
 
     /**
+     * it places the worker on the board only if it's not already placed.
      * @param w Worker that has to be placed
      * @param x index of the cell (x) where the worker will be placed
      * @param y index of the cell (y) where the worker will be placed
@@ -60,8 +58,16 @@ public class Island {
         if (!inRange(x, y)) {
             throw new IndexOutOfBoundsException();
         }
+        if (isWorkerAlreadyPlaced(w)) {
+            return;
+        }
+        /*
+        if (isWorkerAlreadyPlaced(w)) {
+            throw new IllegalArgumentException("Worker already placed by the player on the island");
+        } */
 
         grid[x][y].addWorker(w);
+        w.setPlacedOnIsland(true);
         w.setPosition(x, y);
 
         System.out.println("DEBUG: Island: worker placed at index " + x + "," + y);
@@ -126,6 +132,7 @@ public class Island {
         CellCluster hasWorkerIn = grid[pos[0]] [pos[1]];
         if (hasWorkerIn.hasWorkerOnTop()) {
             hasWorkerIn.removeWorker();
+            w.setPlacedOnIsland(false);
         }
         else {
             throw new InvalidWorkerRemovalException("DEBUG: worker position x,y fetched but there is no worker in x,y");
@@ -155,6 +162,25 @@ public class Island {
         }
         return null;
     }
+
+    private boolean isWorkerAlreadyPlaced (Worker w) {
+
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (grid[i][j].hasWorkerOnTop() && grid[i][j].getWorkerID().equals(w.getWorkerID())) {
+                    if (grid[i][j].getWorkerOwnerUsername().equals(w.getPlayerUsername())) {
+                        return true;
+                    }
+
+                }
+
+            }
+        }
+
+        return false;
+    }
+
 
 
 }
