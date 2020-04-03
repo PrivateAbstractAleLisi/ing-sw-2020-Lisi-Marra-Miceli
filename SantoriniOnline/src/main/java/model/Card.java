@@ -1,14 +1,12 @@
 package model;
 
-import auxiliary.Range;
-import model.exception.*;
+import model.exception.InvalidBuildException;
+import model.exception.InvalidMovementException;
+import model.exception.WinningException;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.CellCluster;
 import model.gamemap.Island;
 import model.gamemap.Worker;
-import placeholders.IslandPrinter;
-
-import java.util.concurrent.ExecutionException;
 
 import static java.lang.StrictMath.sqrt;
 
@@ -42,7 +40,7 @@ public abstract class Card {
      */
     public void placeWorker(Worker worker, int desiredX, int desiredY, Island island) throws CloneNotSupportedException, InvalidMovementException {
         if (!isValidWorkerPlacement(worker, desiredX, desiredY, island)) {
-            throw new InvalidMovementException("Invalid move for this card");
+            throw new InvalidMovementException("Invalid Placement for this card");
         }
 
         island.placeWorker(worker, desiredX, desiredY);
@@ -359,5 +357,12 @@ public abstract class Card {
         if (cellCluster.hasWorkerOnTop() && cellCluster.getCostructionHeight() == 3 && cellCluster.getCostructionHeight() > oldAltitudeOfPlayer) {
             throw new WinningException("Worker on 3th level!!");
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+    public String getDescription() {
+        return description;
     }
 }

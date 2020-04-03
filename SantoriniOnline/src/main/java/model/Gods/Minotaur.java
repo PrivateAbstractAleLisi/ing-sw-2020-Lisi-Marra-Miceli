@@ -14,8 +14,8 @@ import java.util.List;
 /**
  * @author Gabriele_Marra
  */
-public class Apollo extends Card {
-    public Apollo(Player player) {
+public class Minotaur extends Card {
+    public Minotaur(Player player) {
         super(player);
         name = "Apollo";
         description = "Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.";
@@ -39,29 +39,23 @@ public class Apollo extends Card {
             if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
+
+            if (!isValidDirectionShift(actualX, actualY, desiredX, desiredY, island)) {
+                throw new InvalidMovementException("Invalid move for this worker");
+            }
+
             //decrementa il numero di movimenti rimasti
             playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
+            Worker enemyWorker = getEnemyWorker(desiredX, desiredY, island);
             CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
-            String enemyUsername = desiredCellCluster.getWorkerOwnerUsername();
-            Worker.IDs enemyWorkerID = desiredCellCluster.getWorkerID();
-
-            List<Player> playerList = playedBy.getPlayers();
-            Player oppositePlayer = null;
-            for (Player actual : playerList) {
-                if (actual.getUsername().equals(enemyUsername)) {
-                    oppositePlayer = actual;
-                }
-            }
-
-            if (oppositePlayer == null) throw new InvalidMovementException("Opposite Player not found");
-            Worker enemyWorker = oppositePlayer.getWorker(enemyWorkerID);
+            int[] shiftedCoordinates = getShiftedCoordinates(actualX, actualY, desiredX, desiredY);
 
             desiredCellCluster.removeWorker();
             island.moveWorker(worker, desiredX, desiredY);
-            island.placeWorker(enemyWorker, actualX, actualY);
+            island.placeWorker(enemyWorker, shiftedCoordinates[0], shiftedCoordinates[1]);
 
-            if (!checkWorkerPosition(island, worker, desiredX, desiredY) && !checkWorkerPosition(island, enemyWorker, actualX, actualY)) {
+            if (!checkWorkerPosition(island, worker, desiredX, desiredY) && !checkWorkerPosition(island, enemyWorker, shiftedCoordinates[0], shiftedCoordinates[1])) {
                 throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
             } else {
                 //Memorizzo l'altitudine del worker per poi controllare se è effettivamente salito
@@ -89,7 +83,8 @@ public class Apollo extends Card {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
-        if(desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())){
+        //ADDED Verifico che il worker sulla cella desiderata sia di un altro giocatore
+        if (desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
             return false;
         }
 
@@ -118,5 +113,73 @@ public class Apollo extends Card {
             }
         }
         return true;
+    }
+
+    /**
+     * This class test if the Minotaur can use his power: return true if the cell close to the desired one is free and not complete.
+     *
+     * @param actualX  Actual X Position of the worker
+     * @param actualY  Actual Y Position of the worker
+     * @param desiredX X Position where the player wants to move the worker
+     * @param desiredY Y Position where the player wants to move the worker
+     * @param island   The current board of game
+     * @return true if the worker in the desired CellCluster can shift in the same direction, false otherwise
+     */
+    private boolean isValidDirectionShift(int actualX, int actualY, int desiredX, int desiredY, Island island) throws InvalidMovementException {
+        int[] shiftedCoordinates = getShiftedCoordinates(actualX, actualY, desiredX, desiredY);
+
+        CellCluster shiftCellCluster = island.getCellCluster(shiftedCoordinates[0], shiftedCoordinates[1]);
+
+        if (shiftCellCluster.hasWorkerOnTop() | shiftCellCluster.isComplete()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param actualX  Actual X Position of the worker
+     * @param actualY  Actual Y Position of the worker
+     * @param desiredX X Position where the player wants to move the worker
+     * @param desiredY Y Position where the player wants to move the worker
+     * @return the coordinates of the shift movement
+     */
+    private int[] getShiftedCoordinates(int actualX, int actualY, int desiredX, int desiredY) throws InvalidMovementException {
+        int directionOnX = desiredX - actualX;
+        int directionOnY = desiredY - actualY;
+
+        int[] shiftedCoordinates = new int[2];
+        shiftedCoordinates[0] = desiredX + directionOnX;
+        shiftedCoordinates[1] = desiredY + directionOnY;
+
+        if (shiftedCoordinates[0] < 0 | shiftedCoordinates[0] > 4 | shiftedCoordinates[1] < 0 | shiftedCoordinates[1] > 4) {
+            throw new InvalidMovementException("The opposite worker can't shift in this coordinates");
+        }
+
+        return shiftedCoordinates;
+    }
+
+    /**
+     * @param desiredX X Position where the player wants to move the worker
+     * @param desiredY Y Position where the player wants to move the worker
+     * @param island The current board of game
+     * @return The enemy {@code Worker} in the desired coordinates
+     * @throws InvalidMovementException if the opposite worker is not found
+     */
+    private Worker getEnemyWorker(int desiredX, int desiredY, Island island) throws InvalidMovementException {
+        CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
+        String enemyUsername = desiredCellCluster.getWorkerOwnerUsername();
+        Worker.IDs enemyWorkerID = desiredCellCluster.getWorkerID();
+
+        List<Player> playerList = playedBy.getPlayers();
+        Player oppositePlayer = null;
+        for (Player actual : playerList) {
+            if (actual.getUsername().equals(enemyUsername)) {
+                oppositePlayer = actual;
+            }
+        }
+
+        if (oppositePlayer == null) throw new InvalidMovementException("Opposite Player not found");
+
+        return oppositePlayer.getWorker(enemyWorkerID);
     }
 }

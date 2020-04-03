@@ -1,5 +1,6 @@
 package model;
 
+import model.Gods.Artemis;
 import model.exception.*;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.Island;
@@ -8,10 +9,7 @@ import model.gamemap.Worker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import placeholders.IslandPrinter;
-
-import java.util.logging.Level;
 
 import static org.junit.Assert.*;
 
@@ -25,7 +23,7 @@ public class CardTest {
 
     @Before
     public void setUp() throws Exception {
-        card = new Card(player);
+        card = new Artemis(player);
         player.setCard(card);
         island = new Island();
         ip = new IslandPrinter(island);
@@ -127,7 +125,7 @@ public class CardTest {
     }
 
     @Test
-    public void placeWorker_correctInput() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException {
+    public void placeWorker_correctInput() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException {
         island.buildBlock(BlockTypeEnum.LEVEL1, 3, 4);
 
         island.placeWorker(worker1, 2, 2);
@@ -152,35 +150,35 @@ public class CardTest {
 //    }
 
     @Test(expected = InvalidMovementException.class)
-    public void placeWorker_WrongInput_PlayerAlreadyOnTop() throws InvalidMovementException, MoveExecutionException, CloneNotSupportedException {
+    public void placeWorker_WrongInput_PlayerAlreadyOnTop() throws InvalidMovementException, CloneNotSupportedException {
         island.placeWorker(worker1, 4, 4);
 
         card.placeWorker(worker2, 4, 4, island);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void placeWorker_WrongInput_ErrorIndex() throws InvalidMovementException, MoveExecutionException, CloneNotSupportedException {
+    public void placeWorker_WrongInput_ErrorIndex() throws InvalidMovementException, CloneNotSupportedException {
         island.placeWorker(worker1, 4, 4);
 
         card.placeWorker(worker2, 6, 4, island);
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void placeWorker_WrongInput_WorkerAlreadyPlaced() throws InvalidMovementException, MoveExecutionException, CloneNotSupportedException {
+    public void placeWorker_WrongInput_WorkerAlreadyPlaced() throws InvalidMovementException, CloneNotSupportedException {
         island.placeWorker(worker1, 4, 4);
 
         card.placeWorker(worker1, 4, 4, island);
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void placeWorker_WrongInput_DomeOnTop() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException {
+    public void placeWorker_WrongInput_DomeOnTop() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException {
         island.buildBlock(BlockTypeEnum.DOME, 3, 4);
 
         card.placeWorker(worker2, 3, 4, island);
     }
 
     @Test
-    public void move_Simple_RightMove() throws InvalidMovementException, MoveExecutionException, WinningException, CloneNotSupportedException {
+    public void move_Simple_RightMove() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         card.placeWorker(worker2, 0, 1, island);
 
@@ -189,7 +187,7 @@ public class CardTest {
     }
 
     @Test
-    public void move_RightMove() throws InvalidMovementException, MoveExecutionException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void move_RightMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
         card.placeWorker(worker2, 0, 1, island);
@@ -199,7 +197,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_Simple_WrongMove_PlayerAlreadyOnCell() throws InvalidMovementException, MoveExecutionException, WinningException, CloneNotSupportedException {
+    public void move_Simple_WrongMove_PlayerAlreadyOnCell() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         card.placeWorker(worker2, 0, 1, island);
 
@@ -208,7 +206,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_Simple_WrongMove_TooFar() throws InvalidMovementException, MoveExecutionException, WinningException, CloneNotSupportedException {
+    public void move_Simple_WrongMove_TooFar() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
 
         card.resetBehaviour();
@@ -216,7 +214,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_WrongMove_TooHigh() throws InvalidMovementException, MoveExecutionException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void move_WrongMove_TooHigh() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 0, 1);
         island.buildBlock(BlockTypeEnum.LEVEL2, 0, 1);
@@ -226,7 +224,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_WrongMove_DomeOnTop() throws InvalidMovementException, MoveExecutionException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void move_WrongMove_DomeOnTop() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.DOME, 1, 1);
 
@@ -235,7 +233,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_WrongMove_NoMovementesRemaining() throws InvalidMovementException, MoveExecutionException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void move_WrongMove_NoMovementesRemaining() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         card.resetBehaviour();
 
@@ -246,7 +244,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_WrongMove_NoClimbAdmit() throws InvalidMovementException, MoveExecutionException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void move_WrongMove_NoClimbAdmit() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 0, 1);
         card.resetBehaviour();
@@ -258,7 +256,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_WrongMove_SameCoordinates() throws InvalidMovementException, MoveExecutionException, WinningException, CloneNotSupportedException {
+    public void move_WrongMove_SameCoordinates() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
 
         card.resetBehaviour();
@@ -266,7 +264,7 @@ public class CardTest {
     }
 
     @Test(expected = WinningException.class)
-    public void move_RightMove_Win() throws InvalidMovementException, MoveExecutionException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void move_RightMove_Win() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         island.buildBlock(BlockTypeEnum.LEVEL1, 0, 0);
         island.buildBlock(BlockTypeEnum.LEVEL2, 0, 0);
         card.placeWorker(worker1, 0, 0, island);
@@ -279,7 +277,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_WrongMove_TooMuchMovements() throws InvalidMovementException, MoveExecutionException, WinningException, CloneNotSupportedException {
+    public void move_WrongMove_TooMuchMovements() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
 
         card.resetBehaviour();
@@ -288,14 +286,15 @@ public class CardTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void move_WrongMove_IndexError() throws InvalidMovementException, MoveExecutionException, WinningException, CloneNotSupportedException {
+    public void move_WrongMove_IndexError() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
 
         card.resetBehaviour();
         card.move(worker1, 0, -5, island);
     }
+
     @Test
-    public void build_RightBuild() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_RightBuild() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
@@ -304,7 +303,7 @@ public class CardTest {
     }
 
     @Test
-    public void build_ComplexCorrectSequence() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_ComplexCorrectSequence() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
@@ -324,7 +323,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_tooFar() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_WrongBuild_tooFar() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
@@ -333,7 +332,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_PlayerOnTop1() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_WrongBuild_PlayerOnTop1() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
@@ -342,7 +341,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_PlayerOnTop2() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_WrongBuild_PlayerOnTop2() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
         card.placeWorker(worker2, 1, 1, island);
@@ -352,7 +351,7 @@ public class CardTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void build_WrongBuild_ErrorIndex() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_WrongBuild_ErrorIndex() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
@@ -361,7 +360,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_DomeOnTop() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_WrongBuild_DomeOnTop() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.DOME, 1, 1);
         card.move(worker1, 1, 0, island);
@@ -371,7 +370,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_TooMuchBlockPlacement() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_WrongBuild_TooMuchBlockPlacement() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
@@ -381,7 +380,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_WrongOrderPosition() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_WrongBuild_WrongOrderPosition() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
@@ -391,7 +390,7 @@ public class CardTest {
     }
 
     @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_BuildDomeEveryWhere() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException, WinningException {
+    public void build_WrongBuild_BuildDomeEveryWhere() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
