@@ -158,8 +158,7 @@ public class BoardManagerTest {
         Player player = new Player("matteo", boardManager);
         Worker worker = new Worker(Worker.IDs.A,player.getUsername());
         boardManager.getIsland().placeWorker(worker,2,2);
-        worker.setPosition(2,2);
-        player.setWorker(worker);
+        player.getWorker(Worker.IDs.A).setPosition(2,2);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
         boardManager.removePlayer("matteo");
@@ -171,8 +170,7 @@ public class BoardManagerTest {
         Player player = new Player("matteo", boardManager);
         Worker worker = new Worker(Worker.IDs.A,player.getUsername());
         boardManager.getIsland().placeWorker(worker,2,2);
-        worker.setPosition(2,2);
-        player.setWorker(worker);
+        player.getWorker(Worker.IDs.A).setPosition(2,2);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
         boardManager.removePlayer(player);
@@ -184,8 +182,7 @@ public class BoardManagerTest {
         Player player = new Player("matteo", boardManager);
         Worker worker = new Worker(Worker.IDs.B,player.getUsername());
         boardManager.getIsland().placeWorker(worker,2,2);
-        worker.setPosition(2,2);
-        player.setWorker(worker);
+        player.getWorker(Worker.IDs.A).setPosition(2,2);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
         boardManager.removePlayer("matteo");
@@ -197,8 +194,7 @@ public class BoardManagerTest {
         Player player = new Player("matteo", boardManager);
         Worker worker = new Worker(Worker.IDs.B,player.getUsername());
         boardManager.getIsland().placeWorker(worker,2,2);
-        worker.setPosition(2,2);
-        player.setWorker(worker);
+        player.getWorker(Worker.IDs.A).setPosition(2,2);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
         boardManager.removePlayer(player);
@@ -276,6 +272,5 @@ public class BoardManagerTest {
         boardManager.selectCard("Apollo");
         boardManager.takeCard("Athena");
     }
-
 
 }

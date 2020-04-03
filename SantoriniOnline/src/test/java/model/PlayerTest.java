@@ -39,37 +39,15 @@ public class PlayerTest {
 
     @Test
     public void setCard_normalCard_shouldReturnNormally() {
-        Card card= new Card(player);
-        player.setCard(card);
-        assertEquals(card, player.getCard());
+        player.setCard("Apollo");
+        assertEquals("Apollo", player.getCard());
     }
 
     @Test
     public void setAndRemoveWorker_normalWorker_shouldReturnNormally() throws InvalidWorkerException {
-        Worker worker = new Worker(Worker.IDs.A, "matteo");
-        player.setWorker(worker);
-        assertEquals(worker, player.getWorker(Worker.IDs.A));
-        player.removeWorker(worker.getWorkerID());
-        assertTrue(player.getWorker(worker.getWorkerID())==null);
-    }
-
-    @Test (expected = InvalidWorkerException.class)
-    public void setWorker_withTwoWorker_shouldReturnNormally() throws InvalidWorkerException {
-
-        Worker worker1 = new Worker(Worker.IDs.A, "matteo");
-        player.setWorker(worker1);
-        Worker worker2 = new Worker (Worker.IDs.B, "matteo");
-        player.setWorker(worker2);
-        Worker worker3 = new Worker(Worker.IDs.A,"matteo");
-        player.setWorker(worker3);
-    }
-
-    @Test (expected = InvalidWorkerException.class)
-    public void setWorker_twoWorkersSameID_shouldThrowException() throws InvalidWorkerException{
-        Worker worker1= new Worker(Worker.IDs.A, "matteo");
-        Worker worker2= new Worker(Worker.IDs.A, "matteo");
-        player.setWorker(worker1);
-        player.setWorker(worker2);
+        Player player = new Player("matteo", new BoardManager());
+        player.removeWorker(player.getWorker(Worker.IDs.A).getWorkerID());
+        assertNull(player.getWorker(Worker.IDs.A));
     }
 
 
@@ -94,10 +72,5 @@ public class PlayerTest {
         players.add(player);
         assertEquals(players, player.getPlayers());
     }
-
-
-
-
-
 
 }

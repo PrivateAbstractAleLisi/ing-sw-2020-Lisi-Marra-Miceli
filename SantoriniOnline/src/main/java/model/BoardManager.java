@@ -112,7 +112,10 @@ public class BoardManager {
     public void addPlayer(Player player) throws LimitExceededException, AlreadyExistingPlayer {
         if (players.size() < 3) {
             if (players.contains(player)) throw new AlreadyExistingPlayer("Player already existing");
-            else players.add(player);
+            else {
+                player.setBoardManager(this);
+                players.add(player);
+            }
         } else throw new LimitExceededException("Exceeded number of players");
     }
 
@@ -122,10 +125,14 @@ public class BoardManager {
      */
     public void addPlayer(String username) throws LimitExceededException, AlreadyExistingPlayer {
         if (players.size() < 3) {
-            if (players.contains(username)) throw new AlreadyExistingPlayer("Player already existing");
-            else {
-                Player newPlayer = new Player(username);
-                players.add(newPlayer);
+            for (Player p: players)
+            {
+                if (p.getUsername().equals(username))
+                throw new AlreadyExistingPlayer("Player already existing");
+                else {
+                    Player newPlayer = new Player(username, this);
+                    players.add(newPlayer);
+                }
             }
         } else throw new LimitExceededException("Exceeded number of players");
     }

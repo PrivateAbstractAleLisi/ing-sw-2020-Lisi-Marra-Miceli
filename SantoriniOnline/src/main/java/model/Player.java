@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Gods.*;
 import model.exception.InvalidWorkerException;
 import model.gamemap.Worker;
 
@@ -26,6 +27,10 @@ public class Player {
         this.username = username;
         this.boardManager = boardManager;
         behaviour = new BehaviourManager();
+        Worker worker1 = new Worker(Worker.IDs.A, username);
+        workers.add(worker1);
+        Worker worker2 = new Worker(Worker.IDs.B, username);
+        workers.add(worker2);
     }
 
     public Player(String username) {
@@ -34,7 +39,6 @@ public class Player {
     }
 
     /**
-     *
      * @param boardManager the boardManager the player is connected to
      */
     public void setBoardManager(BoardManager boardManager) {
@@ -54,12 +58,38 @@ public class Player {
      * @param cardToSet the card chosen by the player
      */
     public void setCard(String cardToSet) {
-        try {
-            Class<? extends Card> card = Class.forName("model.cards." + cardToSet).asSubclass(Card.class);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        switch (cardToSet) {
+            case "Apollo":
+                this.card = new Apollo(this);
+                break;
+            case "Artemis":
+                this.card = new Artemis(this);
+                break;
+            case "Athena":
+                this.card = new Athena(this);
+                break;
+            case "Atlas":
+                this.card = new Atlas(this);
+                break;
+            case "Demeter":
+                this.card = new Demeter(this);
+                break;
+            case "Hephaestus":
+                this.card = new Hephaestus(this);
+                break;
+            case "Minotaur":
+                this.card = new Minotaur(this);
+                break;
+            case "Pan":
+                this.card = new Pan(this);
+                break;
+            case "Prometheus":
+                this.card = new Prometheus(this);
+                break;
+            default:
+                throw new IllegalArgumentException("String doesn't match with any God");
         }
-        this.card = card;
+        this.card.resetBehaviour();
     }
 
     public void setCard(Card card) {
@@ -80,11 +110,12 @@ public class Player {
         return behaviour;
     }
 
+    /*
     /**
      * @param worker the worker to be added in the workers
      * @throws InvalidWorkerException if there are already two workers or there is already one with the same ID
      */
-    public void setWorker(Worker worker) throws InvalidWorkerException {
+    /*public void setWorker(Worker worker) throws InvalidWorkerException {
         if (workers.size() == 2)
             throw new InvalidWorkerException("Already two workers for this player");
         for (Worker w : workers) {
@@ -93,6 +124,9 @@ public class Player {
         }
         workers.add(worker);
     }
+
+     */
+
 
     /**
      * @param id the id of the worker to return
@@ -109,13 +143,12 @@ public class Player {
     }
 
     /**
-     *
      * @param id the worker id of the worker to delete from the worker list of this player
      */
-    public void removeWorker(Worker.IDs id){
+    public void removeWorker(Worker.IDs id) {
         Worker worker = null;
-        for (Worker w: workers){
-            if(w.getWorkerID()==id) {
+        for (Worker w : workers) {
+            if (w.getWorkerID() == id) {
                 worker = w;
             }
         }
@@ -135,8 +168,7 @@ public class Player {
      * @return the color of the workers of the player
      */
     public WorkerColors getColor() {
-        WorkerColors colorCopy = color;
-        return colorCopy;
+        return color;
     }
 
     /**
