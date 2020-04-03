@@ -21,7 +21,7 @@ import static java.lang.StrictMath.sqrt;
  * <p>
  * To define what action is valid or not, the methods analise the {@link Island} and the moves that any {@link Player} can do (accessing to {@link BoardManager} object in {@link Player}).
  */
-public /*abstract*/ class Card {
+public abstract class Card {
     protected String name;
     protected String description;
     private Object avatarImage;
@@ -40,7 +40,7 @@ public /*abstract*/ class Card {
      * @param island   The current board of game
      * @throws InvalidMovementException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
      */
-    public void placeWorker(Worker worker, int desiredX, int desiredY, Island island) throws MoveExecutionException, CloneNotSupportedException, InvalidMovementException {
+    public void placeWorker(Worker worker, int desiredX, int desiredY, Island island) throws CloneNotSupportedException, InvalidMovementException {
         if (!isValidWorkerPlacement(worker, desiredX, desiredY, island)) {
             throw new InvalidMovementException("Invalid move for this card");
         }
@@ -48,7 +48,7 @@ public /*abstract*/ class Card {
         island.placeWorker(worker, desiredX, desiredY);
 
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
-            throw new MoveExecutionException("The move is valid there was an error applying desired changes");
+            throw new InvalidMovementException("The move is valid there was an error applying desired changes");
         }
     }
 
@@ -68,6 +68,8 @@ public /*abstract*/ class Card {
         if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
             throw new InvalidMovementException("Invalid move for this worker");
         }
+        //decrementa il numero di movimenti rimasti
+        playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
         island.moveWorker(worker, desiredX, desiredY);
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
@@ -104,6 +106,9 @@ public /*abstract*/ class Card {
         if (!isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {
             throw new InvalidBuildException("Invalid build for this worker");
         }
+        //decrementa il numero di blocchi da costruire rimasti e ritorno true
+        playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);
+
         island.buildBlock(block, desiredX, desiredY);
         if (!checkBlockPosition(island, block, desiredX, desiredY, oldCellCluster)) {
             throw new InvalidBuildException("The build is valid but there was an error applying desired changes");
@@ -166,24 +171,19 @@ public /*abstract*/ class Card {
                 return false;
             }
         }
-
-        //decrementa il numero di movimenti rimasti
-        behaviour.setMovementsRemaining(behaviour.getMovementsRemaining() - 1);
-
         return true;
     }
 
     /**
      * Check if the desired location is free and not complete for a {@link Worker} Placement.
      *
-     *
-     * @param worker A worker of the actual player
+     * @param worker   A worker of the actual player
      * @param desiredX X Position where the player wants to place the worker
      * @param desiredY Y Position where the player wants to place the worker
      * @param island   The current board of game
      * @return true if the the desired location is free and not complete, false otherwise
      */
-    protected boolean isValidWorkerPlacement(Worker worker, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException{
+    protected boolean isValidWorkerPlacement(Worker worker, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         if (desiredCellCluster.hasWorkerOnTop()) {
             return false;
@@ -191,7 +191,7 @@ public /*abstract*/ class Card {
         if (desiredCellCluster.isComplete()) {
             return false;
         }
-        if(worker.isPlacedOnIsland()){
+        if (worker.isPlacedOnIsland()) {
             return false;
         }
         return true;
@@ -208,7 +208,7 @@ public /*abstract*/ class Card {
      * @param island   The current board of game
      * @return true when the construction can be done from the actual position, false otherwise
      */
-    protected boolean isValidConstruction (BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
+    protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
         //        CellCluster actualCellCluster = islandRef.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
@@ -233,9 +233,6 @@ public /*abstract*/ class Card {
         if (!isValidBlockPlacement(block, desiredConstruction, behaviour)) {
             return false;
         }
-
-        //decrementa il numero di blocchi da costruire rimasti e ritorno true
-        behaviour.setBlockPlacementLeft(behaviour.getBlockPlacementLeft() - 1);
         return true;
     }
 
