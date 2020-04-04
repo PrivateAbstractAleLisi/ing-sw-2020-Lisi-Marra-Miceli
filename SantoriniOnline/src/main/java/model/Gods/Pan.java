@@ -6,6 +6,9 @@ import model.exception.WinningException;
 import model.gamemap.CellCluster;
 import model.gamemap.Island;
 
+/**
+ * @author alelisi
+ */
 public class Pan extends Card {
 
     public Pan(Player p) {

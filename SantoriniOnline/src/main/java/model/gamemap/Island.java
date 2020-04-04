@@ -61,7 +61,7 @@ public class Island {
         if (isWorkerAlreadyPlaced(w)) {
             return;
         }
-        /*
+/*
         if (isWorkerAlreadyPlaced(w)) {
             throw new IllegalArgumentException("Worker already placed by the player on the island");
         } */
