@@ -38,12 +38,6 @@ public class PlayerTest {
     }
 
     @Test
-    public void setCard_normalCard_shouldReturnNormally() {
-        player.setCard("Apollo");
-        assertEquals("Apollo", player.getCard());
-    }
-
-    @Test
     public void setAndRemoveWorker_normalWorker_shouldReturnNormally() throws InvalidWorkerException {
         Player player = new Player("matteo", new BoardManager());
         player.removeWorker(player.getWorker(Worker.IDs.A).getWorkerID());

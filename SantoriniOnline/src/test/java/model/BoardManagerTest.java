@@ -126,11 +126,10 @@ public class BoardManagerTest {
 
     @Test (expected = LimitExceededException.class)
     public void addPlayer_withString_shouldThrowException() throws LimitExceededException, AlreadyExistingPlayer {
-
         boardManager.addPlayer("matteo");
         boardManager.addPlayer("gabriele");
         boardManager.addPlayer("alessandro");
-        boardManager.addPlayer("mattia");
+        boardManager.addPlayer("daniele");
     }
 
     @Test
@@ -156,9 +155,7 @@ public class BoardManagerTest {
     @Test
     public void removePlayer_withStringWorkerA_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
         Player player = new Player("matteo", boardManager);
-        Worker worker = new Worker(Worker.IDs.A,player.getUsername());
-        boardManager.getIsland().placeWorker(worker,2,2);
-        player.getWorker(Worker.IDs.A).setPosition(2,2);
+        boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.A),2,2);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
         boardManager.removePlayer("matteo");
@@ -168,8 +165,7 @@ public class BoardManagerTest {
     @Test
     public void removePlayer_withPlayerWorkerA_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
         Player player = new Player("matteo", boardManager);
-        Worker worker = new Worker(Worker.IDs.A,player.getUsername());
-        boardManager.getIsland().placeWorker(worker,2,2);
+        boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.A),2,2);
         player.getWorker(Worker.IDs.A).setPosition(2,2);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
@@ -180,9 +176,7 @@ public class BoardManagerTest {
     @Test
     public void removePlayer_withStringWorkerB_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
         Player player = new Player("matteo", boardManager);
-        Worker worker = new Worker(Worker.IDs.B,player.getUsername());
-        boardManager.getIsland().placeWorker(worker,2,2);
-        player.getWorker(Worker.IDs.A).setPosition(2,2);
+        boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.B),2,2);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
         boardManager.removePlayer("matteo");

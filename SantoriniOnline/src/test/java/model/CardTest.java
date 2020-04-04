@@ -51,7 +51,7 @@ public class CardTest {
         assertTrue(behaviourManager.isCanClimb());
         assertFalse(behaviourManager.isCanBuildDomeEverywhere());
         assertEquals(1, behaviourManager.getBlockPlacementLeft());
-        assertEquals(1, behaviourManager.getMovementsRemaining());
+        assertEquals(2, behaviourManager.getMovementsRemaining());
     }
 
     @Test //DONE

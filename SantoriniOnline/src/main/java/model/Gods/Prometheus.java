@@ -16,16 +16,17 @@ public class Prometheus extends Card {
 
     public Prometheus(Player player) {
         super(player);
-        name="Prometheus";
-        description="If your Worker does not move up, it may build both before and after moving.";
-        hasAlreadyBuilt=false;
+        name = "Prometheus";
+        description = "If your Worker does not move up, it may build both before and after moving.";
+        hasAlreadyBuilt = false;
     }
 
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
-        if(hasAlreadyBuilt){
+        if (hasAlreadyBuilt) {
             BehaviourManager behaviour = playedBy.getBehaviour();
             behaviour.setCanClimb(false);
+            behaviour.setBlockPlacementLeft(1);
         }
         super.move(worker, desiredX, desiredY, island);
     }
@@ -33,7 +34,7 @@ public class Prometheus extends Card {
     @Override
     public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
         super.build(worker, block, desiredX, desiredY, island);
-        hasAlreadyBuilt=true;
+        hasAlreadyBuilt = true;
     }
 
     @Override
@@ -43,6 +44,6 @@ public class Prometheus extends Card {
         behaviour.setMovementsRemaining(1);
         behaviour.setCanClimb(true);
         behaviour.setCanBuildDomeEverywhere(false);
-        hasAlreadyBuilt=false;
+        hasAlreadyBuilt = false;
     }
 }

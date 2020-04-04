@@ -125,15 +125,12 @@ public class BoardManager {
      */
     public void addPlayer(String username) throws LimitExceededException, AlreadyExistingPlayer {
         if (players.size() < 3) {
-            for (Player p: players)
-            {
+            for (Player p: players) {
                 if (p.getUsername().equals(username))
-                throw new AlreadyExistingPlayer("Player already existing");
-                else {
-                    Player newPlayer = new Player(username, this);
-                    players.add(newPlayer);
-                }
+                    throw new AlreadyExistingPlayer("Player already existing");
             }
+            Player newPlayer = new Player(username, this);
+            players.add(newPlayer);
         } else throw new LimitExceededException("Exceeded number of players");
     }
 
@@ -173,7 +170,7 @@ public class BoardManager {
         }
         if (player.getWorker(Worker.IDs.B)!= null){
             Worker worker2 = player.getWorker(Worker.IDs.B);
-            player.removeWorker(Worker.IDs.A);
+            player.removeWorker(Worker.IDs.B);
             island.removeWorker(worker2);
         }
         players.remove(player);

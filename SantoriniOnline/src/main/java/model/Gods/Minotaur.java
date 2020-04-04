@@ -17,7 +17,7 @@ import java.util.List;
 public class Minotaur extends Card {
     public Minotaur(Player player) {
         super(player);
-        name = "Apollo";
+        name = "Minotaur";
         description = "Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.";
     }
 

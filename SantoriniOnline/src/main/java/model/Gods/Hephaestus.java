@@ -14,8 +14,8 @@ public class Hephaestus extends Card {
 
     public Hephaestus(Player player) {
         super(player);
-        name="Hephaestus";
-        description="Your Worker may build one additional block (not dome) on top of your first block.";
+        name = "Hephaestus";
+        description = "Your Worker may build one additional block (not dome) on top of your first block.";
         lastBuiltPosition = new int[]{-1, -1};
     }
 
@@ -27,7 +27,7 @@ public class Hephaestus extends Card {
      * @return false never built in this turn, true he built here
      */
     private boolean hasAlreadyBuiltHereInThisTurn(int desiredX, int desiredY) {
-        if ( lastBuiltPosition[1] == -1 && lastBuiltPosition[0] == -1 ) { //he never built in this turn
+        if (lastBuiltPosition[1] == -1 && lastBuiltPosition[0] == -1) { //he never built in this turn
             return false;
         } else { //he build at least one block
             return lastBuiltPosition[0] == desiredX && lastBuiltPosition[1] == desiredY;
@@ -36,17 +36,16 @@ public class Hephaestus extends Card {
 
     @Override
     public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
-        if(!hasAlreadyBuiltHereInThisTurn(desiredX, desiredY)) {
+        if (!hasAlreadyBuiltHereInThisTurn(desiredX, desiredY)) {
             super.build(worker, block, desiredX, desiredY, island);
-            lastBuiltPosition[0]=desiredX;
-            lastBuiltPosition[1]=desiredY;
-        }
-        else {
-            if(block == BlockTypeEnum.DOME) throw new InvalidBuildException("Cannot build a DOME");
+            lastBuiltPosition[0] = desiredX;
+            lastBuiltPosition[1] = desiredY;
+        } else {
+            if (block == BlockTypeEnum.DOME) throw new InvalidBuildException("Cannot build a DOME");
             else {
                 super.build(worker, block, desiredX, desiredY, island);
-                lastBuiltPosition[0]=desiredX;
-                lastBuiltPosition[1]=desiredY;
+                lastBuiltPosition[0] = desiredX;
+                lastBuiltPosition[1] = desiredY;
             }
         }
     }
