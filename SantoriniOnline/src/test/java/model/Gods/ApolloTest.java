@@ -8,7 +8,7 @@ import placeholders.IslandPrinter;
 
 import static org.junit.Assert.*;
 
-public class DemeterTest {
+public class ApolloTest {
     BoardManager boardManager=null;
     Card card = null;
     Card card2 = null;
@@ -31,7 +31,7 @@ public class DemeterTest {
         ip = new IslandPrinter(island);
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
-        player1.setCard("Demeter");
+        player1.setCard("Apollo");
         player2.setCard("Atlas");
         worker1 = player1.getWorker(Worker.IDs.A);
         worker2 = player2.getWorker(Worker.IDs.A);
@@ -46,6 +46,23 @@ public class DemeterTest {
     public void tearDown() throws Exception {
         player1.setCard((Card) null);
         card = null;
+    }
+
+
+    @Test //DONE
+    public void resetBehaviour() {
+        BehaviourManager behaviourManager = player1.getBehaviour();
+        behaviourManager.setCanClimb(false);
+        behaviourManager.setCanBuildDomeEverywhere(true);
+        behaviourManager.setBlockPlacementLeft(25);
+        behaviourManager.setMovementsRemaining(0);
+
+        card.resetBehaviour();
+
+        assertTrue(behaviourManager.isCanClimb());
+        assertFalse(behaviourManager.isCanBuildDomeEverywhere());
+        assertEquals(1, behaviourManager.getBlockPlacementLeft());
+        assertEquals(1, behaviourManager.getMovementsRemaining());
     }
 
     @Test //DONE
@@ -107,15 +124,6 @@ public class DemeterTest {
 
         card.resetBehaviour();
         card.move(worker1, 1, 1, island);
-    }
-
-    @Test(expected = InvalidMovementException.class)
-    public void move_Simple_WrongMove_PlayerAlreadyOnCell() throws InvalidMovementException, WinningException, CloneNotSupportedException {
-        card.placeWorker(worker1, 0, 0, island);
-        card.placeWorker(worker2, 0, 1, island);
-
-        card.resetBehaviour();
-        card.move(worker1, 0, 1, island);
     }
 
     @Test(expected = InvalidMovementException.class)
@@ -317,45 +325,71 @@ public class DemeterTest {
         card.build(worker1, BlockTypeEnum.DOME, 1, 2, island);
     }
 
-    //god specific test
-    @Test //DONE
-    public void resetBehaviour() {
-        BehaviourManager behaviourManager = player1.getBehaviour();
-        behaviourManager.setCanClimb(false);
-        behaviourManager.setCanBuildDomeEverywhere(true);
-        behaviourManager.setBlockPlacementLeft(25);
-        behaviourManager.setMovementsRemaining(0);
-
-        card.resetBehaviour();
-
-        assertTrue(behaviourManager.isCanClimb());
-        assertFalse(behaviourManager.isCanBuildDomeEverywhere());
-        assertEquals(2, behaviourManager.getBlockPlacementLeft());
-        assertEquals(1, behaviourManager.getMovementsRemaining());
-    }
-
+    //TEST FOR SPECIFIC GOD POWER
     @Test
-    public void turn_twoBuildOnDifferentSpace_shouldReturnNormally() throws InvalidBuildException, CloneNotSupportedException, InvalidMovementException, WinningException {
-        card.placeWorker(worker1,2,2,island);
-        card.resetBehaviour();
-        //first move
-        card.move(worker1, 2 ,3 , island);
-        //first build
-        card.build(worker1, BlockTypeEnum.LEVEL1, 3, 3, island);
-        //first build
-        card.build(worker1, BlockTypeEnum.LEVEL1, 2, 4, island);
-    }
+    public void move_ApolloPower() throws InvalidMovementException, WinningException, CloneNotSupportedException {
+        card.placeWorker(worker1, 0, 0, island);
+        card.placeWorker(worker2, 0, 1, island);
 
-    @Test (expected = InvalidBuildException.class)
-    public void turn_twoBuildOnTheSameSpace_shouldThrowException() throws InvalidBuildException, CloneNotSupportedException, InvalidMovementException, WinningException {
-        card.placeWorker(worker1,2,2,island);
+        ip.displayIsland();
         card.resetBehaviour();
-        //first move
-        card.move(worker1, 2 ,3 , island);
-        //first build
-        card.build(worker1, BlockTypeEnum.LEVEL1, 3, 3, island);
-        //first build
-        card.build(worker1, BlockTypeEnum.LEVEL2, 3, 3, island);
+        card.move(worker1, 0, 1, island);
+
         ip.displayIsland();
     }
+
+    @Test(expected = InvalidMovementException.class)
+    public void move_PlayerAlready_WrongMove_TooFar() throws InvalidMovementException, WinningException, CloneNotSupportedException {
+        card.placeWorker(worker1, 0, 0, island);
+        card2.placeWorker(worker2, 2, 1, island);
+
+        card.resetBehaviour();
+        card.move(worker1, 2, 1, island);
+    }
+
+    @Test(expected = InvalidMovementException.class)
+    public void move_PlayerAlready_WrongMove_TooHigh() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+        card.placeWorker(worker1, 0, 0, island);
+        island.buildBlock(BlockTypeEnum.LEVEL1, 0, 1);
+        island.buildBlock(BlockTypeEnum.LEVEL2, 0, 1);
+        card2.placeWorker(worker2, 0, 1, island);
+
+        card.resetBehaviour();
+        card.move(worker1, 0, 1, island);
+    }
+
+    @Test(expected = InvalidMovementException.class)
+    public void move_PlayerAlready_WrongMove_NoMovementesRemaining() throws InvalidMovementException, WinningException, CloneNotSupportedException {
+        card.placeWorker(worker1, 0, 0, island);
+        card2.placeWorker(worker2, 1, 1, island);
+        card.resetBehaviour();
+
+        BehaviourManager behaviourManager = player1.getBehaviour();
+        behaviourManager.setMovementsRemaining(0);
+
+        card.move(worker1, 1, 1, island);
+    }
+
+    @Test(expected = InvalidMovementException.class)
+    public void move_PlayerAlready_WrongMove_NoClimbAdmit() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+        card.placeWorker(worker1, 0, 0, island);
+        island.buildBlock(BlockTypeEnum.LEVEL1, 0, 1);
+        card2.placeWorker(worker2, 0, 1, island);
+        card.resetBehaviour();
+
+        BehaviourManager behaviourManager = player1.getBehaviour();
+        behaviourManager.setCanClimb(false);
+
+        card.move(worker1, 0, 1, island);
+    }
+
+    @Test(expected = InvalidMovementException.class)
+    public void move_PlayerAlready_WrongMove_SameCoordinates() throws InvalidMovementException, WinningException, CloneNotSupportedException {
+        card.placeWorker(worker1, 0, 0, island);
+
+
+        card.resetBehaviour();
+        card.move(worker1, 0, 0, island);
+    }
+
 }

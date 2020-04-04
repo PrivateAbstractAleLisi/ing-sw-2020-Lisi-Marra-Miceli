@@ -8,9 +8,12 @@ import model.exception.WinningException;
 import model.gamemap.Island;
 import model.gamemap.Worker;
 
+/**
+ * @author alelisi
+ */
 public class Artemis extends Card {
-
     private int[] startingPosition;
+    private Worker.IDs workerChoosen;
 
     /**
      * costructor, same as card but it fills name and descriptions
@@ -20,9 +23,8 @@ public class Artemis extends Card {
     public Artemis(Player p) {
         super(p);
         name = "Artemis";
-        description = "Your Build: Your Worker may build one additional time, but not on the same space.";
-        startingPosition = new int[2];
-
+        description = "Your Worker may move one additional time, but not back to its initial space.";
+        startingPosition =  new int[]{-1, -1};
     }
 
     /**
@@ -38,8 +40,6 @@ public class Artemis extends Card {
      */
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
-
-
         //dove parte il mio worker
         int actualX = worker.getPosition()[0];
         int actualY = worker.getPosition()[1];
@@ -49,23 +49,28 @@ public class Artemis extends Card {
             throw new InvalidMovementException("Invalid move for this worker");
         }
 
-
         //se non mi sono mai mosso mi salvo da dove parto
-        if (playedBy.getBehaviour().getMovementsRemaining() == 2) {
+        if (startingPosition[0] == -1 && startingPosition[1] == -1) {
             startingPosition = new int[2];
-            ;
-            startingPosition[0] = desiredX;
-            startingPosition[1] = desiredY;
+            workerChoosen = worker.getWorkerID();
+            startingPosition[0] = actualX;
+            startingPosition[1] = actualY;
         }
         //se è la seconda volta che mi muovo allora controllo che non sto tornando dove ero prima
-        else if (playedBy.getBehaviour().getMovementsRemaining() == 1) {
+        else {
             if (desiredX == startingPosition[0] && desiredY == startingPosition[1]) {
-                throw new IllegalArgumentException("ARTEMIS: on the second movement you can't come back to starting position ");
+                throw new IllegalArgumentException("ARTEMIS: on the second movement you can't come back to starting position");
+            }
+            if (worker.getWorkerID() != workerChoosen) {
+                throw new IllegalArgumentException("ARTEMIS: on the second movement you must use the same worker ");
             }
         }
 
         //se posso allora mi sposto
         island.moveWorker(worker, desiredX, desiredY);
+
+        //decrementa il numero di movimenti rimasti
+        playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
             throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
@@ -90,6 +95,4 @@ public class Artemis extends Card {
         startingPosition[1] = -1;
 
     }
-
-
 }

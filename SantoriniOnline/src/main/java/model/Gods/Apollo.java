@@ -4,6 +4,7 @@ import model.BehaviourManager;
 import model.Card;
 import model.Player;
 import model.exception.InvalidMovementException;
+import model.exception.InvalidWorkerRemovalException;
 import model.exception.WinningException;
 import model.gamemap.CellCluster;
 import model.gamemap.Island;
@@ -36,7 +37,7 @@ public class Apollo extends Card {
             int actualX = worker.getPosition()[0];
             int actualY = worker.getPosition()[1];
 
-            if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
+            if (!isValidDestinationApolloPower(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
             //decrementa il numero di movimenti rimasti
@@ -57,7 +58,11 @@ public class Apollo extends Card {
             if (oppositePlayer == null) throw new InvalidMovementException("Opposite Player not found");
             Worker enemyWorker = oppositePlayer.getWorker(enemyWorkerID);
 
-            desiredCellCluster.removeWorker();
+            try {
+                island.removeWorker(enemyWorker);
+            } catch (InvalidWorkerRemovalException e) {
+                throw new InvalidMovementException("It's impossible to remove worker from his position");
+            }
             island.moveWorker(worker, desiredX, desiredY);
             island.placeWorker(enemyWorker, actualX, actualY);
 
@@ -83,8 +88,8 @@ public class Apollo extends Card {
      * @param island   The current board of game
      * @return true when the destination is reachable from the actual position, false otherwise
      */
-    @Override
-    protected boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+//Override not possible
+    protected boolean isValidDestinationApolloPower(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
@@ -93,10 +98,6 @@ public class Apollo extends Card {
             return false;
         }
 
-        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
-        if (actualX == desiredX && actualY == desiredY) {
-            return false;
-        }
         //verifica il behaviour permette di muoversi
         if (behaviour.getMovementsRemaining() <= 0) {
             return false;

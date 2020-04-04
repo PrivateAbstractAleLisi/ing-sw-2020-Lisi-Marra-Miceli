@@ -4,6 +4,7 @@ import model.BehaviourManager;
 import model.Card;
 import model.Player;
 import model.exception.InvalidMovementException;
+import model.exception.InvalidWorkerRemovalException;
 import model.exception.WinningException;
 import model.gamemap.CellCluster;
 import model.gamemap.Island;
@@ -35,6 +36,12 @@ public class Minotaur extends Card {
         if (island.getCellCluster(desiredX, desiredY).hasWorkerOnTop()) {
             int actualX = worker.getPosition()[0];
             int actualY = worker.getPosition()[1];
+            CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
+
+            //ADDED Verifico che il worker sulla cella desiderata sia di un altro giocatore
+            if (desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
+                throw new InvalidMovementException("Invalid move for this worker");
+            }
 
             if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
@@ -48,10 +55,13 @@ public class Minotaur extends Card {
             playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
             Worker enemyWorker = getEnemyWorker(desiredX, desiredY, island);
-            CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
             int[] shiftedCoordinates = getShiftedCoordinates(actualX, actualY, desiredX, desiredY);
 
-            desiredCellCluster.removeWorker();
+            try {
+                island.removeWorker(enemyWorker);
+            } catch (InvalidWorkerRemovalException e) {
+                throw new InvalidMovementException("It's impossible to remove worker from his position");
+            }
             island.moveWorker(worker, desiredX, desiredY);
             island.placeWorker(enemyWorker, shiftedCoordinates[0], shiftedCoordinates[1]);
 
@@ -82,11 +92,6 @@ public class Minotaur extends Card {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
-
-        //ADDED Verifico che il worker sulla cella desiderata sia di un altro giocatore
-        if (desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
-            return false;
-        }
 
         //Verifico che la coordinate di destinazione siano diverse da quelle attuali
         if (actualX == desiredX && actualY == desiredY) {
@@ -161,7 +166,7 @@ public class Minotaur extends Card {
     /**
      * @param desiredX X Position where the player wants to move the worker
      * @param desiredY Y Position where the player wants to move the worker
-     * @param island The current board of game
+     * @param island   The current board of game
      * @return The enemy {@code Worker} in the desired coordinates
      * @throws InvalidMovementException if the opposite worker is not found
      */

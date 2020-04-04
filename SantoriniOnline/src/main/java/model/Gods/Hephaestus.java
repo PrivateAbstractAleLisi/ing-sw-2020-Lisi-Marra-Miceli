@@ -9,8 +9,8 @@ import model.gamemap.Island;
 import model.gamemap.Worker;
 
 public class Hephaestus extends Card {
-
     private int[] lastBuiltPosition;
+    private Worker.IDs workerChoosen;
 
     public Hephaestus(Player player) {
         super(player);
@@ -40,9 +40,13 @@ public class Hephaestus extends Card {
             super.build(worker, block, desiredX, desiredY, island);
             lastBuiltPosition[0] = desiredX;
             lastBuiltPosition[1] = desiredY;
+            workerChoosen = worker.getWorkerID();
         } else {
-            if (block == BlockTypeEnum.DOME) throw new InvalidBuildException("Cannot build a DOME");
-            else {
+            if (block == BlockTypeEnum.DOME) {
+                throw new InvalidBuildException("Cannot build a DOME");
+            } else if (worker.getWorkerID() != workerChoosen) {
+                throw new IllegalArgumentException("DEMETER: on the second building you must use the same worker");
+            } else {
                 super.build(worker, block, desiredX, desiredY, island);
                 lastBuiltPosition[0] = desiredX;
                 lastBuiltPosition[1] = desiredY;
@@ -60,3 +64,4 @@ public class Hephaestus extends Card {
         lastBuiltPosition = new int[]{-1, -1};
     }
 }
+//check se utilizzo lo stesso worker

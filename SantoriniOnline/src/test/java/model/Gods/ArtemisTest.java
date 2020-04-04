@@ -8,8 +8,8 @@ import placeholders.IslandPrinter;
 
 import static org.junit.Assert.*;
 
-public class DemeterTest {
-    BoardManager boardManager=null;
+public class ArtemisTest {
+    BoardManager boardManager = null;
     Card card = null;
     Card card2 = null;
     Player player1 = null;
@@ -17,28 +17,28 @@ public class DemeterTest {
     Island island = null;
     Worker worker1 = null;
     Worker worker2 = null;
-    Worker worker1B= null;
-    Worker worker2B= null;
+    Worker worker1B = null;
+    Worker worker2B = null;
     IslandPrinter ip = null;
 
     @Before
     public void setUp() throws Exception {
-        boardManager=new BoardManager();
+        boardManager = new BoardManager();
         boardManager.addPlayer("Gabriele");
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
         ip = new IslandPrinter(island);
-        player1=boardManager.getPlayer("Gabriele");
-        player2=boardManager.getPlayer("Matteo");
-        player1.setCard("Demeter");
+        player1 = boardManager.getPlayer("Gabriele");
+        player2 = boardManager.getPlayer("Matteo");
+        player1.setCard("Artemis");
         player2.setCard("Atlas");
         worker1 = player1.getWorker(Worker.IDs.A);
         worker2 = player2.getWorker(Worker.IDs.A);
         worker1B = player1.getWorker(Worker.IDs.B);
         worker2B = player2.getWorker(Worker.IDs.B);
-        card=player1.getCard();
-        card2=player2.getCard();
+        card = player1.getCard();
+        card2 = player2.getCard();
 
     }
 
@@ -99,7 +99,7 @@ public class DemeterTest {
         card.move(worker1, 1, 1, island);
     }
 
-    @Test //NON RUNNA PERCHÈ MANCA IL BOARDMANAGER E IL SECONDO PLAYER
+    @Test
     public void move_RightMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
@@ -330,32 +330,29 @@ public class DemeterTest {
 
         assertTrue(behaviourManager.isCanClimb());
         assertFalse(behaviourManager.isCanBuildDomeEverywhere());
-        assertEquals(2, behaviourManager.getBlockPlacementLeft());
-        assertEquals(1, behaviourManager.getMovementsRemaining());
+        assertEquals(1, behaviourManager.getBlockPlacementLeft());
+        assertEquals(2, behaviourManager.getMovementsRemaining());
     }
 
     @Test
-    public void turn_twoBuildOnDifferentSpace_shouldReturnNormally() throws InvalidBuildException, CloneNotSupportedException, InvalidMovementException, WinningException {
-        card.placeWorker(worker1,2,2,island);
+    public void move_RightMove_SecondMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+        card.placeWorker(worker1, 0, 0, island);
+        island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
+        card.placeWorker(worker2, 0, 1, island);
+
         card.resetBehaviour();
-        //first move
-        card.move(worker1, 2 ,3 , island);
-        //first build
-        card.build(worker1, BlockTypeEnum.LEVEL1, 3, 3, island);
-        //first build
-        card.build(worker1, BlockTypeEnum.LEVEL1, 2, 4, island);
+        card.move(worker1, 1, 1, island);
+        card.move(worker1, 2, 1, island);
     }
 
-    @Test (expected = InvalidBuildException.class)
-    public void turn_twoBuildOnTheSameSpace_shouldThrowException() throws InvalidBuildException, CloneNotSupportedException, InvalidMovementException, WinningException {
-        card.placeWorker(worker1,2,2,island);
+    @Test (expected = IllegalArgumentException.class)
+    public void move_WrongMove_SecondMoveBack() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+        card.placeWorker(worker1, 0, 0, island);
+        island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
+        card.placeWorker(worker2, 0, 1, island);
+
         card.resetBehaviour();
-        //first move
-        card.move(worker1, 2 ,3 , island);
-        //first build
-        card.build(worker1, BlockTypeEnum.LEVEL1, 3, 3, island);
-        //first build
-        card.build(worker1, BlockTypeEnum.LEVEL2, 3, 3, island);
-        ip.displayIsland();
+        card.move(worker1, 1, 1, island);
+        card.move(worker1, 0, 0, island);
     }
 }

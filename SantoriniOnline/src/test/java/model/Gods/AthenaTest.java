@@ -1,46 +1,57 @@
-package model;
+package model.Gods;
 
-import model.Gods.Artemis;
+import model.*;
+import model.gamemap.*;
 import model.exception.*;
-import model.gamemap.BlockTypeEnum;
-import model.gamemap.Island;
-import model.gamemap.Worker;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import placeholders.IslandPrinter;
 
 import static org.junit.Assert.*;
 
-public class CardTest {
+public class AthenaTest {
+    BoardManager boardManager=null;
     Card card = null;
-    Player player = new Player("Marco");
+    Card card2 = null;
+    Player player1 = null;
+    Player player2 = null;
     Island island = null;
     Worker worker1 = null;
     Worker worker2 = null;
+    Worker worker1B= null;
+    Worker worker2B= null;
     IslandPrinter ip = null;
 
     @Before
     public void setUp() throws Exception {
-        card = new Artemis(player);
-        player.setCard(card);
-        island = new Island();
+        boardManager=new BoardManager();
+        boardManager.addPlayer("Gabriele");
+        boardManager.addPlayer("Matteo");
+
+        island = boardManager.getIsland();
         ip = new IslandPrinter(island);
-        worker1 = new Worker(Worker.IDs.A, player.getUsername());
-        worker2 = new Worker(Worker.IDs.B, player.getUsername());
+        player1=boardManager.getPlayer("Gabriele");
+        player2=boardManager.getPlayer("Matteo");
+        player1.setCard("Athena");
+        player2.setCard("Atlas");
+        worker1 = player1.getWorker(Worker.IDs.A);
+        worker2 = player2.getWorker(Worker.IDs.A);
+        worker1B = player1.getWorker(Worker.IDs.B);
+        worker2B = player2.getWorker(Worker.IDs.B);
+        card=player1.getCard();
+        card2=player2.getCard();
+
     }
 
     @After
     public void tearDown() throws Exception {
-        player.setCard((Card) null);
+        player1.setCard((Card) null);
         card = null;
     }
 
 
     @Test //DONE
     public void resetBehaviour() {
-        BehaviourManager behaviourManager = player.getBehaviour();
+        BehaviourManager behaviourManager = player1.getBehaviour();
         behaviourManager.setCanClimb(false);
         behaviourManager.setCanBuildDomeEverywhere(true);
         behaviourManager.setBlockPlacementLeft(25);
@@ -51,77 +62,12 @@ public class CardTest {
         assertTrue(behaviourManager.isCanClimb());
         assertFalse(behaviourManager.isCanBuildDomeEverywhere());
         assertEquals(1, behaviourManager.getBlockPlacementLeft());
-        assertEquals(2, behaviourManager.getMovementsRemaining());
+        assertEquals(1, behaviourManager.getMovementsRemaining());
     }
 
     @Test //DONE
     public void distance() {
         assertEquals(5, card.distance(0, 0, 4, 3), 0);
-    }
-
-    @Test //DONE
-    public void checkWorkerPosition_CorrectInput() throws InvalidBuildException, InvalidMovementException {
-        System.out.println("TEST: checkWorkerPosition_CorrectInput");
-        island.buildBlock(BlockTypeEnum.LEVEL1, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL1, 4, 4);
-        island.placeWorker(worker1, 4, 4);
-
-        assertTrue(card.checkWorkerPosition(island, worker1, 4, 4));
-    }
-
-    @Test //DONE
-    public void checkWorkerPosition_WrongInput_WorkerNotOnTop() throws InvalidBuildException, InvalidMovementException, InvalidWorkerRemovalException {
-        System.out.println("TEST: checkWorkerPosition_WrongInput_WorkerNotOnTop");
-        island.buildBlock(BlockTypeEnum.LEVEL1, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL1, 4, 4);
-        island.placeWorker(worker1, 4, 4);
-        System.out.println(island.getCellCluster(4, 4).hasWorkerOnTop());
-        island.removeWorker(worker1);
-
-        assertFalse(card.checkWorkerPosition(island, worker1, 4, 4));
-    }
-
-    @Test(expected = WinningException.class) //DONE
-    public void checkWin_correctInput() throws InvalidBuildException, InvalidMovementException, WinningException {
-        System.out.println("TEST: checkWin_correctInput");
-        island.buildBlock(BlockTypeEnum.LEVEL1, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL2, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL3, 3, 3);
-        island.placeWorker(worker1, 3, 3);
-
-        card.checkWin(island, 3, 3, 2);
-    }
-
-    @Test //DONE
-    public void checkWin_WrongInput_NotAWorkerOnTop() throws InvalidBuildException, InvalidMovementException, WinningException {
-        System.out.println("TEST: checkWin_correctInput");
-        island.buildBlock(BlockTypeEnum.LEVEL1, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL2, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL3, 3, 3);
-        island.placeWorker(worker1, 4, 4);
-
-        card.checkWin(island, 3, 3, 2);
-    }
-
-    @Test //DONE
-    public void checkWin_WrongInput_WorkerAtLevel2() throws InvalidBuildException, InvalidMovementException, WinningException {
-        System.out.println("TEST: checkWin_correctInput");
-        island.buildBlock(BlockTypeEnum.LEVEL1, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL2, 3, 3);
-        island.placeWorker(worker1, 4, 4);
-
-        card.checkWin(island, 3, 3, 2);
-    }
-
-    @Test //DONE
-    public void checkWin_WrongInput_WorkerDontClimb() throws InvalidBuildException, InvalidMovementException, WinningException {
-        System.out.println("TEST: checkWin_correctInput");
-        island.buildBlock(BlockTypeEnum.LEVEL1, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL2, 3, 3);
-        island.buildBlock(BlockTypeEnum.LEVEL3, 3, 3);
-        island.placeWorker(worker1, 3, 3);
-
-        card.checkWin(island, 3, 3, 3);
     }
 
     @Test
@@ -132,22 +78,6 @@ public class CardTest {
 
         card.placeWorker(worker2, 1, 1, island);
     }
-
-//    @Test
-//    public void placeWorker_correctInput() throws InvalidMovementException, MoveExecutionException, InvalidBuildException, CloneNotSupportedException {
-//        ip.displayIsland();
-//        island.buildBlock(BlockTypeEnum.LEVEL1, 3, 4);
-//
-//        ip.displayIsland();
-//
-//        island.placeWorker(worker1, 2, 2);
-//
-//        ip.displayIsland();
-//
-//        card.placeWorker(worker2, 1, 1, island);
-//
-//        ip.displayIsland();
-//    }
 
     @Test(expected = InvalidMovementException.class)
     public void placeWorker_WrongInput_PlayerAlreadyOnTop() throws InvalidMovementException, CloneNotSupportedException {
@@ -186,7 +116,7 @@ public class CardTest {
         card.move(worker1, 1, 1, island);
     }
 
-    @Test
+    @Test //NON RUNNA PERCHÈ MANCA IL BOARDMANAGER E IL SECONDO PLAYER
     public void move_RightMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
@@ -233,11 +163,11 @@ public class CardTest {
     }
 
     @Test(expected = InvalidMovementException.class)
-    public void move_WrongMove_NoMovementesRemaining() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void move_WrongMove_NoMovementesRemaining() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         card.resetBehaviour();
 
-        BehaviourManager behaviourManager = player.getBehaviour();
+        BehaviourManager behaviourManager = player1.getBehaviour();
         behaviourManager.setMovementsRemaining(0);
 
         card.move(worker1, 1, 1, island);
@@ -249,7 +179,7 @@ public class CardTest {
         island.buildBlock(BlockTypeEnum.LEVEL1, 0, 1);
         card.resetBehaviour();
 
-        BehaviourManager behaviourManager = player.getBehaviour();
+        BehaviourManager behaviourManager = player1.getBehaviour();
         behaviourManager.setCanClimb(false);
 
         card.move(worker1, 0, 1, island);
@@ -396,11 +326,30 @@ public class CardTest {
 
         card.resetBehaviour();
 
-        BehaviourManager behaviourManager = player.getBehaviour();
+        BehaviourManager behaviourManager = player1.getBehaviour();
         behaviourManager.setCanBuildDomeEverywhere(true);
         behaviourManager.setBlockPlacementLeft(2);
 
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
         card.build(worker1, BlockTypeEnum.DOME, 1, 2, island);
+    }
+
+    //god specific test
+    @Test (expected = InvalidMovementException.class)
+    public void moveUp_oppositeCantMoveUp() throws InvalidMovementException, CloneNotSupportedException, WinningException, InvalidBuildException {
+        card.placeWorker(worker1, 0, 0, island);
+        card2.placeWorker(worker2, 0, 2, island);
+
+        card.move(worker1, 0,1,island);
+        card.build(worker1,BlockTypeEnum.LEVEL1, 0,0,island);
+        card2.move(worker2, 0,3,island);
+        card2.build(worker2,BlockTypeEnum.LEVEL1, 0,2,island);
+
+        card.resetBehaviour();
+        card2.resetBehaviour();
+
+        card.move(worker1,0,0,island);
+        ip.displayIsland();
+        card2.move(worker2,0,2,island);
     }
 }

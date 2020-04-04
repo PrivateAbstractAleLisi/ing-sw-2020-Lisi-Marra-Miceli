@@ -9,10 +9,12 @@ import model.gamemap.CellCluster;
 import model.gamemap.Island;
 import model.gamemap.Worker;
 
+/**
+ * @author Ale Lisi
+ */
 public class Demeter extends Card {
-
     int[] lastBuiltPosition;
-
+    private Worker.IDs workerChoosen;
 
     public Demeter(Player p) {
         super(p);
@@ -46,6 +48,16 @@ public class Demeter extends Card {
         if (!isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {
             throw new InvalidBuildException("Invalid build for this worker");
         }
+
+        //check se utilizzo lo stesso worker
+        if (lastBuiltPosition[0] == -1 && lastBuiltPosition[1] == -1) {
+            workerChoosen = worker.getWorkerID();
+        }else {
+            if (worker.getWorkerID() != workerChoosen) {
+                throw new IllegalArgumentException("DEMETER: on the second building you must use the same worker");
+            }
+        }
+
         island.buildBlock(block, desiredX, desiredY);
         if (!checkBlockPosition(island, block, desiredX, desiredY, oldCellCluster)) {
             throw new InvalidBuildException("The build is valid but there was an error applying desired changes");
@@ -70,7 +82,6 @@ public class Demeter extends Card {
                 return true;
             }
         }
-
         return false;
     }
 
