@@ -1,0 +1,181 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Artemis</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">model.Gods</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Artemis (model.Gods)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Artemis</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93,9%
+  </span>
+  <span class="absValue">
+    (31/ 33)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package model.Gods;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import model.BehaviourManager;
+<i>4</i>&nbsp;import model.Card;
+<i>5</i>&nbsp;import model.Player;
+<i>6</i>&nbsp;import model.exception.InvalidMovementException;
+<i>7</i>&nbsp;import model.exception.WinningException;
+<i>8</i>&nbsp;import model.gamemap.Island;
+<i>9</i>&nbsp;import model.gamemap.Worker;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;/**
+<i>12</i>&nbsp; * @author alelisi
+<i>13</i>&nbsp; */
+<i>14</i>&nbsp;public class Artemis extends Card {
+<i>15</i>&nbsp;    private int[] startingPosition;
+<i>16</i>&nbsp;    private Worker.IDs workerChoosen;
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    /**
+<i>19</i>&nbsp;     * costructor, same as card but it fills name and descriptions
+<i>20</i>&nbsp;     *
+<i>21</i>&nbsp;     * @param p the player that plays with the card
+<i>22</i>&nbsp;     */
+<i>23</i>&nbsp;    public Artemis(Player p) {
+<b class="fc"><i>24</i>&nbsp;        super(p);</b>
+<b class="fc"><i>25</i>&nbsp;        name = &quot;Artemis&quot;;</b>
+<b class="fc"><i>26</i>&nbsp;        description = &quot;Your Worker may move one additional time, but not back to its initial space.&quot;;</b>
+<b class="fc"><i>27</i>&nbsp;        startingPosition =  new int[]{-1, -1};</b>
+<b class="fc"><i>28</i>&nbsp;    }</b>
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    /**
+<i>31</i>&nbsp;     * Artemis overrides the move method
+<i>32</i>&nbsp;     * SPECIAL EFFECT: Artemis can move a second time without going back to starting position
+<i>33</i>&nbsp;     *
+<i>34</i>&nbsp;     * @param worker   A worker of the actual player
+<i>35</i>&nbsp;     * @param desiredX X Position where the player wants to move the worker
+<i>36</i>&nbsp;     * @param desiredY Y Position where the player wants to move the worker
+<i>37</i>&nbsp;     * @param island   The current board of game
+<i>38</i>&nbsp;     * @throws InvalidMovementException
+<i>39</i>&nbsp;     * @throws WinningException
+<i>40</i>&nbsp;     */
+<i>41</i>&nbsp;    @Override
+<i>42</i>&nbsp;    public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
+<i>43</i>&nbsp;        //dove parte il mio worker
+<b class="fc"><i>44</i>&nbsp;        int actualX = worker.getPosition()[0];</b>
+<b class="fc"><i>45</i>&nbsp;        int actualY = worker.getPosition()[1];</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;        //Checks if movement is available and if I can move there
+<b class="fc"><i>48</i>&nbsp;        if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {</b>
+<b class="fc"><i>49</i>&nbsp;            throw new InvalidMovementException(&quot;Invalid move for this worker&quot;);</b>
+<i>50</i>&nbsp;        }
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;        //se non mi sono mai mosso mi salvo da dove parto
+<b class="fc"><i>53</i>&nbsp;        if (startingPosition[0] == -1 &amp;&amp; startingPosition[1] == -1) {</b>
+<b class="fc"><i>54</i>&nbsp;            startingPosition = new int[2];</b>
+<b class="fc"><i>55</i>&nbsp;            workerChoosen = worker.getWorkerID();</b>
+<b class="fc"><i>56</i>&nbsp;            startingPosition[0] = actualX;</b>
+<b class="fc"><i>57</i>&nbsp;            startingPosition[1] = actualY;</b>
+<i>58</i>&nbsp;        }
+<i>59</i>&nbsp;        //se è la seconda volta che mi muovo allora controllo che non sto tornando dove ero prima
+<i>60</i>&nbsp;        else {
+<b class="fc"><i>61</i>&nbsp;            if (desiredX == startingPosition[0] &amp;&amp; desiredY == startingPosition[1]) {</b>
+<b class="fc"><i>62</i>&nbsp;                throw new IllegalArgumentException(&quot;ARTEMIS: on the second movement you can&#39;t come back to starting position&quot;);</b>
+<i>63</i>&nbsp;            }
+<b class="fc"><i>64</i>&nbsp;            if (worker.getWorkerID() != workerChoosen) {</b>
+<b class="nc"><i>65</i>&nbsp;                throw new IllegalArgumentException(&quot;ARTEMIS: on the second movement you must use the same worker &quot;);</b>
+<i>66</i>&nbsp;            }
+<i>67</i>&nbsp;        }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;        //se posso allora mi sposto
+<b class="fc"><i>70</i>&nbsp;        island.moveWorker(worker, desiredX, desiredY);</b>
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;        //decrementa il numero di movimenti rimasti
+<b class="fc"><i>73</i>&nbsp;        playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);</b>
+<i>74</i>&nbsp;
+<b class="fc"><i>75</i>&nbsp;        if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {</b>
+<b class="nc"><i>76</i>&nbsp;            throw new InvalidMovementException(&quot;The move is valid but there was an error applying desired changes&quot;);</b>
+<i>77</i>&nbsp;        } else {
+<i>78</i>&nbsp;            //Memorizzo l&#39;altitudine del worker per poi controllare se è effettivamente salito
+<b class="fc"><i>79</i>&nbsp;            int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();</b>
+<b class="fc"><i>80</i>&nbsp;            checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);</b>
+<i>81</i>&nbsp;        }
+<i>82</i>&nbsp;
+<b class="fc"><i>83</i>&nbsp;    }</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    //ARTEMIS can move two times in normal conditions
+<i>86</i>&nbsp;    @Override
+<i>87</i>&nbsp;    public void resetBehaviour() {
+<b class="fc"><i>88</i>&nbsp;        BehaviourManager behaviour = playedBy.getBehaviour();</b>
+<b class="fc"><i>89</i>&nbsp;        behaviour.setBlockPlacementLeft(1);</b>
+<b class="fc"><i>90</i>&nbsp;        behaviour.setMovementsRemaining(2);</b>
+<b class="fc"><i>91</i>&nbsp;        behaviour.setCanClimb(true);</b>
+<b class="fc"><i>92</i>&nbsp;        behaviour.setCanBuildDomeEverywhere(false);</b>
+<i>93</i>&nbsp;        //convenzione
+<b class="fc"><i>94</i>&nbsp;        startingPosition[0] = -1;</b>
+<b class="fc"><i>95</i>&nbsp;        startingPosition[1] = -1;</b>
+<i>96</i>&nbsp;
+<b class="fc"><i>97</i>&nbsp;    }</b>
+<i>98</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-05 21:17</div>
+</div>
+</body>
+</html>
