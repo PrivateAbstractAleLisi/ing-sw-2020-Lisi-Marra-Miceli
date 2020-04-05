@@ -43,7 +43,7 @@ public class Minotaur extends Card {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
 
-            if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
+            if (!isValidDestinationMinotaurPower(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
 
@@ -87,8 +87,8 @@ public class Minotaur extends Card {
      * @param island   The current board of game
      * @return true when the destination is reachable from the actual position, false otherwise
      */
-    @Override
-    protected boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+    //not possible to override
+    protected boolean isValidDestinationMinotaurPower(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();

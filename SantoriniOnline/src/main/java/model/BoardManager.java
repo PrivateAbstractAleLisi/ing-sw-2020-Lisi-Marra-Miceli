@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import model.Player;
-import model.exception.AlreadyExistingPlayer;
+import model.exception.AlreadyExistingPlayerException;
 import model.exception.InvalidCardException;
 import model.exception.InvalidWorkerRemovalException;
 import model.exception.NoRemainingBlockException;
@@ -109,9 +108,9 @@ public class BoardManager {
      * @param player the player to add
      * @throws LimitExceededException if there are already three player in the game
      */
-    public void addPlayer(Player player) throws LimitExceededException, AlreadyExistingPlayer {
+    public void addPlayer(Player player) throws LimitExceededException, AlreadyExistingPlayerException {
         if (players.size() < 3) {
-            if (players.contains(player)) throw new AlreadyExistingPlayer("Player already existing");
+            if (players.contains(player)) throw new AlreadyExistingPlayerException("Player already existing");
             else {
                 player.setBoardManager(this);
                 players.add(player);
@@ -123,11 +122,11 @@ public class BoardManager {
      * @param username the username of the player to add
      * @throws LimitExceededException if there are already three player in the game
      */
-    public void addPlayer(String username) throws LimitExceededException, AlreadyExistingPlayer {
+    public void addPlayer(String username) throws LimitExceededException, AlreadyExistingPlayerException {
         if (players.size() < 3) {
             for (Player p: players) {
                 if (p.getUsername().equals(username))
-                    throw new AlreadyExistingPlayer("Player already existing");
+                    throw new AlreadyExistingPlayerException("Player already existing");
             }
             Player newPlayer = new Player(username, this);
             players.add(newPlayer);
@@ -266,6 +265,9 @@ public class BoardManager {
         } else throw new InvalidCardException("Card is not a selected one");
     }
 
+    /**
+     * Resets all the player behaviour using their cards
+     */
     public void resetAllPlayerBehaviour () {
         for (Player p : players) {
             p.getCard().resetBehaviour();

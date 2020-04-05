@@ -1,6 +1,6 @@
 package model;
 
-import model.exception.AlreadyExistingPlayer;
+import model.exception.AlreadyExistingPlayerException;
 import model.exception.InvalidWorkerException;
 import model.gamemap.Worker;
 import org.junit.After;
@@ -54,7 +54,7 @@ public class PlayerTest {
     }
 
     @Test
-    public void getPlayers_normalPlayers_shouldReturnNormally() throws AlreadyExistingPlayer, LimitExceededException {
+    public void getPlayers_normalPlayers_shouldReturnNormally() throws AlreadyExistingPlayerException, LimitExceededException {
         Player p1 = new Player("gabriele");
         Player p2= new Player ("alessandro");
         boardManager.addPlayer(p1);

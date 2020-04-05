@@ -118,14 +118,14 @@ public class BoardManagerTest {
     }
 
     @Test
-    public void addPlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer {
+    public void addPlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException {
         boardManager.addPlayer("matteo");
         assertTrue(boardManager.isPlayerConnected("matteo"));
     }
 
 
     @Test (expected = LimitExceededException.class)
-    public void addPlayer_withString_shouldThrowException() throws LimitExceededException, AlreadyExistingPlayer {
+    public void addPlayer_withString_shouldThrowException() throws LimitExceededException, AlreadyExistingPlayerException {
         boardManager.addPlayer("matteo");
         boardManager.addPlayer("gabriele");
         boardManager.addPlayer("alessandro");
@@ -133,14 +133,14 @@ public class BoardManagerTest {
     }
 
     @Test
-    public void addPlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer {
+    public void addPlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException {
         Player p1 = new Player("matteo");
         boardManager.addPlayer(p1);
         assertTrue(boardManager.isPlayerConnected(p1));
     }
 
     @Test (expected = LimitExceededException.class)
-    public void addPlayer_withPlayerClass_shouldThrowException() throws LimitExceededException, AlreadyExistingPlayer {
+    public void addPlayer_withPlayerClass_shouldThrowException() throws LimitExceededException, AlreadyExistingPlayerException {
         Player p1=new Player("matteo");
         Player p2=new Player("gabriele");
         Player p3=new Player("alessandro");
@@ -153,20 +153,10 @@ public class BoardManagerTest {
 
 
     @Test
-    public void removePlayer_withStringWorkerA_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
+    public void removePlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
         Player player = new Player("matteo", boardManager);
         boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.A),2,2);
-        boardManager.addPlayer(player);
-        assertTrue( boardManager.isPlayerConnected("matteo"));
-        boardManager.removePlayer("matteo");
-        assertTrue(!boardManager.isPlayerConnected("matteo"));
-    }
-
-    @Test
-    public void removePlayer_withPlayerWorkerA_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
-        Player player = new Player("matteo", boardManager);
-        boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.A),2,2);
-        player.getWorker(Worker.IDs.A).setPosition(2,2);
+        boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.B),3,4);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
         boardManager.removePlayer(player);
@@ -174,9 +164,10 @@ public class BoardManagerTest {
     }
 
     @Test
-    public void removePlayer_withStringWorkerB_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
+    public void removePlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
         Player player = new Player("matteo", boardManager);
         boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.B),2,2);
+        boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.A), 3, 3);
         boardManager.addPlayer(player);
         assertTrue( boardManager.isPlayerConnected("matteo"));
         boardManager.removePlayer("matteo");
@@ -184,30 +175,7 @@ public class BoardManagerTest {
     }
 
     @Test
-    public void removePlayer_withPlayerWorkerB_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException, InvalidWorkerException, InvalidMovementException {
-        Player player = new Player("matteo", boardManager);
-        Worker worker = new Worker(Worker.IDs.B,player.getUsername());
-        boardManager.getIsland().placeWorker(worker,2,2);
-        player.getWorker(Worker.IDs.A).setPosition(2,2);
-        boardManager.addPlayer(player);
-        assertTrue( boardManager.isPlayerConnected("matteo"));
-        boardManager.removePlayer(player);
-        assertTrue(!boardManager.isPlayerConnected("matteo"));
-    }
-
-
-
-    @Test
-    public void removePlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer, InvalidWorkerRemovalException {
-        Player p1 = new Player("matteo");
-        boardManager.addPlayer(p1);
-        assertTrue( boardManager.isPlayerConnected(p1));
-        boardManager.removePlayer(p1);
-        assertFalse(boardManager.isPlayerConnected(p1));
-    }
-
-    @Test
-    public void getPlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer {
+    public void getPlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException {
         Player p1= new Player("matteo");
         boardManager.addPlayer(p1);
         assertEquals(boardManager.getPlayer("matteo"),p1);
@@ -215,7 +183,7 @@ public class BoardManagerTest {
 
 
     @Test
-    public void getPlayers_normalPlayers_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayer {
+    public void getPlayers_normalPlayers_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException {
         Player p1=new Player("matteo");
         Player p2=new Player("gabriele");
         Player p3=new Player("alessandro");
@@ -267,4 +235,30 @@ public class BoardManagerTest {
         boardManager.takeCard("Athena");
     }
 
+    @Test (expected = AlreadyExistingPlayerException.class)
+    public void addPlayer_twoPlayerSameUsername_shouldThrowExcepetion() throws LimitExceededException, AlreadyExistingPlayerException {
+        boardManager.addPlayer("gabriele");
+        boardManager.addPlayer("gabriele");
+    }
+
+    @Test
+    public void resetAllPlayerBehaviour() throws LimitExceededException, AlreadyExistingPlayerException {
+        Player p1 = new Player("matteo");
+        Player p2 = new Player("alessandro");
+        boardManager.addPlayer(p1);
+        boardManager.addPlayer(p2);
+        p1.setCard("Apollo");
+        p2.setCard("Athena");
+        p1.getBehaviour().setBlockPlacementLeft(10);
+        p2.getBehaviour().setMovementsRemaining(10000);
+        boardManager.resetAllPlayerBehaviour();
+        Player p1Copy = new Player("matteo");
+        Player p2Copy = new Player("alessandro");
+        p1Copy.setCard("Apollo");
+        p2Copy.setCard("Athena");
+        p1.getCard().resetBehaviour();
+        p2.getCard().resetBehaviour();
+        assertEquals(p1.getBehaviour().getBlockPlacementLeft(), p1Copy.getBehaviour().getBlockPlacementLeft());
+        assertEquals(p2.getBehaviour().getMovementsRemaining(), p2Copy.getBehaviour().getMovementsRemaining());
+    }
 }
