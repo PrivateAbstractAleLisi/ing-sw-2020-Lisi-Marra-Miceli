@@ -2,6 +2,7 @@ package model;
 
 import model.exception.InvalidBuildException;
 import model.exception.InvalidMovementException;
+import model.exception.NoRemainingBlockException;
 import model.exception.WinningException;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.CellCluster;
@@ -107,6 +108,13 @@ public abstract class Card {
         //decrementa il numero di blocchi da costruire rimasti e ritorno true
         playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);
 
+        //decrease the number of block of this type available
+        try {
+            playedBy.getBoardManager().drawBlock(block);
+        } catch (NoRemainingBlockException e) {
+            throw new InvalidBuildException("The build is valid but BoardManager has no block remaining");
+        }
+
         island.buildBlock(block, desiredX, desiredY);
         if (!checkBlockPosition(island, block, desiredX, desiredY, oldCellCluster)) {
             throw new InvalidBuildException("The build is valid but there was an error applying desired changes");
@@ -170,6 +178,39 @@ public abstract class Card {
             }
         }
         return true;
+    }
+
+    /**
+     * Check if the destination is reachable from the actual position of the {@link Worker}, also available GodPower.
+     *
+     * @param actualX  Actual X Position of the worker
+     * @param actualY  Actual Y Position of the worker
+     * @param desiredX X Position where the player wants to place the worker
+     * @param desiredY Y Position where the player wants to place the worker
+     * @param island   The current board of game
+     * @return true when the destination is reachable from the actual position, false otherwise
+     */
+    protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+        return this.isValidDestination(actualX, actualY, desiredX, desiredY, island);
+    }
+
+    /**
+     * Check if the construction can be done from the actual position of the {@link Worker}., also available GodPower.
+     *
+     * @param actualX  Actual X Position of the worker
+     * @param actualY  Actual Y Position of the worker
+     * @param desiredX X Position where the player wants to build the worker
+     * @param desiredY Y Position where the player wants to build the worker
+     * @param island   The current board of game
+     * @return rue when the construction can be done from the actual position, false otherwise
+     */
+    protected boolean checkCellCostructionAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+        for (BlockTypeEnum block : BlockTypeEnum.values()) {
+            if (this.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -243,6 +284,12 @@ public abstract class Card {
      * @return true if the block order and placement is valid, false otherwise
      */
     protected boolean isValidBlockPlacement(BlockTypeEnum block, int[] desiredConstruction, BehaviourManager behaviour) {
+        BoardManager boardManager = playedBy.getBoardManager();
+
+        if (boardManager.getNumberOfBlocksRemaining(block) <= 0) {
+            return false;
+        }
+
         int[] longArray = new int[desiredConstruction.length + 1];
         longArray[0] = 0;
 
@@ -362,6 +409,7 @@ public abstract class Card {
     public String getName() {
         return name;
     }
+
     public String getDescription() {
         return description;
     }

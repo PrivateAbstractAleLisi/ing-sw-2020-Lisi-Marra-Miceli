@@ -4,6 +4,7 @@ import model.BehaviourManager;
 import model.Card;
 import model.Player;
 import model.exception.InvalidBuildException;
+import model.exception.NoRemainingBlockException;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.CellCluster;
 import model.gamemap.Island;
@@ -22,7 +23,6 @@ public class Demeter extends Card {
         description = "Your Move: Your Worker may build one additional time, but not on the same space.";
         lastBuiltPosition = new int[]{-1, -1};
     }
-
 
     @Override
     protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
@@ -65,10 +65,17 @@ public class Demeter extends Card {
         lastBuiltPosition = new int[]{desiredX, desiredY};
         //decrementa il numero di blocchi da costruire rimasti e ritorno true
         playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);
+
+        //decrease the number of block of this type available
+        try {
+            playedBy.getBoardManager().drawBlock(block);
+        } catch (NoRemainingBlockException e) {
+            throw new InvalidBuildException("The build is valid but BoardManager has no block remaining");
+        }
     }
 
     /**
-     * it doen't update the lastBuiltPosition, it just checks if you have already built here or not in the turn
+     * it doesn't update the lastBuiltPosition, it just checks if you have already built here or not in the turn
      *
      * @param desidedX where you want to build
      * @param desiredY where you want to build

@@ -120,4 +120,12 @@ public class Apollo extends Card {
         }
         return true;
     }
+
+    @Override
+    protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+        if(island.getCellCluster(actualX,actualY).hasWorkerOnTop()) {
+            return isValidDestinationApolloPower(actualX, actualY, desiredX, desiredY, island);
+        }
+        return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
+    }
 }

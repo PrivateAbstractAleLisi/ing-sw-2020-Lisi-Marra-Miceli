@@ -187,4 +187,12 @@ public class Minotaur extends Card {
 
         return oppositePlayer.getWorker(enemyWorkerID);
     }
+
+    @Override
+    protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+        if(island.getCellCluster(actualX,actualY).hasWorkerOnTop()) {
+            return isValidDestinationMinotaurPower(actualX, actualY, desiredX, desiredY, island);
+        }
+        return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
+    }
 }

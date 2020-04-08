@@ -318,12 +318,7 @@ public class HephaestusTest {
 
         card.resetBehaviour();
 
-        BehaviourManager behaviourManager = player1.getBehaviour();
-        behaviourManager.setCanBuildDomeEverywhere(true);
-        behaviourManager.setBlockPlacementLeft(2);
-
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
-        card.build(worker1, BlockTypeEnum.DOME, 1, 2, island);
     }
 
     //god specific tests

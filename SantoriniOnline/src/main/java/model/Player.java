@@ -1,11 +1,10 @@
 package model;
 
+import model.Gods.*;
+import model.gamemap.Worker;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Gods.*;
-import model.exception.InvalidWorkerException;
-import model.gamemap.Worker;
 
 public class Player {
 
@@ -176,5 +175,10 @@ public class Player {
      */
     public List<Player> getPlayers() {
         return boardManager.getPlayers();
+    }
+
+
+    public BoardManager getBoardManager() {
+        return boardManager;
     }
 }

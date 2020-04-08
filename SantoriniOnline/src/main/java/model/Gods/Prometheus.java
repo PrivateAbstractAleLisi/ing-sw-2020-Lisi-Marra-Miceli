@@ -35,7 +35,6 @@ public class Prometheus extends Card {
     public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
         super.build(worker, block, desiredX, desiredY, island);
         hasAlreadyBuilt = true;
-
     }
 
     @Override

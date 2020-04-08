@@ -1,59 +1,55 @@
 package model.Gods;
 
-import model.BehaviourManager;
-import model.Card;
-import model.Player;
-import model.exception.InvalidBuildException;
-import model.exception.InvalidMovementException;
-import model.exception.WinningException;
-import model.gamemap.BlockTypeEnum;
-import model.gamemap.Island;
-import model.gamemap.Worker;
+import model.*;
+import model.gamemap.*;
+import model.exception.*;
 import org.junit.*;
 import placeholders.IslandPrinter;
 
 import static org.junit.Assert.*;
 
 public class AtlasTest {
+    BoardManager boardManager=null;
     Card card = null;
-    Player player = new Player("Marco");
+    Card card2 = null;
+    Player player1 = null;
+    Player player2 = null;
     Island island = null;
     Worker worker1 = null;
     Worker worker2 = null;
+    Worker worker1B= null;
+    Worker worker2B= null;
     IslandPrinter ip = null;
 
     @Before
     public void setUp() throws Exception {
-        card = new Atlas(player);
-        player.setCard(card);
-        island = new Island();
+        boardManager=new BoardManager();
+        boardManager.addPlayer("Gabriele");
+        boardManager.addPlayer("Matteo");
+
+        island = boardManager.getIsland();
         ip = new IslandPrinter(island);
-        worker1 = new Worker(Worker.IDs.A, player.getUsername());
-        worker2 = new Worker(Worker.IDs.B, player.getUsername());
+        player1=boardManager.getPlayer("Gabriele");
+        player2=boardManager.getPlayer("Matteo");
+        player1.setCard("Atlas");
+        player2.setCard("Athena");
+        worker1 = player1.getWorker(Worker.IDs.A);
+        worker2 = player2.getWorker(Worker.IDs.A);
+        worker1B = player1.getWorker(Worker.IDs.B);
+        worker2B = player2.getWorker(Worker.IDs.B);
+        card=player1.getCard();
+        card2=player2.getCard();
+
     }
 
     @After
     public void tearDown() throws Exception {
-        player.setCard((Card) null);
+        player1.setCard((Card) null);
         card = null;
     }
 
 
-    @Test //DONE
-    public void resetBehaviour() {
-        BehaviourManager behaviourManager = player.getBehaviour();
-        behaviourManager.setCanClimb(false);
-        behaviourManager.setCanBuildDomeEverywhere(true);
-        behaviourManager.setBlockPlacementLeft(25);
-        behaviourManager.setMovementsRemaining(0);
 
-        card.resetBehaviour();
-
-        assertTrue(behaviourManager.isCanClimb());
-        assertTrue(behaviourManager.isCanBuildDomeEverywhere());
-        assertEquals(1, behaviourManager.getBlockPlacementLeft());
-        assertEquals(1, behaviourManager.getMovementsRemaining());
-    }
 
     @Test //DONE
     public void distance() {
@@ -106,7 +102,7 @@ public class AtlasTest {
         card.move(worker1, 1, 1, island);
     }
 
-    @Test
+    @Test //NON RUNNA PERCHÈ MANCA IL BOARDMANAGER E IL SECONDO PLAYER
     public void move_RightMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
@@ -157,7 +153,7 @@ public class AtlasTest {
         card.placeWorker(worker1, 0, 0, island);
         card.resetBehaviour();
 
-        BehaviourManager behaviourManager = player.getBehaviour();
+        BehaviourManager behaviourManager = player1.getBehaviour();
         behaviourManager.setMovementsRemaining(0);
 
         card.move(worker1, 1, 1, island);
@@ -169,7 +165,7 @@ public class AtlasTest {
         island.buildBlock(BlockTypeEnum.LEVEL1, 0, 1);
         card.resetBehaviour();
 
-        BehaviourManager behaviourManager = player.getBehaviour();
+        BehaviourManager behaviourManager = player1.getBehaviour();
         behaviourManager.setCanClimb(false);
 
         card.move(worker1, 0, 1, island);
@@ -309,18 +305,35 @@ public class AtlasTest {
         card.build(worker1, BlockTypeEnum.LEVEL3, 1, 1, island);
     }
 
-    @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_BuildDomeEveryWhere() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
+
+
+    //god specific test
+
+    @Test //DONE
+    public void resetBehaviour() {
+        BehaviourManager behaviourManager = player1.getBehaviour();
+        behaviourManager.setCanClimb(false);
+        behaviourManager.setCanBuildDomeEverywhere(true);
+        behaviourManager.setBlockPlacementLeft(25);
+        behaviourManager.setMovementsRemaining(0);
+
+        card.resetBehaviour();
+
+        assertTrue(behaviourManager.isCanClimb());
+        assertTrue(behaviourManager.isCanBuildDomeEverywhere());
+        assertEquals(1, behaviourManager.getBlockPlacementLeft());
+        assertEquals(1, behaviourManager.getMovementsRemaining());
+    }
+
+    @Test
+    public void build_RightBuild_BuildDomeEveryWhere() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
 
         card.resetBehaviour();
 
-        BehaviourManager behaviourManager = player.getBehaviour();
-        behaviourManager.setCanBuildDomeEverywhere(true);
-        behaviourManager.setBlockPlacementLeft(2);
-
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
-        card.build(worker1, BlockTypeEnum.DOME, 1, 2, island);
+        card.resetBehaviour();
+        card.build(worker1, BlockTypeEnum.DOME, 0, 1, island);
     }
 }
