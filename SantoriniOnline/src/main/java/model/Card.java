@@ -252,6 +252,10 @@ public abstract class Card {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
+        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+        if (actualX == desiredX && actualY == desiredY) {
+            return false;
+        }
         //verifica il behaviour permette di costruire
         if (behaviour.getBlockPlacementLeft() <= 0) {
             return false;

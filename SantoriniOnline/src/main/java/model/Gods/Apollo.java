@@ -98,6 +98,11 @@ public class Apollo extends Card {
             return false;
         }
 
+        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+        if (actualX == desiredX && actualY == desiredY) {
+            return false;
+        }
+
         //verifica il behaviour permette di muoversi
         if (behaviour.getMovementsRemaining() <= 0) {
             return false;
