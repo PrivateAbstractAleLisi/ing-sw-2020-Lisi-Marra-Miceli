@@ -7,7 +7,7 @@ import java.util.List;
 
 import static model.gamemap.BlockTypeEnum.*; //Controllare che cosa significa, generato automaticamente
 
-public class CellCluster implements Cloneable{
+public class CellCluster implements Cloneable {
     private List<BlockTypeEnum> construction;
     private boolean isComplete, isFree;
     private Worker worker;
@@ -22,17 +22,18 @@ public class CellCluster implements Cloneable{
 
     /**
      * Checks if the construction inside this cell has a valid CostructionBlock order
+     *
      * @return true if the order is valid, false otherwise
      */
     public boolean checkBuildingBlockOrder(BlockTypeEnum toBeAdded) {
-        List <BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
+        List<BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
         constructionAfter.addAll(construction);
         constructionAfter.add(toBeAdded);
 
-        int [] array=toIntArray(constructionAfter);
+        int[] array = toIntArray(constructionAfter);
 
-        for (int i = 0; i < array.length -1 ; i++) { //checks if it's ascending order
-            if (array[i] >= array[i+1]) {
+        for (int i = 0; i < array.length - 1; i++) { //checks if it's ascending order
+            if (array[i] >= array[i + 1]) {
                 return false;
             }
         }
@@ -40,9 +41,9 @@ public class CellCluster implements Cloneable{
         return true;
     }
 
-    private int [] toIntArray (List <BlockTypeEnum> construction ){
+    private int[] toIntArray(List<BlockTypeEnum> construction) {
         int[] array = new int[construction.size()]; //Auxiliary array
-        for (int i = 0; i< array.length; i++) { //Converts the construction into an integer array
+        for (int i = 0; i < array.length; i++) { //Converts the construction into an integer array
 
             switch (construction.get(i)) {
                 case LEVEL1:
@@ -65,7 +66,7 @@ public class CellCluster implements Cloneable{
 
     public int[] toIntArray() {
         int[] array = new int[construction.size()]; //Auxiliary array
-        for (int i = 0; i< array.length; i++) { //Converts the construction into an integer array
+        for (int i = 0; i < array.length; i++) { //Converts the construction into an integer array
 
             switch (construction.get(i)) {
                 case LEVEL1:
@@ -85,8 +86,9 @@ public class CellCluster implements Cloneable{
 
         return array;
     }
-    public int[] toIntArrayWithHypo(BlockTypeEnum toBeAdded){
-        List <BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
+
+    public int[] toIntArrayWithHypo(BlockTypeEnum toBeAdded) {
+        List<BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
         constructionAfter.addAll(construction);
         constructionAfter.add(toBeAdded);
 
@@ -163,16 +165,27 @@ public class CellCluster implements Cloneable{
         }
     }
 
-    public String getWorkerOwnerUsername () {
+    public String getWorkerOwnerUsername() {
         return worker.getPlayerUsername();
     }
-    public Worker.IDs getWorkerID () {
+
+    public Worker.IDs getWorkerID() {
         return worker.getWorkerID();
     }
 
-    public Object clone() throws
-            CloneNotSupportedException
-    {
+    /*
+        public Object clone() throws
+                CloneNotSupportedException
+        {
+            return super.clone();
+        }
+        */
+    public Object clone() throws CloneNotSupportedException {
+
         return super.clone();
+
+
     }
+
+
 }

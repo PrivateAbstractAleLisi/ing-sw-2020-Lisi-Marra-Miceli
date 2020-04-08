@@ -6,9 +6,6 @@ import model.exception.*;
 
 public class Island {
 
-    //public costants
-    public final int ISLAND_SIZE = 5;
-    public final int NUM_OF_CELLS = 25;
 
     private Range indexRange;
 
@@ -180,6 +177,16 @@ public class Island {
 
         return false;
     }
+
+    /**
+     * This function is used to fill the grid when copying the island
+     * @param x
+     * @param y
+     * @param c the cell cluster you want to insert at position x, y
+     */
+
+
+
 
 
 

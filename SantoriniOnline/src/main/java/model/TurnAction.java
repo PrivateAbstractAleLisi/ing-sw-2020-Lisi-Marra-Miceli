@@ -1,6 +1,6 @@
 package model;
 
-public enum turnAction {
+public enum TurnAction {
     MOVE,
     BUILD
 }

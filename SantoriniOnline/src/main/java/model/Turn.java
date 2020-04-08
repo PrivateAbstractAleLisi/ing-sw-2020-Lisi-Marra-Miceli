@@ -69,22 +69,21 @@ public class Turn {
      * @param workerID the worker that perform the action
      * @param action the action to perform
      * @return a list of all the possible move or build destination
-     * @throws DefeatException if the player as no move and build actions possible
      */
-    public ArrayList<int[]> validActions(Worker.IDs workerID, turnAction action) throws DefeatException {
+    public ArrayList<int[]> validActions(Worker.IDs workerID, TurnAction action) {
         ArrayList<int[]> validMoves = new ArrayList<int[]>();
         int[] position = null;
         Worker worker = currentPlayer.getWorker(workerID);
         for (int i= worker.getPosition()[0]-1; i<=1; i++) {
             for (int j = worker.getPosition()[1] - 1; j <= 1; j++) {
-                if (action==turnAction.MOVE) {
+                if (action==TurnAction.MOVE) {
                     if (currentPlayer.getCard().checkCellMovementAvailability(worker.getPosition()[0], worker.getPosition()[1], i, j, boardManager.getIsland()))
                         position = new int[2];
                         position[0] = i;
                         position[1] = j;
                         validMoves.add(position);
-                } else if (action==turnAction.BUILD) {
-                    if (currentPlayer.getCard().checkCellBuildAvailability(worker.getPosition()[0], worker.getPosition()[1], i, j, boardManager.getIsland())) {
+                } else if (action==TurnAction.BUILD) {
+                    if (currentPlayer.getCard().checkCellCostructionAvailability(worker.getPosition()[0], worker.getPosition()[1], i, j, boardManager.getIsland())) {
                         position = new int[2];
                         position[0] = i;
                         position[1] = j;
@@ -93,8 +92,23 @@ public class Turn {
                 }
             }
         }
-        if (validMoves.size() == 0) throw new DefeatException(currentPlayer.getUsername());
+        /* if (validMoves.size() == 0) throw new DefeatException(currentPlayer.getUsername()); */
         return validMoves;
     }
 
+    public boolean isHasAlreadyMoved() {
+        return hasAlreadyMoved;
+    }
+
+    public void setHasAlreadyMoved(boolean hasAlreadyMoved) {
+        this.hasAlreadyMoved = hasAlreadyMoved;
+    }
+
+    public boolean isHasAlreadyBuild() {
+        return hasAlreadyBuild;
+    }
+
+    public void setHasAlreadyBuild(boolean hasAlreadyBuild) {
+        this.hasAlreadyBuild = hasAlreadyBuild;
+    }
 }

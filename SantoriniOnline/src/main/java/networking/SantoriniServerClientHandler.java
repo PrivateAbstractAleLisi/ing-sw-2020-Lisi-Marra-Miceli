@@ -43,40 +43,41 @@ public class SantoriniServerClientHandler implements Runnable {
             if (!ServerLobby.isRoomAlreadyCreated()) { //First user logging
                 System.out.println("FIRST USER");
                 ServerLobby.setIsRoomAlreadyCreated(true);
+                //First user creates new match
+                output.writeObject(ANSIColors.ANSI_RESET + "You're the first user, let's create a new match");
+                output.writeObject("Type 2 or 3 to set the room size");
+
+                Integer sizeSent = -111;
+                System.out.println("Ready to read room size");
+                while (sizeSent < 2 || sizeSent>3) {
+                    try {
+                        sizeSent = (Integer) input.readObject();
+                        System.out.println("reading..");
+                    }
+                    catch (ClassCastException e) {
+
+                    }
+
+                }
+                System.out.println("Room size has been read.");
+
+                switch(sizeSent) {
+                    case 2:
+                        new ServerRoom(2);
+                        System.out.println("Created a 2 player match");
+                        break;
+                    case 3:
+                        new ServerRoom(3 );
+                        System.out.println("Created a 3 player match");
+                        break;
+
+                }
+
             }
             else {
                 System.out.println("NOT FIRST USER");
             }
 
-            //First user creates new match
-            output.writeObject(ANSIColors.ANSI_RESET + "You're the first user, let's create a new match");
-            output.writeObject("Type 2 or 3 to set the room size");
-
-            Integer sizeSent = -111;
-            System.out.println("Ready to read room size");
-            while (sizeSent < 2 || sizeSent>3) {
-                try {
-                    sizeSent = (Integer) input.readObject();
-                    System.out.println("reading..");
-                }
-                catch (ClassCastException e) {
-
-                }
-
-            }
-            System.out.println("Room size has been read.");
-
-            switch(sizeSent) {
-                case 2:
-                    new ServerRoom(2);
-                    System.out.println("Created a 2 player match");
-                    break;
-                case 3:
-                    new ServerRoom(3 );
-                    System.out.println("Created a 3 player match");
-                    break;
-
-            }
 
 
             output.writeObject("Please insert your username: ");
