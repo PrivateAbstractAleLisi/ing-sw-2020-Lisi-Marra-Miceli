@@ -14,14 +14,20 @@ public interface EventListener {
 
     void handleEvent(RoomSizeResponseGameEvent event);
 
+    void handleEvent(RoomUpdateGameEvent event);
+
     void handleEvent(ConnectionRequestGameEvent event);
+
+    void handleEvent(ConnectionRequestServerGameEvent event);
 
     public void handleEvent(RoomSizeRequestGameEvent event);
 
     public void handleEvent(ConnectionRejectedErrorGameEvent event);
 
     public void handleEvent(ChallengerCardsChosenEvent event);
+
     public void handleEvent(PlayerCardChosenEvent event);
+
     public void handleEvent(ChallengerChosenFirstPlayerEvent event);
 
 }

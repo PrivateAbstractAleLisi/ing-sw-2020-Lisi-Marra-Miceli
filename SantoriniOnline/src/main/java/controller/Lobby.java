@@ -29,14 +29,19 @@ public class Lobby extends EventSource implements EventListener {
         Lobby.isRoomAlreadyCreated = isRoomAlreadyCreated;
     }
 
-    //todo deve lanciare gli eventi
     @Override
-    public void handleEvent(ConnectionRequestGameEvent event) {
+    public void handleEvent(ConnectionRequestServerGameEvent event) {
         if (activeUsersList.contains(event.getUsername())) {
-            //todo l'username non va bene
+            ConnectionRejectedErrorGameEvent msgError = new ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
+            notifyAllObserverByType(ListenerType.VIEW, msgError);
         } else {
             if (isRoomAlreadyCreated()) {
-                activeRooms.get(0).addUser(event.getUsername());
+                if (activeRooms.get(0).getSIZE() > activeRooms.get(0).getLastOccupiedPosition()) {
+                    activeRooms.get(0).addUser(event.getUsername());
+                } else {
+                    ConnectionRejectedErrorGameEvent msgError = new ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
+                    notifyAllObserverByType(ListenerType.VIEW, msgError);
+                }
             } else {
                 pendingUsername = event.getUsername();
                 RoomSizeRequestGameEvent request = new RoomSizeRequestGameEvent("Inserisci la dimensione della stanza: ");
@@ -47,11 +52,6 @@ public class Lobby extends EventSource implements EventListener {
 
 
     @Override
-    public void handleEvent(GameEvent event) {
-
-    }
-
-    @Override
     public void handleEvent(RoomSizeResponseGameEvent event) {
         Room newRoom = new Room(event.getSize());
         activeRooms.add(newRoom);
@@ -59,14 +59,36 @@ public class Lobby extends EventSource implements EventListener {
         setIsRoomAlreadyCreated(true);
     }
 
+    @Override
+    public void handleEvent(RoomUpdateGameEvent event) {
+    }
+
+    @Override
+    public void handleEvent(GameEvent event) {
+    }
+
+    @Override
+    public void handleEvent(ConnectionRequestGameEvent event) {
+    }
+
 
     @Override
     public void handleEvent(RoomSizeRequestGameEvent event) {
-
     }
 
     @Override
     public void handleEvent(ConnectionRejectedErrorGameEvent event) {
+    }
 
+    @Override
+    public void handleEvent(ChallengerCardsChosenEvent event) {
+    }
+
+    @Override
+    public void handleEvent(PlayerCardChosenEvent event) {
+    }
+
+    @Override
+    public void handleEvent(ChallengerChosenFirstPlayerEvent event) {
     }
 }

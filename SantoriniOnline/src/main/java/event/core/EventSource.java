@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Alessandro Lisi
  * an observable objects that generates events notifying all the attached listeners
  */
-public class EventSource {
+public abstract class EventSource {
 
     private Map<ListenerType, List<EventListener>> listeners; //all
 
@@ -28,7 +28,7 @@ public class EventSource {
      * @param event notified by
      */
     public void notifyAllObserverByType(ListenerType type, GameEvent event) {
-        System.out.println("DEBUG: ready to notify:");
+//        System.out.println("DEBUG: ready to notify:");
         System.out.println("DEBUG: DESCRIPTION: " + event.getEventDescription());
 
         List<EventListener> observersFiltered = listeners.get(type);

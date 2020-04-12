@@ -35,7 +35,7 @@ public class WelcomeView extends EventSource implements EventListener, View {
         String userProposal = askUsername();
         this.attachListenerByType(VIEW, virtualServer);
 
-        ConnectionRequestGameEvent req = new ConnectionRequestGameEvent("Tentativo di connessione", "--", userProposal);
+        ConnectionRequestGameEvent req = new ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
         this.notifyAllObserverByType(VIEW, req);
         //ask IP
 
@@ -75,7 +75,7 @@ public class WelcomeView extends EventSource implements EventListener, View {
         printValidMessage("Room size");
         RoomSizeResponseGameEvent response;
         response = new RoomSizeResponseGameEvent("first player sends the chosen size", sizeIn);
-
+        notifyAllObserverByType(VIEW, response);
     }
 
     /**
@@ -161,7 +161,21 @@ public class WelcomeView extends EventSource implements EventListener, View {
     }
 
     @Override
+    public void handleEvent(RoomUpdateGameEvent event) {
+        System.out.println("Ciaooo Stanza Creata");
+        for (int i = 0; i < event.getUsersInRoom().length; i++) {
+            int j = i + 1;
+            System.out.println(j + ") " + event.getUsersInRoom()[i]);
+        }
+    }
+
+    @Override
     public void handleEvent(ConnectionRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(ConnectionRequestServerGameEvent event) {
 
     }
 
@@ -187,6 +201,21 @@ public class WelcomeView extends EventSource implements EventListener, View {
         //read a new username if it's already taken
         askUsername();
 
+
+    }
+
+    @Override
+    public void handleEvent(ChallengerCardsChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(PlayerCardChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(ChallengerChosenFirstPlayerEvent event) {
 
     }
 

@@ -1,5 +1,8 @@
 package controller;
 
+import event.core.EventSource;
+import event.core.ListenerType;
+import event.events.RoomUpdateGameEvent;
 import model.BoardManager;
 import model.Player;
 import model.exception.AlreadyExistingPlayerException;
@@ -7,14 +10,14 @@ import model.exception.AlreadyExistingPlayerException;
 import javax.naming.LimitExceededException;
 import java.util.Map;
 
-public class Room {
+public class Room extends EventSource {
 
     private final int SIZE;
-    private static int lastOccupiedPosition;
-    private static String[] activeUsers;
+    private int lastOccupiedPosition;
+    private String[] activeUsers;
     private BoardManager boardManager;
     private TurnController turnController;
-    private PreGame preGame;
+    private PreGameController preGame;
 
 
     public Room(int size) {
@@ -22,19 +25,26 @@ public class Room {
         activeUsers = new String[SIZE];
         lastOccupiedPosition = 0;
         boardManager = new BoardManager();
+
+//        DEBUG
+        System.out.println("DEBUG: ROOM: Stanza creata");
     }
 
     public void addUser(String username) {
         try {
             boardManager.addPlayer(username);
-            Room.activeUsers[lastOccupiedPosition] = username;
-            Room.lastOccupiedPosition++;
+            this.activeUsers[lastOccupiedPosition] = username;
+            //        DEBUG
+            System.out.println("DEBUG: ROOM: username aggiunto");
+            this.lastOccupiedPosition++;
+            RoomUpdateGameEvent updateEvent = new RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy());
+            notifyAllObserverByType(ListenerType.VIEW, updateEvent);
         } catch (LimitExceededException e) {
-            //todo aggiungere generazione eventi di errore
             e.printStackTrace();
         } catch (AlreadyExistingPlayerException e) {
             e.printStackTrace();
         }
+
     }
 
     public void logAllUsers() {
@@ -45,7 +55,7 @@ public class Room {
     }
 
     public void beginPreGame() {
-        preGame = new PreGame();
+        preGame = new PreGameController(boardManager, this);
         preGame.start();
     }
 
@@ -57,7 +67,15 @@ public class Room {
         return SIZE;
     }
 
-    public static String[] getActiveUsers() {
+    public String[] getActiveUsers() {
         return activeUsers;
+    }
+
+    public String[] getActiveUsersCopy() {
+        return activeUsers.clone();
+    }
+
+    public int getLastOccupiedPosition() {
+        return lastOccupiedPosition;
     }
 }

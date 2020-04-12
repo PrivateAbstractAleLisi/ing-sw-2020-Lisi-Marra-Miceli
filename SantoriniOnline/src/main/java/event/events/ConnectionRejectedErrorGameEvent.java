@@ -4,21 +4,22 @@ import event.core.EventListener;
 
 public class ConnectionRejectedErrorGameEvent extends GameEvent {
 
-    private final String errorMessage, wrongUsername;
+    private final String errorMessage;
     private final String errorCode;
+    private final String userIP;
+    private final int userPort;
+    private final String wrongUsername;
     //USER_TAKEN
     //ROOM_FULL
 
 
-    public ConnectionRejectedErrorGameEvent(String description, String errorCode, String errorMessage, String wrongUsername) {
+    public ConnectionRejectedErrorGameEvent(String description, String errorCode, String errorMessage, String userIP, int userPort, String wrongUsername) {
         super(description);
         this.errorMessage = errorMessage;
-        this.wrongUsername = wrongUsername;
+        this.userIP = userIP;
+        this.userPort = userPort;
         this.errorCode = errorCode;
-    }
-
-    public String getWrongUsername() {
-        return wrongUsername;
+        this.wrongUsername = wrongUsername;
     }
 
     public String getErrorMessage() {
@@ -28,6 +29,19 @@ public class ConnectionRejectedErrorGameEvent extends GameEvent {
     public String getErrorCode() {
         return errorCode;
     }
+
+    public int getUserPort() {
+        return userPort;
+    }
+
+    public String getUserIP() {
+        return userIP;
+    }
+
+    public String getWrongUsername() {
+        return wrongUsername;
+    }
+
 
     @Override
     public void notifyHandler(EventListener listener) {

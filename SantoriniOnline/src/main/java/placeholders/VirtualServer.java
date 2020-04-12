@@ -21,17 +21,42 @@ public class VirtualServer extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(ConnectionRejectedErrorGameEvent event) {
+        notifyAllObserverByType(ListenerType.VIEW, event);
+    }
+
+    @Override
+    public void handleEvent(ChallengerCardsChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(PlayerCardChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(ChallengerChosenFirstPlayerEvent event) {
 
     }
 
     @Override
     public void handleEvent(RoomSizeResponseGameEvent event) {
+        virtualView.handleEvent(event);
+    }
 
+    @Override
+    public void handleEvent(RoomUpdateGameEvent event) {
+        notifyAllObserverByType(ListenerType.VIEW, event);
     }
 
     @Override
     public void handleEvent(ConnectionRequestGameEvent event) {
         virtualView.handleEvent(event);
+    }
+
+    @Override
+    public void handleEvent(ConnectionRequestServerGameEvent event) {
+
     }
 
 
