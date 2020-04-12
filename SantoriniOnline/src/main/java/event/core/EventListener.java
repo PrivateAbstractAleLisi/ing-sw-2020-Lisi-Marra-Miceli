@@ -10,8 +10,6 @@ public interface EventListener {
 
     /* one handler for each event class */
     public void handleEvent(GameEvent event);
-    public void handleEvent(WelcomeGameEvent event);
-
 
 }
 

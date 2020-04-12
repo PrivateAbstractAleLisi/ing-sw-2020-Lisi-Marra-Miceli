@@ -1,5 +1,7 @@
 
-package event.events;
+package event.events.temporary;
+
+import event.events.GameEvent;
 
 /**
  * @author Alessandro Lisi

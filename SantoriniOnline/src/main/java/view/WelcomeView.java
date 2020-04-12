@@ -2,15 +2,15 @@ package view;
 
 import auxiliary.ANSIColors;
 import auxiliary.Range;
-import event.core.EventSource;
-import jdk.jfr.Event;
+import event.core.ViewEventListener;
+import event.events.*;
+import event.events.temporary.WelcomeGameEvent;
 
 import java.io.PrintStream;
-import java.util.EventListener;
-import java.util.Scanner;
-import java.util.stream.Stream;
 
-public class WelcomeView extends EventSource implements View, EventListener {
+import java.util.Scanner;
+
+public class WelcomeView implements ViewEventListener, View {
 
     //IN-OUT DATA FROM CONSOLE
     private final PrintStream output;
@@ -21,9 +21,19 @@ public class WelcomeView extends EventSource implements View, EventListener {
         this.input = new Scanner(System.in);
     }
 
+    //MAIN METHODS
+
+
     public void start() {
 
         displayTitle();
+        askUsername();
+        //ask IP
+
+    }
+
+    private void askUsername() {
+
         String str = "null";
         output.println("Insert a valid username ");
         output.println("[at least 3 alpha numeric characters] ");
@@ -34,9 +44,9 @@ public class WelcomeView extends EventSource implements View, EventListener {
             str = input.nextLine();
         }
 
-        printValidMessage("Username");
-
-        askGameRoomSize();
+        //avvia una richiesta di connessione
+        //send username
+        //printValidMessage("Username");
 
     }
 
@@ -52,20 +62,29 @@ public class WelcomeView extends EventSource implements View, EventListener {
         }
 
         printValidMessage("Room size");
+        RoomSizeResponseGameEvent response;
+        response = new RoomSizeResponseGameEvent("first player sends the chosen size", sizeIn);
+
     }
 
+    /**
+     * prints (message) is valid in green
+     * @param message
+     */
     private void printValidMessage(String message) {
         output.println(ANSIColors.ANSI_GREEN + "✓ " +message+ " is valid " + ANSIColors.ANSI_RESET);
     }
 
     //USERNAME VALIDATION:
     private void checkUsernameOnSever() {
+
         //TODO sends an event to the server that the username has been inserted, the server checks if it's valid
     }
 
-    //Called both by invalid username already taken (via server) or invalid usernamenot alphanumeric
+
     private boolean checkLocalUsernameAlphaNumeric(String username) {
-        if (username == null || username.length() < 3) {
+        boolean notValid = (username == null || username.length() < 3 || username.length() > 16);
+        if (notValid) {
             return false;
         } else {
             return username.matches("^[a-zA-Z0-9]*$");
@@ -75,7 +94,10 @@ public class WelcomeView extends EventSource implements View, EventListener {
     }
 
     //DISPLAY UTILITIES
+
+    //Called both by invalid username already taken (via server) or invalid username not alphanumeric
     private void displayUsernameErrorMessage(String errorMessage) {
+        System.err.print("\n Invalid Username: ");
         System.err.println(errorMessage);
     }
 
@@ -114,5 +136,41 @@ public class WelcomeView extends EventSource implements View, EventListener {
     @Override
     public void updateScreen() {
 
+    }
+
+    @Override
+    public void handleEvent(GameEvent e) {
+
+    }
+
+
+    @Override
+    public void handleEvent(ConnectionRejectedErrorGameEvent event) {
+
+        switch (event.getErrorCode()) {
+            case "USER_TAKEN" :
+                //notify the error on screen
+                System.err.print("Username " + event.getWrongUsername() );
+                displayUsernameErrorMessage(event.getErrorMessage());
+                displayUsernameErrorMessage(event.getEventDescription());
+                askUsername();
+                break;
+
+            case "ROOM_FULL":
+                displayUsernameErrorMessage("Server room is currently full");
+                return;
+        }
+
+
+        //read a new username if it's already taken
+        askUsername();
+
+
+
+    }
+
+    @Override
+    public void handleEvent(RoomSizeRequestGameEvent event) {
+        askGameRoomSize();
     }
 }

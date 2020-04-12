@@ -3,6 +3,7 @@ package event.core;
 
 
 import event.events.*;
+import event.events.temporary.WelcomeGameEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
