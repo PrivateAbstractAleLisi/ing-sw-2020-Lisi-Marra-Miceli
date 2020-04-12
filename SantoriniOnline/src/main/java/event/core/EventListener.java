@@ -20,5 +20,9 @@ public interface EventListener {
 
     public void handleEvent(ConnectionRejectedErrorGameEvent event);
 
+    public void handleEvent(ChallengerCardsChosenEvent event);
+    public void handleEvent(PlayerCardChosenEvent event);
+    public void handleEvent(ChallengerChosenFirstPlayerEvent event);
+
 }
 

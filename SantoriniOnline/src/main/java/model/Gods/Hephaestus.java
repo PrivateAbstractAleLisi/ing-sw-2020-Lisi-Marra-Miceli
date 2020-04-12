@@ -2,6 +2,7 @@ package model.Gods;
 
 import model.BehaviourManager;
 import model.Card;
+import model.CardEnum;
 import model.Player;
 import model.exception.InvalidBuildException;
 import model.gamemap.BlockTypeEnum;
@@ -14,8 +15,7 @@ public class Hephaestus extends Card {
 
     public Hephaestus(Player player) {
         super(player);
-        name = "Hephaestus";
-        description = "Your Worker may build one additional block (not dome) on top of your first block.";
+        name = CardEnum.HEPHAESTUS;
         lastBuiltPosition = new int[]{-1, -1};
     }
 

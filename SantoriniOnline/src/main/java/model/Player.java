@@ -56,33 +56,33 @@ public class Player {
      *
      * @param cardToSet the card chosen by the player
      */
-    public void setCard(String cardToSet) {
+    public void setCard(CardEnum cardToSet) {
         switch (cardToSet) {
-            case "Apollo":
+            case APOLLO:
                 this.card = new Apollo(this);
                 break;
-            case "Artemis":
+            case ARTEMIS:
                 this.card = new Artemis(this);
                 break;
-            case "Athena":
+            case ATHENA:
                 this.card = new Athena(this);
                 break;
-            case "Atlas":
+            case ATLAS:
                 this.card = new Atlas(this);
                 break;
-            case "Demeter":
+            case DEMETER:
                 this.card = new Demeter(this);
                 break;
-            case "Hephaestus":
+            case HEPHAESTUS:
                 this.card = new Hephaestus(this);
                 break;
-            case "Minotaur":
+            case MINOTAUR:
                 this.card = new Minotaur(this);
                 break;
-            case "Pan":
+            case PAN:
                 this.card = new Pan(this);
                 break;
-            case "Prometheus":
+            case PROMETHEUS:
                 this.card = new Prometheus(this);
                 break;
             default:

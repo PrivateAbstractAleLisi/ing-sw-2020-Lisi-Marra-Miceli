@@ -2,13 +2,15 @@ package model.Gods;
 
 import model.BehaviourManager;
 import model.Card;
+import model.CardEnum;
 import model.Player;
+
+import static model.CardEnum.ATLAS;
 
 public class Atlas extends Card {
     public Atlas(Player player) {
         super(player);
-        name = "Atlas";
-        description = "Your Worker may build a dome at any level.";
+        name = CardEnum.ATLAS;
     }
 
     /**

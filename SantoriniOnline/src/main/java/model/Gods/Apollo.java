@@ -2,6 +2,7 @@ package model.Gods;
 
 import model.BehaviourManager;
 import model.Card;
+import model.CardEnum;
 import model.Player;
 import model.exception.InvalidMovementException;
 import model.exception.InvalidWorkerRemovalException;
@@ -18,8 +19,7 @@ import java.util.List;
 public class Apollo extends Card {
     public Apollo(Player player) {
         super(player);
-        name = "Apollo";
-        description = "Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.";
+        name = CardEnum.APOLLO;
     }
 
     /**

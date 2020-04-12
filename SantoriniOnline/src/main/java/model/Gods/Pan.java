@@ -1,6 +1,7 @@
 package model.Gods;
 
 import model.Card;
+import model.CardEnum;
 import model.Player;
 import model.exception.WinningException;
 import model.gamemap.CellCluster;
@@ -13,8 +14,7 @@ public class Pan extends Card {
 
     public Pan(Player p) {
         super(p);
-        name = "Pan";
-        description = "Win Condition: You also win if your Worker moves down two or more levels.";
+        name = CardEnum.PAN;
 
     }
 

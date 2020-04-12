@@ -1,8 +1,6 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import model.exception.AlreadyExistingPlayerException;
 import model.exception.InvalidCardException;
@@ -29,9 +27,11 @@ public class BoardManager {
     //Island of the game
     private Island island;
 
-    private List<String> cards;
-    private List<String> selectedCards;
-    private List<String> takenCards;
+    private List<CardEnum> cards;
+    private List<CardEnum> selectedCards;
+    private List<CardEnum> takenCards;
+
+    private Map<String, CardEnum> playersCardsCorrespondence;
 
     /**
      * Constructor: initialize the game creating the island
@@ -46,10 +46,10 @@ public class BoardManager {
 
         players = new ArrayList<Player>();
 
-        cards = new ArrayList<String>();
+        cards = new ArrayList<CardEnum>();
         initializeCardList();
-        selectedCards = new ArrayList<String>();
-        takenCards = new ArrayList<String>();
+        selectedCards = new ArrayList<CardEnum>();
+        takenCards = new ArrayList<CardEnum>();
     }
 
     /**
@@ -217,17 +217,14 @@ public class BoardManager {
      * Creates the list of all the cards
      */
     public void initializeCardList() {
-        String[] cards = new String[]{
-                "Apollo", "Artemis", "Athena", "Atlas", "Demeter", "Hephaestus", "Minotaur", "Pan", "Prometheus"
-        };
-        Collections.addAll(this.cards, cards);
+        Collections.addAll(cards, CardEnum.values());
     }
 
     /**
      * @return a copy of the cards list
      */
-    public List<String> getCardsList() {
-        return new ArrayList<>(cards);
+    public ArrayList<CardEnum> getCardsList() {
+        return new ArrayList<CardEnum>(cards);
     }
 
     /**
@@ -236,7 +233,7 @@ public class BoardManager {
      * @throws InvalidCardException if the card is not in the card list
      * @throws LimitExceededException if there already three cards selected
      */
-    public void selectCard(String card) throws InvalidCardException, LimitExceededException {
+    public void selectCard(CardEnum card) throws InvalidCardException, LimitExceededException {
         if (selectedCards.size() < 3) {
             if (cards.contains(card)) {
                 selectedCards.add(card);
@@ -250,19 +247,27 @@ public class BoardManager {
     /**
      * @return a copy of the list of the cards selected
      */
-    public List<String> getSelectedCards() {
-        return new ArrayList<>(selectedCards);
+    public ArrayList<CardEnum> getSelectedCards() {
+        return new ArrayList<CardEnum>(selectedCards);
     }
 
     /**
      * @param card the card chosen by one player that should be added to the list selectedCards
      * @throws InvalidCardException if the card passed as input is not in the card list
      */
-    public void takeCard(String card) throws InvalidCardException {
+    public void takeCard(CardEnum card) throws InvalidCardException {
         if (selectedCards.contains(card)) {
             takenCards.add(card);
             selectedCards.remove(card);
         } else throw new InvalidCardException("Card is not a selected one");
+    }
+
+    /**
+     *
+     * @param playersCardsCorrespondence a map that memorize the correspondence of the players and the cards
+     */
+    public void setPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence) {
+        this.playersCardsCorrespondence = playersCardsCorrespondence;
     }
 
     /**
@@ -276,8 +281,8 @@ public class BoardManager {
     /**
      * @return a copy of the list of the cards taken
      */
-    public List<String> getTakenCards() {
-        return new ArrayList<>(takenCards);
+    public ArrayList<CardEnum> getTakenCards() {
+        return new ArrayList<CardEnum>(takenCards);
     }
 
     /**

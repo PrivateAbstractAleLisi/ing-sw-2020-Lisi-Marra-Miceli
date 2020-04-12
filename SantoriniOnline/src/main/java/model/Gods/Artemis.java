@@ -2,6 +2,7 @@ package model.Gods;
 
 import model.BehaviourManager;
 import model.Card;
+import model.CardEnum;
 import model.Player;
 import model.exception.InvalidMovementException;
 import model.exception.WinningException;
@@ -22,8 +23,7 @@ public class Artemis extends Card {
      */
     public Artemis(Player p) {
         super(p);
-        name = "Artemis";
-        description = "Your Worker may move one additional time, but not back to its initial space.";
+        name = CardEnum.ARTEMIS;
         startingPosition =  new int[]{-1, -1};
     }
 

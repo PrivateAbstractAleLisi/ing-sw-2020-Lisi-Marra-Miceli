@@ -2,6 +2,7 @@ package model.Gods;
 
 import model.BehaviourManager;
 import model.Card;
+import model.CardEnum;
 import model.Player;
 import model.exception.InvalidBuildException;
 import model.exception.InvalidMovementException;
@@ -16,8 +17,8 @@ public class Prometheus extends Card {
 
     public Prometheus(Player player) {
         super(player);
-        name = "Prometheus";
-        description = "If your Worker does not move up, it may build both before and after moving.";
+        name = CardEnum.PROMETHEUS;
+
         hasAlreadyBuilt = false;
     }
 

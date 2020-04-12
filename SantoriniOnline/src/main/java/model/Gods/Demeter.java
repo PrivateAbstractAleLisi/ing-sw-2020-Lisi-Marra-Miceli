@@ -2,6 +2,7 @@ package model.Gods;
 
 import model.BehaviourManager;
 import model.Card;
+import model.CardEnum;
 import model.Player;
 import model.exception.InvalidBuildException;
 import model.exception.NoRemainingBlockException;
@@ -19,8 +20,7 @@ public class Demeter extends Card {
 
     public Demeter(Player p) {
         super(p);
-        name = "Demeter";
-        description = "Your Move: Your Worker may build one additional time, but not on the same space.";
+        name = CardEnum.DEMETER;
         lastBuiltPosition = new int[]{-1, -1};
     }
 

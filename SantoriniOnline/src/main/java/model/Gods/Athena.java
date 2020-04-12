@@ -1,6 +1,7 @@
 package model.Gods;
 
 import model.Card;
+import model.CardEnum;
 import model.Player;
 import model.exception.InvalidMovementException;
 import model.exception.WinningException;
@@ -12,8 +13,7 @@ import java.util.List;
 public class Athena extends Card {
     public Athena(Player player) {
         super(player);
-        name = "Athena";
-        description = "If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.";
+        name = CardEnum.ATHENA;
     }
 
     /**
