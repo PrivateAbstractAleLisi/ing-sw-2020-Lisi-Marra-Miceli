@@ -1,5 +1,7 @@
 package event.events;
 
+import event.core.EventListener;
+
 public class ConnectionRejectedErrorGameEvent extends GameEvent {
 
     private final String errorMessage, wrongUsername;
@@ -8,8 +10,7 @@ public class ConnectionRejectedErrorGameEvent extends GameEvent {
     //ROOM_FULL
 
 
-
-    public ConnectionRejectedErrorGameEvent(String description,  String errorCode, String errorMessage, String wrongUsername) {
+    public ConnectionRejectedErrorGameEvent(String description, String errorCode, String errorMessage, String wrongUsername) {
         super(description);
         this.errorMessage = errorMessage;
         this.wrongUsername = wrongUsername;
@@ -26,5 +27,10 @@ public class ConnectionRejectedErrorGameEvent extends GameEvent {
 
     public String getErrorCode() {
         return errorCode;
+    }
+
+    @Override
+    public void notifyHandler(EventListener listener) {
+        listener.handleEvent(this);
     }
 }

@@ -1,9 +1,7 @@
 package event.core;
 
 
-
-import event.events.*;
-import event.events.temporary.WelcomeGameEvent;
+import event.events.GameEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +24,7 @@ public class EventSource {
     }
 
     /**
-     *
-     * @param type the category of listeners that will be notified
+     * @param type  the category of listeners that will be notified
      * @param event notified by
      */
     public void notifyAllObserverByType(ListenerType type, GameEvent event) {
@@ -38,28 +35,34 @@ public class EventSource {
         for (EventListener observerGameObject : observersFiltered) {
 
             //perform the right cast
-            if (event instanceof WelcomeGameEvent) {
-                WelcomeGameEvent cast = (WelcomeGameEvent) event;
-                observerGameObject.handleEvent(cast); //handles the event
-            }
-
+//            if (event instanceof WelcomeGameEvent) {
+//                WelcomeGameEvent cast = (WelcomeGameEvent) event;
+//                observerGameObject.handleEvent(cast); //handles the event
+//            } else if (event instanceof ConnectionRequestGameEvent) {
+//                ConnectionRequestGameEvent cast = (ConnectionRequestGameEvent) event;
+//                observerGameObject.handleEvent(cast); //handles the event
+//            }
+            event.notifyHandler(observerGameObject);
         }
     }
 
     /**
      * attaches a listener to this object by a category
-     * @param type the category in which the listener will be registered
+     *
+     * @param type     the category in which the listener will be registered
      * @param listener the listener that will be registered
      */
     public void attachListenerByType(ListenerType type, EventListener listener) {
         List<EventListener> users = listeners.get(type);
         users.add(listener);
+//        listeners.get(type).add(listener);
         System.out.println("DEBUG: listener added to event manager" + type + listener.toString());
 
     }
 
     /**
      * detaches the listener from all the categories
+     *
      * @param listener the listener that will be removed
      */
     public void detachByType(EventListener listener) {
@@ -67,9 +70,11 @@ public class EventSource {
             listeners.get(type).remove(listener);
         }
     }
+
     /**
      * detaches the listener from a single category
-     * @param type the category from which the listener will be detached
+     *
+     * @param type     the category from which the listener will be detached
      * @param listener the listener that will be detached
      */
     public void detachListenerByType(ListenerType type, EventListener listener) {

@@ -1,5 +1,7 @@
 package event.events;
 
+import event.core.EventListener;
+
 public class ConnectionSuccessfulGameEvent extends GameEvent {
 
     private final String username;
@@ -14,4 +16,8 @@ public class ConnectionSuccessfulGameEvent extends GameEvent {
     }
 
 
+    @Override
+    public void notifyHandler(EventListener listener) {
+        listener.handleEvent(this);
+    }
 }

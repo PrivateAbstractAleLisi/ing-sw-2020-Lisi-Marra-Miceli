@@ -1,5 +1,7 @@
 package event.events;
 
+import event.core.EventListener;
+
 public class ConnectionRequestGameEvent extends GameEvent {
 
     private final String IP;
@@ -19,5 +21,8 @@ public class ConnectionRequestGameEvent extends GameEvent {
         return username;
     }
 
-
+    @Override
+    public void notifyHandler(EventListener listener) {
+        listener.handleEvent(this);
+    }
 }

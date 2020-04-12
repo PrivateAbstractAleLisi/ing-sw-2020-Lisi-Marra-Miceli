@@ -1,19 +1,20 @@
 package controller;
 
-import model.*;
-import model.exception.DefeatException;
+import model.BoardManager;
+import model.Player;
+import model.Turn;
 import model.exception.InvalidBuildException;
 import model.exception.InvalidMovementException;
 import model.exception.WinningException;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.Worker;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static model.TurnAction.*;
-import static model.gamemap.Worker.*;
+import static model.TurnAction.BUILD;
+import static model.TurnAction.MOVE;
+import static model.gamemap.Worker.IDs;
 
 /**
  * This class filters VirtualView events, it creates a turn(on model) for current player and manages it
@@ -33,9 +34,8 @@ public class TurnController {
 
     public TurnController(Map<Integer, Player> turnSequence, int numberOfPlayers) {
         this.turnSequence = turnSequence;
-        this.currentTurnIndex = 0;
+        this.currentTurnIndex = -1;
         this.numberOfPlayers = numberOfPlayers;
-
     }
 
     /**

@@ -2,15 +2,17 @@ package view;
 
 import auxiliary.ANSIColors;
 import auxiliary.Range;
-import event.core.ViewEventListener;
+import event.core.EventListener;
+import event.core.EventSource;
 import event.events.*;
-import event.events.temporary.WelcomeGameEvent;
+import placeholders.VirtualServer;
 
 import java.io.PrintStream;
-
 import java.util.Scanner;
 
-public class WelcomeView implements ViewEventListener, View {
+import static event.core.ListenerType.VIEW;
+
+public class WelcomeView extends EventSource implements EventListener, View {
 
     //IN-OUT DATA FROM CONSOLE
     private final PrintStream output;
@@ -21,18 +23,25 @@ public class WelcomeView implements ViewEventListener, View {
         this.input = new Scanner(System.in);
     }
 
+    VirtualServer virtualServer;
+
     //MAIN METHODS
 
 
     public void start() {
-
+        virtualServer = new VirtualServer();
+        virtualServer.attachListenerByType(VIEW, this);
         displayTitle();
-        askUsername();
+        String userProposal = askUsername();
+        this.attachListenerByType(VIEW, virtualServer);
+
+        ConnectionRequestGameEvent req = new ConnectionRequestGameEvent("Tentativo di connessione", "--", userProposal);
+        this.notifyAllObserverByType(VIEW, req);
         //ask IP
 
     }
 
-    private void askUsername() {
+    private String askUsername() {
 
         String str = "null";
         output.println("Insert a valid username ");
@@ -44,7 +53,9 @@ public class WelcomeView implements ViewEventListener, View {
             str = input.nextLine();
         }
 
+        return str;
         //avvia una richiesta di connessione
+
         //send username
         //printValidMessage("Username");
 
@@ -52,11 +63,11 @@ public class WelcomeView implements ViewEventListener, View {
 
     private void askGameRoomSize() {
         Integer sizeIn = null;
-        Range validSize = new Range(2,3);
+        Range validSize = new Range(2, 3);
         System.out.println("You're the first player, please insert the room size:");
         sizeIn = input.nextInt();
 
-        while(!validSize.contains(sizeIn)) {
+        while (!validSize.contains(sizeIn)) {
             System.err.println("Invalid size: please enter 2 or 3");
             sizeIn = input.nextInt();
         }
@@ -69,10 +80,11 @@ public class WelcomeView implements ViewEventListener, View {
 
     /**
      * prints (message) is valid in green
+     *
      * @param message
      */
     private void printValidMessage(String message) {
-        output.println(ANSIColors.ANSI_GREEN + "✓ " +message+ " is valid " + ANSIColors.ANSI_RESET);
+        output.println(ANSIColors.ANSI_GREEN + "✓ " + message + " is valid " + ANSIColors.ANSI_RESET);
     }
 
     //USERNAME VALIDATION:
@@ -140,6 +152,16 @@ public class WelcomeView implements ViewEventListener, View {
 
     @Override
     public void handleEvent(GameEvent e) {
+        System.out.println("dioooooo");
+    }
+
+    @Override
+    public void handleEvent(RoomSizeResponseGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(ConnectionRequestGameEvent event) {
 
     }
 
@@ -148,9 +170,9 @@ public class WelcomeView implements ViewEventListener, View {
     public void handleEvent(ConnectionRejectedErrorGameEvent event) {
 
         switch (event.getErrorCode()) {
-            case "USER_TAKEN" :
+            case "USER_TAKEN":
                 //notify the error on screen
-                System.err.print("Username " + event.getWrongUsername() );
+                System.err.print("Username " + event.getWrongUsername());
                 displayUsernameErrorMessage(event.getErrorMessage());
                 displayUsernameErrorMessage(event.getEventDescription());
                 askUsername();
@@ -164,7 +186,6 @@ public class WelcomeView implements ViewEventListener, View {
 
         //read a new username if it's already taken
         askUsername();
-
 
 
     }
