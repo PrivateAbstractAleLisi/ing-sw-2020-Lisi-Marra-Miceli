@@ -37,7 +37,7 @@ public class Room extends EventSource {
             //        DEBUG
             System.out.println("DEBUG: ROOM: username aggiunto");
             this.lastOccupiedPosition++;
-            RoomUpdateGameEvent updateEvent = new RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy());
+            RoomUpdateGameEvent updateEvent = new RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
             notifyAllObserverByType(ListenerType.VIEW, updateEvent);
         } catch (LimitExceededException e) {
             e.printStackTrace();

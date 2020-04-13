@@ -35,7 +35,7 @@ public class PreGameController extends EventSource implements EventListener {
         Random random = new Random();
         int number = random.nextInt(room.getSIZE()) + 1;
         challenger = room.getActiveUsers()[number];
-        ChallengerChosenEvent event = new ChallengerChosenEvent(challenger);
+        ChallengerChosenEvent event = new ChallengerChosenEvent(challenger, room.getSIZE());
         notifyAllObserverByType(VIEW, event);
         // needed the external attach to the listener
     }
@@ -107,6 +107,11 @@ public class PreGameController extends EventSource implements EventListener {
         }
     }
 
+    @Override //NO IMPL
+    public void handleEvent(ChallengerChosenEvent event) {
+        return;
+    }
+
     @Override
     public void handleEvent(GameEvent event) {
         throw new RuntimeException("");
@@ -118,8 +123,18 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(RoomUpdateGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(ConnectionRequestGameEvent event) {
         throw new RuntimeException("");
+    }
+
+    @Override
+    public void handleEvent(ConnectionRequestServerGameEvent event) {
+
     }
 
     @Override

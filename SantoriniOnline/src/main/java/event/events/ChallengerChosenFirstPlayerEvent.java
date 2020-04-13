@@ -16,5 +16,5 @@ public class ChallengerChosenFirstPlayerEvent extends GameEvent {
     public String getUsername(){
         return super.getEventDescription();
     }
-
+ //USERNAME IS INTO THE DESCRIPTION FIELD
 }

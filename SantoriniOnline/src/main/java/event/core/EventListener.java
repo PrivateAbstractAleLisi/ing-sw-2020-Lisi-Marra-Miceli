@@ -29,6 +29,7 @@ public interface EventListener {
     public void handleEvent(PlayerCardChosenEvent event);
 
     public void handleEvent(ChallengerChosenFirstPlayerEvent event);
+    public void handleEvent(ChallengerChosenEvent event);
 
 }
 
