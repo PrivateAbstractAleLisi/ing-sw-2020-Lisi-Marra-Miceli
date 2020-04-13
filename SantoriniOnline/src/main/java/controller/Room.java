@@ -22,13 +22,16 @@ public class Room extends EventSource {
     private Map<String, VirtualView> virtualViewMap;
     private BoardManager boardManager;
     private TurnController turnController;
+
+//    todo AFTER DEBUG: make private
+//    public PreGameController preGame;
     private PreGameController preGame;
 
 
     public Room(int size) {
         this.SIZE = size;
         activeUsers = new ArrayList<String>();
-        lastOccupiedPosition = 0;
+        lastOccupiedPosition = activeUsers.size();
         boardManager = new BoardManager();
         virtualViewMap = new HashMap<>(SIZE);
 
@@ -43,13 +46,17 @@ public class Room extends EventSource {
             this.activeUsers.add(username);
             this.virtualViewMap.put(username, virtualView);
             attachListenerByType(ListenerType.VIEW, virtualView);
-            this.lastOccupiedPosition++;
+            this.lastOccupiedPosition=activeUsers.size();
 
             //        DEBUG
             System.out.println("DEBUG: ROOM: username aggiunto");
 
             RoomUpdateGameEvent updateEvent = new RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
             notifyAllObserverByType(ListenerType.VIEW, updateEvent);
+
+            if (lastOccupiedPosition == SIZE) {
+                beginPreGame();
+            }
         } catch (LimitExceededException e) {
             e.printStackTrace();
         } catch (AlreadyExistingPlayerException e) {

@@ -33,11 +33,13 @@ public class PreGameController extends EventSource implements EventListener {
     public void chooseChallenger() {
         //choose the challenger in a random way
         Random random = new Random();
-        int number = random.nextInt(room.getSIZE()) + 1;
+        int number = random.nextInt(room.getSIZE());
         challenger = room.getActiveUsers().get(number);
         ChallengerChosenEvent event = new ChallengerChosenEvent(challenger, room.getSIZE());
         notifyAllObserverByType(VIEW, event);
         // needed the external attach to the listener
+        //DEBUG
+        System.out.println("Il challenger è "+challenger);
     }
 
     public Map<String, CardEnum> getPlayersCardsCorrespondence() {

@@ -37,6 +37,7 @@ public class Lobby extends EventSource implements EventListener {
             ConnectionRejectedErrorGameEvent msgError = new ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
             notifyAllObserverByType(ListenerType.VIEW, msgError);
         } else {
+            activeUsersList.add(event.getUsername());
             if (isRoomAlreadyCreated()) {
                 if (activeRooms.get(0).getSIZE() > activeRooms.get(0).getLastOccupiedPosition()) {
                     activeRooms.get(0).addUser(event.getUsername(),event.getVirtualView());
