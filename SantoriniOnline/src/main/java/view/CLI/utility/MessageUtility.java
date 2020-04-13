@@ -9,7 +9,7 @@ public class MessageUtility {
 
     //Called both by invalid username already taken (via server) or invalid username not alphanumeric
     public static void displayErrorMessage(String errorMessage) {
-        System.err.println("⚠ ERROR: "  + "errorMessage");
+        System.out.println(ANSIColors.ANSI_RED + "⚠ ERROR: "  + errorMessage + ANSIColors.ANSI_RESET);
 
     }
 

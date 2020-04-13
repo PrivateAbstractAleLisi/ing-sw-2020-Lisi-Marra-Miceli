@@ -5,6 +5,8 @@ import auxiliary.Range;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.events.*;
+import event.events.prematch.ToViewCardChoiceRequestGameEvent;
+import event.events.prematch.ToViewWaitGameEvent;
 import model.CardEnum;
 import placeholders.VirtualServer;
 import view.CLI.utility.CardUtility;
@@ -21,13 +23,17 @@ import static event.core.ListenerType.VIEW;
 public class CLIView extends EventSource implements EventListener {
 
     //IN-OUT DATA FROM CONSOLE
-    private final PrintStream output;
-    private final Scanner input;
+    private PrintStream output;
+    private Scanner input;
 
     public CLIView() {
         this.output = System.out;
         this.input = new Scanner(System.in);
+        virtualServer = new VirtualServer();
+
+        //listening to each other
         virtualServer.attachListenerByType(VIEW, this);
+        this.attachListenerByType(VIEW, virtualServer);
     }
 
     VirtualServer virtualServer;
@@ -36,27 +42,31 @@ public class CLIView extends EventSource implements EventListener {
 
 
     public void start() {
+
         virtualServer = new VirtualServer();
         virtualServer.attachListenerByType(VIEW, this);
         MessageUtility.displayTitle();
         String userProposal = askUsername();
-        this.attachListenerByType(VIEW, virtualServer);
 
+        //try to connect
         ConnectionRequestGameEvent req = new ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
         this.notifyAllObserverByType(VIEW, req);
-        //ask IP
+
 
     }
 
     private String askUsername() {
 
-        String str = "null";
+        input = new Scanner(System.in);
+
+        String str = null;
         output.println("Insert a valid username ");
         output.println("[at least 3 alpha numeric characters] ");
+
         str = input.nextLine();
 
         while (!checkLocalUsernameAlphaNumeric(str)) {
-            displayUsernameErrorMessage("⚠ Invalid username: please at least 3 alpha numeric characters");
+            MessageUtility.displayErrorMessage("⚠ Invalid username: please at least 3 alpha numeric characters");
             str = input.nextLine();
         }
 
@@ -66,9 +76,11 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     private int askGameRoomSize() {
+
+        input = new Scanner(System.in);
         Integer sizeIn = null;
         Range validSize = new Range(2, 3);
-        System.out.println("You're the first player, please insert the room size:");
+        System.out.println("You're the first player, please choose a valid room size (2-3):");
         sizeIn = input.nextInt();
 
         while (!validSize.contains(sizeIn)) {
@@ -76,20 +88,12 @@ public class CLIView extends EventSource implements EventListener {
             sizeIn = input.nextInt();
         }
 
-        printValidMessage("Room size");
+        MessageUtility.printValidMessage("room size is valid!");
         return sizeIn;
 
 
     }
 
-    /**
-     * prints (message) is valid in green
-     *
-     * @param message
-     */
-    private void printValidMessage(String message) {
-        output.println(ANSIColors.ANSI_GREEN + "✓ " + message + " is valid " + ANSIColors.ANSI_RESET);
-    }
 
     //USERNAME VALIDATION:
     private void checkUsernameOnSever() {
@@ -132,7 +136,7 @@ public class CLIView extends EventSource implements EventListener {
         for (CardEnum card : CardEnum.values()) {
             if (card.getNumber() == i) {
                 ok = true;
-                break;
+                return true;
             }
 
         }
@@ -159,9 +163,14 @@ public class CLIView extends EventSource implements EventListener {
         return true;
     }
 
+    /**
+     * reads 2 or 3 cards IDs from the input as integers
+     * @param roomSize how many cards you want to read from the challenger
+     * @return a list of enum representing chosen cards
+     */
     private List<CardEnum> challengerPickCards(int roomSize) {
 
-        output.println("please insert " + roomSize + " cards numbers");
+        output.println("\nPlease insert " + roomSize + " cards numbers");
         output.println("(one number each line)");
 
         int[] choosenCardsIndex = null;
@@ -173,7 +182,7 @@ public class CLIView extends EventSource implements EventListener {
             choosenCardsIndex[i] = readCard;
         }
 
-        while (areInsertedCardsValid(choosenCardsIndex)) {
+        while (!areInsertedCardsValid(choosenCardsIndex)) {
             MessageUtility.displayErrorMessage("the cards you inserted are not valid");
             output.println("please insert " + roomSize + " cards numbers");
             output.println("(one number each line)");
@@ -187,21 +196,14 @@ public class CLIView extends EventSource implements EventListener {
 
         }
 
-        printValidMessage("cards are valid");
+        MessageUtility.printValidMessage("cards are valid, thank you Challenger. ");
+        output.println("Now wait for the other players to choose their cards...");
 
         return fromIntToCardEnum(choosenCardsIndex);
 
         //check if they are all different
 
 
-    }
-
-    //DISPLAY UTILITIES
-
-    //Called both by invalid username already taken (via server) or invalid username not alphanumeric
-    private void displayUsernameErrorMessage(String errorMessage) {
-        System.err.print("\n Invalid Username: ");
-        System.err.println(errorMessage);
     }
 
 
@@ -212,11 +214,6 @@ public class CLIView extends EventSource implements EventListener {
         System.err.println("generic <handleEvent> has been called ");
     }
 
-    @Override //NO IMPL
-    public void handleEvent(RoomSizeResponseGameEvent event) {
-        return;
-    }
-
     @Override
     /**
      * room created, it clears and display an updated current room player list.
@@ -224,20 +221,10 @@ public class CLIView extends EventSource implements EventListener {
     public void handleEvent(RoomUpdateGameEvent event) {
 
         clearScreen();
-        System.out.println("ROOM CREATED: ");
+        System.out.println("\nROOM CREATED: ");
         String[] playersIn = event.getUsersInRoom();
         RoomUtility.printPlayersInRoom(playersIn, event.getRoomSize());
 
-    }
-
-    @Override //NO IMPL
-    public void handleEvent(ConnectionRequestGameEvent event) {
-        return;
-    }
-
-    @Override //NO IMPL
-    public void handleEvent(ConnectionRequestServerGameEvent event) {
-        return;
     }
 
 
@@ -250,21 +237,18 @@ public class CLIView extends EventSource implements EventListener {
         switch (event.getErrorCode()) {
             case "USER_TAKEN":
                 //notify the error on screen
-                System.err.print("Username " + event.getWrongUsername());
-                displayUsernameErrorMessage(event.getErrorMessage());
-                displayUsernameErrorMessage(event.getEventDescription());
-                askUsername();
+                MessageUtility.displayErrorMessage(event.getErrorMessage());
                 break;
 
             case "ROOM_FULL":
-                displayUsernameErrorMessage("Server room is currently full");
+                MessageUtility.displayErrorMessage(event.getErrorMessage());
+
                 return;
         }
 
-
         //read a new username if it's already taken
         String userProposal = askUsername();
-
+        //send the new connection request
 
         ConnectionRequestGameEvent req;
         req = new ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
@@ -272,7 +256,6 @@ public class CLIView extends EventSource implements EventListener {
 
 
     }
-
 
     @Override
     public void handleEvent(ChallengerCardsChosenEvent event) {
@@ -285,20 +268,27 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     @Override
-
-    public void handleEvent(ChallengerChosenFirstPlayerEvent event) {
-
-    }
-
-    @Override
     /*
     this user is the challenger, it has to choose the 3 cards
      */
     public void handleEvent(ChallengerChosenEvent event) {
-        output.println("You're the challenger!");
+        MessageUtility.printValidMessage("You're the challenger!");
         output.println("Choose 3 cards for this match:");
         CardUtility.displayAllCards();
         List<CardEnum> gameCards = challengerPickCards(event.getRoomSize());
+    }
+
+    //CARD CHOICE
+    @Override
+    public void handleEvent(ToViewCardChoiceRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(ToViewWaitGameEvent event) {
+        clearScreen();
+        System.out.println("⌛︎ WAITING ︎⌛︎");
+        System.out.println(event.getEventDescription());
     }
 
     @Override
@@ -309,10 +299,41 @@ public class CLIView extends EventSource implements EventListener {
         int size = askGameRoomSize();
         RoomSizeResponseGameEvent response;
         response = new RoomSizeResponseGameEvent("first player sends the chosen size", size);
+        notifyAllObserverByType(VIEW, response);
     }
 
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
+
+
+    /*                              /*
+
+                NOT IMPLEMENTED
+     */                             //
+
+
+    @Override //NO IMPL
+    public void handleEvent(ConnectionRequestGameEvent event) {
+        return;
+    }
+
+    @Override //NO IMPL
+    public void handleEvent(ConnectionRequestServerGameEvent event) {
+        return;
+    }
+
+    @Override
+
+    public void handleEvent(ChallengerChosenFirstPlayerEvent event) { return;
+
+    }
+
+
+    @Override //NO IMPL
+    public void handleEvent(RoomSizeResponseGameEvent event) {
+        return;
+    }
+
 }

@@ -20,6 +20,7 @@ public enum CardEnum {
     CardEnum(int number,String name,  String description) {
         this.number = number;
         this.description = description;
+        this.name = name;
     }
 
     public int getNumber() {

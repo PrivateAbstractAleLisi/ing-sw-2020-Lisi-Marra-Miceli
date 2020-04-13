@@ -1,6 +1,8 @@
 package event.core;
 
 import event.events.*;
+import event.events.prematch.ToViewCardChoiceRequestGameEvent;
+import event.events.prematch.ToViewWaitGameEvent;
 
 /**
  * @author Alessandro Lisi
@@ -30,6 +32,9 @@ public interface EventListener {
 
     public void handleEvent(ChallengerChosenFirstPlayerEvent event);
     public void handleEvent(ChallengerChosenEvent event);
+
+    public void handleEvent(ToViewCardChoiceRequestGameEvent event);
+    public void handleEvent(ToViewWaitGameEvent event);
 
 }
 

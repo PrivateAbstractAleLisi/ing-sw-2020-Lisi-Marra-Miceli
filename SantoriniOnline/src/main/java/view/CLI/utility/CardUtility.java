@@ -10,8 +10,8 @@ public class CardUtility {
 
         System.out.println("AVAILABLE CARDS: ");
         for (CardEnum c : CardEnum.values()) {
-            System.out.println("NUM" + c.getNumber() + ". " + c.getName() + ":  ");
-            System.out.println(c.getDescription() + "\n");
+            System.out.println(c.getNumber() + ". " + c.getName() + ":  ");
+            System.out.println(c.getDescription());
 
         }
 
