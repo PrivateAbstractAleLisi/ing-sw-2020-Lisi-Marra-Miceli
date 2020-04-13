@@ -34,7 +34,7 @@ public class PreGameController extends EventSource implements EventListener {
         //choose the challenger in a random way
         Random random = new Random();
         int number = random.nextInt(room.getSIZE()) + 1;
-        challenger = room.getActiveUsers()[number];
+        challenger = room.getActiveUsers().get(number);
         ChallengerChosenEvent event = new ChallengerChosenEvent(challenger, room.getSIZE());
         notifyAllObserverByType(VIEW, event);
         // needed the external attach to the listener
@@ -78,7 +78,7 @@ public class PreGameController extends EventSource implements EventListener {
         boardManager.setPlayersCardsCorrespondence(playersCardsCorrespondence);
         String firstPlayer = event.getUsername();
         turnSequence.add(firstPlayer);
-        String[] players = room.getActiveUsers();
+        String[] players = room.getActiveUsersCopy();
 
         //create the turnSequence based on the story
         for (int i = 0; i < players.length; i++) {

@@ -9,14 +9,16 @@ import model.exception.AlreadyExistingPlayerException;
 import view.VirtualView;
 
 import javax.naming.LimitExceededException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Room extends EventSource {
 
     private final int SIZE;
     private int lastOccupiedPosition;
-    private String[] activeUsers;
+    private List<String> activeUsers;
     private Map<String, VirtualView> virtualViewMap;
     private BoardManager boardManager;
     private TurnController turnController;
@@ -25,7 +27,7 @@ public class Room extends EventSource {
 
     public Room(int size) {
         this.SIZE = size;
-        activeUsers = new String[SIZE];
+        activeUsers = new ArrayList<String>();
         lastOccupiedPosition = 0;
         boardManager = new BoardManager();
         virtualViewMap = new HashMap<>(SIZE);
@@ -38,7 +40,7 @@ public class Room extends EventSource {
         try {
             boardManager.addPlayer(username);
 
-            this.activeUsers[lastOccupiedPosition] = username;
+            this.activeUsers.add(username);
             this.virtualViewMap.put(username, virtualView);
             attachListenerByType(ListenerType.VIEW, virtualView);
             this.lastOccupiedPosition++;
@@ -58,8 +60,8 @@ public class Room extends EventSource {
 
     public void logAllUsers() {
         System.out.println("IN THIS ROOM: ");
-        for (int i = 0; i < activeUsers.length; i++) {
-            System.out.println(i + " | " + activeUsers[i]);
+        for (int i = 0; i < activeUsers.size(); i++) {
+            System.out.println(i + " | " + activeUsers.get(i));
         }
     }
 
@@ -68,7 +70,7 @@ public class Room extends EventSource {
 
         //virtualView added to listener
         for (int i = 0; i < SIZE; i++) {
-            String tempUser = activeUsers[i];
+            String tempUser = activeUsers.get(i);
             VirtualView tempVirtualView = virtualViewMap.get(tempUser);
             preGame.attachListenerByType(ListenerType.VIEW,tempVirtualView);
         }
@@ -83,12 +85,18 @@ public class Room extends EventSource {
         return SIZE;
     }
 
-    public String[] getActiveUsers() {
+    public List<String> getActiveUsers() {
         return activeUsers;
     }
 
+
+
     public String[] getActiveUsersCopy() {
-        return activeUsers.clone();
+        String[] result = new String[activeUsers.size()];
+        for (int i = 0; i < activeUsers.size(); i++) {
+            result[i] = activeUsers.get(i);
+        }
+        return result;
     }
 
     public int getLastOccupiedPosition() {
