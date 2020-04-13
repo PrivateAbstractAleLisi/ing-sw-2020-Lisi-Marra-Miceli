@@ -31,8 +31,8 @@ public class PrometheusTest {
         ip = new IslandPrinter(island);
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
-        player1.setCard("Prometheus");
-        player2.setCard("Atlas");
+        player1.setCard(CardEnum.PROMETHEUS);
+        player2.setCard(CardEnum.ATLAS);
         worker1 = player1.getWorker(Worker.IDs.A);
         worker2 = player2.getWorker(Worker.IDs.A);
         worker1B = player1.getWorker(Worker.IDs.B);

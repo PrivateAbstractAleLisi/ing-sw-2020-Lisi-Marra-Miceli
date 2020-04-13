@@ -1,9 +1,6 @@
 package model.Gods;
 
-import model.BehaviourManager;
-import model.BoardManager;
-import model.Card;
-import model.Player;
+import model.*;
 import model.exception.InvalidBuildException;
 import model.exception.InvalidMovementException;
 import model.exception.WinningException;
@@ -40,8 +37,8 @@ public class HephaestusTest {
         ip = new IslandPrinter(island);
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
-        player1.setCard("Hephaestus");
-        player2.setCard("Atlas");
+        player1.setCard(CardEnum.HEPHAESTUS);
+        player2.setCard(CardEnum.ATLAS);
         worker1 = player1.getWorker(Worker.IDs.A);
         worker2 = player2.getWorker(Worker.IDs.A);
         worker1B = player1.getWorker(Worker.IDs.B);

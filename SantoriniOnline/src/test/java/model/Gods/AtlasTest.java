@@ -31,8 +31,8 @@ public class AtlasTest {
         ip = new IslandPrinter(island);
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
-        player1.setCard("Atlas");
-        player2.setCard("Athena");
+        player1.setCard(CardEnum.ATLAS);
+        player2.setCard(CardEnum.ATLAS);
         worker1 = player1.getWorker(Worker.IDs.A);
         worker2 = player2.getWorker(Worker.IDs.A);
         worker1B = player1.getWorker(Worker.IDs.B);
