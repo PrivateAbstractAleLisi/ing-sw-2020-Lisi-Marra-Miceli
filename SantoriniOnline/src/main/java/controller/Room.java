@@ -6,8 +6,10 @@ import event.events.RoomUpdateGameEvent;
 import model.BoardManager;
 import model.Player;
 import model.exception.AlreadyExistingPlayerException;
+import view.VirtualView;
 
 import javax.naming.LimitExceededException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Room extends EventSource {
@@ -15,6 +17,7 @@ public class Room extends EventSource {
     private final int SIZE;
     private int lastOccupiedPosition;
     private String[] activeUsers;
+    private Map<String, VirtualView> virtualViewMap;
     private BoardManager boardManager;
     private TurnController turnController;
     private PreGameController preGame;
@@ -25,18 +28,24 @@ public class Room extends EventSource {
         activeUsers = new String[SIZE];
         lastOccupiedPosition = 0;
         boardManager = new BoardManager();
+        virtualViewMap = new HashMap<>(SIZE);
 
 //        DEBUG
         System.out.println("DEBUG: ROOM: Stanza creata");
     }
 
-    public void addUser(String username) {
+    public void addUser(String username, VirtualView virtualView) {
         try {
             boardManager.addPlayer(username);
+
             this.activeUsers[lastOccupiedPosition] = username;
+            this.virtualViewMap.put(username, virtualView);
+            attachListenerByType(ListenerType.VIEW, virtualView);
+            this.lastOccupiedPosition++;
+
             //        DEBUG
             System.out.println("DEBUG: ROOM: username aggiunto");
-            this.lastOccupiedPosition++;
+
             RoomUpdateGameEvent updateEvent = new RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
             notifyAllObserverByType(ListenerType.VIEW, updateEvent);
         } catch (LimitExceededException e) {
@@ -56,6 +65,13 @@ public class Room extends EventSource {
 
     public void beginPreGame() {
         preGame = new PreGameController(boardManager, this);
+
+        //virtualView added to listener
+        for (int i = 0; i < SIZE; i++) {
+            String tempUser = activeUsers[i];
+            VirtualView tempVirtualView = virtualViewMap.get(tempUser);
+            preGame.attachListenerByType(ListenerType.VIEW,tempVirtualView);
+        }
         preGame.start();
     }
 

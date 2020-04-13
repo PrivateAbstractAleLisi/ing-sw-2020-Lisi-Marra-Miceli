@@ -41,7 +41,7 @@ public class VirtualView extends EventSource implements EventListener {
 
         this.userIP = "192.168.1.1";
         this.userPort = 12345;
-        ConnectionRequestServerGameEvent newServerRequest = new ConnectionRequestServerGameEvent(event.getEventDescription(), userIP, userPort, event.getUsername());
+        ConnectionRequestServerGameEvent newServerRequest = new ConnectionRequestServerGameEvent(event.getEventDescription(), userIP, userPort,this, event.getUsername());
         notifyAllObserverByType(ListenerType.VIEW, newServerRequest);
 
     }
@@ -75,6 +75,11 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(ChallengerChosenFirstPlayerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(ChallengerChosenEvent event) {
 
     }
 }

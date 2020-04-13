@@ -1,10 +1,7 @@
 package model;
 
-import static org.junit.Assert.*;
-
 import model.exception.*;
 import model.gamemap.BlockTypeEnum;
-
 import model.gamemap.Worker;
 import org.junit.After;
 import org.junit.Before;
@@ -13,6 +10,9 @@ import org.junit.Test;
 import javax.naming.LimitExceededException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class BoardManagerTest {
 
@@ -199,40 +199,35 @@ public class BoardManagerTest {
 
     @Test
     public void selectCard_normalCard_shouldReturnNormally() throws InvalidCardException, LimitExceededException {
-        boardManager.selectCard("Apollo");
-        List<String> c= new ArrayList<String>();
-        c.add("Apollo");
+        boardManager.selectCard(CardEnum.APOLLO);
+        List<CardEnum> c= new ArrayList<CardEnum>();
+        c.add(CardEnum.APOLLO);
         assertEquals(boardManager.getSelectedCards(),c);
     }
 
-    @Test (expected = InvalidCardException.class)
-    public void selectCard_wrongCard_shouldThrowException() throws InvalidCardException, LimitExceededException {
-        boardManager.selectCard("Apollo");
-        boardManager.selectCard("matteo");
-    }
 
     @Test (expected = LimitExceededException.class)
     public void selectCard_toManyCards_shouldThrowException() throws InvalidCardException, LimitExceededException {
-        boardManager.selectCard("Apollo");
-        boardManager.selectCard("Atlas");
-        boardManager.selectCard("Athena");
-        boardManager.selectCard("Demeter");
+        boardManager.selectCard(CardEnum.APOLLO);
+        boardManager.selectCard(CardEnum.ATLAS);
+        boardManager.selectCard(CardEnum.ATHENA);
+        boardManager.selectCard(CardEnum.DEMETER);
     }
 
 
     @Test
     public void takeCard_normalCard_shouldReturnNormally() throws InvalidCardException, LimitExceededException {
-        boardManager.selectCard("Apollo");
-        boardManager.takeCard("Apollo");
-        List<String> c= new ArrayList<String>();
-        c.add("Apollo");
+        boardManager.selectCard(CardEnum.APOLLO);
+        boardManager.takeCard(CardEnum.APOLLO);
+        List<CardEnum> c= new ArrayList<CardEnum>();
+        c.add(CardEnum.APOLLO);
         assertEquals(boardManager.getTakenCards(),c);
     }
 
     @Test (expected = InvalidCardException.class)
     public void takeCard_wrongCard_shouldThrowException() throws InvalidCardException, LimitExceededException {
-        boardManager.selectCard("Apollo");
-        boardManager.takeCard("Athena");
+        boardManager.selectCard(CardEnum.APOLLO);
+        boardManager.takeCard(CardEnum.ATHENA);
     }
 
     @Test (expected = AlreadyExistingPlayerException.class)
@@ -247,15 +242,15 @@ public class BoardManagerTest {
         Player p2 = new Player("alessandro");
         boardManager.addPlayer(p1);
         boardManager.addPlayer(p2);
-        p1.setCard("Apollo");
-        p2.setCard("Athena");
+        p1.setCard(CardEnum.APOLLO);
+        p2.setCard(CardEnum.ATHENA);
         p1.getBehaviour().setBlockPlacementLeft(10);
         p2.getBehaviour().setMovementsRemaining(10000);
         boardManager.resetAllPlayerBehaviour();
         Player p1Copy = new Player("matteo");
         Player p2Copy = new Player("alessandro");
-        p1Copy.setCard("Apollo");
-        p2Copy.setCard("Athena");
+        p1Copy.setCard(CardEnum.APOLLO);
+        p2Copy.setCard(CardEnum.ATHENA);
         p1.getCard().resetBehaviour();
         p2.getCard().resetBehaviour();
         assertEquals(p1.getBehaviour().getBlockPlacementLeft(), p1Copy.getBehaviour().getBlockPlacementLeft());

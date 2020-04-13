@@ -29,7 +29,7 @@ public abstract class EventSource {
      */
     public void notifyAllObserverByType(ListenerType type, GameEvent event) {
 //        System.out.println("DEBUG: ready to notify:");
-        System.out.println("DEBUG: DESCRIPTION: " + event.getEventDescription());
+//        System.out.println("DEBUG: DESCRIPTION: " + event.getEventDescription());
 
         List<EventListener> observersFiltered = listeners.get(type);
         for (EventListener observerGameObject : observersFiltered) {

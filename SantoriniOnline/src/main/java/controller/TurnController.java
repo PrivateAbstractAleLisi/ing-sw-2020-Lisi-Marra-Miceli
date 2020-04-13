@@ -1,6 +1,7 @@
 package controller;
 
 import model.BoardManager;
+import model.CardEnum;
 import model.Player;
 import model.Turn;
 import model.exception.InvalidBuildException;
@@ -110,7 +111,7 @@ public class TurnController {
         //current player might play with Prometheus
 
         boolean isPrometheus;
-        isPrometheus = currentPlayer.getCard().getName().toUpperCase().equals("Prometheus".toUpperCase());
+        isPrometheus = currentPlayer.getCard().getName()== CardEnum.PROMETHEUS;
 
         if (!isPrometheus) {
 

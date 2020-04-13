@@ -4,6 +4,7 @@ import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
 import event.events.*;
+import view.VirtualView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class Lobby extends EventSource implements EventListener {
     private List<String> activeUsersList;
     private static boolean isRoomAlreadyCreated;
     private String pendingUsername;
+    private VirtualView pendingVirtualView;
 
     public Lobby() {
         isRoomAlreadyCreated = false;
@@ -37,13 +39,14 @@ public class Lobby extends EventSource implements EventListener {
         } else {
             if (isRoomAlreadyCreated()) {
                 if (activeRooms.get(0).getSIZE() > activeRooms.get(0).getLastOccupiedPosition()) {
-                    activeRooms.get(0).addUser(event.getUsername());
+                    activeRooms.get(0).addUser(event.getUsername(),event.getVirtualView());
                 } else {
                     ConnectionRejectedErrorGameEvent msgError = new ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
                     notifyAllObserverByType(ListenerType.VIEW, msgError);
                 }
             } else {
                 pendingUsername = event.getUsername();
+                pendingVirtualView=event.getVirtualView();
                 RoomSizeRequestGameEvent request = new RoomSizeRequestGameEvent("Inserisci la dimensione della stanza: ");
                 notifyAllObserverByType(ListenerType.VIEW, request);
             }
@@ -55,7 +58,7 @@ public class Lobby extends EventSource implements EventListener {
     public void handleEvent(RoomSizeResponseGameEvent event) {
         Room newRoom = new Room(event.getSize());
         activeRooms.add(newRoom);
-        activeRooms.get(0).addUser(pendingUsername);
+        activeRooms.get(0).addUser(pendingUsername,pendingVirtualView);
         setIsRoomAlreadyCreated(true);
     }
 
@@ -90,5 +93,10 @@ public class Lobby extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(ChallengerChosenFirstPlayerEvent event) {
+    }
+
+    @Override
+    public void handleEvent(ChallengerChosenEvent event) {
+
     }
 }

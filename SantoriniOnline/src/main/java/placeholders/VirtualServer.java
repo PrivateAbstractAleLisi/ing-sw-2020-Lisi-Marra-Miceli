@@ -40,6 +40,11 @@ public class VirtualServer extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(ChallengerChosenEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(RoomSizeResponseGameEvent event) {
         virtualView.handleEvent(event);
     }
