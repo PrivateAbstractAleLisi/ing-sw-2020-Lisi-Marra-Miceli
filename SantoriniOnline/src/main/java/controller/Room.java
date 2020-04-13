@@ -2,7 +2,7 @@ package controller;
 
 import event.core.EventSource;
 import event.core.ListenerType;
-import event.events.RoomUpdateGameEvent;
+import event.gameEvents.lobby.CV_RoomUpdateGameEvent;
 import model.BoardManager;
 import model.Player;
 import model.exception.AlreadyExistingPlayerException;
@@ -24,8 +24,8 @@ public class Room extends EventSource {
     private TurnController turnController;
 
 //    todo AFTER DEBUG: make private
-//    public PreGameController preGame;
-    private PreGameController preGame;
+    public PreGameController preGame;
+//    private PreGameController preGame;
 
 
     public Room(int size) {
@@ -51,7 +51,7 @@ public class Room extends EventSource {
             //        DEBUG
             System.out.println("DEBUG: ROOM: username aggiunto");
 
-            RoomUpdateGameEvent updateEvent = new RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
+            CV_RoomUpdateGameEvent updateEvent = new CV_RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
             notifyAllObserverByType(ListenerType.VIEW, updateEvent);
 
             if (lastOccupiedPosition == SIZE) {

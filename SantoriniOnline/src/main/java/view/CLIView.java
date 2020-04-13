@@ -1,12 +1,11 @@
 package view;
 
-import auxiliary.ANSIColors;
 import auxiliary.Range;
 import event.core.EventListener;
 import event.core.EventSource;
-import event.events.*;
-import event.events.prematch.ToViewCardChoiceRequestGameEvent;
-import event.events.prematch.ToViewWaitGameEvent;
+import event.gameEvents.GameEvent;
+import event.gameEvents.lobby.*;
+import event.gameEvents.prematch.*;
 import model.CardEnum;
 import placeholders.VirtualServer;
 import view.CLI.utility.CardUtility;
@@ -49,10 +48,8 @@ public class CLIView extends EventSource implements EventListener {
         String userProposal = askUsername();
 
         //try to connect
-        ConnectionRequestGameEvent req = new ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
+        VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
         this.notifyAllObserverByType(VIEW, req);
-
-
     }
 
     private String askUsername() {
@@ -218,7 +215,7 @@ public class CLIView extends EventSource implements EventListener {
     /**
      * room created, it clears and display an updated current room player list.
      */
-    public void handleEvent(RoomUpdateGameEvent event) {
+    public void handleEvent(CV_RoomUpdateGameEvent event) {
 
         clearScreen();
         System.out.println("\nROOM CREATED: ");
@@ -232,7 +229,7 @@ public class CLIView extends EventSource implements EventListener {
     /**
      * connection has been rejected for username already taken of room is full. It may ask to insert a new username
      */
-    public void handleEvent(ConnectionRejectedErrorGameEvent event) {
+    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
 
         switch (event.getErrorCode()) {
             case "USER_TAKEN":
@@ -250,20 +247,20 @@ public class CLIView extends EventSource implements EventListener {
         String userProposal = askUsername();
         //send the new connection request
 
-        ConnectionRequestGameEvent req;
-        req = new ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
+        VC_ConnectionRequestGameEvent req;
+        req = new VC_ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
         this.notifyAllObserverByType(VIEW, req);
 
 
     }
 
     @Override
-    public void handleEvent(ChallengerCardsChosenEvent event) {
+    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
 
     }
 
     @Override
-    public void handleEvent(PlayerCardChosenEvent event) {
+    public void handleEvent(VC_PlayerCardChosenEvent event) {
 
     }
 
@@ -271,7 +268,7 @@ public class CLIView extends EventSource implements EventListener {
     /*
     this user is the challenger, it has to choose the 3 cards
      */
-    public void handleEvent(ChallengerChosenEvent event) {
+    public void handleEvent(CV_ChallengerChosenEvent event) {
         MessageUtility.printValidMessage("You're the challenger!");
         output.println("Choose 3 cards for this match:");
         CardUtility.displayAllCards();
@@ -280,12 +277,12 @@ public class CLIView extends EventSource implements EventListener {
 
     //CARD CHOICE
     @Override
-    public void handleEvent(ToViewCardChoiceRequestGameEvent event) {
+    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
 
     }
 
     @Override
-    public void handleEvent(ToViewWaitGameEvent event) {
+    public void handleEvent(CV_WaitGameEvent event) {
         clearScreen();
         System.out.println("⌛︎ WAITING ︎⌛︎");
         System.out.println(event.getEventDescription());
@@ -295,10 +292,10 @@ public class CLIView extends EventSource implements EventListener {
     /**
      * you're the first player so you have to insert a room size to create a room.
      */
-    public void handleEvent(RoomSizeRequestGameEvent event) {
+    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         int size = askGameRoomSize();
-        RoomSizeResponseGameEvent response;
-        response = new RoomSizeResponseGameEvent("first player sends the chosen size", size);
+        VC_RoomSizeResponseGameEvent response;
+        response = new VC_RoomSizeResponseGameEvent("first player sends the chosen size", size);
         notifyAllObserverByType(VIEW, response);
     }
 
@@ -315,12 +312,12 @@ public class CLIView extends EventSource implements EventListener {
 
 
     @Override //NO IMPL
-    public void handleEvent(ConnectionRequestGameEvent event) {
+    public void handleEvent(VC_ConnectionRequestGameEvent event) {
         return;
     }
 
     @Override //NO IMPL
-    public void handleEvent(ConnectionRequestServerGameEvent event) {
+    public void handleEvent(CC_ConnectionRequestGameEvent event) {
         return;
     }
 
@@ -332,7 +329,7 @@ public class CLIView extends EventSource implements EventListener {
 
 
     @Override //NO IMPL
-    public void handleEvent(RoomSizeResponseGameEvent event) {
+    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         return;
     }
 

@@ -3,7 +3,9 @@ package controller;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
-import event.events.*;
+import event.gameEvents.*;
+import event.gameEvents.lobby.*;
+import event.gameEvents.prematch.*;
 import view.VirtualView;
 
 import java.util.ArrayList;
@@ -32,9 +34,9 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(ConnectionRequestServerGameEvent event) {
+    public void handleEvent(CC_ConnectionRequestGameEvent event) {
         if (activeUsersList.contains(event.getUsername())) {
-            ConnectionRejectedErrorGameEvent msgError = new ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
+            CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
             notifyAllObserverByType(ListenerType.VIEW, msgError);
         } else {
             activeUsersList.add(event.getUsername());
@@ -42,13 +44,14 @@ public class Lobby extends EventSource implements EventListener {
                 if (activeRooms.get(0).getSIZE() > activeRooms.get(0).getLastOccupiedPosition()) {
                     activeRooms.get(0).addUser(event.getUsername(),event.getVirtualView());
                 } else {
-                    ConnectionRejectedErrorGameEvent msgError = new ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
+                    CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
                     notifyAllObserverByType(ListenerType.VIEW, msgError);
                 }
             } else {
                 pendingUsername = event.getUsername();
                 pendingVirtualView=event.getVirtualView();
-                RoomSizeRequestGameEvent request = new RoomSizeRequestGameEvent("Inserisci la dimensione della stanza: ");
+                //todo, room size request deve avere username
+                CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Inserisci la dimensione della stanza: ");
                 notifyAllObserverByType(ListenerType.VIEW, request);
             }
         }
@@ -56,7 +59,7 @@ public class Lobby extends EventSource implements EventListener {
 
 
     @Override
-    public void handleEvent(RoomSizeResponseGameEvent event) {
+    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         Room newRoom = new Room(event.getSize());
         activeRooms.add(newRoom);
         activeRooms.get(0).addUser(pendingUsername,pendingVirtualView);
@@ -64,7 +67,7 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(RoomUpdateGameEvent event) {
+    public void handleEvent(CV_RoomUpdateGameEvent event) {
     }
 
     @Override
@@ -72,24 +75,24 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(ConnectionRequestGameEvent event) {
+    public void handleEvent(VC_ConnectionRequestGameEvent event) {
     }
 
 
     @Override
-    public void handleEvent(RoomSizeRequestGameEvent event) {
+    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
     }
 
     @Override
-    public void handleEvent(ConnectionRejectedErrorGameEvent event) {
+    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
     }
 
     @Override
-    public void handleEvent(ChallengerCardsChosenEvent event) {
+    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
     }
 
     @Override
-    public void handleEvent(PlayerCardChosenEvent event) {
+    public void handleEvent(VC_PlayerCardChosenEvent event) {
     }
 
     @Override
@@ -97,7 +100,17 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(ChallengerChosenEvent event) {
+    public void handleEvent(CV_ChallengerChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_WaitGameEvent event) {
 
     }
 }

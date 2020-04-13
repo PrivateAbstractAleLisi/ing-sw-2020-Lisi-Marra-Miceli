@@ -1,4 +1,4 @@
-package event.events;
+package event.gameEvents;
 
 import event.core.EventListener;
 

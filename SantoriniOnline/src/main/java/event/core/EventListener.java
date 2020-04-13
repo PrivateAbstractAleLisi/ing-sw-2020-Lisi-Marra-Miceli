@@ -1,8 +1,8 @@
 package event.core;
 
-import event.events.*;
-import event.events.prematch.ToViewCardChoiceRequestGameEvent;
-import event.events.prematch.ToViewWaitGameEvent;
+import event.gameEvents.*;
+import event.gameEvents.lobby.*;
+import event.gameEvents.prematch.*;
 
 /**
  * @author Alessandro Lisi
@@ -14,27 +14,27 @@ public interface EventListener {
     /* one handler for each event class */
     public void handleEvent(GameEvent event);
 
-    void handleEvent(RoomSizeResponseGameEvent event);
+    void handleEvent(VC_RoomSizeResponseGameEvent event);
 
-    void handleEvent(RoomUpdateGameEvent event);
+    void handleEvent(CV_RoomUpdateGameEvent event);
 
-    void handleEvent(ConnectionRequestGameEvent event);
+    void handleEvent(VC_ConnectionRequestGameEvent event);
 
-    void handleEvent(ConnectionRequestServerGameEvent event);
+    void handleEvent(CC_ConnectionRequestGameEvent event);
 
-    public void handleEvent(RoomSizeRequestGameEvent event);
+    public void handleEvent(CV_RoomSizeRequestGameEvent event);
 
-    public void handleEvent(ConnectionRejectedErrorGameEvent event);
+    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event);
 
-    public void handleEvent(ChallengerCardsChosenEvent event);
+    public void handleEvent(VC_ChallengerCardsChosenEvent event);
 
-    public void handleEvent(PlayerCardChosenEvent event);
+    public void handleEvent(VC_PlayerCardChosenEvent event);
 
     public void handleEvent(ChallengerChosenFirstPlayerEvent event);
-    public void handleEvent(ChallengerChosenEvent event);
+    public void handleEvent(CV_ChallengerChosenEvent event);
 
-    public void handleEvent(ToViewCardChoiceRequestGameEvent event);
-    public void handleEvent(ToViewWaitGameEvent event);
+    public void handleEvent(CV_CardChoiceRequestGameEvent event);
+    public void handleEvent(CV_WaitGameEvent event);
 
 }
 

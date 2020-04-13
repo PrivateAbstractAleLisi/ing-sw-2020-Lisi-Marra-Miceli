@@ -1,12 +1,16 @@
-package event.events;
+package event.gameEvents.prematch;
 
 import event.core.EventListener;
+import event.gameEvents.GameEvent;
 import model.CardEnum;
 
-public class PlayerCardChosenEvent extends GameEvent{
+/**
+ * By View to controller, sent when the current player has chosen the card to play with
+ */
+public class VC_PlayerCardChosenEvent extends GameEvent {
     private CardEnum card;
 
-    public PlayerCardChosenEvent(String username, CardEnum card) {
+    public VC_PlayerCardChosenEvent(String username, CardEnum card) {
         super(username);
         this.card = card;
     }

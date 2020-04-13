@@ -1,14 +1,15 @@
-package event.events;
+package event.gameEvents.lobby;
 
 import event.core.EventListener;
+import event.gameEvents.GameEvent;
 
-public class ConnectionRequestGameEvent extends GameEvent {
+public class VC_ConnectionRequestGameEvent extends GameEvent {
 
     private final String IP;
     private final int port;
     private final String username;
 
-    public ConnectionRequestGameEvent(String description, String IP, int port, String username) {
+    public VC_ConnectionRequestGameEvent(String description, String IP, int port, String username) {
         super(description);
         this.IP = IP;
         this.port=port;

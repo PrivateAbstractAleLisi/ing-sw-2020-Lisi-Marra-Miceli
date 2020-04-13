@@ -1,7 +1,7 @@
 package event.core;
 
 
-import event.events.GameEvent;
+import event.gameEvents.GameEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

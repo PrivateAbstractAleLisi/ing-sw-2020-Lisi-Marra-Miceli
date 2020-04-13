@@ -1,7 +1,7 @@
-package event.events.prematch;
+package event.gameEvents.prematch;
 
 import event.core.EventListener;
-import event.events.GameEvent;
+import event.gameEvents.GameEvent;
 import model.CardEnum;
 
 import java.util.List;
@@ -13,13 +13,23 @@ import java.util.List;
  * available cards: the list of cards from which the user must choose his god.
 
  */
-public class ToViewCardChoiceRequestGameEvent extends GameEvent {
+public class CV_CardChoiceRequestGameEvent extends GameEvent {
 
     private List <CardEnum> availableCards;
+    private String username;
 
-    public ToViewCardChoiceRequestGameEvent(String description, List<CardEnum> availableCards) {
+    public CV_CardChoiceRequestGameEvent(String description, List<CardEnum> availableCards, String username) {
         super(description);
         this.availableCards = availableCards;
+        this.username=username;
+    }
+
+    public List<CardEnum> getAvailableCards() {
+        return availableCards;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     @Override

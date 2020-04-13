@@ -1,8 +1,9 @@
-package event.events;
+package event.gameEvents.lobby;
 
 import event.core.EventListener;
+import event.gameEvents.GameEvent;
 
-public class ConnectionRejectedErrorGameEvent extends GameEvent {
+public class CV_ConnectionRejectedErrorGameEvent extends GameEvent {
 
     private final String errorMessage;
     private final String errorCode;
@@ -13,7 +14,7 @@ public class ConnectionRejectedErrorGameEvent extends GameEvent {
     //ROOM_FULL
 
 
-    public ConnectionRejectedErrorGameEvent(String description, String errorCode, String errorMessage, String userIP, int userPort, String wrongUsername) {
+    public CV_ConnectionRejectedErrorGameEvent(String description, String errorCode, String errorMessage, String userIP, int userPort, String wrongUsername) {
         super(description);
         this.errorMessage = errorMessage;
         this.userIP = userIP;

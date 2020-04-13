@@ -4,14 +4,18 @@ import controller.Lobby;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
-import event.events.*;
+import event.gameEvents.*;
+import event.gameEvents.lobby.*;
+import event.gameEvents.prematch.*;
 import placeholders.VirtualServer;
 
 public class VirtualView extends EventSource implements EventListener {
     Lobby lobby;
     VirtualServer virtualServer;
-    String userIP;
-    int userPort;
+
+    //todo AFTER DEBUG: make private
+    public String userIP;
+   public  int userPort;
 
     public VirtualView(Lobby lobby, VirtualServer virtualServer) {
         this.lobby = lobby;
@@ -26,50 +30,50 @@ public class VirtualView extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(RoomSizeResponseGameEvent event) {
+    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         notifyAllObserverByType(ListenerType.VIEW, event);
     }
 
     @Override
-    public void handleEvent(RoomUpdateGameEvent event) {
+    public void handleEvent(CV_RoomUpdateGameEvent event) {
         virtualServer.handleEvent(event);
     }
 
     @Override
-    public void handleEvent(ConnectionRequestGameEvent event) {
+    public void handleEvent(VC_ConnectionRequestGameEvent event) {
         //todo mofidicare con Server/socket
 
         this.userIP = "192.168.1.1";
         this.userPort = 12345;
-        ConnectionRequestServerGameEvent newServerRequest = new ConnectionRequestServerGameEvent(event.getEventDescription(), userIP, userPort,this, event.getUsername());
+        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort,this, event.getUsername());
         notifyAllObserverByType(ListenerType.VIEW, newServerRequest);
 
     }
 
     @Override
-    public void handleEvent(ConnectionRequestServerGameEvent event) {
+    public void handleEvent(CC_ConnectionRequestGameEvent event) {
 
     }
 
     @Override
-    public void handleEvent(RoomSizeRequestGameEvent event) {
+    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         virtualServer.handleEvent(event);
     }
 
     @Override
-    public void handleEvent(ConnectionRejectedErrorGameEvent event) {
+    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
         if (event.getUserIP() == userIP && event.getUserPort() == userPort) {
             virtualServer.handleEvent(event);
         }
     }
 
     @Override
-    public void handleEvent(ChallengerCardsChosenEvent event) {
+    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
 
     }
 
     @Override
-    public void handleEvent(PlayerCardChosenEvent event) {
+    public void handleEvent(VC_PlayerCardChosenEvent event) {
 
     }
 
@@ -79,7 +83,17 @@ public class VirtualView extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(ChallengerChosenEvent event) {
+    public void handleEvent(CV_ChallengerChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_WaitGameEvent event) {
 
     }
 }

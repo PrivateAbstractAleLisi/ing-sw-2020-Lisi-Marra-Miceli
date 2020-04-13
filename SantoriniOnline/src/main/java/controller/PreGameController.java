@@ -2,7 +2,9 @@ package controller;
 
 import event.core.EventListener;
 import event.core.EventSource;
-import event.events.*;
+import event.gameEvents.*;
+import event.gameEvents.lobby.*;
+import event.gameEvents.prematch.*;
 import model.BoardManager;
 import model.CardEnum;
 import model.exception.InvalidCardException;
@@ -35,7 +37,7 @@ public class PreGameController extends EventSource implements EventListener {
         Random random = new Random();
         int number = random.nextInt(room.getSIZE());
         challenger = room.getActiveUsers().get(number);
-        ChallengerChosenEvent event = new ChallengerChosenEvent(challenger, room.getSIZE());
+        CV_ChallengerChosenEvent event = new CV_ChallengerChosenEvent(challenger, room.getSIZE());
         notifyAllObserverByType(VIEW, event);
         // needed the external attach to the listener
         //DEBUG
@@ -52,7 +54,7 @@ public class PreGameController extends EventSource implements EventListener {
 
 
     @Override
-    public void handleEvent(ChallengerCardsChosenEvent event) {
+    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
         List<CardEnum> cardsChosen = event.getCardsChosen();
         for (CardEnum card : cardsChosen) {
             try {
@@ -66,7 +68,7 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(PlayerCardChosenEvent event) {
+    public void handleEvent(VC_PlayerCardChosenEvent event) {
         try {
             boardManager.takeCard(event.getCard());
             playersCardsCorrespondence.put(event.getPlayer(), event.getCard());
@@ -110,8 +112,18 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     @Override //NO IMPL
-    public void handleEvent(ChallengerChosenEvent event) {
+    public void handleEvent(CV_ChallengerChosenEvent event) {
         return;
+    }
+
+    @Override
+    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_WaitGameEvent event) {
+
     }
 
     @Override
@@ -120,32 +132,32 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(RoomSizeResponseGameEvent event) {
+    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         throw new RuntimeException("");
     }
 
     @Override
-    public void handleEvent(RoomUpdateGameEvent event) {
+    public void handleEvent(CV_RoomUpdateGameEvent event) {
 
     }
 
     @Override
-    public void handleEvent(ConnectionRequestGameEvent event) {
+    public void handleEvent(VC_ConnectionRequestGameEvent event) {
         throw new RuntimeException("");
     }
 
     @Override
-    public void handleEvent(ConnectionRequestServerGameEvent event) {
+    public void handleEvent(CC_ConnectionRequestGameEvent event) {
 
     }
 
     @Override
-    public void handleEvent(RoomSizeRequestGameEvent event) {
+    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         throw new RuntimeException("");
     }
 
     @Override
-    public void handleEvent(ConnectionRejectedErrorGameEvent event) {
+    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
         throw new RuntimeException("");
     }
 

@@ -1,8 +1,8 @@
 
-package event.events.temporary;
+package event.gameEvents.temporary;
 
 import event.core.EventListener;
-import event.events.GameEvent;
+import event.gameEvents.GameEvent;
 
 /**
  * @author Alessandro Lisi

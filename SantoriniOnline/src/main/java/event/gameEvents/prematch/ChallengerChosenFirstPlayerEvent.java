@@ -1,6 +1,7 @@
-package event.events;
+package event.gameEvents.prematch;
 
 import event.core.EventListener;
+import event.gameEvents.GameEvent;
 
 public class ChallengerChosenFirstPlayerEvent extends GameEvent {
 

@@ -1,13 +1,14 @@
-package event.events;
+package event.gameEvents.lobby;
 
 import event.core.EventListener;
+import event.gameEvents.GameEvent;
 
-public class RoomUpdateGameEvent extends GameEvent {
+public class CV_RoomUpdateGameEvent extends GameEvent {
 
     private final String [] usersInRoom;
     private final int roomSize;
 
-    public RoomUpdateGameEvent(String description, String[] usersInRoom, int roomSize) {
+    public CV_RoomUpdateGameEvent(String description, String[] usersInRoom, int roomSize) {
         super(description);
         this.usersInRoom=usersInRoom;
         this.roomSize = roomSize;
