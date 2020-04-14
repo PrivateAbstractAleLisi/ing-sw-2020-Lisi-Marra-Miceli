@@ -45,7 +45,7 @@ public class PreGameController extends EventSource implements EventListener {
         challenger = players.get(number);
         for (String recipient: players){
             if (!recipient.equals(challenger)){
-                CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is choosing the cards", challenger, recipient);
+                CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is the challenger, he's now choosing the cards", challenger, recipient);
                 notifyAllObserverByType(VIEW, requestEvent);
             }
 
@@ -151,7 +151,7 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(ChallengerChosenFirstPlayerEvent event) {
+    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
         boardManager.setPlayersCardsCorrespondence(playersCardsCorrespondence);
         String firstPlayer = event.getUsername();
         int index = 0;

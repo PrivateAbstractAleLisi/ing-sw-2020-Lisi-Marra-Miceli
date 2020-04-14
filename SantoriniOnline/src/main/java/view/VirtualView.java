@@ -78,7 +78,7 @@ public class VirtualView extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(ChallengerChosenFirstPlayerEvent event) {
+    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
 
     }
 

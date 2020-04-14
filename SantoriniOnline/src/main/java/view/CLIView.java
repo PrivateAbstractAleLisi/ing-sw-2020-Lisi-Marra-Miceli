@@ -203,6 +203,19 @@ public class CLIView extends EventSource implements EventListener {
 
     }
 
+    //CARD CHOICE
+
+    private boolean isSelectedCardValid (int cardID, List<CardEnum> available) {
+        boolean ok = false;
+        for (CardEnum card : available) {
+            if (card.getNumber() == cardID) {
+                ok = true;
+                return true;
+            }
+
+        }
+        return false;
+    }
 
     //EVENT HANDLING
 
@@ -255,16 +268,6 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_PlayerCardChosenEvent event) {
-
-    }
-
-    @Override
     /*
     this user is the challenger, it has to choose the 3 cards
      */
@@ -276,16 +279,74 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     //CARD CHOICE
+
     @Override
+    /*
+    this user has to choose a card from the remaining list
+     */
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
 
+        clearScreen();
+
+        System.out.println("It's time to choose the card to play with");
+        CardUtility.displayAllAvailableCards(event.getAvailableCards());
+        System.out.println("\n please insert a card number");
+
+        Integer id;
+
+        //read from the console
+        input = new Scanner(System.in);
+        id = input.nextInt();
+
+        while (!isSelectedCardValid(id, event.getAvailableCards())) {
+            MessageUtility.displayErrorMessage(id + " is not a valid card number");
+            id = input.nextInt();
+        }
+
+        CardEnum selected = CardEnum.getValueFromInt(id);
+        MessageUtility.printValidMessage("you made your choice");
+
+        //notify the server
+        VC_PlayerCardChosenEvent choice = new VC_PlayerCardChosenEvent(event.getUsername(),selected);
+        this.notifyAllObserverByType(VIEW, choice);
     }
 
     @Override
+    /*
+    waiting both because of the challenger or because of other players choice is made
+     */
     public void handleEvent(CV_WaitGameEvent event) {
         clearScreen();
         System.out.println("⌛︎ WAITING ︎⌛︎");
-        System.out.println(event.getEventDescription());
+        System.out.println(event.getActingPlayer().toUpperCase() + " " + event.getEventDescription());
+    }
+
+    @Override
+    /*
+    this user is the challenger, he has to choose the first player
+     */
+    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
+        System.out.println("Since you are the Challenger, please choose the player who starts first " );
+        List<String> players = event.getPlayers();
+
+        for (String player : players) {
+            System.out.println(player);
+        }
+        System.out.println("please choose a player name from this list:");
+
+        input = new Scanner (System.in);
+
+        String choice = input.nextLine();
+
+        while (!players.contains(choice)) {
+            MessageUtility.displayErrorMessage("invalid username");
+        }
+
+        MessageUtility.printValidMessage("You chose " + choice + " as the first player.");
+
+        VC_ChallengerChosenFirstPlayerEvent choiceEvent = new VC_ChallengerChosenFirstPlayerEvent(choice);
+
+        notifyAllObserverByType(VIEW, choiceEvent);
     }
 
     @Override
@@ -305,11 +366,11 @@ public class CLIView extends EventSource implements EventListener {
     }
 
 
+
     /*                              /*
 
                 NOT IMPLEMENTED
      */                             //
-
 
     @Override //NO IMPL
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
@@ -323,7 +384,7 @@ public class CLIView extends EventSource implements EventListener {
 
     @Override
 
-    public void handleEvent(ChallengerChosenFirstPlayerEvent event) { return;
+    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) { return;
 
     }
 
@@ -331,6 +392,16 @@ public class CLIView extends EventSource implements EventListener {
     @Override //NO IMPL
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         return;
+    }
+
+    @Override
+    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerCardChosenEvent event) {
+
     }
 
 }

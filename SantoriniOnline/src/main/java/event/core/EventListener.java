@@ -30,7 +30,7 @@ public interface EventListener {
 
     public void handleEvent(VC_PlayerCardChosenEvent event);
 
-    public void handleEvent(ChallengerChosenFirstPlayerEvent event);
+    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event);
     public void handleEvent(CV_ChallengerChosenEvent event);
 
     public void handleEvent(CV_CardChoiceRequestGameEvent event);

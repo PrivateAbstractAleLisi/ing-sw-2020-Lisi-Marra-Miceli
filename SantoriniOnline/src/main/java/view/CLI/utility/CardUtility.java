@@ -2,6 +2,8 @@ package view.CLI.utility;
 
 import model.CardEnum;
 
+import java.util.List;
+
 public class CardUtility {
 
     CardEnum cards;
@@ -15,5 +17,13 @@ public class CardUtility {
 
         }
 
+    }
+
+    public static void displayAllAvailableCards (List<CardEnum> cards) {
+        System.out.println("AVAILABLE CARDS: ");
+        for (CardEnum card : cards) {
+            System.out.println(card.getName() + ":  ");
+            System.out.println(card.getDescription());
+        }
     }
 }
