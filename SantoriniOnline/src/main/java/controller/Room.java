@@ -79,6 +79,7 @@ public class Room extends EventSource {
         for (int i = 0; i < SIZE; i++) {
             String tempUser = activeUsers.get(i);
             VirtualView tempVirtualView = virtualViewMap.get(tempUser);
+            tempVirtualView.attachListenerByType(ListenerType.VIEW, preGame);
             preGame.attachListenerByType(ListenerType.VIEW,tempVirtualView);
         }
         preGame.start();

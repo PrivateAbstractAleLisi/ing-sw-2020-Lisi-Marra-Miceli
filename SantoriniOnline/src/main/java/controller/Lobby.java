@@ -42,16 +42,16 @@ public class Lobby extends EventSource implements EventListener {
             activeUsersList.add(event.getUsername());
             if (isRoomAlreadyCreated()) {
                 if (activeRooms.get(0).getSIZE() > activeRooms.get(0).getLastOccupiedPosition()) {
-                    activeRooms.get(0).addUser(event.getUsername(),event.getVirtualView());
+                    activeRooms.get(0).addUser(event.getUsername(), event.getVirtualView());
                 } else {
                     CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
                     notifyAllObserverByType(ListenerType.VIEW, msgError);
                 }
             } else {
                 pendingUsername = event.getUsername();
-                pendingVirtualView=event.getVirtualView();
-                //todo, room size request deve avere username
-                CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Inserisci la dimensione della stanza: ");
+                pendingVirtualView = event.getVirtualView();
+
+                CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Inserisci la dimensione della stanza: ", event.getUsername());
                 notifyAllObserverByType(ListenerType.VIEW, request);
             }
         }
@@ -62,10 +62,14 @@ public class Lobby extends EventSource implements EventListener {
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         Room newRoom = new Room(event.getSize());
         activeRooms.add(newRoom);
-        activeRooms.get(0).addUser(pendingUsername,pendingVirtualView);
+        activeRooms.get(0).addUser(pendingUsername, pendingVirtualView);
         setIsRoomAlreadyCreated(true);
+        pendingUsername=null;
+        pendingVirtualView=null;
     }
 
+
+    //    NOT IMPLMENTED
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
     }
@@ -111,6 +115,11 @@ public class Lobby extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_WaitGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
 
     }
 }
