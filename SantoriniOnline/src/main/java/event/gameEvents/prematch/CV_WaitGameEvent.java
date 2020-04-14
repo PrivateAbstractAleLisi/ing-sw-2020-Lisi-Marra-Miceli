@@ -14,11 +14,21 @@ import event.gameEvents.GameEvent;
  */
 public class CV_WaitGameEvent extends GameEvent {
 
-    private final String choosingPlayer;
+    private final String actingPlayer;
+    private final String recipient;
 
-    public CV_WaitGameEvent(String description, String choosingPlayer) {
+    public CV_WaitGameEvent(String description, String actingPlayer, String recipient) {
         super(description);
-        this.choosingPlayer = choosingPlayer;
+        this.actingPlayer = actingPlayer;
+        this.recipient = recipient;
+    }
+
+    public String getActingPlayer() {
+        return actingPlayer;
+    }
+
+    public String getRecipient() {
+        return recipient;
     }
 
     @Override
