@@ -50,13 +50,12 @@ public class PreGameController extends EventSource implements EventListener {
             }
 
         }
+
+        //DEBUG
+//        System.out.println("Il challenger è "+challenger);
+
         CV_ChallengerChosenEvent event = new CV_ChallengerChosenEvent(challenger, room.getSIZE());
         notifyAllObserverByType(VIEW, event);
-
-
-        // needed the external attach to the listener
-        //DEBUG
-        System.out.println("Il challenger è "+challenger);
     }
 
     public Map<String, CardEnum> getPlayersCardsCorrespondence() {
@@ -106,7 +105,6 @@ public class PreGameController extends EventSource implements EventListener {
         }
         CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(i));
         notifyAllObserverByType(VIEW, requestEvent);
-
     }
 
     @Override

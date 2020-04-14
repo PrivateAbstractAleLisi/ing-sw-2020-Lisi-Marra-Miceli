@@ -56,7 +56,7 @@ public abstract class EventSource {
         List<EventListener> users = listeners.get(type);
         users.add(listener);
 //        listeners.get(type).add(listener);
-        System.out.println("DEBUG: listener added to event manager" + type + listener.toString());
+//        System.out.println("DEBUG: listener added to event manager" + type + listener.toString());
 
     }
 

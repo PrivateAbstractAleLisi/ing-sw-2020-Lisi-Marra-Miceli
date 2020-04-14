@@ -15,7 +15,7 @@ public class Lobby extends EventSource implements EventListener {
 
     private List<Room> activeRooms;
     private List<String> activeUsersList;
-    private static boolean isRoomAlreadyCreated;
+    private boolean isRoomAlreadyCreated;
     private String pendingUsername;
     private VirtualView pendingVirtualView;
 
@@ -25,12 +25,12 @@ public class Lobby extends EventSource implements EventListener {
         activeUsersList = new ArrayList<String>();
     }
 
-    public static boolean isRoomAlreadyCreated() {
+    public boolean isRoomAlreadyCreated() {
         return isRoomAlreadyCreated;
     }
 
-    public static void setIsRoomAlreadyCreated(boolean isRoomAlreadyCreated) {
-        Lobby.isRoomAlreadyCreated = isRoomAlreadyCreated;
+    public  void setIsRoomAlreadyCreated(boolean isRoomAlreadyCreated) {
+        this.isRoomAlreadyCreated = isRoomAlreadyCreated;
     }
 
     @Override

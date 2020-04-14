@@ -2,9 +2,8 @@ package placeholders;
 
 import controller.Lobby;
 import event.core.EventListener;
-import event.core.EventSource;
 import event.core.ListenerType;
-import event.gameEvents.*;
+import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.prematch.*;
 import view.VirtualView;
@@ -12,17 +11,17 @@ import view.VirtualView;
 /**
  * DEBUG CLASS, USED ONLY FOR TESTING PURPOSE: public attribute
  */
-public class VirtualServer extends EventSource implements EventListener {
-
-    //todo AFTER DEBUG: remove username and make virtualView Private
+public class OpenVirtualServer extends VirtualServer implements EventListener {
     public VirtualView virtualView;
+
+    //todo AFTER DEBUG: remove username
     public String username;
 
-    public VirtualServer() {
+    public OpenVirtualServer() {
         virtualView = new VirtualView(new Lobby(), this);
     }
 
-    public VirtualServer(Lobby lobby) {
+    public OpenVirtualServer(Lobby lobby) {
         this.virtualView = new VirtualView(lobby, this);
     }
 
@@ -30,6 +29,7 @@ public class VirtualServer extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
+        this.username=event.getUsername();
         virtualView.handleEvent(event);
     }
 
