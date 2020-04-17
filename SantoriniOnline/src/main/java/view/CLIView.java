@@ -7,6 +7,7 @@ import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
+import networking.client.SantoriniClient;
 import placeholders.VirtualServer;
 import view.CLI.utility.CardUtility;
 import view.CLI.utility.MessageUtility;
@@ -25,25 +26,22 @@ public class CLIView extends EventSource implements EventListener {
     private PrintStream output;
     private Scanner input;
 
-    public CLIView() {
+    public CLIView(SantoriniClient client) {
         this.output = System.out;
         this.input = new Scanner(System.in);
-        virtualServer = new VirtualServer();
 
         //listening to each other
-        virtualServer.attachListenerByType(VIEW, this);
-        this.attachListenerByType(VIEW, virtualServer);
+        client.attachListenerByType(VIEW, this);
+        this.attachListenerByType(VIEW, client);
     }
 
-    VirtualServer virtualServer;
 
     //MAIN METHODS
 
 
     public void start() {
 
-        virtualServer = new VirtualServer();
-        virtualServer.attachListenerByType(VIEW, this);
+        clearScreen();
         MessageUtility.displayTitle();
         String userProposal = askUsername();
 

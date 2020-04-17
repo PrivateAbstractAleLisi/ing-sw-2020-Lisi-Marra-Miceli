@@ -13,16 +13,30 @@ import java.util.List;
 
 public class Lobby extends EventSource implements EventListener {
 
+    private static Lobby instance = null; // istanza singola
+
+    private Lobby() {
+        isRoomAlreadyCreated = false;
+        activeRooms = new ArrayList<Room>();
+        activeUsersList = new ArrayList<String>();
+    }
+
+    private synchronized static Lobby createInstance() { // crea l oggetto solo se non esiste:
+        if (instance == null) instance = new Lobby();
+        return instance;
+    }
+    public static Lobby instance() { //metodo esportato // chiama metodo synchr. solo se l oggetto non esiste: if (instance == null) createInstance();
+        return createInstance();
+    }
+
     private List<Room> activeRooms;
     private List<String> activeUsersList;
     private boolean isRoomAlreadyCreated;
     private String pendingUsername;
     private VirtualView pendingVirtualView;
 
-    public Lobby() {
-        isRoomAlreadyCreated = false;
-        activeRooms = new ArrayList<Room>();
-        activeUsersList = new ArrayList<String>();
+    public void debug() {
+        System.out.println("debug");
     }
 
     public boolean isRoomAlreadyCreated() {
@@ -35,6 +49,7 @@ public class Lobby extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CC_ConnectionRequestGameEvent event) {
+        System.out.println("debug, lobby gestisce una richiesta di connessione");
         if (activeUsersList.contains(event.getUsername())) {
             CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
             notifyAllObserverByType(ListenerType.VIEW, msgError);
