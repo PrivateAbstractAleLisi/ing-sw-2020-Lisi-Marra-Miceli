@@ -166,11 +166,17 @@ public class CellCluster implements Cloneable {
     }
 
     public String getWorkerOwnerUsername() {
-        return worker.getPlayerUsername();
+        if(hasWorkerOnTop()) {
+            return worker.getPlayerUsername();
+        }
+        return null;
     }
 
     public Worker.IDs getWorkerID() {
-        return worker.getWorkerID();
+       if(hasWorkerOnTop()) {
+           return worker.getWorkerID();
+       }
+       return null;
     }
 
     /*

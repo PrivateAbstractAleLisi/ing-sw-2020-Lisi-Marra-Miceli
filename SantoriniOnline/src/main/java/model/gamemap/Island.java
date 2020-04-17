@@ -3,6 +3,7 @@ package model.gamemap;
 
 import auxiliary.Range;
 import model.exception.*;
+import placeholders.CellClusterData;
 
 public class Island {
 
@@ -178,13 +179,15 @@ public class Island {
         return false;
     }
 
-    /**
-     * This function is used to fill the grid when copying the island
-     * @param x
-     * @param y
-     * @param c the cell cluster you want to insert at position x, y
-     */
-
+   public CellClusterData[][] getIslandToPrint (){
+       CellClusterData [][] newGrid =new CellClusterData[5][5];
+       for (int i = 0; i <5 ; i++) {
+           for (int j = 0; j <5 ; j++) {
+               newGrid[i][j] = new CellClusterData(getCellCluster(i, j));
+           }
+       }
+       return newGrid;
+   }
 
 
 

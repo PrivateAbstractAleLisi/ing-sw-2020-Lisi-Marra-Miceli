@@ -33,7 +33,8 @@ public class TurnController {
     private Player currentPlayer;
     private BoardManager board;
 
-    public TurnController(Map<Integer, Player> turnSequence, int numberOfPlayers) {
+    public TurnController(BoardManager boardManager, Map<Integer, Player> turnSequence, int numberOfPlayers) {
+        this.board = boardManager;
         this.turnSequence = turnSequence;
         this.currentTurnIndex = -1;
         this.numberOfPlayers = numberOfPlayers;
@@ -111,7 +112,7 @@ public class TurnController {
         //current player might play with Prometheus
 
         boolean isPrometheus;
-        isPrometheus = currentPlayer.getCard().getName()== CardEnum.PROMETHEUS;
+        isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
 
         if (!isPrometheus) {
 

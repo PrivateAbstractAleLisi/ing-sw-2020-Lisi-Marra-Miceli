@@ -86,7 +86,7 @@ public class Room extends EventSource {
     }
 
     public void beginGame(Map<Integer, Player> turnSequence) {
-        turnController = new TurnController(turnSequence, SIZE);
+        turnController = new TurnController (boardManager, turnSequence, SIZE);
     }
 
     public int getSIZE() {

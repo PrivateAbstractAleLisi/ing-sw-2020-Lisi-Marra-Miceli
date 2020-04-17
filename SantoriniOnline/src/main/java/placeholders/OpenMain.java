@@ -12,7 +12,7 @@ import static event.core.ListenerType.VIEW;
 public class OpenMain {
     public static void main(String[] args) throws CloneNotSupportedException, InvalidMovementException {
 
-        Lobby lobby = new Lobby();
+        Lobby lobby =  Lobby.instance();
 
         VirtualServer openServer1 = new OpenVirtualServer(lobby);
         OpenCLIView CLIView1 = new OpenCLIView();
