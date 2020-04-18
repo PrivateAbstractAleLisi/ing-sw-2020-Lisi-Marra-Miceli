@@ -28,7 +28,7 @@ public class SantoriniServer {
 
 
                 Socket clientIncoming = socket.accept(); //get the client socket
-            System.out.println("accepted");
+                System.out.println("accepted");
                 SantoriniServerClientHandler handler = new SantoriniServerClientHandler((clientIncoming));
 
                 //Starts a new thread to handle this client

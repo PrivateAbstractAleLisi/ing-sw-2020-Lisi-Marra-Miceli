@@ -22,11 +22,12 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     private synchronized static Lobby createInstance() { // crea l oggetto solo se non esiste:
-        if (instance == null) instance = new Lobby();
+        instance = new Lobby();
         return instance;
     }
     public static Lobby instance() { //metodo esportato // chiama metodo synchr. solo se l oggetto non esiste: if (instance == null) createInstance();
-        return createInstance();
+        if (instance == null) createInstance();
+        return instance;
     }
 
     private List<Room> activeRooms;

@@ -46,7 +46,7 @@ public class CLIView extends EventSource implements EventListener {
         String userProposal = askUsername();
 
         //try to connect
-        VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
+        VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
         this.notifyAllObserverByType(VIEW, req);
     }
 
@@ -256,6 +256,7 @@ public class CLIView extends EventSource implements EventListener {
 
         //read a new username if it's already taken
         String userProposal = askUsername();
+
         //send the new connection request
 
         VC_ConnectionRequestGameEvent req;

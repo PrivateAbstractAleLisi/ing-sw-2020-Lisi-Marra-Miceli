@@ -23,6 +23,8 @@ public class SantoriniClient extends EventSource implements EventListener {
 
     ObjectInputStream in;
     ObjectOutputStream out;
+
+
     public void begin() {
 
         cli = new CLIView(this);
@@ -42,11 +44,12 @@ public class SantoriniClient extends EventSource implements EventListener {
 
         System.out.println("CLIENT: connected ");
 
+        //open the in/out stream from the server
         try {
 
             in = new ObjectInputStream(serverSocket.getInputStream());
             out = new ObjectOutputStream(serverSocket.getOutputStream());
-            cli.start();
+            cli.start(); //starts
 
 
         } catch (IOException e) {
@@ -58,22 +61,19 @@ public class SantoriniClient extends EventSource implements EventListener {
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
         try {
 
+            out.writeObject(event); //event is serializable
 
-
-            //non usato
+            /*non usato
             Gson gson = new Gson();
             String jsonString = gson.toJson(event);
-            System.out.println(jsonString);
+            System.out.println(jsonString); */
 
-            out.writeObject(jsonString);
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-
 
 
     @Override
@@ -90,7 +90,6 @@ public class SantoriniClient extends EventSource implements EventListener {
     public void handleEvent(CV_RoomUpdateGameEvent event) {
 
     }
-
 
 
     @Override

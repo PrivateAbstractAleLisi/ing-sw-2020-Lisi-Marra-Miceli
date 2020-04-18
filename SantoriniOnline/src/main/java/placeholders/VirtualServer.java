@@ -19,12 +19,13 @@ public class VirtualServer extends EventSource implements EventListener {
     public String username;
 
     public VirtualServer() {
-        virtualView = new VirtualView( Lobby.instance(), this);
+        virtualView = null;
+        //virtualView = new VirtualView( Lobby.instance(), this);
     }
 
-    public VirtualServer(Lobby lobby) {
+    /* public VirtualServer(Lobby lobby) {
         this.virtualView = new VirtualView(lobby, this);
-    }
+    } */
 
     //TO CONTROLLER
 

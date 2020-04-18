@@ -7,5 +7,7 @@ package event.core;
 public enum ListenerType {
     GENERIC,
     VIEW,
-    DEBUG
+    CONTROLLER,
+    DEBUG,
+    ERROR
 }

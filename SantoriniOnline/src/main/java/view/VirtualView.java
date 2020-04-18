@@ -7,34 +7,47 @@ import event.core.ListenerType;
 import event.gameEvents.*;
 import event.gameEvents.lobby.*;
 import event.gameEvents.prematch.*;
+import networking.SantoriniServerSender;
 import placeholders.VirtualServer;
 
+import java.net.InetAddress;
+import java.net.Socket;
+
 public class VirtualView extends EventSource implements EventListener {
-    Lobby lobby;
-    VirtualServer virtualServer;
+
+
+    private Lobby lobby;
 
     //todo AFTER DEBUG: make private
-    public String userIP;
+    public InetAddress userIP;
     public int userPort;
     public String username;
 
-    public VirtualView(Lobby lobby, VirtualServer virtualServer) {
-        this.lobby = lobby;
-        this.virtualServer = virtualServer;
+    Socket client;
+
+    public VirtualView(Socket clientSocket) {
+        this.lobby = Lobby.instance();
+        //listening to each other
         attachListenerByType(ListenerType.VIEW, lobby);
         lobby.attachListenerByType(ListenerType.VIEW, this);
+        client = clientSocket;
     }
 
+    private void sendEventToClient(GameEvent event) {
+        SantoriniServerSender sender = new SantoriniServerSender(client, event);
+        Thread senderThread = new Thread(sender, "TH_send_event");
+        senderThread.start();
 
+    }
     //TO CONTROLLER
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
 
-        //todo mofidicare con Server/socket
-
-//        this.userIP = "192.168.1.1";
-//        this.userPort = 12345;
+        //todo modificare con Server/socket
+        System.out.println("virtual view ha ricevuto");
+        this.userIP = client.getInetAddress();
+        this.userPort = client.getPort();
         this.username = event.getUsername();
         CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, event.getUsername());
         notifyAllObserverByType(ListenerType.VIEW, newServerRequest);
@@ -67,47 +80,47 @@ public class VirtualView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         if (event.getUsername().equals(this.username)) {
-            virtualServer.handleEvent(event);
+            sendEventToClient(event);
         }
     }
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
-        virtualServer.handleEvent(event);
+        sendEventToClient(event);
     }
 
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
         if (event.getUsername().equals(this.username)) {
-            virtualServer.handleEvent(event);
+            sendEventToClient(event);
         }
     }
 
     @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
         if (event.getUsername().equals(this.username)) {
-            virtualServer.handleEvent(event);
+            sendEventToClient(event);
         }
     }
 
     @Override
     public void handleEvent(CV_WaitGameEvent event) {
         if (event.getRecipient().equals(this.username)) {
-            virtualServer.handleEvent(event);
+            sendEventToClient(event);
         }
     }
 
     @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
         if (event.getChallenger().equals(this.username)) {
-            virtualServer.handleEvent(event);
+            sendEventToClient(event);
         }
     }
 
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
         if (event.getUserIP().equals(userIP) && event.getUserPort() == userPort) {
-            virtualServer.handleEvent(event);
+            sendEventToClient(event);
         }
     }
 

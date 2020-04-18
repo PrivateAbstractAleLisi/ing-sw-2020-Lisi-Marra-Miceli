@@ -44,8 +44,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <verbose>true</verbose>
-                    <fork>true</fork>
-                    <executable>${java.home}</executable>
+                   <!-- <fork>true</fork>
+                    <executable>${java.home}</executable> -->
                     <source>13</source>
                     <target>13</target>
                 </configuration>

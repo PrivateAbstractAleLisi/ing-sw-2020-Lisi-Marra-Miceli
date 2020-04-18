@@ -3,21 +3,36 @@ package networking;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import auxiliary.ANSIColors;
 import com.google.gson.Gson;
 import controller.Lobby;
+import event.core.EventListener;
+import event.core.EventSource;
+import event.core.ListenerType;
 import event.gameEvents.GameEvent;
-import event.gameEvents.lobby.VC_ConnectionRequestGameEvent;
+import event.gameEvents.lobby.*;
+import event.gameEvents.prematch.*;
+import view.VirtualView;
 
-public class SantoriniServerClientHandler implements Runnable {
+import static event.core.ListenerType.CONTROLLER;
+import static event.core.ListenerType.VIEW;
+
+public class SantoriniServerClientHandler extends EventSource implements Runnable {
 
     private Socket client;
-    private SantoriniServer server;
+    private String localUsername;
+    private InetAddress localUserIP;
+    private int localUserPort;
+
+    VirtualView clientVV;
 
     public SantoriniServerClientHandler(Socket client) {
         this.client = client;
-        this.server = server;
+        this.clientVV = new VirtualView(client);
+        makeConnections();
+
     }
 
     @Override
@@ -29,38 +44,46 @@ public class SantoriniServerClientHandler implements Runnable {
         }
     }
 
+    private void makeConnections() {
+        this.attachListenerByType(VIEW, clientVV);
+    }
+
+
+    private void staccaStacca() {
+        try {
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void handleClientConnection() throws IOException, ClassNotFoundException {
 
+        //Client is connected via socket, creating a virtual view for it
 
         //Opens the streams
         ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
         ObjectInputStream input = new ObjectInputStream(client.getInputStream());
 
-        String json = (String) input.readObject();
-        GameEvent req = new Gson().fromJson(json, GameEvent.class);
 
-        /*
+        GameEvent eventReceived;
 
-                VC_ConnectionRequestGameEvent req = (VC_ConnectionRequestGameEvent) input.readObject();
+        //read further events
+        while (true) {
+            GameEvent received = (GameEvent) input.readObject();
 
-        Lobby.instance().handleEvent(req);
-        Lobby.instance().debug();
-        System.out.println("debug, richiesta inviata a lobby");
+            try {
+                //if (received!= null)
+                //notifyAllObserverByType(VIEW, received);
+            } catch (Exception e) {
+                break;
+            }
+            //keaps reading
 
-
-
-
-        if (req instanceof VC_ConnectionRequestGameEvent) {
-            System.out.println("ci siamo");
         }
-        while(!json.equals("end")) {
-            json = (String) input.readObject();
-        } */
-/*
-        try {
 
- */
-        client.close();
+        staccaStacca();
+
     }
 
 

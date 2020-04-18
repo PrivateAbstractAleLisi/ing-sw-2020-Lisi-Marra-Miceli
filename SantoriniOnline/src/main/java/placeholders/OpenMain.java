@@ -11,7 +11,7 @@ import static event.core.ListenerType.VIEW;
  */
 public class OpenMain {
     public static void main(String[] args) throws CloneNotSupportedException, InvalidMovementException {
-
+/*
         Lobby lobby =  Lobby.instance();
 
         VirtualServer openServer1 = new OpenVirtualServer(lobby);
@@ -47,7 +47,7 @@ public class OpenMain {
 //        lobby.handleEvent(request1);
 //        VC_RoomSizeResponseGameEvent roomSizeResponse = new VC_RoomSizeResponseGameEvent("", 2);
 //        lobby.handleEvent(roomSizeResponse);
-//        lobby.handleEvent(request2);
+//        lobby.handleEvent(request2); */
 
     }
 }

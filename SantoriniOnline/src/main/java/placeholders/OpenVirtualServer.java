@@ -18,11 +18,11 @@ public class OpenVirtualServer extends VirtualServer implements EventListener {
     public String username;
 
     public OpenVirtualServer() {
-        virtualView = new VirtualView(Lobby.instance(), this);
+        //virtualView = new VirtualView(Lobby.instance(), this);
     }
 
     public OpenVirtualServer(Lobby lobby) {
-        this.virtualView = new VirtualView(lobby, this);
+        //this.virtualView = new VirtualView(lobby, this);
     }
 
     //TO CONTROLLER
