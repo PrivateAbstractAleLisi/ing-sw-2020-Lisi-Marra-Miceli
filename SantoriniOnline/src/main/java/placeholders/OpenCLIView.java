@@ -354,6 +354,16 @@ public class OpenCLIView extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
+
+    }
+
+    @Override
     /**
      * you're the first player so you have to insert a room size to create a room.
      */

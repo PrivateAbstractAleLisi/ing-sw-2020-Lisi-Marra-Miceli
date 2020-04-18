@@ -138,4 +138,14 @@ public class Lobby extends EventSource implements EventListener {
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
 
     }
+
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
+
+    }
 }

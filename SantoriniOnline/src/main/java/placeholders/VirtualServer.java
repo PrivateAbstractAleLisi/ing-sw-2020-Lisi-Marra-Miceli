@@ -78,6 +78,16 @@ public class VirtualServer extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
         notifyAllObserverByType(ListenerType.VIEW, event);
     }

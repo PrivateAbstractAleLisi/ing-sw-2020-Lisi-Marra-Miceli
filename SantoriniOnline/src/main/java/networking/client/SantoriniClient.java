@@ -9,20 +9,20 @@ import event.gameEvents.prematch.*;
 import networking.SantoriniServer;
 import view.CLIView;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static event.core.ListenerType.VIEW;
 
-public class SantoriniClient extends EventSource implements EventListener {
 
-    CLIView cli;
+public class SantoriniClient extends EventSource implements Runnable {
 
-    ObjectInputStream in;
-    ObjectOutputStream out;
+    private CLIView cli;
+
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private Socket serverSocket;
 
 
     public void begin() {
@@ -33,7 +33,7 @@ public class SantoriniClient extends EventSource implements EventListener {
         System.out.println("Insert server IP Address: ");
         String IP = systemIn.nextLine();
 
-        Socket serverSocket = null;
+        serverSocket = null;
         //Open a connection with the server
         try {
             serverSocket = new Socket(IP, SantoriniServer.SOCKET_PORT);
@@ -47,7 +47,7 @@ public class SantoriniClient extends EventSource implements EventListener {
         //open the in/out stream from the server
         try {
 
-            in = new ObjectInputStream(serverSocket.getInputStream());
+            in = new ObjectInputStream(new BufferedInputStream(serverSocket.getInputStream()));
             out = new ObjectOutputStream(serverSocket.getOutputStream());
             cli.start(); //starts
 
@@ -57,88 +57,27 @@ public class SantoriniClient extends EventSource implements EventListener {
         }
     }
 
-    @Override
-    public void handleEvent(VC_ConnectionRequestGameEvent event) {
+    public void sendEvent(GameEvent event){
         try {
-
             out.writeObject(event); //event is serializable
-
-            /*non usato
-            Gson gson = new Gson();
-            String jsonString = gson.toJson(event);
-            System.out.println(jsonString); */
-
-
-
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    @Override
-    public void handleEvent(GameEvent event) {
-
-    }
 
     @Override
-    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
+    public void run() {
+        while (true){
+            try {
+                GameEvent event = (GameEvent) in.readObject();
+                notifyAllObserverByType(VIEW, event);
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
 
-    }
-
-    @Override
-    public void handleEvent(CV_RoomUpdateGameEvent event) {
-
-    }
-
-
-    @Override
-    public void handleEvent(CC_ConnectionRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_PlayerCardChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_ChallengerChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_WaitGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-
+        }
     }
 }

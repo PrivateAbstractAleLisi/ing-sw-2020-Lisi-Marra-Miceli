@@ -25,14 +25,14 @@ public class CLIView extends EventSource implements EventListener {
     //IN-OUT DATA FROM CONSOLE
     private PrintStream output;
     private Scanner input;
+    private SantoriniClient client;
 
     public CLIView(SantoriniClient client) {
         this.output = System.out;
         this.input = new Scanner(System.in);
-
+        this.client= client;
         //listening to each other
         client.attachListenerByType(VIEW, this);
-        this.attachListenerByType(VIEW, client);
     }
 
 
@@ -47,7 +47,8 @@ public class CLIView extends EventSource implements EventListener {
 
         //try to connect
         VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
-        this.notifyAllObserverByType(VIEW, req);
+        this.client.sendEvent(req);
+        new Thread(client).start();
     }
 
     private String askUsername() {
@@ -232,7 +233,6 @@ public class CLIView extends EventSource implements EventListener {
         System.out.println("\nROOM CREATED: ");
         String[] playersIn = event.getUsersInRoom();
         RoomUtility.printPlayersInRoom(playersIn, event.getRoomSize());
-
     }
 
 
@@ -261,7 +261,7 @@ public class CLIView extends EventSource implements EventListener {
 
         VC_ConnectionRequestGameEvent req;
         req = new VC_ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
-        this.notifyAllObserverByType(VIEW, req);
+        this.client.sendEvent( req);
 
 
     }
@@ -307,7 +307,7 @@ public class CLIView extends EventSource implements EventListener {
 
         //notify the server
         VC_PlayerCardChosenEvent choice = new VC_PlayerCardChosenEvent(event.getUsername(),selected);
-        this.notifyAllObserverByType(VIEW, choice);
+        this.client.sendEvent( choice);
     }
 
     @Override
@@ -345,7 +345,17 @@ public class CLIView extends EventSource implements EventListener {
 
         VC_ChallengerChosenFirstPlayerEvent choiceEvent = new VC_ChallengerChosenFirstPlayerEvent(choice);
 
-        notifyAllObserverByType(VIEW, choiceEvent);
+        client.sendEvent( choiceEvent);
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
+
     }
 
     @Override
@@ -356,7 +366,7 @@ public class CLIView extends EventSource implements EventListener {
         int size = askGameRoomSize();
         VC_RoomSizeResponseGameEvent response;
         response = new VC_RoomSizeResponseGameEvent("first player sends the chosen size", size);
-        notifyAllObserverByType(VIEW, response);
+        client.sendEvent(response);
     }
 
     public static void clearScreen() {

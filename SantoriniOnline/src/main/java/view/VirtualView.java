@@ -7,9 +7,9 @@ import event.core.ListenerType;
 import event.gameEvents.*;
 import event.gameEvents.lobby.*;
 import event.gameEvents.prematch.*;
-import networking.SantoriniServerSender;
-import placeholders.VirtualServer;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -22,6 +22,7 @@ public class VirtualView extends EventSource implements EventListener {
     public InetAddress userIP;
     public int userPort;
     public String username;
+    private ObjectOutputStream output;
 
     Socket client;
 
@@ -31,14 +32,23 @@ public class VirtualView extends EventSource implements EventListener {
         attachListenerByType(ListenerType.VIEW, lobby);
         lobby.attachListenerByType(ListenerType.VIEW, this);
         client = clientSocket;
+        try {
+            output = new ObjectOutputStream(client.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendEventToClient(GameEvent event) {
-        SantoriniServerSender sender = new SantoriniServerSender(client, event);
-        Thread senderThread = new Thread(sender, "TH_send_event");
-        senderThread.start();
+        try {
+            output.writeObject(event);
+            output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
+
     //TO CONTROLLER
 
     @Override
@@ -115,6 +125,16 @@ public class VirtualView extends EventSource implements EventListener {
         if (event.getChallenger().equals(this.username)) {
             sendEventToClient(event);
         }
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
+
     }
 
     @Override
