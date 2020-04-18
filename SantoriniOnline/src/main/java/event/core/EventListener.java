@@ -37,6 +37,8 @@ public interface EventListener {
     public void handleEvent(CV_WaitGameEvent event);
 
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event);
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event);
+    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event);
 
 }
 

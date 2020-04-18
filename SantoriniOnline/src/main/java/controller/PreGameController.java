@@ -10,6 +10,8 @@ import model.CardEnum;
 import model.Player;
 import model.WorkerColors;
 import model.exception.InvalidCardException;
+import model.exception.InvalidMovementException;
+import model.gamemap.Worker;
 
 import javax.naming.LimitExceededException;
 import java.util.*;
@@ -185,10 +187,47 @@ public class PreGameController extends EventSource implements EventListener {
                 }
             }
         }
+        placeAllWorkers();
         room.beginGame(turnSequence);
     }
 
-    @Override //NO IMPL
+    public void placeAllWorkers()
+    {
+        List<Player> players = new ArrayList<Player>();
+        for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
+            players.add(player.getValue());
+        }
+        for (Player player : players){
+            for (Player recipient: players){
+                if (!recipient.getUsername().equals(player.getUsername())){
+                    CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is placing his workers", player.getUsername(), recipient.getUsername());
+                    notifyAllObserverByType(VIEW, requestEvent);
+                }
+            }
+            CV_PlayerPlaceWorkersRequestEvent event = new CV_PlayerPlaceWorkersRequestEvent("Choose where to put your workers", player.getUsername());
+            notifyAllObserverByType(VIEW, event);
+        }
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event){
+        Player actingPlayer = boardManager.getPlayer(event.getActingPlayer());
+        Worker worker = actingPlayer.getWorker(event.getId());
+        int x = event.getPosX();
+        int y = event.getPosY();
+        try {
+            actingPlayer.getCard().placeWorker(worker, x , y, boardManager.getIsland());
+            //DEBUG
+            System.out.println("DEBUG: PREGAME: Worker placed");
+        } catch (CloneNotSupportedException e) {
+
+        } catch (InvalidMovementException e) {
+
+        }
+    }
+
+
+        @Override //NO IMPL
     public void handleEvent(CV_ChallengerChosenEvent event) {
     }
 
@@ -204,6 +243,11 @@ public class PreGameController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
 
     }
 
