@@ -32,7 +32,7 @@ public class SantoriniClient extends EventSource implements Runnable {
         System.out.println("WELCOME, Client Started.");
         System.out.println("Insert server IP Address: ");
         String IP = systemIn.nextLine();
-
+        IP = "127.0.0.1";
         serverSocket = null;
         //Open a connection with the server
         try {

@@ -1,6 +1,7 @@
 package view;
 
 import controller.Lobby;
+import controller.PreGameController;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
@@ -61,6 +62,12 @@ public class VirtualView extends EventSource implements EventListener {
         this.username = event.getUsername();
         CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, event.getUsername());
         notifyAllObserverByType(ListenerType.VIEW, newServerRequest);
+        if (lobby.canStartPreRoom0()) {
+            detachListenerByType(ListenerType.VIEW, lobby);
+            Lobby.instance().beginPreGameForRoom0();
+        }
+
+
 
     }
 

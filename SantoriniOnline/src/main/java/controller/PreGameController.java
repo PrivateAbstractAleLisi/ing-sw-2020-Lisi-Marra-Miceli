@@ -81,6 +81,7 @@ public class PreGameController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
+        System.out.println("è già qualcosa");
         availableCards = event.getCardsChosen();
         for (CardEnum card : availableCards) {
             try {
@@ -187,8 +188,10 @@ public class PreGameController extends EventSource implements EventListener {
                 }
             }
         }
-        placeAllWorkers();
-        room.beginGame(turnSequence);
+        //daqui
+        System.out.println("GAME IS READY TO START");
+        //placeAllWorkers();
+        //room.beginGame(turnSequence);
     }
 
     public void placeAllWorkers()

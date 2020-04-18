@@ -195,6 +195,7 @@ public class CLIView extends EventSource implements EventListener {
         MessageUtility.printValidMessage("cards are valid, thank you Challenger. ");
         output.println("Now wait for the other players to choose their cards...");
 
+
         return fromIntToCardEnum(choosenCardsIndex);
 
         //check if they are all different
@@ -275,6 +276,8 @@ public class CLIView extends EventSource implements EventListener {
         output.println("Choose 3 cards for this match:");
         CardUtility.displayAllCards();
         List<CardEnum> gameCards = challengerPickCards(event.getRoomSize());
+        VC_ChallengerCardsChosenEvent response = new VC_ChallengerCardsChosenEvent("", gameCards);
+        client.sendEvent(response);
     }
 
     //CARD CHOICE

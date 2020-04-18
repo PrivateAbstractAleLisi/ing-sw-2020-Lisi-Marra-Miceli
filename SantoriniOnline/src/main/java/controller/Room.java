@@ -39,7 +39,7 @@ public class Room extends EventSource {
         System.out.println("DEBUG: ROOM: Stanza creata");
     }
 
-    public void addUser(String username, VirtualView virtualView) {
+    public void addUser(String username, VirtualView virtualView)  {
         try {
             boardManager.addPlayer(username);
 
@@ -54,9 +54,10 @@ public class Room extends EventSource {
             CV_RoomUpdateGameEvent updateEvent = new CV_RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
             notifyAllObserverByType(ListenerType.VIEW, updateEvent);
 
-            if (lastOccupiedPosition == SIZE) {
-                beginPreGame();
-            }
+            /*if (lastOccupiedPosition == SIZE) {  //when room is filled.
+                //beginPreGame();
+                throw new Exception("ROOMREADY");
+            } */
         } catch (LimitExceededException e) {
             e.printStackTrace();
         } catch (AlreadyExistingPlayerException e) {
@@ -72,7 +73,12 @@ public class Room extends EventSource {
         }
     }
 
+    public boolean isFull() {
+        return ((lastOccupiedPosition == SIZE));
+    }
     public void beginPreGame() {
+
+        //1! controller for this pre match/game
         preGame = new PreGameController(boardManager, this);
 
         //virtualView added to listener
@@ -82,7 +88,11 @@ public class Room extends EventSource {
             tempVirtualView.attachListenerByType(ListenerType.VIEW, preGame);
             preGame.attachListenerByType(ListenerType.VIEW,tempVirtualView);
         }
+        startPreGame();
+    }
+    private void startPreGame() {
         preGame.start();
+        System.out.println("pregame started");
     }
 
     public void beginGame(Map<Integer, Player> turnSequence) {
