@@ -43,10 +43,10 @@ public class PreGameController extends EventSource implements EventListener {
         //choose the challenger in a random way
         Random random = new Random();
         int number = random.nextInt(room.getSIZE());
-        List<String>  players = room.getActiveUsers();
+        List<String> players = room.getActiveUsers();
         challenger = players.get(number);
-        for (String recipient: players){
-            if (!recipient.equals(challenger)){
+        for (String recipient : players) {
+            if (!recipient.equals(challenger)) {
                 CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is the challenger, he's now choosing the cards", challenger, recipient);
                 notifyAllObserverByType(VIEW, requestEvent);
             }
@@ -68,11 +68,10 @@ public class PreGameController extends EventSource implements EventListener {
         return turnSequence;
     }
 
-    public void setColors(){
+    public void setColors() {
         //DA FARE
-        List <String> players = room.getActiveUsers();
-        for (int i = 0; i<room.getSIZE(); i++)
-        {
+        List<String> players = room.getActiveUsers();
+        for (int i = 0; i < room.getSIZE(); i++) {
             String player = players.get(i);
             boardManager.getPlayer(player).setColor(WorkerColors.values()[i]);
         }
@@ -93,20 +92,19 @@ public class PreGameController extends EventSource implements EventListener {
             }
         }
         List<String> players = room.getActiveUsers();
-        int i = players.indexOf(challenger);
-        if(i+1 < room.getSIZE()) {
-            i++;
+        int indexOfNextChoosingPlayer = players.indexOf(challenger);
+        if (indexOfNextChoosingPlayer < room.getSIZE() - 1) {
+            indexOfNextChoosingPlayer++;
+        } else if (indexOfNextChoosingPlayer == room.getSIZE() - 1) {
+            indexOfNextChoosingPlayer = 0;
         }
-        else if (i+1 == room.getSIZE()){
-            i=0;
-        }
-        for (String recipient: players){
-            if (!recipient.equals(players.get(i))){
-                CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is choosing his card", players.get(i), recipient);
+        for (String recipient : players) {
+            if (!recipient.equals(players.get(indexOfNextChoosingPlayer))) {
+                CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is choosing his card", players.get(indexOfNextChoosingPlayer), recipient);
                 notifyAllObserverByType(VIEW, requestEvent);
             }
         }
-        CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(i));
+        CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(indexOfNextChoosingPlayer));
         notifyAllObserverByType(VIEW, requestEvent);
     }
 
@@ -118,73 +116,82 @@ public class PreGameController extends EventSource implements EventListener {
             availableCards.remove(event.getCard());
             List<String> players = room.getActiveUsers();
 
-            int i = players.indexOf(event.getPlayer());
-            if (availableCards.size()> 0){
-                if((i < room.getSIZE() - 1) ){
-                    i++;
+            int indexOfChoosingPlayer = players.indexOf(event.getPlayer());
+            int indexOfNextChoosingPlayer = indexOfChoosingPlayer;
+            if (availableCards.size() > 0) { //there are cards remaining
+                if ((indexOfChoosingPlayer < room.getSIZE() - 1)) {
+                    indexOfNextChoosingPlayer++;
+                } else if ((indexOfChoosingPlayer == room.getSIZE() - 1)) {
+                    indexOfNextChoosingPlayer = 0;
                 }
-                else if ((i+1 == room.getSIZE() - 1)){
-                    i=0;
-                }
-                for (String recipient: players){
-                    if (!recipient.equals(players.get(i))){
-                        CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is choosing his card", players.get(i), recipient);
+                for (String recipient : players) {
+                    if (!recipient.equals(players.get(indexOfNextChoosingPlayer))) {
+                        CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is choosing his card", players.get(indexOfNextChoosingPlayer), recipient);
                         notifyAllObserverByType(VIEW, requestEvent);
                     }
                 }
-                CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(i));
+                //send the event to the next player that has to choose the card
+                CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(indexOfNextChoosingPlayer));
                 notifyAllObserverByType(VIEW, requestEvent);
-            }
-            else {
-                for (String recipient: players){
-                    if (!recipient.equals(players.get(i))){
-                        CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is choosing the first player", challenger, recipient);
-                        notifyAllObserverByType(VIEW, requestEvent);
-                    }
-                }
-
-                CV_ChallengerChooseFirstPlayerRequestEvent requestEvent = new CV_ChallengerChooseFirstPlayerRequestEvent("Choose the first player", challenger, players);
-                notifyAllObserverByType(VIEW, requestEvent);
+            } else { // there are no more cards remaining
+                ChallengerChooseFirstPlayer();
             }
         } catch (InvalidCardException e) {
 
         }
     }
 
+    public void ChallengerChooseFirstPlayer() {
+        List<String> players = room.getActiveUsers();
+        for (String recipient : players) {
+            if (!recipient.equals(challenger)) {
+                CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is choosing the first player", challenger, recipient);
+                notifyAllObserverByType(VIEW, requestEvent);
+            }
+        }
+        //the challenger has to choose the first player
+        CV_ChallengerChooseFirstPlayerRequestEvent requestEvent = new CV_ChallengerChooseFirstPlayerRequestEvent("Choose the first player", challenger, players);
+        notifyAllObserverByType(VIEW, requestEvent);
+    }
+
     @Override
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
         boardManager.setPlayersCardsCorrespondence(playersCardsCorrespondence);
-        String firstPlayer = event.getUsername();
-        int index = 0;
-        turnSequence.put(index, boardManager.getPlayer(firstPlayer));
-        index ++;
-        String[] players = room.getActiveUsersCopy();
 
-        //create the turnSequence based on the
+        String firstPlayer = event.getUsername();
+        int turnSequenceIndex = 0;
+        turnSequence.put(turnSequenceIndex, boardManager.getPlayer(firstPlayer));
+        turnSequenceIndex++;
+
+
+        String[] players = room.getActiveUsersCopy();
+        int indexOfChosenPlayer = 0;
+        //get the index of the chosen player
         for (int i = 0; i < players.length; i++) {
-            if (players[i].equals(firstPlayer)) {
-                if (i == players.length - 1) { //the player chosen is the last in the list of the room
-                    int j = 0;
-                    while (j < players.length - 1) {
-                        turnSequence.put(index, boardManager.getPlayer(players[j]));
-                        index ++;
-                        j++;
-                    }
-                } else { // the player is not the last in the list of the room
-                    int j = i;
-                    while (j < players.length - 1) { //adds all the player past the chosen player
-                        turnSequence.put(index, boardManager.getPlayer(players[j]));
-                        index++;
-                        j++;
-                    }
-                    if (turnSequence.size() < players.length) { // if there are, adds all the player before the chosen one
-                        j = 0;
-                        while (j < i) {
-                            turnSequence.put(index, boardManager.getPlayer(players[j]));
-                            index++;
-                            j++;
-                        }
-                    }
+            if (players[i].equals(firstPlayer)) indexOfChosenPlayer = i;
+        }
+        //create the turnSequence based on the challenger choice
+        int indexOfPlayerToAdd = 0;
+        if (indexOfChosenPlayer == players.length - 1) { //the chosen player is the last in the list of the room
+
+            while (indexOfPlayerToAdd < players.length - 1) { //adds all the players before the last one
+                turnSequence.put(turnSequenceIndex, boardManager.getPlayer(players[indexOfPlayerToAdd]));
+                turnSequenceIndex++;
+                indexOfPlayerToAdd++;
+            }
+        } else { // the chosen player is not the last in the list of the room
+            indexOfPlayerToAdd = indexOfChosenPlayer;
+            while (indexOfPlayerToAdd < players.length) { //adds all the player past the chosen player
+                turnSequence.put(turnSequenceIndex, boardManager.getPlayer(players[indexOfPlayerToAdd]));
+                turnSequenceIndex++;
+                indexOfPlayerToAdd++;
+            }
+            if (turnSequence.size() < players.length) { // if there are, adds all the player before the chosen one
+                indexOfPlayerToAdd = 0;
+                while (indexOfPlayerToAdd < indexOfChosenPlayer) {
+                    turnSequence.put(turnSequenceIndex, boardManager.getPlayer(players[indexOfPlayerToAdd]));
+                    turnSequenceIndex++;
+                    indexOfPlayerToAdd++;
                 }
             }
         }
@@ -194,15 +201,14 @@ public class PreGameController extends EventSource implements EventListener {
         //room.beginGame(turnSequence);
     }
 
-    public void placeAllWorkers()
-    {
+    public void placeAllWorkers() {
         List<Player> players = new ArrayList<Player>();
         for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
             players.add(player.getValue());
         }
-        for (Player player : players){
-            for (Player recipient: players){
-                if (!recipient.getUsername().equals(player.getUsername())){
+        for (Player player : players) {
+            for (Player recipient : players) {
+                if (!recipient.getUsername().equals(player.getUsername())) {
                     CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is placing his workers", player.getUsername(), recipient.getUsername());
                     notifyAllObserverByType(VIEW, requestEvent);
                 }
@@ -213,13 +219,13 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(VC_PlayerPlacedWorkerEvent event){
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         Player actingPlayer = boardManager.getPlayer(event.getActingPlayer());
         Worker worker = actingPlayer.getWorker(event.getId());
         int x = event.getPosX();
         int y = event.getPosY();
         try {
-            actingPlayer.getCard().placeWorker(worker, x , y, boardManager.getIsland());
+            actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
             //DEBUG
             System.out.println("DEBUG: PREGAME: Worker placed");
         } catch (CloneNotSupportedException e) {
@@ -230,7 +236,7 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
 
-        @Override //NO IMPL
+    @Override //NO IMPL
     public void handleEvent(CV_ChallengerChosenEvent event) {
     }
 
