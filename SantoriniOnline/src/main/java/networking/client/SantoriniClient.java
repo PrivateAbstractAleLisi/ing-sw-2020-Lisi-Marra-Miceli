@@ -1,15 +1,14 @@
 package networking.client;
 
-import com.google.gson.Gson;
-import event.core.EventListener;
 import event.core.EventSource;
 import event.gameEvents.GameEvent;
-import event.gameEvents.lobby.*;
-import event.gameEvents.prematch.*;
 import networking.SantoriniServer;
 import view.CLIView;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -30,9 +29,12 @@ public class SantoriniClient extends EventSource implements Runnable {
         cli = new CLIView(this);
         Scanner systemIn = new Scanner(System.in);
         System.out.println("WELCOME, Client Started.");
-        System.out.println("Insert server IP Address: ");
+        System.out.println("Insert server IP Address (press ENTER for localhost): ");
         String IP = systemIn.nextLine();
-        IP = "127.0.0.1";
+        if (IP.equals("")) {
+            IP = "127.0.0.1";
+        }
+
         serverSocket = null;
         //Open a connection with the server
         try {
@@ -57,7 +59,7 @@ public class SantoriniClient extends EventSource implements Runnable {
         }
     }
 
-    public void sendEvent(GameEvent event){
+    public void sendEvent(GameEvent event) {
         try {
             out.writeObject(event); //event is serializable
             out.flush();
@@ -67,10 +69,9 @@ public class SantoriniClient extends EventSource implements Runnable {
     }
 
 
-
     @Override
     public void run() {
-        while (true){
+        while (true) {
             try {
                 GameEvent event = (GameEvent) in.readObject();
                 notifyAllObserverByType(VIEW, event);

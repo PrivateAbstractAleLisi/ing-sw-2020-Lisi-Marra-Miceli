@@ -8,7 +8,6 @@ import event.gameEvents.lobby.*;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
 import networking.client.SantoriniClient;
-import placeholders.VirtualServer;
 import view.CLI.utility.CardUtility;
 import view.CLI.utility.MessageUtility;
 import view.CLI.utility.RoomUtility;
@@ -30,7 +29,7 @@ public class CLIView extends EventSource implements EventListener {
     public CLIView(SantoriniClient client) {
         this.output = System.out;
         this.input = new Scanner(System.in);
-        this.client= client;
+        this.client = client;
         //listening to each other
         client.attachListenerByType(VIEW, this);
     }
@@ -161,6 +160,7 @@ public class CLIView extends EventSource implements EventListener {
 
     /**
      * reads 2 or 3 cards IDs from the input as integers
+     *
      * @param roomSize how many cards you want to read from the challenger
      * @return a list of enum representing chosen cards
      */
@@ -205,7 +205,7 @@ public class CLIView extends EventSource implements EventListener {
 
     //CARD CHOICE
 
-    private boolean isSelectedCardValid (int cardID, List<CardEnum> available) {
+    private boolean isSelectedCardValid(int cardID, List<CardEnum> available) {
         boolean ok = false;
         for (CardEnum card : available) {
             if (card.getNumber() == cardID) {
@@ -242,29 +242,39 @@ public class CLIView extends EventSource implements EventListener {
      * connection has been rejected for username already taken of room is full. It may ask to insert a new username
      */
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-
+        String userProposal = "";
         switch (event.getErrorCode()) {
             case "USER_TAKEN":
                 //notify the error on screen
                 MessageUtility.displayErrorMessage(event.getErrorMessage());
-                break;
 
+                //read a new username if it's already taken
+                userProposal = askUsername();
+
+                break;
+            case "WAIT_FOR_CREATION":
+                MessageUtility.displayErrorMessage(event.getErrorMessage());
+                try {
+                    Thread.sleep(5000);
+                    userProposal = event.getWrongUsername();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                break;
             case "ROOM_FULL":
                 MessageUtility.displayErrorMessage(event.getErrorMessage());
-
                 return;
         }
 
-        //read a new username if it's already taken
-        String userProposal = askUsername();
-
-        //send the new connection request
+        //Force to select an username
+        if (userProposal.equals("")) {
+            //send the new connection request
+            userProposal = askUsername();
+        }
 
         VC_ConnectionRequestGameEvent req;
         req = new VC_ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
-        this.client.sendEvent( req);
-
-
+        this.client.sendEvent(req);
     }
 
     @Override
@@ -292,7 +302,7 @@ public class CLIView extends EventSource implements EventListener {
 
         System.out.println("It's time to choose the card to play with");
         CardUtility.displayAllAvailableCards(event.getAvailableCards());
-        System.out.println("\n please insert a card number");
+        System.out.println("\nPlease insert a card number");
 
         Integer id;
 
@@ -309,8 +319,8 @@ public class CLIView extends EventSource implements EventListener {
         MessageUtility.printValidMessage("you made your choice");
 
         //notify the server
-        VC_PlayerCardChosenEvent choice = new VC_PlayerCardChosenEvent(event.getUsername(),selected);
-        this.client.sendEvent( choice);
+        VC_PlayerCardChosenEvent choice = new VC_PlayerCardChosenEvent(event.getUsername(), selected);
+        this.client.sendEvent(choice);
     }
 
     @Override
@@ -328,7 +338,7 @@ public class CLIView extends EventSource implements EventListener {
     this user is the challenger, he has to choose the first player
      */
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-        System.out.println("Since you are the Challenger, please choose the player who starts first " );
+        System.out.println("Since you are the Challenger, please choose the player who starts first ");
         List<String> players = event.getPlayers();
 
         for (String player : players) {
@@ -336,7 +346,7 @@ public class CLIView extends EventSource implements EventListener {
         }
         System.out.println("please choose a player name from this list:");
 
-        input = new Scanner (System.in);
+        input = new Scanner(System.in);
 
         String choice = input.nextLine();
 
@@ -348,7 +358,7 @@ public class CLIView extends EventSource implements EventListener {
 
         VC_ChallengerChosenFirstPlayerEvent choiceEvent = new VC_ChallengerChosenFirstPlayerEvent(choice);
 
-        client.sendEvent( choiceEvent);
+        client.sendEvent(choiceEvent);
     }
 
     @Override
@@ -396,7 +406,8 @@ public class CLIView extends EventSource implements EventListener {
 
     @Override
 
-    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) { return;
+    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
+        return;
 
     }
 
