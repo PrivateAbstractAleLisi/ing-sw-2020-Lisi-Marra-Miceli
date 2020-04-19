@@ -78,8 +78,6 @@ public class Lobby extends EventSource implements EventListener {
 
                 if (!room.isFull()) {
                     room.addUser(event.getUsername(), event.getVirtualView());
-                } else {
-
                 }
             } else if (canCreateNewRoom.get() && !lock1.isLocked() && MAX_ROOMS > activeRooms.size()) {
                 lock1.lock();
@@ -98,7 +96,7 @@ public class Lobby extends EventSource implements EventListener {
                 CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
                 notifyAllObserverByType(ListenerType.VIEW, msgError);
             } else if (canCreateNewRoom.get() == false) {
-                CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "WAIT_FOR_CREATION", "The room is actually in creation, please wait few seconds.", event.getUserIP(), event.getUserPort(), event.getUsername());
+                CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "WAIT_FOR_CREATION", "A room is being created by another user, please wait few seconds.", event.getUserIP(), event.getUserPort(), event.getUsername());
                 notifyAllObserverByType(ListenerType.VIEW, msgError);
             }
         }

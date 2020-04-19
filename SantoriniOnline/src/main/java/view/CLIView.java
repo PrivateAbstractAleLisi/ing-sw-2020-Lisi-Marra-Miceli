@@ -282,6 +282,14 @@ public class CLIView extends EventSource implements EventListener {
     this user is the challenger, it has to choose the 3 cards
      */
     public void handleEvent(CV_ChallengerChosenEvent event) {
+        System.out.println("⌛︎ WAITING   ⌛︎");
+        System.out.println("The game is choosing the challenger\n");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        clearScreen();
         MessageUtility.printValidMessage("You're the challenger!");
         output.println("Choose 3 cards for this match:");
         CardUtility.displayAllCards();
@@ -342,16 +350,29 @@ public class CLIView extends EventSource implements EventListener {
         List<String> players = event.getPlayers();
 
         for (String player : players) {
-            System.out.println(player);
+            System.out.println("- " + player);
         }
-        System.out.println("please choose a player name from this list:");
+        System.out.println("\nPlease choose a player name from this list:");
 
         input = new Scanner(System.in);
 
         String choice = input.nextLine();
 
         while (!players.contains(choice)) {
-            MessageUtility.displayErrorMessage("invalid username");
+            clearScreen();
+            MessageUtility.displayErrorMessage("Invalid username");
+
+            System.out.println("Since you are the Challenger, please choose the player who starts first ");
+            players = event.getPlayers();
+
+            for (String player : players) {
+                System.out.println("- " + player);
+            }
+            System.out.println("\nPlease choose a player name from this list:");
+
+            input = new Scanner(System.in);
+
+            choice = input.nextLine();
         }
 
         MessageUtility.printValidMessage("You chose " + choice + " as the first player.");
