@@ -195,7 +195,10 @@ public class CellCluster implements Cloneable {
     }
 
     public WorkerColors getWorkerColor() {
-        return worker.getColor();
+        if(hasWorkerOnTop()) {
+            return worker.getColor();
+        }
+        return null;
     }
 
 

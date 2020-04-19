@@ -6,6 +6,7 @@ import event.core.EventSource;
 import event.core.ListenerType;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
+import event.gameEvents.match.CV_GameStartedGameEvent;
 import event.gameEvents.prematch.*;
 import view.VirtualView;
 
@@ -124,11 +125,34 @@ public class Lobby extends EventSource implements EventListener {
         return room0.isFull();
     }
 
+    public boolean canStartGameForThisUser(String username) {
+        if(activeUsersList.contains(username)){
+            for (Room room:activeRooms) {
+                if(room.getActiveUsers().contains(username)){
+                    return room.isGameCanStart();
+                }
+            }
+        }
+        return false;
+    }
+
+    public void startGameForThisUser(String username){
+        if(canStartGameForThisUser(username)){
+            if(activeUsersList.contains(username)){
+                for (Room room:activeRooms) {
+                    if(room.getActiveUsers().contains(username)){
+                       room.beginGame();
+                    }
+                }
+            }
+        }
+    }
+
     private Room getRoom0() {
         return activeRooms.get(0);
     }
 
-    public void beginPreGameForRoom0() {
+    public void startPreGameForRoom0() {
         activeRooms.get(0).beginPreGame();
     }
 
@@ -162,6 +186,11 @@ public class Lobby extends EventSource implements EventListener {
     //    NOT IMPLMENTED
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
+    }
+
+    @Override
+    public void handleEvent(CV_GameStartedGameEvent event) {
+
     }
 
     @Override
@@ -219,7 +248,7 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
+    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
 
     }
 }

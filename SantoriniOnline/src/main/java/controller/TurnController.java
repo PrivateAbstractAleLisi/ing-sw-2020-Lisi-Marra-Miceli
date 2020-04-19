@@ -1,5 +1,11 @@
 package controller;
 
+import event.core.EventListener;
+import event.core.EventSource;
+import event.gameEvents.GameEvent;
+import event.gameEvents.lobby.*;
+import event.gameEvents.match.CV_GameStartedGameEvent;
+import event.gameEvents.prematch.*;
 import model.BoardManager;
 import model.CardEnum;
 import model.Player;
@@ -23,7 +29,7 @@ import static model.gamemap.Worker.IDs;
  * @author alelisi
  */
 //TODO complete the implementation when model turn class is ready
-public class TurnController {
+public class TurnController extends EventSource implements EventListener {
 
     private Map<Integer, Player> turnSequence;
     private int currentTurnIndex;
@@ -230,15 +236,15 @@ public class TurnController {
         }
     }
 
-    public void placeInvoke(Player player, Worker w, int x, int y) {
-        try {
-            player.getCard().placeWorker(w, x, y, board.getIsland());
-        } catch (CloneNotSupportedException e) {
-            //ERRORE GRAVE CODICE
-        } catch (InvalidMovementException e) {
-            //NON POSSO PIAZZARE
-        }
-    }
+//    public void placeInvoke(Player player, Worker w, int x, int y) {
+//        try {
+//            player.getCard().placeWorker(w, x, y, board.getIsland());
+//        } catch (CloneNotSupportedException e) {
+//            //ERRORE GRAVE CODICE
+//        } catch (InvalidMovementException e) {
+//            //NON POSSO PIAZZARE
+//        }
+//    }
 
     /**
      * checks if both movement and build are unavailable for choosen worker
@@ -257,4 +263,88 @@ public class TurnController {
 
     }
 
+    @Override
+    public void handleEvent(GameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_RoomUpdateGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameStartedGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_ConnectionRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CC_ConnectionRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerCardChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_ChallengerChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_WaitGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
+
+    }
 }

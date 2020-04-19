@@ -21,7 +21,10 @@ public class CellClusterData {
     }
 
     public WorkerColors getWorkerColor() {
-        return workerColor;
+        if(getWorkerOnTop()!=null) {
+            return workerColor;
+        }
+        return null;
     }
 
     public Worker.IDs getWorkerOnTop() {

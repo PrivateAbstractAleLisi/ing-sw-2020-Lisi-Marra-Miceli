@@ -2,6 +2,7 @@ package event.core;
 
 import event.gameEvents.*;
 import event.gameEvents.lobby.*;
+import event.gameEvents.match.CV_GameStartedGameEvent;
 import event.gameEvents.prematch.*;
 
 /**
@@ -17,6 +18,8 @@ public interface EventListener {
     void handleEvent(VC_RoomSizeResponseGameEvent event);
 
     void handleEvent(CV_RoomUpdateGameEvent event);
+
+    void handleEvent(CV_GameStartedGameEvent event);
 
     void handleEvent(VC_ConnectionRequestGameEvent event);
 
@@ -38,7 +41,8 @@ public interface EventListener {
 
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event);
     public void handleEvent(VC_PlayerPlacedWorkerEvent event);
-    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event);
+    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event);
 
+//    public void handleEvent(CV)
 }
 

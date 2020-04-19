@@ -1,17 +1,19 @@
 package controller;
 
+import com.google.gson.Gson;
 import event.core.EventListener;
 import event.core.EventSource;
-import event.gameEvents.*;
+import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
+import event.gameEvents.match.CV_GameStartedGameEvent;
 import event.gameEvents.prematch.*;
 import model.BoardManager;
 import model.CardEnum;
 import model.Player;
-import model.WorkerColors;
 import model.exception.InvalidCardException;
 import model.exception.InvalidMovementException;
 import model.gamemap.Worker;
+import placeholders.IslandData;
 
 import javax.naming.LimitExceededException;
 import java.util.*;
@@ -25,6 +27,7 @@ public class PreGameController extends EventSource implements EventListener {
     private Map<String, CardEnum> playersCardsCorrespondence;
     private List<CardEnum> availableCards;
     private Map<Integer, Player> turnSequence;
+    private int currentTurnIndex;
 
     public PreGameController(BoardManager boardManager, Room room) {
         this.boardManager = boardManager;
@@ -35,7 +38,7 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     public void start() {
-        setColors();
+//        setColors();
         chooseChallenger();
     }
 
@@ -50,7 +53,6 @@ public class PreGameController extends EventSource implements EventListener {
                 CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is the challenger, he's now choosing the cards", challenger, recipient);
                 notifyAllObserverByType(VIEW, requestEvent);
             }
-
         }
 
         //DEBUG
@@ -68,19 +70,18 @@ public class PreGameController extends EventSource implements EventListener {
         return turnSequence;
     }
 
-    public void setColors() {
-        //DA FARE
-        List<String> players = room.getActiveUsers();
-        for (int i = 0; i < room.getSIZE(); i++) {
-            String player = players.get(i);
-            boardManager.getPlayer(player).setColor(WorkerColors.values()[i]);
-        }
-    }
+//    public void setColors() {
+//        //DA FARE
+//        List<String> players = room.getActiveUsers();
+//        for (int i = 0; i < room.getSIZE(); i++) {
+//            String player = players.get(i);
+//            boardManager.getPlayer(player).setColor(WorkerColors.values()[i]);
+//        }
+//    }
 
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-        System.out.println("è già qualcosa");
         availableCards = event.getCardsChosen();
         for (CardEnum card : availableCards) {
             try {
@@ -195,45 +196,90 @@ public class PreGameController extends EventSource implements EventListener {
                 }
             }
         }
-        //daqui
-        System.out.println("GAME IS READY TO START");
-        //placeAllWorkers();
-        //room.beginGame(turnSequence);
+
+        room.setTurnSequence(turnSequence);
+        currentTurnIndex = 0;
+        askPlaceFirstWorkerForCurrentUser();
     }
 
-    public void placeAllWorkers() {
+    private void askPlaceFirstWorkerForCurrentUser() {
         List<Player> players = new ArrayList<Player>();
         for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
             players.add(player.getValue());
         }
-        for (Player player : players) {
-            for (Player recipient : players) {
-                if (!recipient.getUsername().equals(player.getUsername())) {
-                    CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is placing his workers", player.getUsername(), recipient.getUsername());
-                    notifyAllObserverByType(VIEW, requestEvent);
-                }
+
+        Player activePlayer = turnSequence.get(currentTurnIndex);
+
+        for (Player recipient : players) {
+            if (!recipient.getUsername().equals(activePlayer.getUsername())) {
+                CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is placing his workers", activePlayer.getUsername(), recipient.getUsername());
+                notifyAllObserverByType(VIEW, requestEvent);
             }
-            CV_PlayerPlaceWorkersRequestEvent event = new CV_PlayerPlaceWorkersRequestEvent("Choose where to put your workers", player.getUsername());
-            notifyAllObserverByType(VIEW, event);
         }
+
+        IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
+        Gson gson=new Gson();
+        String islandDataJson = gson.toJson(currentIsland);
+        CV_PlayerPlaceWorkerRequestEvent event = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers", activePlayer.getUsername(),
+                islandDataJson, Worker.IDs.A);
+        notifyAllObserverByType(VIEW, event);
     }
 
-    @Override
-    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+    public void placeInvoke(VC_PlayerPlacedWorkerEvent event) throws InvalidMovementException, CloneNotSupportedException {
         Player actingPlayer = boardManager.getPlayer(event.getActingPlayer());
         Worker worker = actingPlayer.getWorker(event.getId());
         int x = event.getPosX();
         int y = event.getPosY();
+
+        actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
+    }
+
+//    public void placeAllWorkers() {
+//        List<Player> players = new ArrayList<Player>();
+//        for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
+//            players.add(player.getValue());
+//        }
+//        for (Player player : players) {
+//            for (Player recipient : players) {
+//                if (!recipient.getUsername().equals(player.getUsername())) {
+//                    CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is placing his workers", player.getUsername(), recipient.getUsername());
+//                    notifyAllObserverByType(VIEW, requestEvent);
+//                }
+//            }
+//
+//        }
+
+//    }
+
+
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         try {
-            actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
-            //DEBUG
-            System.out.println("DEBUG: PREGAME: Worker placed");
-        } catch (CloneNotSupportedException e) {
-
+            placeInvoke(event);
         } catch (InvalidMovementException e) {
+            //todo gestione errore
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
 
+        if (event.getId() == Worker.IDs.A) {
+            IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
+            Gson gson=new Gson();
+            String islandDataJson = gson.toJson(currentIsland);
+            CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
+                    event.getActingPlayer(), islandDataJson, Worker.IDs.B);
+            notifyAllObserverByType(VIEW, newEvent);
+        } else {
+            if (currentTurnIndex < turnSequence.size()) {
+                currentTurnIndex++;
+                askPlaceFirstWorkerForCurrentUser();
+            } else {
+                room.setGameCanStart(true);
+//                room.beginGame(turnSequence);
+            }
         }
     }
+
 
 
     @Override //NO IMPL
@@ -256,7 +302,7 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
+    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
 
     }
 
@@ -270,6 +316,11 @@ public class PreGameController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameStartedGameEvent event) {
 
     }
 

@@ -1,8 +1,8 @@
 package placeholders;
 
-import model.gamemap.CellCluster;
+import java.io.Serializable;
 
-public class IslandData {
+public class IslandData implements Serializable {
 
     private CellClusterData[][] grid;
 

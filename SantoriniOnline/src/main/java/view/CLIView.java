@@ -1,11 +1,12 @@
 package view;
 
-import auxiliary.ANSIColors;
 import auxiliary.Range;
+import com.google.gson.Gson;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
+import event.gameEvents.match.CV_GameStartedGameEvent;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
 import networking.client.SantoriniClient;
@@ -400,7 +401,9 @@ public class CLIView extends EventSource implements EventListener {
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
 
         //display island
-        final IslandData isla = event.getIsland();
+        Gson gson = new Gson();
+        final IslandData isla = (IslandData) gson.fromJson(event.getIsland(), IslandData.class);
+
         IslandUtility temp = new IslandUtility(isla);
 
         temp.displayIsland();
@@ -434,12 +437,12 @@ public class CLIView extends EventSource implements EventListener {
 
         }
 
-    //subtracting  1 'cause 1...5 --> 0...4 on model, controller
+        //subtracting  1 'cause 1...5 --> 0...4 on model, controller
         VC_PlayerPlacedWorkerEvent response =
                 new VC_PlayerPlacedWorkerEvent("sending an x, y proposal ",
                         event.getActingPlayer(),
-                        x-1,
-                        y-1,
+                        x - 1,
+                        y - 1,
                         event.getWorkerToPlace());
 
         client.sendEvent(response);
@@ -455,6 +458,13 @@ public class CLIView extends EventSource implements EventListener {
         VC_RoomSizeResponseGameEvent response;
         response = new VC_RoomSizeResponseGameEvent("first player sends the chosen size", size);
         client.sendEvent(response);
+    }
+
+    @Override
+    public void handleEvent(CV_GameStartedGameEvent event) {
+        clearScreen();
+        //TODO BIG TITLE
+        System.out.println("GAME IS STARTING");
     }
 
     public static void clearScreen() {
