@@ -1,5 +1,6 @@
 package view;
 
+import auxiliary.ANSIColors;
 import auxiliary.Range;
 import event.core.EventListener;
 import event.core.EventSource;
@@ -41,7 +42,7 @@ public class CLIView extends EventSource implements EventListener {
     public void start() {
 
         clearScreen();
-        MessageUtility.displayTitle();
+        //MessageUtility.displayTitle();
         String userProposal = askUsername();
 
         //try to connect
@@ -390,6 +391,11 @@ public class CLIView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
 
+        //display island
+        //TODO deve prima mostrare l'isola di gicoo
+        System.out.println("It's your turn to place your worker");
+        System.out.println("enter a cell where to place the worker");
+        System.out.println(ANSIColors.YELLOW_UNDERLINED + "<< for example 3,4 or 1,1 >> " + ANSIColors.ANSI_BLACK);
     }
 
     @Override

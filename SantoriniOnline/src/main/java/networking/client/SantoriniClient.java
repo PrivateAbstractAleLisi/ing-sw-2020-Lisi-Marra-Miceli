@@ -1,8 +1,10 @@
 package networking.client;
 
+import auxiliary.ANSIColors;
 import event.core.EventSource;
 import event.gameEvents.GameEvent;
 import networking.SantoriniServer;
+import view.CLI.utility.MessageUtility;
 import view.CLIView;
 
 import java.io.BufferedInputStream;
@@ -11,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import static event.core.ListenerType.VIEW;
 
@@ -28,7 +31,22 @@ public class SantoriniClient extends EventSource implements Runnable {
 
         cli = new CLIView(this);
         Scanner systemIn = new Scanner(System.in);
-        System.out.println("WELCOME, Client Started.");
+        MessageUtility.setBackground();
+        MessageUtility.bigTitle();
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+            MessageUtility.online();
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(ANSIColors.ANSI_RED + "Press Enter to Start: " + ANSIColors.ANSI_WHITE);
+        System.out.print(ANSIColors.ANSI_WHITE + ANSIColors.ANSI_BLACK_BACKGROUND);
+        systemIn.nextLine();
+
+        //System.out.println("WELCOME, Client Started.");
+        CLIView.clearScreen();
         System.out.println("Insert server IP Address (press ENTER for localhost): ");
         String IP = systemIn.nextLine();
         if (IP.equals("")) {

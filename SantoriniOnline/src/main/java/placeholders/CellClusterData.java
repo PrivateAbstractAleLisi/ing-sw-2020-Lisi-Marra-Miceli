@@ -1,19 +1,27 @@
 package placeholders;
 
+import model.WorkerColors;
 import model.gamemap.CellCluster;
 import model.gamemap.Worker;
 
 public class CellClusterData {
+
     private final int[] blocks;
     private final boolean domeOnTop;
     private final Worker.IDs workerOnTop;
     private final String usernamePlayer;
+    private final WorkerColors workerColor;
 
     public CellClusterData(CellCluster cellCluster) {
         blocks = cellCluster.toIntArray();
         this.domeOnTop = cellCluster.isComplete();
         this.workerOnTop = cellCluster.getWorkerID();
         this.usernamePlayer = cellCluster.getWorkerOwnerUsername();
+        this.workerColor = cellCluster.getWorkerColor();
+    }
+
+    public WorkerColors getWorkerColor() {
+        return workerColor;
     }
 
     public Worker.IDs getWorkerOnTop() {
@@ -36,5 +44,9 @@ public class CellClusterData {
 
     public boolean isDomeOnTop() {
         return domeOnTop;
+    }
+
+    public boolean isFree() {
+        return !domeOnTop && usernamePlayer == null && blocks.length == 0;
     }
 }

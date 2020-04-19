@@ -10,7 +10,7 @@ import model.gamemap.Worker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import placeholders.IslandPrinter;
+import view.CLI.utility.IslandUtility;
 
 import static org.junit.Assert.*;
 
@@ -25,7 +25,7 @@ public class HephaestusTest {
     Worker worker2 = null;
     Worker worker1B= null;
     Worker worker2B= null;
-    IslandPrinter ip = null;
+    IslandUtility ip = null;
 
     @Before
     public void setUp() throws Exception {
@@ -34,7 +34,7 @@ public class HephaestusTest {
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-        ip = new IslandPrinter(island);
+        ip = new IslandUtility(island);
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
         player1.setCard(CardEnum.HEPHAESTUS);
