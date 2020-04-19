@@ -28,7 +28,7 @@ public class AthenaTest {
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-        ip = new IslandUtility(island);
+
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
         player1.setCard(CardEnum.ATHENA);
@@ -344,7 +344,7 @@ public class AthenaTest {
         card2.resetBehaviour();
 
         card.move(worker1,0,0,island);
-        ip.displayIsland();
+
         card2.move(worker2,0,2,island);
     }
 }

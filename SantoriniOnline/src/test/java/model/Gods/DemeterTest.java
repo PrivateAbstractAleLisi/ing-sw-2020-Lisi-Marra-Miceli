@@ -19,7 +19,7 @@ public class DemeterTest {
     Worker worker2 = null;
     Worker worker1B= null;
     Worker worker2B= null;
-    IslandUtility ip = null;
+
 
     @Before
     public void setUp() throws Exception {
@@ -28,7 +28,6 @@ public class DemeterTest {
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-        ip = new IslandUtility(island);
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
         player1.setCard(CardEnum.DEMETER);
@@ -351,6 +350,6 @@ public class DemeterTest {
         card.build(worker1, BlockTypeEnum.LEVEL1, 3, 3, island);
         //first build
         card.build(worker1, BlockTypeEnum.LEVEL2, 3, 3, island);
-        ip.displayIsland();
+
     }
 }

@@ -9,7 +9,9 @@ import event.gameEvents.lobby.*;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
 import networking.client.SantoriniClient;
+import placeholders.IslandData;
 import view.CLI.utility.CardUtility;
+import view.CLI.utility.IslandUtility;
 import view.CLI.utility.MessageUtility;
 import view.CLI.utility.RoomUtility;
 
@@ -385,17 +387,63 @@ public class CLIView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+        //not implemente
+    }
 
+    public boolean checkCellInput(int x, int y) {
+
+        Range oneToFive = new Range(1, 5);
+        return oneToFive.contains(x) && oneToFive.contains(y);
     }
 
     @Override
-    public void handleEvent(CV_PlayerPlaceWorkersRequestEvent event) {
+    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
 
         //display island
-        //TODO deve prima mostrare l'isola di gicoo
-        System.out.println("It's your turn to place your worker");
-        System.out.println("enter a cell where to place the worker");
-        System.out.println(ANSIColors.YELLOW_UNDERLINED + "<< for example 3,4 or 1,1 >> " + ANSIColors.ANSI_BLACK);
+        final IslandData isla = event.getIsland();
+        IslandUtility temp = new IslandUtility(isla);
+
+        temp.displayIsland();
+
+        String workerFirstOrSecond = null;
+        switch (event.getWorkerToPlace()) {
+
+            case A:
+                workerFirstOrSecond = "first";
+                break;
+            case B:
+                workerFirstOrSecond = "second";
+                break;
+        }
+
+        input = new Scanner(System.in);
+
+        int x, y;
+        System.out.println("It's your turn to place your " + workerFirstOrSecond + " worker");
+        System.out.print(" please enter a row :");
+        x = input.nextInt();
+        System.out.print(" and a column :");
+        y = input.nextInt();
+
+        while (!checkCellInput(x, y)) {
+            MessageUtility.displayErrorMessage("invalid row or column");
+            System.out.print("please enter a row :");
+            x = input.nextInt();
+            System.out.print(" and a column :");
+            y = input.nextInt();
+
+        }
+
+    //subtracting  1 'cause 1...5 --> 0...4 on model, controller
+        VC_PlayerPlacedWorkerEvent response =
+                new VC_PlayerPlacedWorkerEvent("sending an x, y proposal ",
+                        event.getActingPlayer(),
+                        x-1,
+                        y-1,
+                        event.getWorkerToPlace());
+
+        client.sendEvent(response);
+
     }
 
     @Override
@@ -413,7 +461,6 @@ public class CLIView extends EventSource implements EventListener {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
-
 
 
     /*                              /*

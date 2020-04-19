@@ -28,7 +28,7 @@ public class ArtemisTest {
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-        ip = new IslandUtility(island);
+
         player1 = boardManager.getPlayer("Gabriele");
         player2 = boardManager.getPlayer("Matteo");
         player1.setCard(CardEnum.ARTEMIS);
