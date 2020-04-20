@@ -10,6 +10,7 @@ import event.gameEvents.prematch.*;
 import model.BoardManager;
 import model.CardEnum;
 import model.Player;
+import model.WorkerColors;
 import model.exception.InvalidCardException;
 import model.exception.InvalidMovementException;
 import model.gamemap.Worker;
@@ -38,7 +39,7 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     public void start() {
-//        setColors();
+        setColors();
         chooseChallenger();
     }
 
@@ -70,14 +71,21 @@ public class PreGameController extends EventSource implements EventListener {
         return turnSequence;
     }
 
-//    public void setColors() {
-//        //DA FARE
-//        List<String> players = room.getActiveUsers();
-//        for (int i = 0; i < room.getSIZE(); i++) {
-//            String player = players.get(i);
-//            boardManager.getPlayer(player).setColor(WorkerColors.values()[i]);
-//        }
-//    }
+    public void setColors() {
+        List<String> players = room.getActiveUsers();
+        for (String p : players) {
+            int i = players.indexOf(p);
+            Player player = boardManager.getPlayer(p);
+
+            WorkerColors color = WorkerColors.values()[i];
+
+            player.setColor(color);
+
+            for (Worker.IDs id : Worker.IDs.values()) {
+                player.getWorker(id).setColor(color);
+            }
+        }
+    }
 
 
     @Override
@@ -113,6 +121,7 @@ public class PreGameController extends EventSource implements EventListener {
     public void handleEvent(VC_PlayerCardChosenEvent event) {
         try {
             boardManager.takeCard(event.getCard());
+            boardManager.getPlayer(event.getPlayer()).setCard(event.getCard());
             playersCardsCorrespondence.put(event.getPlayer(), event.getCard());
             availableCards.remove(event.getCard());
             List<String> players = room.getActiveUsers();
@@ -181,7 +190,7 @@ public class PreGameController extends EventSource implements EventListener {
                 indexOfPlayerToAdd++;
             }
         } else { // the chosen player is not the last in the list of the room
-            indexOfPlayerToAdd = indexOfChosenPlayer;
+            indexOfPlayerToAdd = indexOfChosenPlayer + 1;
             while (indexOfPlayerToAdd < players.length) { //adds all the player past the chosen player
                 turnSequence.put(turnSequenceIndex, boardManager.getPlayer(players[indexOfPlayerToAdd]));
                 turnSequenceIndex++;
@@ -202,6 +211,10 @@ public class PreGameController extends EventSource implements EventListener {
         askPlaceFirstWorkerForCurrentUser();
     }
 
+    /**
+     * This method ask to the current Active player to place the first worker (IDs.A) and send a WaitEvent to the other players
+     * The first time currentTurnIndex should be 0
+     */
     private void askPlaceFirstWorkerForCurrentUser() {
         List<Player> players = new ArrayList<Player>();
         for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
@@ -218,13 +231,20 @@ public class PreGameController extends EventSource implements EventListener {
         }
 
         IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
-        Gson gson=new Gson();
+        Gson gson = new Gson();
         String islandDataJson = gson.toJson(currentIsland);
         CV_PlayerPlaceWorkerRequestEvent event = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers", activePlayer.getUsername(),
                 islandDataJson, Worker.IDs.A);
         notifyAllObserverByType(VIEW, event);
     }
 
+    /**
+     * This method is called by handleEvent(VC_PlayerPlacedWorkerEvent event) to place the worker
+     *
+     * @param event
+     * @throws InvalidMovementException
+     * @throws CloneNotSupportedException
+     */
     public void placeInvoke(VC_PlayerPlacedWorkerEvent event) throws InvalidMovementException, CloneNotSupportedException {
         Player actingPlayer = boardManager.getPlayer(event.getActingPlayer());
         Worker worker = actingPlayer.getWorker(event.getId());
@@ -234,24 +254,13 @@ public class PreGameController extends EventSource implements EventListener {
         actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
     }
 
-//    public void placeAllWorkers() {
-//        List<Player> players = new ArrayList<Player>();
-//        for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
-//            players.add(player.getValue());
-//        }
-//        for (Player player : players) {
-//            for (Player recipient : players) {
-//                if (!recipient.getUsername().equals(player.getUsername())) {
-//                    CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("is placing his workers", player.getUsername(), recipient.getUsername());
-//                    notifyAllObserverByType(VIEW, requestEvent);
-//                }
-//            }
-//
-//        }
-
-//    }
-
-
+    /**
+     * this method handle the VC_PlayerPlacedWorkerEvent.
+     * if the worker placed is the IDs.A it sends an event asking for the placement of IDs.B worker to the same player
+     * if the worker placed is the IDs.B the method increment the currentTurnIndex and call askPlaceFirstWorkerForCurrentUser()
+     *
+     * @param event
+     */
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         try {
@@ -264,13 +273,13 @@ public class PreGameController extends EventSource implements EventListener {
 
         if (event.getId() == Worker.IDs.A) {
             IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
-            Gson gson=new Gson();
+            Gson gson = new Gson();
             String islandDataJson = gson.toJson(currentIsland);
             CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
                     event.getActingPlayer(), islandDataJson, Worker.IDs.B);
             notifyAllObserverByType(VIEW, newEvent);
         } else {
-            if (currentTurnIndex < turnSequence.size()) {
+            if (currentTurnIndex + 1 < turnSequence.size()) {
                 currentTurnIndex++;
                 askPlaceFirstWorkerForCurrentUser();
             } else {
@@ -279,7 +288,6 @@ public class PreGameController extends EventSource implements EventListener {
             }
         }
     }
-
 
 
     @Override //NO IMPL

@@ -54,7 +54,7 @@ public class Room extends EventSource {
             attachListenerByType(ListenerType.VIEW, virtualView);
             this.lastOccupiedPosition = activeUsers.size();
 
-            setColor(username);
+//            setColor(username);
             //        DEBUG
             System.out.println("DEBUG: ROOM: username aggiunto");
 
