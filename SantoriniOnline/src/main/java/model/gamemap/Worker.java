@@ -1,6 +1,8 @@
 package model.gamemap;
 
 
+import model.WorkerColors;
+
 public class Worker {
 
 
@@ -11,6 +13,7 @@ public class Worker {
     private IDs workerID;
     private String playerUsername;
     private boolean isPlacedOnIsland;
+    private WorkerColors color;
 
     private int[] position;
 
@@ -24,8 +27,22 @@ public class Worker {
         this.playerUsername = playerUsername;
         position = null;
         isPlacedOnIsland = false;
+
     }
-//Changed: vettore posizione unico, no getter x, getter y
+
+    /**
+     * sets worker color
+     * @param color the color of the worker
+     */
+    public void setColor(WorkerColors color) {
+        this.color = color;
+    }
+
+    public WorkerColors getColor() {
+        return color;
+    }
+
+    //Changed: vettore posizione unico, no getter x, getter y
 
     //2D
 

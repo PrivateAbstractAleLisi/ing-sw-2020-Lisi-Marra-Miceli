@@ -4,6 +4,7 @@ package model.gamemap;
 import auxiliary.Range;
 import model.exception.*;
 import placeholders.CellClusterData;
+import placeholders.IslandData;
 
 public class Island {
 
@@ -179,7 +180,7 @@ public class Island {
         return false;
     }
 
-   public CellClusterData[][] getIslandToPrint (){
+   private CellClusterData[][] getGridData (){
        CellClusterData [][] newGrid =new CellClusterData[5][5];
        for (int i = 0; i <5 ; i++) {
            for (int j = 0; j <5 ; j++) {
@@ -188,6 +189,13 @@ public class Island {
        }
        return newGrid;
    }
+
+   public IslandData getIslandDataCopy() {
+        IslandData copy = new IslandData();
+        copy.fillIsland(getGridData());
+        return copy;
+   }
+
 
 
 

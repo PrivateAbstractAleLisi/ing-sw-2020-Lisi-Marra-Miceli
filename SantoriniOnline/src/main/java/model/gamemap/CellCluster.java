@@ -1,5 +1,6 @@
 package model.gamemap;
 
+import model.WorkerColors;
 import model.exception.*;
 
 import java.util.ArrayList;
@@ -191,6 +192,13 @@ public class CellCluster implements Cloneable {
         return super.clone();
 
 
+    }
+
+    public WorkerColors getWorkerColor() {
+        if(hasWorkerOnTop()) {
+            return worker.getColor();
+        }
+        return null;
     }
 
 

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>it.polimi.ingsw.psp58</groupId>
     <artifactId>clientJDK13</artifactId>
-<!--        <artifactId>serverJDK13</artifactId>-->
+    <!--    <artifactId>serverJDK13</artifactId>-->
     <version>1.0</version>
 
     <dependencies>

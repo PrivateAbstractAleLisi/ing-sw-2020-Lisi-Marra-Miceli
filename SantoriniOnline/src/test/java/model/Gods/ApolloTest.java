@@ -4,7 +4,7 @@ import model.*;
 import model.gamemap.*;
 import model.exception.*;
 import org.junit.*;
-import placeholders.IslandPrinter;
+import view.CLI.utility.IslandUtility;
 
 import static org.junit.Assert.*;
 
@@ -19,7 +19,6 @@ public class ApolloTest {
     Worker worker2 = null;
     Worker worker1B= null;
     Worker worker2B= null;
-    IslandPrinter ip = null;
 
     @Before
     public void setUp() throws Exception {
@@ -28,7 +27,6 @@ public class ApolloTest {
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-        ip = new IslandPrinter(island);
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
         player1.setCard(CardEnum.APOLLO);
@@ -326,11 +324,9 @@ public class ApolloTest {
         card.placeWorker(worker1, 0, 0, island);
         card.placeWorker(worker2, 0, 1, island);
 
-        ip.displayIsland();
         card.resetBehaviour();
         card.move(worker1, 0, 1, island);
 
-        ip.displayIsland();
     }
 
     @Test(expected = InvalidMovementException.class)

@@ -15,9 +15,15 @@ public class SantoriniServerSender implements Runnable {
     private Socket client;
     private GameEvent event;
 
+
     public SantoriniServerSender(Socket client, GameEvent event) {
         this.client = client;
         this.event = event;
+        try {
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -31,8 +37,7 @@ public class SantoriniServerSender implements Runnable {
     }
 
     private void sendEvent() throws IOException {
-        //Opens the streams
-        ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
-        output.writeObject(event);
+
+
     }
 }

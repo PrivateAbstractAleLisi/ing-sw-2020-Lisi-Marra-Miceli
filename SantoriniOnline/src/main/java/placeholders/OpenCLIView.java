@@ -5,6 +5,7 @@ import event.core.EventListener;
 import event.core.EventSource;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
+import event.gameEvents.match.CV_GameStartedGameEvent;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
 import view.CLI.utility.CardUtility;
@@ -239,6 +240,11 @@ public class OpenCLIView extends EventSource implements EventListener {
 
     }
 
+    @Override
+    public void handleEvent(CV_GameStartedGameEvent event) {
+
+    }
+
 
     @Override
     /**
@@ -351,6 +357,16 @@ public class OpenCLIView extends EventSource implements EventListener {
         VC_ChallengerChosenFirstPlayerEvent choiceEvent = new VC_ChallengerChosenFirstPlayerEvent(choice);
 
         notifyAllObserverByType(VIEW, choiceEvent);
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
+
     }
 
     @Override

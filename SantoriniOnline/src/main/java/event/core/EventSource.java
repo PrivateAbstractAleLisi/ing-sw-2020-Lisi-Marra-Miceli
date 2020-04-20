@@ -27,7 +27,7 @@ public abstract class EventSource {
      * @param type  the category of listeners that will be notified
      * @param event notified by
      */
-    public void notifyAllObserverByType(ListenerType type, GameEvent event) {
+    public synchronized void  notifyAllObserverByType(ListenerType type, GameEvent event) {
 //        System.out.println("DEBUG: ready to notify:");
 //        System.out.println("DEBUG: DESCRIPTION: " + event.getEventDescription());
 
@@ -52,7 +52,7 @@ public abstract class EventSource {
      * @param type     the category in which the listener will be registered
      * @param listener the listener that will be registered
      */
-    public void attachListenerByType(ListenerType type, EventListener listener) {
+    public synchronized void attachListenerByType(ListenerType type, EventListener listener) {
         List<EventListener> users = listeners.get(type);
         users.add(listener);
 //        listeners.get(type).add(listener);

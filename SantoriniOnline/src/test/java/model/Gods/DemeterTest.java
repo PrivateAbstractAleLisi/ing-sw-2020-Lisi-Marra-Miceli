@@ -4,7 +4,7 @@ import model.*;
 import model.gamemap.*;
 import model.exception.*;
 import org.junit.*;
-import placeholders.IslandPrinter;
+import view.CLI.utility.IslandUtility;
 
 import static org.junit.Assert.*;
 
@@ -19,7 +19,7 @@ public class DemeterTest {
     Worker worker2 = null;
     Worker worker1B= null;
     Worker worker2B= null;
-    IslandPrinter ip = null;
+
 
     @Before
     public void setUp() throws Exception {
@@ -28,7 +28,6 @@ public class DemeterTest {
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-        ip = new IslandPrinter(island);
         player1=boardManager.getPlayer("Gabriele");
         player2=boardManager.getPlayer("Matteo");
         player1.setCard(CardEnum.DEMETER);
@@ -351,6 +350,6 @@ public class DemeterTest {
         card.build(worker1, BlockTypeEnum.LEVEL1, 3, 3, island);
         //first build
         card.build(worker1, BlockTypeEnum.LEVEL2, 3, 3, island);
-        ip.displayIsland();
+
     }
 }

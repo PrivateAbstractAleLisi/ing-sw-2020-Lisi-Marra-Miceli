@@ -161,6 +161,9 @@ public class Player {
      */
     public void setColor(WorkerColors color) {
         this.color = color;
+        for (Worker worker : workers) {
+            worker.setColor(this.color);
+        }
     }
 
     /**

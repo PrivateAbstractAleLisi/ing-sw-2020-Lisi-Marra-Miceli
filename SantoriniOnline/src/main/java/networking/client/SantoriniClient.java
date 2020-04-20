@@ -1,39 +1,59 @@
 package networking.client;
 
-import com.google.gson.Gson;
-import event.core.EventListener;
+import auxiliary.ANSIColors;
 import event.core.EventSource;
 import event.gameEvents.GameEvent;
-import event.gameEvents.lobby.*;
-import event.gameEvents.prematch.*;
 import networking.SantoriniServer;
+import view.CLI.utility.MessageUtility;
 import view.CLIView;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+
+import static event.core.ListenerType.VIEW;
 
 
-public class SantoriniClient extends EventSource implements EventListener {
+public class SantoriniClient extends EventSource implements Runnable {
 
-    CLIView cli;
+    private CLIView cli;
 
-    ObjectInputStream in;
-    ObjectOutputStream out;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private Socket serverSocket;
 
 
     public void begin() {
 
         cli = new CLIView(this);
         Scanner systemIn = new Scanner(System.in);
-        System.out.println("WELCOME, Client Started.");
-        System.out.println("Insert server IP Address: ");
-        String IP = systemIn.nextLine();
+        MessageUtility.setBackground();
+        MessageUtility.bigTitle();
 
-        Socket serverSocket = null;
+        try {
+            TimeUnit.SECONDS.sleep(1);
+            MessageUtility.online();
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(ANSIColors.ANSI_RED + "Press Enter to Start: " + ANSIColors.ANSI_WHITE);
+        System.out.print(ANSIColors.ANSI_WHITE + ANSIColors.ANSI_BLACK_BACKGROUND);
+        systemIn.nextLine();
+
+        //System.out.println("WELCOME, Client Started.");
+        CLIView.clearScreen();
+        System.out.println("Insert server IP Address (press ENTER for localhost): ");
+        String IP = systemIn.nextLine();
+        if (IP.equals("")) {
+            IP = "127.0.0.1";
+        }
+
+        serverSocket = null;
         //Open a connection with the server
         try {
             serverSocket = new Socket(IP, SantoriniServer.SOCKET_PORT);
@@ -47,7 +67,7 @@ public class SantoriniClient extends EventSource implements EventListener {
         //open the in/out stream from the server
         try {
 
-            in = new ObjectInputStream(serverSocket.getInputStream());
+            in = new ObjectInputStream(new BufferedInputStream(serverSocket.getInputStream()));
             out = new ObjectOutputStream(serverSocket.getOutputStream());
             cli.start(); //starts
 
@@ -57,19 +77,10 @@ public class SantoriniClient extends EventSource implements EventListener {
         }
     }
 
-    @Override
-    public void handleEvent(VC_ConnectionRequestGameEvent event) {
+    public void sendEvent(GameEvent event) {
         try {
-
             out.writeObject(event); //event is serializable
-
-            /*non usato
-            Gson gson = new Gson();
-            String jsonString = gson.toJson(event);
-            System.out.println(jsonString); */
-
-
-
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,68 +88,15 @@ public class SantoriniClient extends EventSource implements EventListener {
 
 
     @Override
-    public void handleEvent(GameEvent event) {
+    public void run() {
+        while (true) {
+            try {
+                GameEvent event = (GameEvent) in.readObject();
+                notifyAllObserverByType(VIEW, event);
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
 
-    }
-
-    @Override
-    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_RoomUpdateGameEvent event) {
-
-    }
-
-
-    @Override
-    public void handleEvent(CC_ConnectionRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_PlayerCardChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_ChallengerChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_WaitGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-
+        }
     }
 }

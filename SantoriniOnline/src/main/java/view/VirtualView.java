@@ -4,12 +4,14 @@ import controller.Lobby;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
-import event.gameEvents.*;
+import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
+import event.gameEvents.match.CV_GameStartedGameEvent;
 import event.gameEvents.prematch.*;
-import networking.SantoriniServerSender;
-import placeholders.VirtualServer;
+import model.gamemap.Worker;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -22,6 +24,7 @@ public class VirtualView extends EventSource implements EventListener {
     public InetAddress userIP;
     public int userPort;
     public String username;
+    private ObjectOutputStream output;
 
     Socket client;
 
@@ -31,14 +34,23 @@ public class VirtualView extends EventSource implements EventListener {
         attachListenerByType(ListenerType.VIEW, lobby);
         lobby.attachListenerByType(ListenerType.VIEW, this);
         client = clientSocket;
+        try {
+            output = new ObjectOutputStream(client.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendEventToClient(GameEvent event) {
-        SantoriniServerSender sender = new SantoriniServerSender(client, event);
-        Thread senderThread = new Thread(sender, "TH_send_event");
-        senderThread.start();
+        try {
+            output.writeObject(event);
+            output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
+
     //TO CONTROLLER
 
     @Override
@@ -51,7 +63,10 @@ public class VirtualView extends EventSource implements EventListener {
         this.username = event.getUsername();
         CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, event.getUsername());
         notifyAllObserverByType(ListenerType.VIEW, newServerRequest);
-
+        if (lobby.canStartPreRoom0()) {
+            detachListenerByType(ListenerType.VIEW, lobby);
+            Lobby.instance().startPreGameForRoom0();
+        }
     }
 
     @Override
@@ -74,9 +89,19 @@ public class VirtualView extends EventSource implements EventListener {
         notifyAllObserverByType(ListenerType.VIEW, event);
     }
 
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+        notifyAllObserverByType(ListenerType.VIEW, event);
+        if(event.getId()== Worker.IDs.B){
+            if(lobby.canStartGameForThisUser(username)){
+                lobby.startGameForThisUser(username);
+            }
+        }
+    }
 
 
     //TO VIEW
+
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         if (event.getUsername().equals(this.username)) {
@@ -86,6 +111,11 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
+        sendEventToClient(event);
+    }
+
+    @Override
+    public void handleEvent(CV_GameStartedGameEvent event) {
         sendEventToClient(event);
     }
 
@@ -118,6 +148,13 @@ public class VirtualView extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
+        if (event.getActingPlayer().equals(this.username)) {
+            sendEventToClient(event);
+        }
+    }
+
+    @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
         if (event.getUserIP().equals(userIP) && event.getUserPort() == userPort) {
             sendEventToClient(event);
@@ -125,8 +162,7 @@ public class VirtualView extends EventSource implements EventListener {
     }
 
 
-
-//    NOT IMPLEMENTED
+    //    NOT IMPLEMENTED
     @Override
     public void handleEvent(GameEvent event) {
 

@@ -1,10 +1,13 @@
 package networking;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.Buffer;
+
 import auxiliary.ANSIColors;
 import com.google.gson.Gson;
 import controller.Lobby;
@@ -25,6 +28,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     private String localUsername;
     private InetAddress localUserIP;
     private int localUserPort;
+    private ObjectInputStream input;
 
     VirtualView clientVV;
 
@@ -32,7 +36,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         this.client = client;
         this.clientVV = new VirtualView(client);
         makeConnections();
-
+        input=null;
     }
 
     @Override
@@ -60,10 +64,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     private void handleClientConnection() throws IOException, ClassNotFoundException {
 
         //Client is connected via socket, creating a virtual view for it
-
-        //Opens the streams
-        ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
-        ObjectInputStream input = new ObjectInputStream(client.getInputStream());
+        ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(client.getInputStream()));
 
 
         GameEvent eventReceived;
@@ -73,17 +74,15 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
             GameEvent received = (GameEvent) input.readObject();
 
             try {
-                //if (received!= null)
-                //notifyAllObserverByType(VIEW, received);
+                if (received!= null)
+                notifyAllObserverByType(VIEW, received);
             } catch (Exception e) {
-                break;
+                e.printStackTrace();
             }
             //keaps reading
 
         }
-
-        staccaStacca();
-
+        //staccaStacca();
     }
 
 
