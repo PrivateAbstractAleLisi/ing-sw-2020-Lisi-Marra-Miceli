@@ -1,7 +1,6 @@
-package event.gameEvents.prematch;
+package event.gameEvents;
 
 import event.core.EventListener;
-import event.gameEvents.GameEvent;
 
 /**
  * sent by the PreGame when another player is choosing a card (challenger or not)

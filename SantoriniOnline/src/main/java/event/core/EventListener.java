@@ -2,7 +2,7 @@ package event.core;
 
 import event.gameEvents.*;
 import event.gameEvents.lobby.*;
-import event.gameEvents.match.CV_GameStartedGameEvent;
+import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 
 /**
@@ -13,36 +13,57 @@ import event.gameEvents.prematch.*;
 public interface EventListener {
 
     /* one handler for each event class */
-    public void handleEvent(GameEvent event);
+    void handleEvent(GameEvent event);
 
-    void handleEvent(VC_RoomSizeResponseGameEvent event);
+    void handleEvent(CV_WaitGameEvent event);
 
-    void handleEvent(CV_RoomUpdateGameEvent event);
+    void handleEvent(CV_GameErrorGameEvent event);
 
-    void handleEvent(CV_GameStartedGameEvent event);
-
-    void handleEvent(VC_ConnectionRequestGameEvent event);
+    //LOBBY EVENT
 
     void handleEvent(CC_ConnectionRequestGameEvent event);
 
-    public void handleEvent(CV_RoomSizeRequestGameEvent event);
+    void handleEvent(CV_ConnectionRejectedErrorGameEvent event);
 
-    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event);
+    void handleEvent(CV_RoomSizeRequestGameEvent event);
 
-    public void handleEvent(VC_ChallengerCardsChosenEvent event);
+    void handleEvent(CV_RoomUpdateGameEvent event);
 
-    public void handleEvent(VC_PlayerCardChosenEvent event);
+    void handleEvent(VC_ConnectionRequestGameEvent event);
 
-    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event);
-    public void handleEvent(CV_ChallengerChosenEvent event);
+    void handleEvent(VC_RoomSizeResponseGameEvent event);
 
-    public void handleEvent(CV_CardChoiceRequestGameEvent event);
-    public void handleEvent(CV_WaitGameEvent event);
 
-    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event);
-    public void handleEvent(VC_PlayerPlacedWorkerEvent event);
-    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event);
+    //PREMATCH
 
-//    public void handleEvent(CV)
+    void handleEvent(CV_CardChoiceRequestGameEvent event);
+
+    void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event);
+
+    void handleEvent(CV_PlayerPlaceWorkerRequestEvent event);
+
+    void handleEvent(CV_ChallengerChosenEvent event);
+
+    void handleEvent(VC_ChallengerCardsChosenEvent event);
+
+    void handleEvent(VC_ChallengerChosenFirstPlayerEvent event);
+
+    void handleEvent(VC_PlayerCardChosenEvent event);
+
+    void handleEvent(VC_PlayerPlacedWorkerEvent event);
+
+    //MATCH
+
+    void handleEvent(CV_CommandRequestEvent event);
+
+    void handleEvent(CV_GameOverEvent event);
+
+    void handleEvent(CV_GameStartedGameEvent event);
+
+    void handleEvent(CV_NewTurnEvent event);
+
+    void handleEvent(MV_IslandUpdateEvent event);
+
+    void handleEvent(VC_PlayerCommandGameEvent event);
 }
 

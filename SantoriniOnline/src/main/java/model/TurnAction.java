@@ -2,5 +2,6 @@ package model;
 
 public enum TurnAction {
     MOVE,
-    BUILD
+    BUILD,
+    PASS
 }

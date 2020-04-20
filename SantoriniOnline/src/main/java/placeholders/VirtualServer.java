@@ -5,7 +5,7 @@ import event.core.EventSource;
 import event.core.ListenerType;
 import event.gameEvents.*;
 import event.gameEvents.lobby.*;
-import event.gameEvents.match.CV_GameStartedGameEvent;
+import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import view.VirtualView;
 
@@ -73,6 +73,21 @@ public class VirtualServer extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_NewTurnEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(MV_IslandUpdateEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerCommandGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
         notifyAllObserverByType(ListenerType.VIEW, event);
     }
@@ -84,6 +99,16 @@ public class VirtualServer extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_CommandRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameOverEvent event) {
 
     }
 
@@ -100,6 +125,11 @@ public class VirtualServer extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_WaitGameEvent event) {
         notifyAllObserverByType(ListenerType.VIEW, event);
+    }
+
+    @Override
+    public void handleEvent(CV_GameErrorGameEvent event) {
+
     }
 
     @Override

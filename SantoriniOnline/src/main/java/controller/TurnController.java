@@ -2,9 +2,11 @@ package controller;
 
 import event.core.EventListener;
 import event.core.EventSource;
+import event.gameEvents.CV_GameErrorGameEvent;
+import event.gameEvents.CV_WaitGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
-import event.gameEvents.match.CV_GameStartedGameEvent;
+import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import model.BoardManager;
 import model.CardEnum;
@@ -200,7 +202,8 @@ public class TurnController extends EventSource implements EventListener {
                 }
 
             } catch (InvalidMovementException e) {
-                //manda errore alla view
+                //todo manda errore alla view
+                e.printStackTrace();
             } catch (WinningException e) {
                 win(player);
             }
@@ -228,23 +231,15 @@ public class TurnController extends EventSource implements EventListener {
                 player.getCard().build(w, block, x, y, board.getIsland());
                 currentTurnIstance.setHasAlreadyBuild(true);
             } catch (InvalidBuildException e) {
-                //Manda errore alla view
+                //todo Manda errore alla view
+                e.printStackTrace();
             } catch (CloneNotSupportedException e) {
-                //ERRORE GRAVE del codice
+                //todo ERRORE GRAVE del codice
+                e.printStackTrace();
             }
 
         }
     }
-
-//    public void placeInvoke(Player player, Worker w, int x, int y) {
-//        try {
-//            player.getCard().placeWorker(w, x, y, board.getIsland());
-//        } catch (CloneNotSupportedException e) {
-//            //ERRORE GRAVE CODICE
-//        } catch (InvalidMovementException e) {
-//            //NON POSSO PIAZZARE
-//        }
-//    }
 
     /**
      * checks if both movement and build are unavailable for choosen worker
@@ -280,6 +275,21 @@ public class TurnController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_NewTurnEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(MV_IslandUpdateEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerCommandGameEvent event) {
 
     }
 
@@ -334,12 +344,27 @@ public class TurnController extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_GameErrorGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
 
     }
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_CommandRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameOverEvent event) {
 
     }
 

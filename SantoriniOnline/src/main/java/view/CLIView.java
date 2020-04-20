@@ -4,9 +4,11 @@ import auxiliary.Range;
 import com.google.gson.Gson;
 import event.core.EventListener;
 import event.core.EventSource;
+import event.gameEvents.CV_GameErrorGameEvent;
+import event.gameEvents.CV_WaitGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
-import event.gameEvents.match.CV_GameStartedGameEvent;
+import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
 import networking.client.SantoriniClient;
@@ -346,6 +348,11 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_GameErrorGameEvent event) {
+
+    }
+
+    @Override
     /*
     this user is the challenger, he has to choose the first player
      */
@@ -389,6 +396,16 @@ public class CLIView extends EventSource implements EventListener {
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         //not implemente
+    }
+
+    @Override
+    public void handleEvent(CV_CommandRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameOverEvent event) {
+
     }
 
     public boolean checkCellInput(int x, int y) {
@@ -465,6 +482,21 @@ public class CLIView extends EventSource implements EventListener {
         clearScreen();
         //TODO BIG TITLE
         System.out.println("GAME IS STARTING");
+    }
+
+    @Override
+    public void handleEvent(CV_NewTurnEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(MV_IslandUpdateEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerCommandGameEvent event) {
+
     }
 
     public static void clearScreen() {

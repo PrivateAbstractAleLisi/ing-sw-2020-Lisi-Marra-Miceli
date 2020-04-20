@@ -3,6 +3,7 @@ package placeholders;
 import controller.Lobby;
 import event.core.EventListener;
 import event.core.ListenerType;
+import event.gameEvents.CV_WaitGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.prematch.*;

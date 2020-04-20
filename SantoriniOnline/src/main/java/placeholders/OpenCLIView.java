@@ -3,9 +3,11 @@ package placeholders;
 import auxiliary.Range;
 import event.core.EventListener;
 import event.core.EventSource;
+import event.gameEvents.CV_GameErrorGameEvent;
+import event.gameEvents.CV_WaitGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
-import event.gameEvents.match.CV_GameStartedGameEvent;
+import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
 import view.CLI.utility.CardUtility;
@@ -245,6 +247,21 @@ public class OpenCLIView extends EventSource implements EventListener {
 
     }
 
+    @Override
+    public void handleEvent(CV_NewTurnEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(MV_IslandUpdateEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerCommandGameEvent event) {
+
+    }
+
 
     @Override
     /**
@@ -332,6 +349,11 @@ public class OpenCLIView extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_GameErrorGameEvent event) {
+
+    }
+
+    @Override
     /*
     this user is the challenger, he has to choose the first player
      */
@@ -361,6 +383,16 @@ public class OpenCLIView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_CommandRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameOverEvent event) {
 
     }
 

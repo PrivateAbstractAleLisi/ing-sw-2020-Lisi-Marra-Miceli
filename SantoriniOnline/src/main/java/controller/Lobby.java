@@ -4,9 +4,11 @@ import controller.exceptions.NotFreeRoomAvailableException;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
+import event.gameEvents.CV_GameErrorGameEvent;
+import event.gameEvents.CV_WaitGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
-import event.gameEvents.match.CV_GameStartedGameEvent;
+import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import view.VirtualView;
 
@@ -194,6 +196,21 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_NewTurnEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(MV_IslandUpdateEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerCommandGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(GameEvent event) {
     }
 
@@ -238,12 +255,27 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_GameErrorGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
 
     }
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_CommandRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameOverEvent event) {
 
     }
 

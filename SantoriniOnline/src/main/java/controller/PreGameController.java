@@ -3,9 +3,11 @@ package controller;
 import com.google.gson.Gson;
 import event.core.EventListener;
 import event.core.EventSource;
+import event.gameEvents.CV_GameErrorGameEvent;
+import event.gameEvents.CV_WaitGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
-import event.gameEvents.match.CV_GameStartedGameEvent;
+import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import model.BoardManager;
 import model.CardEnum;
@@ -267,6 +269,7 @@ public class PreGameController extends EventSource implements EventListener {
             placeInvoke(event);
         } catch (InvalidMovementException e) {
             //todo gestione errore
+            e.printStackTrace();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
@@ -289,6 +292,16 @@ public class PreGameController extends EventSource implements EventListener {
         }
     }
 
+    @Override
+    public void handleEvent(CV_CommandRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameOverEvent event) {
+
+    }
+
 
     @Override //NO IMPL
     public void handleEvent(CV_ChallengerChosenEvent event) {
@@ -301,6 +314,11 @@ public class PreGameController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_WaitGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_GameErrorGameEvent event) {
 
     }
 
@@ -329,6 +347,21 @@ public class PreGameController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_NewTurnEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(MV_IslandUpdateEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerCommandGameEvent event) {
 
     }
 
