@@ -9,15 +9,15 @@ import java.util.Arrays;
 public class Turn {
     private Player currentPlayer;
     private Worker.IDs workerID;
-    private boolean hasAlreadyMoved;
-    private boolean hasAlreadyBuild;
+    private int numberOfMove;
+    private int numberOfBuild;
     private int[] startingPosition;
     private BoardManager boardManager;
 
     public Turn(Player currentPlayer, BoardManager boardManager) {
         this.currentPlayer = currentPlayer;
-        this.hasAlreadyBuild=false;
-        this.hasAlreadyMoved=false;
+        this.numberOfBuild =0;
+        this.numberOfMove =0;
         this.boardManager= boardManager;
     }
 
@@ -92,23 +92,23 @@ public class Turn {
                 }
             }
         }
-        /* if (validMoves.size() == 0) throw new DefeatException(currentPlayer.getUsername()); */
-        return validMoves;
+        if (validMoves.isEmpty()) return null;
+        else return validMoves;
     }
 
-    public boolean isHasAlreadyMoved() {
-        return hasAlreadyMoved;
+    public int getNumberOfMove() {
+        return numberOfMove;
     }
 
-    public void setHasAlreadyMoved(boolean hasAlreadyMoved) {
-        this.hasAlreadyMoved = hasAlreadyMoved;
+    public void setNumberOfMove(int numberOfMove) {
+        this.numberOfMove = numberOfMove;
     }
 
-    public boolean isHasAlreadyBuild() {
-        return hasAlreadyBuild;
+    public int getNumberOfBuild() {
+        return numberOfBuild;
     }
 
-    public void setHasAlreadyBuild(boolean hasAlreadyBuild) {
-        this.hasAlreadyBuild = hasAlreadyBuild;
+    public void setNumberOfBuild(int numberOfBuild) {
+        this.numberOfBuild = numberOfBuild;
     }
 }

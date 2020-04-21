@@ -142,6 +142,7 @@ public class Room extends EventSource {
         }
         CV_GameStartedGameEvent event = new CV_GameStartedGameEvent("", turnSequence.get(0).getUsername());
         notifyAllObserverByType(ListenerType.VIEW, event);
+        turnController.firstTurn();
     }
 
     public int getSIZE() {
