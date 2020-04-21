@@ -52,15 +52,15 @@ public class IslandUtility {
                 switch (color) {
                     case BEIGE:
                         //System.out.print("| " + ANSI_YELLOW + "♦︎" + ANSI_BLACK + " ");
-                        cellClusterContent += ANSI_YELLOW + "♦︎" + ANSI_BLACK;
+                        cellClusterContent += ANSI_YELLOW + "♦︎" + ANSI_RESET;
                         break;
                     case BLUE:
                         //System.out.print("| " + CYAN_BRIGHT + "♦︎" + ANSI_BLACK + " ");
-                        cellClusterContent += CYAN_BRIGHT + "♦︎" + ANSI_BLACK;
+                        cellClusterContent += CYAN_BRIGHT + "♦︎" + ANSI_RESET;
                         break;
                     case WHITE:
                         //System.out.print("| " + ANSI_WHITE + "♦︎" + ANSI_BLACK + " ");
-                        cellClusterContent += ANSI_WHITE + "♦︎" + ANSI_BLACK;
+                        cellClusterContent += ANSI_WHITE + "♦︎" + ANSI_RESET;
                         break;
                 }
 

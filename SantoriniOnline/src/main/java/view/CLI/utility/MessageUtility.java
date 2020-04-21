@@ -144,6 +144,13 @@ public class MessageUtility {
 
     }
 
+    public static void printDivider() {
+        for (int i = 0; i < 11; i++) {
+            System.out.print("-");
+        }
+        System.out.print("\n");
+    }
+
 
 
 }

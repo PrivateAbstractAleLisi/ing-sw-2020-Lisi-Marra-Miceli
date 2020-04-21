@@ -1,7 +1,9 @@
 package view;
 
+import auxiliary.ANSIColors;
 import auxiliary.Range;
 import com.google.gson.Gson;
+import controller.Room;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.gameEvents.CV_GameErrorGameEvent;
@@ -477,15 +479,41 @@ public class CLIView extends EventSource implements EventListener {
         client.sendEvent(response);
     }
 
+    //
+
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
-        clearScreen();
+
         //TODO BIG TITLE
+        clearScreen();
         System.out.println("GAME IS STARTING");
+
+
     }
 
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
+
+        String yourUsername = event.getUsername().toLowerCase();
+        String currentPlayerUsername = event.getTurnRotation().get(0);
+
+        boolean yourTurn = yourUsername.equals(currentPlayerUsername);
+        clearScreen();
+        System.out.println("GAME:");
+        MessageUtility.printDivider();
+
+        List<String> turnRotation = event.getTurnRotation();
+        System.out.print("TURN: ");
+
+        for (String s : turnRotation) {
+            if (turnRotation.indexOf(s) == 0) {
+                System.out.print(ANSIColors.GREEN_UNDERLINED + s.toUpperCase() + ANSIColors.ANSI_RESET);
+            }
+            else {
+                System.out.print(" <<< ");
+                System.out.print(ANSIColors.ANSI_RESET + s.toUpperCase() + ANSIColors.ANSI_RESET);
+            }
+        }
 
     }
 
@@ -510,6 +538,7 @@ public class CLIView extends EventSource implements EventListener {
                 NOT IMPLEMENTED
      */                             //
 
+
     @Override //NO IMPL
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
         return;
@@ -524,7 +553,6 @@ public class CLIView extends EventSource implements EventListener {
 
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
         return;
-
     }
 
 
