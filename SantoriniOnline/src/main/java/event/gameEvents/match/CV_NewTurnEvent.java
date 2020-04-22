@@ -6,27 +6,21 @@ import event.gameEvents.GameEvent;
 import java.util.List;
 
 public class CV_NewTurnEvent extends GameEvent {
-    private String player;
+    private final String currentPlayer;
     private final List<String> turnRotation;
-    private final String username;
 
-    public CV_NewTurnEvent(String description, String player, List<String> turnRotation, String username) {
+    public CV_NewTurnEvent(String description, String currentPlayerUsername, List<String> turnRotation) {
         super(description);
-        this.player = player;
+        this.currentPlayer = currentPlayerUsername;
         this.turnRotation = turnRotation;
-        this.username = username;
     }
 
-    public String getPlayer() {
-        return player;
+    public String getCurrentPlayerUsername() {
+        return currentPlayer;
     }
 
     public List<String> getTurnRotation() {
         return turnRotation;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     @Override

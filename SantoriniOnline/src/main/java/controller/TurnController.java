@@ -66,38 +66,79 @@ public class TurnController extends EventSource implements EventListener {
         return this.currentPlayer.getUsername();
     }
 
+    /**
+     * Called by the PreGame: start the match sending the first Events
+     */
     public void firstTurn() {
         if (currentTurnNumber == 0) {
-            currentTurnIndex = 0;
-            String firstPlayer = turnSequence.get(currentTurnIndex).getUsername();
+            nextTurn();
+        }
+    }
 
-            List<Player> players = new ArrayList<Player>();
-            for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
-                players.add(player.getValue());
+    /**
+     * This method send a NewTurnEvent to all players, with basic info about the new turn
+     */
+    private void sendNewTurnEvent() {
+        List<String> turnList = getCurrentTurnListUsername();
+        CV_NewTurnEvent event = new CV_NewTurnEvent("is your turn!", currentPlayer.getUsername(), turnList);
+        notifyAllObserverByType(ListenerType.VIEW, event);
+    }
+
+    /**
+     * This method return a List of {@link Player} the turnSequence where the first element is the {@code currentPlayer}
+     *
+     * @return List of {@link Player} the turnSequence where the first element is the {@code currentPlayer}
+     */
+    private List<Player> getCurrentTurnList() {
+        List<Player> turnSequence = getPlayersSequenceAsList();
+
+        List<Player> currentTurn = new ArrayList<>();
+
+        int index = this.currentTurnIndex;
+
+        while (currentTurn.size() < numberOfPlayers) {
+            if (index == numberOfPlayers - 1) {
+                index = 0;
+            } else {
+                index++;
             }
-            //todo fare sequenza
-
-            CV_NewTurnEvent event = new CV_NewTurnEvent("is your turn!", players, firstPlayer);
-            notifyAllObserverByType(ListenerType.VIEW, event);
-
-
-            for (Player recipient : players) {
-                if (!recipient.getUsername().equals(firstPlayer)) {
-                    CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("Is the turn of", firstPlayer, recipient.getUsername());
-                    notifyAllObserverByType(VIEW, requestEvent);
-                }
-            }
-            sendCommandRequest(firstPlayer);
+            currentTurn.add(turnSequence.get(index));
         }
 
+        return currentTurn;
     }
 
-    public void sendNewTurnEvent(){
-        //todo
+    /**
+     * This method return a List of {@link String} the turnSequence where the first element is the {@code currentPlayer}
+     *
+     * @return List of {@link String} the turnSequence where the first element is the {@code currentPlayer}
+     */
+    public List<String> getCurrentTurnListUsername() {
+        List<String> usernameTurnList = new ArrayList<>();
+
+        List<Player> playerTurnList = getCurrentTurnList();
+
+        for (Player player : playerTurnList) {
+            usernameTurnList.add(player.getUsername());
+        }
+
+        return usernameTurnList;
     }
 
+    /**
+     * This method return the {@code turnSequence} as List
+     *
+     * @return return the turn sequence as List
+     */
+    private List<Player> getPlayersSequenceAsList() {
+        List<Player> players = new ArrayList<Player>();
+        for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
+            players.add(player.getValue());
+        }
+        return players;
+    }
 
-    public void sendCommandRequest(String actingPlayer) {
+    private void sendCommandRequest(String actingPlayer) {
         List<TurnAction> availableActions = new ArrayList<TurnAction>();
         int numberOfMove = currentTurnInstance.getNumberOfMove();
         int numberOfBuild = currentTurnInstance.getNumberOfMove();
@@ -110,8 +151,9 @@ public class TurnController extends EventSource implements EventListener {
         List<int[]> availableBuildBlocksA = new ArrayList<int[]>();
         List<int[]> availableBuildBlocksB = new ArrayList<int[]>();
 
-        if (behaviour.getMovementsRemaining() != 0 &&
-                (numberOfBuild == 0 || ((isPrometheus) && (numberOfBuild == 1)))) {//MOVE is a valid action
+        //Check if the player can MOVE and set the possible moves
+        if ((behaviour.getMovementsRemaining() != 0) &&
+                ((numberOfBuild == 0) || ((isPrometheus) && (numberOfBuild == 1)))) {//MOVE is a valid action
             availableActions.add(MOVE);
             if (numberOfMove == 0 && numberOfBuild == 0) { // he can move with any of the two workers
 
@@ -135,7 +177,13 @@ public class TurnController extends EventSource implements EventListener {
             availableMovementBlocksA = null;
             availableMovementBlocksB = null;
         }
-        if (behaviour.getBlockPlacementLeft() != 0 &&
+        //Double check about what actions can choose the player
+        if (availableMovementBlocksA != null && availableMovementBlocksB != null) {
+            availableActions.remove(MOVE);
+        }
+
+        //Check if the player can BUILD and set the possible builds
+        if ((behaviour.getBlockPlacementLeft() != 0) &&
                 ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0)))) { //BUILD is a valid action
             availableActions.add(BUILD);
             if (numberOfMove == 0 && isPrometheus) { // the player can build with any worker (ONLY PROMETHEUS)
@@ -155,22 +203,29 @@ public class TurnController extends EventSource implements EventListener {
             availableBuildBlocksA = null;
             availableBuildBlocksB = null;
         }
+
+        //Double check about what actions can choose the player
+        if (availableBuildBlocksA != null && availableBuildBlocksB != null) {
+            availableActions.remove(MOVE);
+        }
+
+        //todo check se c'è un errrore
         if ((numberOfMove > 0 && numberOfBuild > 0) ||
-                (isPrometheus &&(numberOfMove == 1 && numberOfBuild >= 1))) { //the player can terminate the turn
+                (isPrometheus && (numberOfMove == 1 && numberOfBuild >= 1))) { //the player can terminate the turn
             availableActions.add(PASS);
         }
-        if (availableActions.isEmpty()){ //the player has no actions possibles so he loses
+
+        if (availableActions.isEmpty()) { //the player has no actions possibles so he loses
             lose(actingPlayer);
         }
         CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildBlocksA, availableMovementBlocksA,
-            availableBuildBlocksB, availableMovementBlocksB, actingPlayer);
+                availableBuildBlocksB, availableMovementBlocksB, actingPlayer);
     }
 
     private void nextTurn() {
         currentTurnInstance = null; //destroys current turn on model
         if (this.currentTurnIndex == numberOfPlayers - 1) { //Ri inizia il giro
             this.currentTurnIndex = 0;
-
         } else {
             this.currentTurnIndex++;
         }
@@ -178,6 +233,20 @@ public class TurnController extends EventSource implements EventListener {
         currentPlayer = turnSequence.get(currentTurnIndex);
         handleCurrentTurn();
         currentTurnNumber++;
+
+        //Notify All Players
+        String currentPlayerUsername = currentPlayer.getUsername();
+        List<Player> players = getPlayersSequenceAsList();
+
+        sendNewTurnEvent();
+
+        for (Player recipient : players) {
+            if (!recipient.getUsername().equals(currentPlayerUsername)) {
+                CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("Is the turn of", currentPlayerUsername, recipient.getUsername());
+                notifyAllObserverByType(VIEW, requestEvent);
+            }
+        }
+        sendCommandRequest(currentPlayerUsername);
     }
 
     //TODO
@@ -188,7 +257,7 @@ public class TurnController extends EventSource implements EventListener {
                 losingPlayers.add(player.getValue().getUsername());
             }
         }
-        CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose",winner.getUsername(), losingPlayers);
+        CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose", winner.getUsername(), losingPlayers);
         notifyAllObserverByType(VIEW, gameOverEvent);
     }
 
@@ -250,7 +319,7 @@ public class TurnController extends EventSource implements EventListener {
             isWorkerBLocked = availableCells_Worker_B.size() == 0;
 
             if (isWorkerALocked && isWorkerBLocked) {
-                lose(currentPlayer);
+                lose(currentPlayer.getUsername());
                 //you lost, notify the view
             }
             //you can move at least one time.
@@ -269,7 +338,7 @@ public class TurnController extends EventSource implements EventListener {
      * @author: alelisi
      * invoked by the virtual view when a next turn event is called
      */
-    public void invokeNextTurn(Player player) {
+    private void invokeNextTurn(Player player) {
         boolean hasAlreadyMovedAndBuilt = false;
         //checks if the player requesting next turn is the one that is playing the turn
         if (currentTurnInstance.getCurrentPlayer().getUsername().equals(player.getUsername())) {
@@ -286,7 +355,7 @@ public class TurnController extends EventSource implements EventListener {
 
     }
 
-    public void invokeMovement(Player player, Worker w, int x, int y) {
+    private void invokeMovement(Player player, Worker w, int x, int y) {
 
         //is your turn?
         if (!player.getUsername().equals(getCurrentPlayerUser())) {
@@ -321,7 +390,7 @@ public class TurnController extends EventSource implements EventListener {
 
     }
 
-    public void invokeBuild(Player player, Worker w, BlockTypeEnum block, int x, int y) {
+    private void invokeBuild(Player player, Worker w, BlockTypeEnum block, int x, int y) {
 
         //are you sure it's your turn?
         if (!player.getUsername().equals(getCurrentPlayerUser())) {
@@ -367,26 +436,50 @@ public class TurnController extends EventSource implements EventListener {
 
     }
 
+
+    /*
+     * il metodo riceve un evento con:
+     * - il tipo di comando (enum)
+     * - il player che lo ha generato
+     * - il body del comando
+     * - la posizione desiderata
+     * - il worker ID utilizzato
+     *
+     * il metodo deve in ordine: verificare che il player sia il suo turno altrimenti lancia un errore
+     * che il player possa fare quella mossa?
+     *
+     * prendere le informazioni contenute nel body, position e worker ed eventualmente richiedere al
+     * model le info necessarie per chiamare i metodi Invoke
+     *
+     * se il comando è next turn allora deve controllare che abbia svolto i movimenti necessari prima
+     * di passare il turno
+     *
+     */
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
-        /**
-         * il metodo riceve un evento con:
-         * - il tipo di comando (enum)
-         * - il player che lo ha generato
-         * - il body del comando
-         * - la posizione desiderata
-         * - il worker ID utilizzato
-         *
-         * il metodo deve in ordine: verificare che il player sia il suo turno altrimenti lancia un errore
-         * che il player possa fare quella mossa?
-         *
-         * prendere le informazioni contenute nel body, position e worker ed eventualmente richiedere al
-         * model le info necessarie per chiamare i metodi Invoke
-         *
-         * se il comando è next turn allora deve controllare che abbia svolto i movimenti necessari prima
-         * di passare il turno
-         *
-         */
+        if (event.getFromPlayer().equals(currentPlayer.getUsername())) {
+            Worker worker;
+            int[] position;
+            switch (event.getCommand()) {
+                case MOVE:
+                    worker = currentPlayer.getWorker(event.getWorkerID());
+                    position = event.getPosition();
+                    invokeMovement(currentPlayer, worker, position[0], position[1]);
+                    break;
+                case BUILD:
+                    //todo gestire quando non forniscono il blocco
+                    worker = currentPlayer.getWorker(event.getWorkerID());
+                    position = event.getPosition();
+                    BlockTypeEnum blockToBuild = event.getBlockToBuild();
+                    invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);
+                    break;
+                case PASS:
+                    invokeNextTurn(currentPlayer);
+                    break;
+            }
+        } else {
+            //todo send error message
+        }
     }
 
 

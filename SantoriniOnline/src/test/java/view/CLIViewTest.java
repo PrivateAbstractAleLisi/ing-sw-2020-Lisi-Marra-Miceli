@@ -9,8 +9,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class CLIViewTest {
 
     CLIView cli = new CLIView(new SantoriniClient());
@@ -34,7 +32,7 @@ public class CLIViewTest {
         turn.add("luigi");
         turn.add("marco");
 
-        cli.handleEvent(new CV_NewTurnEvent("marco", "luigi", turn, "marco"));
+        cli.handleEvent(new CV_NewTurnEvent("marco", "marco", turn));
     }
 
     @Test

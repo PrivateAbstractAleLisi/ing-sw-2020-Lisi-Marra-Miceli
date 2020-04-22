@@ -3,7 +3,6 @@ package view;
 import auxiliary.ANSIColors;
 import auxiliary.Range;
 import com.google.gson.Gson;
-import controller.Room;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.gameEvents.CV_GameErrorGameEvent;
@@ -33,6 +32,7 @@ public class CLIView extends EventSource implements EventListener {
     private PrintStream output;
     private Scanner input;
     private SantoriniClient client;
+    private String myUsername;
 
     public CLIView(SantoriniClient client) {
         this.output = System.out;
@@ -51,6 +51,9 @@ public class CLIView extends EventSource implements EventListener {
         clearScreen();
         //MessageUtility.displayTitle();
         String userProposal = askUsername();
+
+        //use last userProposal as my username
+        myUsername=userProposal;
 
         //try to connect
         VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
@@ -280,6 +283,9 @@ public class CLIView extends EventSource implements EventListener {
             userProposal = askUsername();
         }
 
+        //use last userProposal as my username
+        myUsername=userProposal;
+
         VC_ConnectionRequestGameEvent req;
         req = new VC_ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
         this.client.sendEvent(req);
@@ -494,7 +500,7 @@ public class CLIView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
 
-        String yourUsername = event.getUsername().toLowerCase();
+        String yourUsername = event.getCurrentPlayerUsername().toLowerCase();
         String currentPlayerUsername = event.getTurnRotation().get(0);
 
         boolean yourTurn = yourUsername.equals(currentPlayerUsername);
