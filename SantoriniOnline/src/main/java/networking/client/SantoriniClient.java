@@ -31,7 +31,7 @@ public class SantoriniClient extends EventSource implements Runnable {
 
         cli = new CLIView(this);
         Scanner systemIn = new Scanner(System.in);
-        MessageUtility.setBackground();
+
         MessageUtility.bigTitle();
 
         try {
@@ -41,8 +41,7 @@ public class SantoriniClient extends EventSource implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(ANSIColors.ANSI_RED + "Press Enter to Start: " + ANSIColors.ANSI_WHITE);
-        System.out.print(ANSIColors.ANSI_WHITE + ANSIColors.ANSI_BLACK_BACKGROUND);
+        System.out.println(ANSIColors.YELLOW_UNDERLINED + "Press Enter to Start:" + ANSIColors.ANSI_RESET + " ");
         systemIn.nextLine();
 
         //System.out.println("WELCOME, Client Started.");

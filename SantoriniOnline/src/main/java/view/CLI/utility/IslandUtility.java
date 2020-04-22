@@ -19,7 +19,7 @@ public class IslandUtility {
         String cellClusterContent = "| ";
         if(data.getCellCluster(x,y).isFree()) {
             //System.out.print("| " + " " + " ");
-            cellClusterContent = cellClusterContent + "   ";
+            cellClusterContent = cellClusterContent + "     ";
         }
         else if (data.getCellCluster(x,y).isDomeOnTop()) {
             //System.out.print("| " + "O" + " ");
@@ -75,18 +75,37 @@ public class IslandUtility {
         System.out.print(cellClusterContent);
     }
     public void displayIsland() {
+
+
+        System.out.print("COL →  ");
+
+
+        for (int c = 0; c<5; c++) {
+            System.out.print("   " + (c+1) + "   ");
+        }
+
         for (int row = 0; row < 5; row++)
         {
             System.out.println("");
-            System.out.println("---------------------------------");
+
+            if (row != 0) {
+                System.out.println("        -----------------------------------");
+            }
+            else{
+                System.out.println("ROW ↓   -----------------------------------");
+            }
+
+            System.out.print("    " + (row+1) +  "  ");
+
 
             for (int column = 0; column < 5; column++)
             {
                 printCellCluster(row, column);
             }
             System.out.print("|");
+
         }
         System.out.println("");
-        System.out.println("---------------------------------");
+        System.out.println("        -----------------------------------");
     }
 }
