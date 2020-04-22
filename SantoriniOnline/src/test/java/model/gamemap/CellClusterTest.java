@@ -1,11 +1,13 @@
 package model.gamemap;
 
+import model.WorkerColors;
 import model.exception.InvalidBuildException;
 import model.exception.InvalidMovementException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static model.gamemap.BlockTypeEnum.LEVEL2;
 import static org.junit.Assert.*;
 
 public class CellClusterTest {
@@ -15,7 +17,6 @@ public class CellClusterTest {
     public void setUp() throws Exception {
         istance = new CellCluster();
         istance2 = new CellCluster();
-
     }
 
     @After
@@ -28,39 +29,40 @@ public class CellClusterTest {
     public void checkBuildingBlockOrder() throws InvalidBuildException {
 
         istance.build(BlockTypeEnum.LEVEL1);
-        assertTrue(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL2));
+        assertTrue(istance.checkBuildingBlockOrder(LEVEL2));
         assertTrue(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL3));
         assertTrue(istance.checkBuildingBlockOrder(BlockTypeEnum.DOME));
         assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL1));
         assertFalse(istance.isComplete());
 
-        istance.build(BlockTypeEnum.LEVEL2);
+        istance.build(LEVEL2);
         assertTrue(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL3));
         assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL1));
         assertTrue(istance.checkBuildingBlockOrder(BlockTypeEnum.DOME));
-        assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL2));
+        assertFalse(istance.checkBuildingBlockOrder(LEVEL2));
         assertFalse(istance.isComplete());
 
         istance.build(BlockTypeEnum.LEVEL3);
         assertTrue(istance.checkBuildingBlockOrder(BlockTypeEnum.DOME));
         assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL1));
-        assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL2));
+        assertFalse(istance.checkBuildingBlockOrder(LEVEL2));
         assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL3));
         assertFalse(istance.isComplete());
 
         istance.build(BlockTypeEnum.DOME);
         assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.DOME));
         assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL1));
-        assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL2));
+        assertFalse(istance.checkBuildingBlockOrder(LEVEL2));
         assertFalse(istance.checkBuildingBlockOrder(BlockTypeEnum.LEVEL3));
         assertTrue(istance.isComplete());
     }
 
+    @Test
     public void toIntArray() throws InvalidBuildException {
         istance.build(BlockTypeEnum.LEVEL1);
         int[] expected = new int[]{1};
         assertArrayEquals(expected, istance.toIntArray());
-        istance.build(BlockTypeEnum.LEVEL2);
+        istance.build(LEVEL2);
         expected = new int[]{1,2};
         assertArrayEquals(expected, istance.toIntArray());
         istance.build(BlockTypeEnum.LEVEL3);
@@ -79,7 +81,7 @@ public class CellClusterTest {
         try {
             istance.build(BlockTypeEnum.LEVEL1);
             assertEquals(istance.getCostructionHeight(), 1);
-            istance.build(BlockTypeEnum.LEVEL2);
+            istance.build(LEVEL2);
             assertEquals(istance.getCostructionHeight(), 2);
             istance.build(BlockTypeEnum.LEVEL3);
             assertEquals(istance.getCostructionHeight(), 3);
@@ -107,7 +109,7 @@ public class CellClusterTest {
             assertEquals(istance.getCostructionHeight(), 1);
             istance2.build(BlockTypeEnum.LEVEL1);
             assertEquals(istance2.getCostructionHeight(), 1);
-            istance2.build(BlockTypeEnum.LEVEL2);
+            istance2.build(LEVEL2);
             assertEquals(istance2.getCostructionHeight(), 2);
 
 
@@ -136,7 +138,7 @@ public class CellClusterTest {
         assertTrue(istance.isComplete());
         istance2.build(BlockTypeEnum.LEVEL1);
         assertFalse(istance2.isComplete());
-        istance2.build(BlockTypeEnum.LEVEL2);
+        istance2.build(LEVEL2);
         assertFalse(istance2.isComplete());
         istance2.build(BlockTypeEnum.LEVEL3);
         assertFalse(istance2.isComplete());
@@ -218,7 +220,7 @@ public class CellClusterTest {
         CellCluster original = istance;
         original.addWorker(new Worker (Worker.IDs.B, "lucia"));
         original.build(BlockTypeEnum.LEVEL1);
-        original.build(BlockTypeEnum.LEVEL2);
+        original.build(LEVEL2);
         CellCluster cloned = null;
         try {
             cloned = (CellCluster) istance.clone();
@@ -241,11 +243,11 @@ public class CellClusterTest {
         assertEquals(istance.getCostructionHeight(), 0);
         istance.build(BlockTypeEnum.LEVEL1);
 
-        res = istance.toIntArrayWithHypo(BlockTypeEnum.LEVEL2);
+        res = istance.toIntArrayWithHypo(LEVEL2);
         resExpected = new int[]{1, 2};
         assertArrayEquals(resExpected, res);
         assertEquals(istance.getCostructionHeight(), 1);
-        istance.build(BlockTypeEnum.LEVEL2);
+        istance.build(LEVEL2);
 
         res = istance.toIntArrayWithHypo(BlockTypeEnum.LEVEL3);
         resExpected = new int[]{1, 2, 3};
@@ -261,6 +263,64 @@ public class CellClusterTest {
 
        assertEquals(istance.getCostructionHeight(), 4);
 
+    }
+
+    @Test
+    public void getWorkerOwnerUsername() throws InvalidBuildException, InvalidMovementException {
+        Worker w1 = new Worker(Worker.IDs.A, "elettra");
+        Worker w2 = new Worker(Worker.IDs.A, "filippo");
+        istance.build(BlockTypeEnum.LEVEL1);
+        assertNull(istance.getWorkerOwnerUsername());
+        istance.addWorker(w1);
+        assertEquals("elettra",istance.getWorkerOwnerUsername());
+    }
+
+    @Test
+    public void getWorkerID() throws InvalidBuildException, InvalidMovementException {
+        Worker w1 = new Worker(Worker.IDs.A, "elettra");
+        Worker w2 = new Worker(Worker.IDs.A, "filippo");
+        istance.build(BlockTypeEnum.LEVEL1);
+        assertNull(istance.getWorkerID());
+        istance.addWorker(w1);
+        assertEquals(Worker.IDs.A,istance.getWorkerID());
+    }
+
+    @Test
+    public void getWorkerColor() throws InvalidBuildException, InvalidMovementException {
+        Worker w1 = new Worker(Worker.IDs.A, "elettra");
+        Worker w2 = new Worker(Worker.IDs.A, "filippo");
+        w1.setColor(WorkerColors.WHITE);
+        istance.build(BlockTypeEnum.LEVEL1);
+        assertNull(istance.getWorkerColor());
+        istance.addWorker(w1);
+        assertEquals(WorkerColors.WHITE,istance.getWorkerColor());
+    }
+
+    @Test
+    public void nextBlockToBuild() throws InvalidBuildException {
+        assertEquals(BlockTypeEnum.LEVEL1, istance.nextBlockToBuild());
+        istance.build(BlockTypeEnum.LEVEL1);
+        assertEquals(BlockTypeEnum.LEVEL2, istance.nextBlockToBuild());
+        istance.build(BlockTypeEnum.LEVEL2);
+        assertEquals(BlockTypeEnum.LEVEL3, istance.nextBlockToBuild());
+        istance.build(BlockTypeEnum.LEVEL3);
+        assertEquals(BlockTypeEnum.DOME, istance.nextBlockToBuild());
+    }
+
+    @Test (expected = InvalidBuildException.class)
+    public void nextBlockToBuild_DOME_error() throws InvalidBuildException {
+        istance.build(BlockTypeEnum.LEVEL1);
+        istance.build(BlockTypeEnum.LEVEL2);
+        istance.build(BlockTypeEnum.LEVEL3);
+        istance.build(BlockTypeEnum.DOME);
+        istance.nextBlockToBuild();
+    }
+
+    @Test (expected = InvalidBuildException.class)
+    public void nextBlockToBuild_error() throws InvalidBuildException {
+        istance.build(BlockTypeEnum.LEVEL1);
+        istance.build(BlockTypeEnum.DOME);
+        istance.nextBlockToBuild();
     }
 
 }

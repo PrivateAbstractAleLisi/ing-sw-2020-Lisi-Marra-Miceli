@@ -167,17 +167,17 @@ public class CellCluster implements Cloneable {
     }
 
     public String getWorkerOwnerUsername() {
-        if(hasWorkerOnTop()) {
+        if (hasWorkerOnTop()) {
             return worker.getPlayerUsername();
         }
         return null;
     }
 
     public Worker.IDs getWorkerID() {
-       if(hasWorkerOnTop()) {
-           return worker.getWorkerID();
-       }
-       return null;
+        if (hasWorkerOnTop()) {
+            return worker.getWorkerID();
+        }
+        return null;
     }
 
     /*
@@ -195,8 +195,27 @@ public class CellCluster implements Cloneable {
     }
 
     public WorkerColors getWorkerColor() {
-        if(hasWorkerOnTop()) {
+        if (hasWorkerOnTop()) {
             return worker.getColor();
+        }
+        return null;
+    }
+
+    public BlockTypeEnum nextBlockToBuild() throws InvalidBuildException {
+        if (getCostructionHeight() == 0) {
+            return LEVEL1;
+        } else {
+            BlockTypeEnum lastBlockBuilt = construction.get(getCostructionHeight()-1);
+            switch (lastBlockBuilt){
+                case LEVEL1:
+                    return LEVEL2;
+                case LEVEL2:
+                    return LEVEL3;
+                case LEVEL3:
+                    return DOME;
+                case DOME:
+                    throw new InvalidBuildException("BLOCK_NOT_AVAILABLE");
+            }
         }
         return null;
     }

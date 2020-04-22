@@ -44,6 +44,10 @@ public class VC_PlayerCommandGameEvent extends GameEvent {
         return position;
     }
 
+    public boolean isBlockSet(){
+        return blockToBuild != null;
+    }
+
     public BlockTypeEnum getBlockToBuild() {
         return blockToBuild;
     }
