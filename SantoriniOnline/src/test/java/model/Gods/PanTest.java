@@ -330,7 +330,7 @@ public class PanTest {
 
     @Test
     public void checkWin_pan_comes_down_of_1  () throws CloneNotSupportedException, InvalidMovementException, InvalidBuildException, WinningException {
-        ip.displayIsland();
+//        ip.displayIsland();
         island.placeWorker(worker1, 2, 3);
         island.placeWorker(worker1B, 1, 3);
         island.buildBlock(BlockTypeEnum.LEVEL1, 4, 3);
@@ -342,7 +342,7 @@ public class PanTest {
 
     @Test (expected = WinningException.class)
     public void checkWin_pan_comes_down_of_2  () throws CloneNotSupportedException, InvalidMovementException, InvalidBuildException, WinningException {
-        ip.displayIsland();
+//        ip.displayIsland();
         island.placeWorker(worker1, 2, 3);
         island.placeWorker(worker1B, 1, 3);
         island.buildBlock(BlockTypeEnum.LEVEL1, 0, 0);
@@ -354,7 +354,7 @@ public class PanTest {
 
     @Test (expected = WinningException.class)
     public void checkWin_pan_comes_down_of_2_plus_costant  () throws CloneNotSupportedException, InvalidMovementException, InvalidBuildException, WinningException {
-        ip.displayIsland();
+//        ip.displayIsland();
         island.placeWorker(worker1, 2, 3);
         island.placeWorker(worker1B, 1, 3);
 
@@ -372,7 +372,7 @@ public class PanTest {
 
     @Test (expected = WinningException.class)
     public void checkWin_pan_comes_down_of_3  () throws CloneNotSupportedException, InvalidMovementException, InvalidBuildException, WinningException {
-        ip.displayIsland();
+//        ip.displayIsland();
         island.placeWorker(worker1, 1, 3);
         island.placeWorker(worker1B, 1, 2);
         island.buildBlock(BlockTypeEnum.LEVEL1, 1, 4);

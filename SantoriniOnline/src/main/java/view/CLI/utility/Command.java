@@ -13,7 +13,7 @@ public class Command {
     private final String block;
     private final String com;
 
-   //Converted
+    //Converted
     int fx, fy;
     Worker.IDs fw;
     TurnAction action;
@@ -33,40 +33,36 @@ public class Command {
         try {
             fx = Integer.parseInt(x);
             fy = Integer.parseInt(y);
-        }
-        catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
 
-        if (Worker.IDs.valueOf(worker) == Worker.IDs.A) {
+        if (Worker.IDs.valueOf(worker.toUpperCase()) == Worker.IDs.A) {
             fw = Worker.IDs.A;
-        }
-        else if (Worker.IDs.valueOf(worker) == Worker.IDs.B) {
+        } else if (Worker.IDs.valueOf(worker.toUpperCase()) == Worker.IDs.B) {
             fw = Worker.IDs.B;
 
-        }
-        else {
+        } else {
             return false;
         }
 
         if (com.equals("move")) {
             action = TurnAction.MOVE;
             fblock = null;
-        }
-        else if (com.equals("build")) {
+        } else if (com.equals("build")) {
             action = TurnAction.BUILD;
             if (block != null) {
-                switch(block) {
-                    case("1"):
+                switch (block) {
+                    case ("1"):
                         fblock = BlockTypeEnum.LEVEL1;
                         break;
-                    case("2"):
+                    case ("2"):
                         fblock = BlockTypeEnum.LEVEL2;
                         break;
-                    case("3"):
+                    case ("3"):
                         fblock = BlockTypeEnum.LEVEL3;
                         break;
-                    case("d"):
+                    case ("d"):
                         fblock = BlockTypeEnum.DOME;
                         break;
                     case (""):
@@ -76,8 +72,7 @@ public class Command {
                         return false;
                 }
             }
-        }
-        else {
+        }  else {
             return false;
         }
 

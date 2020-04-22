@@ -1,5 +1,6 @@
 package model.Gods;
 
+import auxiliary.Range;
 import model.BehaviourManager;
 import model.Card;
 import model.CardEnum;
@@ -94,7 +95,7 @@ public class Apollo extends Card {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
-        if(desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())){
+        if (desiredCellCluster.getWorkerOwnerUsername() != null && desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
             return false;
         }
 
@@ -128,9 +129,13 @@ public class Apollo extends Card {
 
     @Override
     protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
-        if(island.getCellCluster(actualX,actualY).hasWorkerOnTop()) {
-            return isValidDestinationApolloPower(actualX, actualY, desiredX, desiredY, island);
+        Range range = new Range(0, 4);
+        if (range.isIndexOfCellInRange(desiredX, desiredY)) {
+            if (island.getCellCluster(actualX, actualY).hasWorkerOnTop()) {
+                return isValidDestinationApolloPower(actualX, actualY, desiredX, desiredY, island);
+            }
+            return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
         }
-        return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
+        return false;
     }
 }

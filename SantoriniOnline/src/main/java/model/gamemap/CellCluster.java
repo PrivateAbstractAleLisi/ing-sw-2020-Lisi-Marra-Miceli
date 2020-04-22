@@ -170,7 +170,7 @@ public class CellCluster implements Cloneable {
         if (hasWorkerOnTop()) {
             return worker.getPlayerUsername();
         }
-        return null;
+        return "null";
     }
 
     public Worker.IDs getWorkerID() {

@@ -13,12 +13,10 @@ import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
 import model.TurnAction;
-import model.gamemap.Worker;
 import networking.client.SantoriniClient;
 import placeholders.IslandData;
 import view.CLI.utility.*;
 
-import java.awt.event.ActionEvent;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -437,9 +435,14 @@ public class CLIView extends EventSource implements EventListener {
             String[] split = typed.split("\\s");
             String command, id, block, row, column;
             command = split[0];
+            VC_PlayerCommandGameEvent request;
 
             if (command.equals("help")) {
                 displayCommandHelp();
+            }else if(command.equals("pass")){
+                request = new VC_PlayerCommandGameEvent("action request", TurnAction.PASS, myUsername,null,null,null);
+                client.sendEvent(request);
+                keepAsking = false;
             } else if (split.length == 4 || split.length == 5) {
 
                 id = split[1];
@@ -456,12 +459,18 @@ public class CLIView extends EventSource implements EventListener {
 
 
                 if (isCommandValid) {
-                    keepAsking = false;
-                    VC_PlayerCommandGameEvent request;
-                    request = new VC_PlayerCommandGameEvent("action request",
-                            com.getFAction(), event.getActingPlayer(), new int[]{com.getFRow(), com.getFColumn()},
-                            com.getFWorker(), com.getFBlock());
-                    notifyAllObserverByType(VIEW, request);
+
+                    if (checkCellInput(com.getFRow(), com.getFColumn())){
+                        keepAsking = false;
+                        request = new VC_PlayerCommandGameEvent("action request",
+                                com.getFAction(), event.getActingPlayer(), new int[]{com.getFRow() - 1, com.getFColumn() - 1},
+                                com.getFWorker(), com.getFBlock());
+                        client.sendEvent(request);
+                    }
+                    else {
+
+                        MessageUtility.displayErrorMessage("invalid row or column");
+                    }
                 } else {
                     MessageUtility.displayErrorMessage("wrong command");
 
@@ -583,7 +592,7 @@ public class CLIView extends EventSource implements EventListener {
         printTurnSequence(event);
 
         if (yourTurn) {
-            System.out.println("It's your turn.");
+            System.out.println("\nIt's your turn.");
         }
 
 

@@ -1,5 +1,6 @@
 package model;
 
+import auxiliary.Range;
 import model.exception.InvalidBuildException;
 import model.exception.InvalidMovementException;
 import model.exception.NoRemainingBlockException;
@@ -190,7 +191,12 @@ public abstract class Card {
      * @return true when the destination is reachable from the actual position, false otherwise
      */
     protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
-        return this.isValidDestination(actualX, actualY, desiredX, desiredY, island);
+        Range range=new Range(0,4);
+
+        if (range.isIndexOfCellInRange(desiredX,desiredY)) {
+            return this.isValidDestination(actualX, actualY, desiredX, desiredY, island);
+        }
+        return false;
     }
 
     /**
@@ -204,9 +210,12 @@ public abstract class Card {
      * @return rue when the construction can be done from the actual position, false otherwise
      */
     protected boolean checkCellCostructionAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
-        for (BlockTypeEnum block : BlockTypeEnum.values()) {
-            if (this.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {
-                return true;
+        Range range=new Range(0,4);
+        if (range.isIndexOfCellInRange(desiredX,desiredY)) {
+            for (BlockTypeEnum block : BlockTypeEnum.values()) {
+                if (this.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {
+                    return true;
+                }
             }
         }
         return false;

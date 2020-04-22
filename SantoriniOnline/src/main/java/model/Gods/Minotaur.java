@@ -1,5 +1,6 @@
 package model.Gods;
 
+import auxiliary.Range;
 import model.BehaviourManager;
 import model.Card;
 import model.CardEnum;
@@ -92,6 +93,10 @@ public class Minotaur extends Card {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
+
+        if (desiredCellCluster.getWorkerOwnerUsername() != null && desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
+            return false;
+        }
 
         //Verifico che la coordinate di destinazione siano diverse da quelle attuali
         if (actualX == desiredX && actualY == desiredY) {
@@ -190,9 +195,13 @@ public class Minotaur extends Card {
 
     @Override
     protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
-        if(island.getCellCluster(actualX,actualY).hasWorkerOnTop()) {
-            return isValidDestinationMinotaurPower(actualX, actualY, desiredX, desiredY, island);
+        Range range = new Range(0, 4);
+        if (range.isIndexOfCellInRange(desiredX, desiredY)) {
+            if (island.getCellCluster(actualX, actualY).hasWorkerOnTop()) {
+                return isValidDestinationMinotaurPower(actualX, actualY, desiredX, desiredY, island);
+            }
+            return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
         }
-        return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
+        return false;
     }
 }

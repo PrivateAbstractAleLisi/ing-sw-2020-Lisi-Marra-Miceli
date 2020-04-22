@@ -99,12 +99,12 @@ public class TurnController extends EventSource implements EventListener {
         int index = this.currentTurnIndex;
 
         while (currentTurn.size() < numberOfPlayers) {
+            currentTurn.add(turnSequence.get(index));
             if (index == numberOfPlayers - 1) {
                 index = 0;
             } else {
                 index++;
             }
-            currentTurn.add(turnSequence.get(index));
         }
 
         return currentTurn;
@@ -143,7 +143,7 @@ public class TurnController extends EventSource implements EventListener {
     private void sendCommandRequest(String actingPlayer) {
         List<TurnAction> availableActions = new ArrayList<TurnAction>();
         int numberOfMove = currentTurnInstance.getNumberOfMove();
-        int numberOfBuild = currentTurnInstance.getNumberOfMove();
+        int numberOfBuild = currentTurnInstance.getNumberOfBuild();
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
 
@@ -162,7 +162,7 @@ public class TurnController extends EventSource implements EventListener {
                 //gets the possibles move for the worker A
                 availableMovementBlocksA.addAll(currentTurnInstance.validActions(IDs.A, MOVE));
                 //gets the possible moves for the worker B
-                availableMovementBlocksA.addAll(currentTurnInstance.validActions(IDs.B, MOVE));
+                availableMovementBlocksB.addAll(currentTurnInstance.validActions(IDs.B, MOVE));
             } else if (behaviour.getMovementsRemaining() != 0) { // the player can make a second move with the worker used for the other actions, also PROMETHEUS that has built before move
 
                 if (currentTurnInstance.getWorkerID() == IDs.A) { //the player has moved with the worker A
@@ -180,7 +180,7 @@ public class TurnController extends EventSource implements EventListener {
             availableMovementBlocksB = null;
         }
         //Double check about what actions can choose the player
-        if (availableMovementBlocksA != null && availableMovementBlocksB != null) {
+        if (availableMovementBlocksA == null && availableMovementBlocksB == null) {
             availableActions.remove(MOVE);
         }
 
@@ -207,8 +207,8 @@ public class TurnController extends EventSource implements EventListener {
         }
 
         //Double check about what actions can choose the player
-        if (availableBuildBlocksA != null && availableBuildBlocksB != null) {
-            availableActions.remove(MOVE);
+        if (availableBuildBlocksA == null && availableBuildBlocksB == null) {
+            availableActions.remove(BUILD);
         }
 
         //todo check se c'è un errrore
@@ -249,6 +249,7 @@ public class TurnController extends EventSource implements EventListener {
                 notifyAllObserverByType(VIEW, requestEvent);
             }
         }
+        sendIslandUpdate();
         sendCommandRequest(currentPlayerUsername);
     }
 
@@ -303,15 +304,15 @@ public class TurnController extends EventSource implements EventListener {
         boolean isPrometheus;
         isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
 
-            System.out.println("DEBUG: he/her's not playing with Prometheus");
+        System.out.println("DEBUG: he/her's not playing with Prometheus");
 
-            Worker wa = currentPlayer.getWorker(IDs.A);
-            Worker wb = currentPlayer.getWorker(IDs.B);
+        Worker wa = currentPlayer.getWorker(IDs.A);
+        Worker wb = currentPlayer.getWorker(IDs.B);
 
-            boolean isWorkerALocked, isWorkerBLocked;
+        boolean isWorkerALocked, isWorkerBLocked;
 
-            //Checks if it's able to perform at least one movement
-            if (!isPrometheus){
+        //Checks if it's able to perform at least one movement
+        if (!isPrometheus) {
 
             //get available movement cells for each worker
             List<int[]> availableCells_Worker_A = currentTurnInstance.validActions(IDs.A, MOVE);
@@ -327,17 +328,17 @@ public class TurnController extends EventSource implements EventListener {
 
             //TODO
         } else if (isPrometheus) {
-                List<int[]> availableCells_Worker_A = currentTurnInstance.validActions(IDs.A, MOVE);
-                List<int[]> availableCells_Worker_B = currentTurnInstance.validActions(IDs.B, MOVE);
-                List<int[]> availableBuildCells_Worker_A = currentTurnInstance.validActions(IDs.A, BUILD);
-                List<int[]> availableBuildCells_Worker_B = currentTurnInstance.validActions(IDs.B, BUILD);
-                isWorkerALocked = availableCells_Worker_A == null && availableBuildCells_Worker_A == null;
-                isWorkerBLocked = availableCells_Worker_B == null && availableBuildCells_Worker_B== null;
+            List<int[]> availableCells_Worker_A = currentTurnInstance.validActions(IDs.A, MOVE);
+            List<int[]> availableCells_Worker_B = currentTurnInstance.validActions(IDs.B, MOVE);
+            List<int[]> availableBuildCells_Worker_A = currentTurnInstance.validActions(IDs.A, BUILD);
+            List<int[]> availableBuildCells_Worker_B = currentTurnInstance.validActions(IDs.B, BUILD);
+            isWorkerALocked = availableCells_Worker_A == null && availableBuildCells_Worker_A == null;
+            isWorkerBLocked = availableCells_Worker_B == null && availableBuildCells_Worker_B == null;
 
-                if (isWorkerALocked && isWorkerBLocked) {
-                    lose(currentPlayer.getUsername());
-                    //you lost, notify the view
-                }
+            if (isWorkerALocked && isWorkerBLocked) {
+                lose(currentPlayer.getUsername());
+                //you lost, notify the view
+            }
         }
     }
 
@@ -388,12 +389,16 @@ public class TurnController extends EventSource implements EventListener {
                 player.getCard().move(w, x, y, board.getIsland());
                 currentTurnInstance.setNumberOfMove(currentTurnInstance.getNumberOfMove() + 1);
                 currentTurnInstance.chooseWorker(w.getWorkerID());
+
                 sendIslandUpdate();
                 if (isCompletelyLocked(currentTurnInstance.getWorkerID())) {
                     lose(currentPlayer.getUsername());
                 }
-
+                sendCommandRequest(player.getUsername());
             } catch (InvalidMovementException e) {
+                System.out.println(e.toString());
+                e.printStackTrace();
+                
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid move!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
@@ -422,6 +427,7 @@ public class TurnController extends EventSource implements EventListener {
                 player.getCard().build(w, block, x, y, board.getIsland());
                 currentTurnInstance.setNumberOfBuild(currentTurnInstance.getNumberOfBuild() + 1);
                 sendIslandUpdate();
+                sendCommandRequest(player.getUsername());
             } catch (InvalidBuildException e) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);

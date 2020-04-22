@@ -15,7 +15,6 @@ import model.Player;
 import model.WorkerColors;
 import model.exception.InvalidCardException;
 import model.exception.InvalidMovementException;
-import model.gamemap.Island;
 import model.gamemap.Worker;
 import placeholders.IslandData;
 
@@ -299,7 +298,6 @@ public class PreGameController extends EventSource implements EventListener {
 
             CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
             notifyAllObserverByType(VIEW, requestEvent);
-
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException();
         }
@@ -318,6 +316,7 @@ public class PreGameController extends EventSource implements EventListener {
 //                room.beginGame(turnSequence);
             }
         }
+
     }
 
     @Override
