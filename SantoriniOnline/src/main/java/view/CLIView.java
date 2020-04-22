@@ -12,13 +12,13 @@ import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import model.CardEnum;
+import model.TurnAction;
+import model.gamemap.Worker;
 import networking.client.SantoriniClient;
 import placeholders.IslandData;
-import view.CLI.utility.CardUtility;
-import view.CLI.utility.IslandUtility;
-import view.CLI.utility.MessageUtility;
-import view.CLI.utility.RoomUtility;
+import view.CLI.utility.*;
 
+import java.awt.event.ActionEvent;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class CLIView extends EventSource implements EventListener {
         String userProposal = askUsername();
 
         //use last userProposal as my username
-        myUsername=userProposal;
+        myUsername = userProposal;
 
         //try to connect
         VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
@@ -284,7 +284,8 @@ public class CLIView extends EventSource implements EventListener {
         }
 
         //use last userProposal as my username
-        myUsername=userProposal;
+        //TODO da fare evento apposta "username approvato"
+        myUsername = userProposal;
 
         VC_ConnectionRequestGameEvent req;
         req = new VC_ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
@@ -357,7 +358,7 @@ public class CLIView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
-
+        MessageUtility.displayErrorMessage(event.getEventDescription().toUpperCase());
     }
 
     @Override
@@ -401,13 +402,77 @@ public class CLIView extends EventSource implements EventListener {
         client.sendEvent(choiceEvent);
     }
 
-    @Override
-    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
-        //not implemente
+
+    private void displayCommandHelp() {
+        System.out.println("COMMAND HELP:");
+        System.out.println("MOVE " + "<WORKER_ID> " + "<row> " + "<column> ");
+        System.out.println("BUILD " + "<WORKER ID> " + "<row> " + "<column> " + "<BLOCK> ");
+        System.out.println("(BLOCK: 1,2,3,D)");
+
     }
+
+    private void displayAvailableBehaviour(CV_CommandRequestEvent event) {
+        boolean canBuild, canMove;
+
+    }
+
 
     @Override
     public void handleEvent(CV_CommandRequestEvent event) {
+
+
+        boolean keepAsking = true;
+        Command com = null;
+        while (keepAsking) {
+            System.out.println("Please insert a new command");
+            System.out.println("<type help to get command help box >");
+            System.out.println("Available actions: ");
+
+            for (TurnAction action : event.getAvailableActions()) {
+                System.out.println(action.toString());
+            }
+
+            input = new Scanner(System.in);
+            String typed = input.nextLine().toLowerCase();
+            String[] split = typed.split("\\s");
+            String command, id, block, row, column;
+            command = split[0];
+
+            if (command.equals("help")) {
+                displayCommandHelp();
+            } else if (split.length == 4 || split.length == 5) {
+
+                id = split[1];
+                row = split[2];
+                column = split[3];
+                if (split.length == 5) {
+                    block = split[4];
+                } else {
+                    block = null;
+                }
+
+                com = new Command(command, row, column, id, block);
+                boolean isCommandValid = com.extract();
+
+
+                if (isCommandValid) {
+                    keepAsking = false;
+                    VC_PlayerCommandGameEvent request;
+                    request = new VC_PlayerCommandGameEvent("action request",
+                            com.getFAction(), event.getActingPlayer(), new int[]{com.getFRow(), com.getFColumn()},
+                            com.getFWorker(), com.getFBlock());
+                    notifyAllObserverByType(VIEW, request);
+                } else {
+                    MessageUtility.displayErrorMessage("wrong command");
+
+                }
+
+            } else {
+                MessageUtility.displayErrorMessage("wrong command");
+            }
+
+
+        }
 
     }
 
@@ -422,17 +487,21 @@ public class CLIView extends EventSource implements EventListener {
         return oneToFive.contains(x) && oneToFive.contains(y);
     }
 
-    @Override
-    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-
+    private void displayIslandUpdateFromJson(String islaJson) {
         //display island
         Gson gson = new Gson();
-        final IslandData isla = (IslandData) gson.fromJson(event.getIsland(), IslandData.class);
+        final IslandData isla = (IslandData) gson.fromJson(islaJson, IslandData.class);
 
         IslandUtility temp = new IslandUtility(isla);
 
         temp.displayIsland();
+    }
 
+    @Override
+    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
+
+
+        displayIslandUpdateFromJson(event.getIsland());
         String workerFirstOrSecond = null;
         switch (event.getWorkerToPlace()) {
 
@@ -497,15 +566,31 @@ public class CLIView extends EventSource implements EventListener {
 
     }
 
+    //TURN
+
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
 
-        String yourUsername = event.getCurrentPlayerUsername().toLowerCase();
+        String yourUsername = myUsername;
+        if (myUsername == null) {
+            System.err.println("username not set");
+        }
         String currentPlayerUsername = event.getTurnRotation().get(0);
 
-        boolean yourTurn = yourUsername.equals(currentPlayerUsername);
+        boolean yourTurn = yourUsername.toLowerCase().equals(currentPlayerUsername.toLowerCase());
         clearScreen();
         System.out.println("GAME:");
+        printTurnSequence(event);
+
+        if (yourTurn) {
+            System.out.println("It's your turn.");
+        }
+
+
+    }
+
+
+    private void printTurnSequence(CV_NewTurnEvent event) {
         MessageUtility.printDivider();
 
         List<String> turnRotation = event.getTurnRotation();
@@ -514,24 +599,19 @@ public class CLIView extends EventSource implements EventListener {
         for (String s : turnRotation) {
             if (turnRotation.indexOf(s) == 0) {
                 System.out.print(ANSIColors.GREEN_UNDERLINED + s.toUpperCase() + ANSIColors.ANSI_RESET);
-            }
-            else {
+            } else {
                 System.out.print(" <<< ");
                 System.out.print(ANSIColors.ANSI_RESET + s.toUpperCase() + ANSIColors.ANSI_RESET);
             }
         }
-
     }
 
     @Override
-    public void handleEvent(MV_IslandUpdateEvent event) {
-
+    public void handleEvent(CV_IslandUpdateEvent event) {
+        displayIslandUpdateFromJson(event.getNewIsland());
+        System.out.println("");
     }
 
-    @Override
-    public void handleEvent(VC_PlayerCommandGameEvent event) {
-
-    }
 
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
@@ -544,6 +624,10 @@ public class CLIView extends EventSource implements EventListener {
                 NOT IMPLEMENTED
      */                             //
 
+    @Override
+    public void handleEvent(VC_PlayerCommandGameEvent event) {
+
+    }
 
     @Override //NO IMPL
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
@@ -574,6 +658,11 @@ public class CLIView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerCardChosenEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
 
     }
 
