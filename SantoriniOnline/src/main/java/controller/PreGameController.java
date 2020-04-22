@@ -15,6 +15,7 @@ import model.Player;
 import model.WorkerColors;
 import model.exception.InvalidCardException;
 import model.exception.InvalidMovementException;
+import model.gamemap.Island;
 import model.gamemap.Worker;
 import placeholders.IslandData;
 
@@ -97,8 +98,19 @@ public class PreGameController extends EventSource implements EventListener {
             try {
                 boardManager.selectCard(card);
             } catch (InvalidCardException e) {
+                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid cards chosen!", challenger);
+                notifyAllObserverByType(VIEW, errorEvent);
+
+                CV_ChallengerChosenEvent requestEvent = new CV_ChallengerChosenEvent("", room.getSIZE());
+                notifyAllObserverByType(VIEW, requestEvent);
 
             } catch (LimitExceededException e) {
+                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("too many cards selected!", challenger);
+                notifyAllObserverByType(VIEW, errorEvent);
+
+                CV_ChallengerChosenEvent requestEvent = new CV_ChallengerChosenEvent("", room.getSIZE());
+                notifyAllObserverByType(VIEW, requestEvent);
+
 
             }
         }
@@ -149,6 +161,12 @@ public class PreGameController extends EventSource implements EventListener {
                 ChallengerChooseFirstPlayer();
             }
         } catch (InvalidCardException e) {
+            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid card chosen!", challenger);
+            notifyAllObserverByType(VIEW, errorEvent);
+
+            CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, event.getPlayer());
+            notifyAllObserverByType(VIEW, requestEvent);
+
 
         }
     }
@@ -256,6 +274,13 @@ public class PreGameController extends EventSource implements EventListener {
         actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
     }
 
+    public String getCurrentIslandJson(){
+        IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
+        Gson gson = new Gson();
+        String islandDataJson = gson.toJson(currentIsland);
+        return islandDataJson;
+    }
+
     /**
      * this method handle the VC_PlayerPlacedWorkerEvent.
      * if the worker placed is the IDs.A it sends an event asking for the placement of IDs.B worker to the same player
@@ -268,18 +293,21 @@ public class PreGameController extends EventSource implements EventListener {
         try {
             placeInvoke(event);
         } catch (InvalidMovementException e) {
-            //todo gestione errore
-            e.printStackTrace();
+            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid placement of the worker!", event.getActingPlayer());
+            notifyAllObserverByType(VIEW, errorEvent);
+
+
+            CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
+            notifyAllObserverByType(VIEW, requestEvent);
+
         } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
+            throw new RuntimeException();
         }
 
         if (event.getId() == Worker.IDs.A) {
-            IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
-            Gson gson = new Gson();
-            String islandDataJson = gson.toJson(currentIsland);
+
             CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
-                    event.getActingPlayer(), islandDataJson, Worker.IDs.B);
+                    event.getActingPlayer(), getCurrentIslandJson(), Worker.IDs.B);
             notifyAllObserverByType(VIEW, newEvent);
         } else {
             if (currentTurnIndex + 1 < turnSequence.size()) {
@@ -356,7 +384,7 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(MV_IslandUpdateEvent event) {
+    public void handleEvent(CV_IslandUpdateEvent event) {
 
     }
 

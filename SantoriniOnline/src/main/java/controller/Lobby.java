@@ -201,7 +201,7 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(MV_IslandUpdateEvent event) {
+    public void handleEvent(CV_IslandUpdateEvent event) {
 
     }
 

@@ -62,7 +62,7 @@ public interface EventListener {
 
     void handleEvent(CV_NewTurnEvent event);
 
-    void handleEvent(MV_IslandUpdateEvent event);
+    void handleEvent(CV_IslandUpdateEvent event);
 
     void handleEvent(VC_PlayerCommandGameEvent event);
 }

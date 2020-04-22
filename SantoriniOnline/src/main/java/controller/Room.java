@@ -72,31 +72,6 @@ public class Room extends EventSource {
         }
     }
 
-    //todo farlo con lo stack
-    private void setColor(String username) {
-        Player player;
-        switch (activeUsers.size()) {
-            case 1:
-                player = boardManager.getPlayer(username);
-                player.setColor(WorkerColors.BEIGE);
-                player.getWorker(Worker.IDs.A).setColor(WorkerColors.BEIGE);
-                player.getWorker(Worker.IDs.B).setColor(WorkerColors.BEIGE);
-                break;
-            case 2:
-                player = boardManager.getPlayer(username);
-                player.setColor(WorkerColors.BLUE);
-                player.getWorker(Worker.IDs.A).setColor(WorkerColors.BLUE);
-                player.getWorker(Worker.IDs.B).setColor(WorkerColors.BLUE);
-                break;
-            case 3:
-                player = boardManager.getPlayer(username);
-                player.setColor(WorkerColors.WHITE);
-                player.getWorker(Worker.IDs.A).setColor(WorkerColors.WHITE);
-                player.getWorker(Worker.IDs.B).setColor(WorkerColors.WHITE);
-                break;
-        }
-    }
-
     public void logAllUsers() {
         System.out.println("IN THIS ROOM: ");
         for (int i = 0; i < activeUsers.size(); i++) {

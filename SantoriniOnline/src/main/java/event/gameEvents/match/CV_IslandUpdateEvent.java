@@ -3,10 +3,10 @@ package event.gameEvents.match;
 import event.core.EventListener;
 import event.gameEvents.GameEvent;
 
-public class MV_IslandUpdateEvent extends GameEvent {
+public class CV_IslandUpdateEvent extends GameEvent {
     private final String newIsland;
 
-    public MV_IslandUpdateEvent(String description, String newIsland) {
+    public CV_IslandUpdateEvent(String description, String newIsland) {
         super(description);
         this.newIsland = newIsland;
     }

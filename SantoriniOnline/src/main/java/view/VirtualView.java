@@ -20,7 +20,7 @@ import java.net.Socket;
 public class VirtualView extends EventSource implements EventListener {
 
 
-    private Lobby lobby;
+    private final Lobby lobby;
 
     //todo AFTER DEBUG: make private
     public InetAddress userIP;
@@ -94,21 +94,16 @@ public class VirtualView extends EventSource implements EventListener {
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         notifyAllObserverByType(ListenerType.VIEW, event);
-        if(event.getId()== Worker.IDs.B){
-            if(lobby.canStartGameForThisUser(username)){
+        if (event.getId() == Worker.IDs.B) {
+            if (lobby.canStartGameForThisUser(username)) {
                 lobby.startGameForThisUser(username);
             }
         }
     }
 
     @Override
-    public void handleEvent(CV_CommandRequestEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_GameOverEvent event) {
-
+    public void handleEvent(VC_PlayerCommandGameEvent event) {
+        notifyAllObserverByType(ListenerType.VIEW, event);
     }
 
 
@@ -129,21 +124,6 @@ public class VirtualView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
         sendEventToClient(event);
-    }
-
-    @Override
-    public void handleEvent(CV_NewTurnEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(MV_IslandUpdateEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_PlayerCommandGameEvent event) {
-
     }
 
     @Override
@@ -168,11 +148,6 @@ public class VirtualView extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(CV_GameErrorGameEvent event) {
-
-    }
-
-    @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
         if (event.getChallenger().equals(this.username)) {
             sendEventToClient(event);
@@ -191,6 +166,35 @@ public class VirtualView extends EventSource implements EventListener {
         if (event.getUserIP().equals(userIP) && event.getUserPort() == userPort) {
             sendEventToClient(event);
         }
+    }
+
+    @Override
+    public void handleEvent(CV_NewTurnEvent event) {
+        sendEventToClient(event);
+    }
+
+    @Override
+    public void handleEvent(CV_CommandRequestEvent event) {
+        if (event.getActingPlayer().equals(this.username)) {
+            sendEventToClient(event);
+        }
+    }
+
+    @Override
+    public void handleEvent(CV_GameOverEvent event) {
+        sendEventToClient(event);
+    }
+
+    @Override
+    public void handleEvent(CV_GameErrorGameEvent event) {
+        if (event.getToUsername().equals(this.username)) {
+            sendEventToClient(event);
+        }
+    }
+
+    @Override
+    public void handleEvent(CV_IslandUpdateEvent event) {
+        sendEventToClient(event);
     }
 
 
