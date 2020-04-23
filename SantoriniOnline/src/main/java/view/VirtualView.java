@@ -194,7 +194,13 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
-        sendEventToClient(event);
+        if (event.isRecipientSet()) {
+            if (event.getRecipient().equals(this.username)) {
+                sendEventToClient(event);
+            }
+        } else {
+            sendEventToClient(event);
+        }
     }
 
 

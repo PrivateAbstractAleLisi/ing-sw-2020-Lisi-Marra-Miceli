@@ -89,6 +89,18 @@ public class PreGameController extends EventSource implements EventListener {
         }
     }
 
+    /**
+     * This method return the {@code turnSequence} as List
+     *
+     * @return return the turn sequence as List
+     */
+    private List<Player> getPlayersSequenceAsList() {
+        List<Player> players = new ArrayList<Player>();
+        for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
+            players.add(player.getValue());
+        }
+        return players;
+    }
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
@@ -235,10 +247,7 @@ public class PreGameController extends EventSource implements EventListener {
      * The first time currentTurnIndex should be 0
      */
     private void askPlaceFirstWorkerForCurrentUser() {
-        List<Player> players = new ArrayList<Player>();
-        for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
-            players.add(player.getValue());
-        }
+        List<Player> players = getPlayersSequenceAsList();
 
         Player activePlayer = turnSequence.get(currentTurnIndex);
 
@@ -273,7 +282,15 @@ public class PreGameController extends EventSource implements EventListener {
         actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
     }
 
-    public String getCurrentIslandJson(){
+    public void sendIslandUpdate(String recipient) {
+        IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
+        Gson gson = new Gson();
+        String islandDataJson = gson.toJson(currentIsland);
+        CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent("island update", islandDataJson, recipient);
+        notifyAllObserverByType(VIEW, islandUpdateEvent);
+    }
+
+    public String getCurrentIslandJson() {
         IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
         Gson gson = new Gson();
         String islandDataJson = gson.toJson(currentIsland);
@@ -291,6 +308,12 @@ public class PreGameController extends EventSource implements EventListener {
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         try {
             placeInvoke(event);
+            List<Player> players = getPlayersSequenceAsList();
+            for (Player recipient : players) {
+                if (!recipient.getUsername().equals(event.getActingPlayer())) {
+                    sendIslandUpdate(recipient.getUsername());
+                }
+            }
         } catch (InvalidMovementException e) {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid placement of the worker!", event.getActingPlayer());
             notifyAllObserverByType(VIEW, errorEvent);
