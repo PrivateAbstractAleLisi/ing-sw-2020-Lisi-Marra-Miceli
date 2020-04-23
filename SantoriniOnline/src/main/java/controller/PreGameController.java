@@ -177,8 +177,6 @@ public class PreGameController extends EventSource implements EventListener {
 
             CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, event.getPlayer());
             notifyAllObserverByType(VIEW, requestEvent);
-
-
         }
     }
 
@@ -279,7 +277,11 @@ public class PreGameController extends EventSource implements EventListener {
         int x = event.getPosX();
         int y = event.getPosY();
 
-        actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
+        if (worker.getPosition() == null) {
+            actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
+        } else {
+            throw new InvalidMovementException("Worker already placed");
+        }
     }
 
     public void sendIslandUpdate(String recipient) {
@@ -308,38 +310,38 @@ public class PreGameController extends EventSource implements EventListener {
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         try {
             placeInvoke(event);
+
+            //done only if no exception is thrown
+
             List<Player> players = getPlayersSequenceAsList();
             for (Player recipient : players) {
                 if (!recipient.getUsername().equals(event.getActingPlayer())) {
                     sendIslandUpdate(recipient.getUsername());
                 }
             }
+
+            if (event.getId() == Worker.IDs.A) {
+                CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
+                        event.getActingPlayer(), getCurrentIslandJson(), Worker.IDs.B);
+                notifyAllObserverByType(VIEW, newEvent);
+            } else {
+                if (currentTurnIndex + 1 < turnSequence.size()) {
+                    currentTurnIndex++;
+                    askPlaceFirstWorkerForCurrentUser();
+                } else {
+                    room.setGameCanStart(true);
+                }
+            }
+
         } catch (InvalidMovementException e) {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid placement of the worker!", event.getActingPlayer());
             notifyAllObserverByType(VIEW, errorEvent);
-
 
             CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
             notifyAllObserverByType(VIEW, requestEvent);
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException();
         }
-
-        if (event.getId() == Worker.IDs.A) {
-
-            CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
-                    event.getActingPlayer(), getCurrentIslandJson(), Worker.IDs.B);
-            notifyAllObserverByType(VIEW, newEvent);
-        } else {
-            if (currentTurnIndex + 1 < turnSequence.size()) {
-                currentTurnIndex++;
-                askPlaceFirstWorkerForCurrentUser();
-            } else {
-                room.setGameCanStart(true);
-//                room.beginGame(turnSequence);
-            }
-        }
-
     }
 
     @Override

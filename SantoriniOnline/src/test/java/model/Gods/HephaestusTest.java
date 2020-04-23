@@ -15,7 +15,7 @@ import view.CLI.utility.IslandUtility;
 import static org.junit.Assert.*;
 
 public class HephaestusTest {
-    BoardManager boardManager=null;
+    BoardManager boardManager = null;
     Card card = null;
     Card card2 = null;
     Player player1 = null;
@@ -23,27 +23,27 @@ public class HephaestusTest {
     Island island = null;
     Worker worker1 = null;
     Worker worker2 = null;
-    Worker worker1B= null;
-    Worker worker2B= null;
+    Worker worker1B = null;
+    Worker worker2B = null;
     IslandUtility ip = null;
 
     @Before
     public void setUp() throws Exception {
-        boardManager=new BoardManager();
+        boardManager = new BoardManager();
         boardManager.addPlayer("Gabriele");
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-        player1=boardManager.getPlayer("Gabriele");
-        player2=boardManager.getPlayer("Matteo");
+        player1 = boardManager.getPlayer("Gabriele");
+        player2 = boardManager.getPlayer("Matteo");
         player1.setCard(CardEnum.HEPHAESTUS);
         player2.setCard(CardEnum.ATLAS);
         worker1 = player1.getWorker(Worker.IDs.A);
         worker2 = player2.getWorker(Worker.IDs.A);
         worker1B = player1.getWorker(Worker.IDs.B);
         worker2B = player2.getWorker(Worker.IDs.B);
-        card=player1.getCard();
-        card2=player2.getCard();
+        card = player1.getCard();
+        card2 = player2.getCard();
 
     }
 
@@ -319,7 +319,7 @@ public class HephaestusTest {
 
     //god specific tests
     @Test
-    public void resetBehaviour(){
+    public void resetBehaviour() {
         BehaviourManager behaviourManager = player1.getBehaviour();
         behaviourManager.setCanClimb(false);
         behaviourManager.setCanBuildDomeEverywhere(true);
@@ -337,24 +337,46 @@ public class HephaestusTest {
     @Test
     public void build_twoValidBuild_shouldReturnNormally() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 2, 2, island);
-        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2 ,3 , boardManager.getIsland());
+        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2, 3, boardManager.getIsland());
         player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL1, 3, 3, boardManager.getIsland());
         player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL2, 3, 3, boardManager.getIsland());
-        assertEquals(2, boardManager.getIsland().getCellCluster(3,3 ).getCostructionHeight() );
+        assertEquals(2, boardManager.getIsland().getCellCluster(3, 3).getCostructionHeight());
     }
 
-    @Test (expected = InvalidBuildException.class)
+    @Test(expected = InvalidBuildException.class)
     public void build_invalidDomeBuild_shouldThrowException() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 2, 2, island);
         //simulation of two turns
         //first turn:
-        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2 ,3 , boardManager.getIsland());
+        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2, 3, boardManager.getIsland());
         player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL1, 3, 3, boardManager.getIsland());
         player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL2, 3, 3, boardManager.getIsland());
         player1.getCard().resetBehaviour();
         //second turn:
-        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2 , 4, boardManager.getIsland());
+        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2, 4, boardManager.getIsland());
         player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL3, 3, 3, boardManager.getIsland());
         player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.DOME, 3, 3, boardManager.getIsland());
     }
+
+    @Test(expected = InvalidBuildException.class)
+    public void build_invalidBuild_differentPlace_shouldThrowException() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+        card.placeWorker(worker1, 2, 2, island);
+        //simulation of two turns
+        //first turn:
+        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2, 3, boardManager.getIsland());
+        player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL1, 3, 3, boardManager.getIsland());
+        player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL1, 3, 4, boardManager.getIsland());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void build_invalidBuild_differentWorkers_shouldThrowException() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+        card.placeWorker(worker1, 2, 2, island);
+        card.placeWorker(worker1B, 4, 3, island);
+        //simulation of two turns
+        //first turn:
+        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2, 3, boardManager.getIsland());
+        player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL1, 3, 3, boardManager.getIsland());
+        player1.getCard().build(player1.getWorker(Worker.IDs.B), BlockTypeEnum.LEVEL2, 3, 3, boardManager.getIsland());
+    }
+
 }

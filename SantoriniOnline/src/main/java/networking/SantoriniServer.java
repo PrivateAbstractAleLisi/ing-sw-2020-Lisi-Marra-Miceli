@@ -3,8 +3,8 @@ package networking;
 import controller.Lobby;
 
 import java.io.IOException;
-import java.io.*;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class SantoriniServer {
 
@@ -24,24 +24,23 @@ public class SantoriniServer {
             return;
         }
         System.out.println("server is running");
-        while(true) { //waiting for a client to connect
+        while (true) { //waiting for a client to connect
 
 
-                Socket clientIncoming = socket.accept(); //get the client socket
-                System.out.println("accepted");
-                SantoriniServerClientHandler handler = new SantoriniServerClientHandler((clientIncoming));
+            Socket clientIncoming = socket.accept(); //get the client socket
+            String clientIpAddress = clientIncoming.getInetAddress().toString();
+            System.out.println("New client accepted:\tIPAddress: " + clientIpAddress + "\tPort: " + clientIncoming.getPort());
+            SantoriniServerClientHandler handler = new SantoriniServerClientHandler((clientIncoming));
 
-                //Starts a new thread to handle this client
-                String threadID = clientIncoming.getInetAddress() + "@" + clientIncoming.getLocalPort();
-                Thread t = new Thread(handler, "santorini_server_" + threadID);
-                t.start();
-
+            //Starts a new thread to handle this client
+            String threadID = clientIncoming.getInetAddress() + "@" + clientIncoming.getPort();
+            Thread t = new Thread(handler, "santorini_server_" + threadID);
+            t.start();
+            System.out.println("Client " + clientIpAddress + " in thread: " + threadID);
         }
 
 
     }
-
-
 
 
 }

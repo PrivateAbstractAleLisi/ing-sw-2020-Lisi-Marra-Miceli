@@ -34,22 +34,28 @@ public class Hephaestus extends Card {
         }
     }
 
+    private boolean hasAlreadyBuiltInThisTurn() {
+        return lastBuiltPosition[1] != -1 || lastBuiltPosition[0] != -1;
+    }
+
     @Override
     public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
-        if (!hasAlreadyBuiltHereInThisTurn(desiredX, desiredY)) {
+        if (!hasAlreadyBuiltInThisTurn()) {
             super.build(worker, block, desiredX, desiredY, island);
             lastBuiltPosition[0] = desiredX;
             lastBuiltPosition[1] = desiredY;
             workerChoosen = worker.getWorkerID();
         } else {
-            if (block == BlockTypeEnum.DOME) {
+            if (hasAlreadyBuiltHereInThisTurn(desiredX, desiredY) && block != BlockTypeEnum.DOME && worker.getWorkerID() == workerChoosen) {
+                super.build(worker, block, desiredX, desiredY, island);
+                lastBuiltPosition[0] = desiredX;
+                lastBuiltPosition[1] = desiredY;
+            } else if (block == BlockTypeEnum.DOME) {
                 throw new InvalidBuildException("Cannot build a DOME");
             } else if (worker.getWorkerID() != workerChoosen) {
                 throw new IllegalArgumentException("DEMETER: on the second building you must use the same worker");
             } else {
-                super.build(worker, block, desiredX, desiredY, island);
-                lastBuiltPosition[0] = desiredX;
-                lastBuiltPosition[1] = desiredY;
+                throw new InvalidBuildException("You must build on the same place of the first build");
             }
         }
     }
