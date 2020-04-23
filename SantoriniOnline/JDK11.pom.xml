@@ -31,7 +31,7 @@
 
     <properties>
 
-        <java.home>C:\Program Files\Java\jdk-11.0.7\bin</java.home>
+<!--        <java.home>C:\Program Files\Java\jdk-11.0.7\bin</java.home>-->
         <maven.compiler.source>1.11</maven.compiler.source>
         <maven.compiler.target>1.11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
