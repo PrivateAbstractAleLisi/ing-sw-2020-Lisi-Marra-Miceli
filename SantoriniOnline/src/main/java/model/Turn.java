@@ -94,8 +94,7 @@ public class Turn {
                 }
             }
         }
-        if (validMoves.isEmpty()) return null;
-        else return validMoves;
+        return validMoves;
     }
 
     public int getNumberOfMove() {

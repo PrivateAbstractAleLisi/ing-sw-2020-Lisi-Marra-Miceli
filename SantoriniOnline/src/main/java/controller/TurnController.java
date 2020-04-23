@@ -29,9 +29,9 @@ import static model.gamemap.Worker.IDs;
 /**
  * This class filters VirtualView events, it creates a turn(on model) for current player and manages it
  *
- * @author alelisi
+ *
  */
-//TODO complete the implementation when model turn class is ready
+
 public class TurnController extends EventSource implements EventListener {
 
     private Map<Integer, Player> turnSequence;
@@ -139,6 +139,50 @@ public class TurnController extends EventSource implements EventListener {
         }
         return players;
     }
+    public void setUpAvailableMovements(BehaviourManager behaviour, List<int[]> availableMovementsA, List<int[]> availableMovementsB) {
+        if (currentTurnInstance.getNumberOfMove() == 0 && currentTurnInstance.getNumberOfBuild() == 0) { // he can move with any of the two workers
+
+            //gets the possibles move for the worker A
+            availableMovementsA.addAll(currentTurnInstance.validActions(IDs.A, MOVE));
+            //gets the possible moves for the worker B
+            availableMovementsB.addAll(currentTurnInstance.validActions(IDs.B, MOVE));
+        } else if (behaviour.getMovementsRemaining() != 0) { // the player can make a second move with the worker used for the other actions, also PROMETHEUS that has built before move
+
+            if (currentTurnInstance.getWorkerID() == IDs.A) { //the player has moved with the worker A
+                availableMovementsA.addAll(currentTurnInstance.validActions(IDs.A, MOVE));
+
+            } else if (currentTurnInstance.getWorkerID() == IDs.B) { //the player has moved with the worker B
+
+                availableMovementsB.addAll(currentTurnInstance.validActions(IDs.B, MOVE));
+            }
+        }
+    }
+
+    public void setUpAvailableBuild(BehaviourManager behaviour, List<int[]> availableBuildA, List<int[]> availableBuildB) {
+        if (currentTurnInstance.getNumberOfMove() == 0) { // the player can build with any worker (ONLY PROMETHEUS)
+            availableBuildA.addAll(currentTurnInstance.validActions(IDs.A, BUILD));
+            availableBuildB.addAll(currentTurnInstance.validActions(IDs.B, BUILD));
+        } else {
+            Worker.IDs id = currentTurnInstance.getWorkerID();
+            if (id == IDs.A) {
+                availableBuildA.addAll(currentTurnInstance.validActions(id, BUILD));
+            } else if (id == IDs.B) {
+                availableBuildB.addAll(currentTurnInstance.validActions(id, BUILD));
+            }
+        }
+    }
+
+    public void checkLose(List<TurnAction> availableActions, String player) {
+        if (availableActions.isEmpty()) { //the player has no actions possibles so he loses
+            lose(player);
+        }
+    }
+
+    public boolean canPassTurn() {
+        boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
+        return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0 && !isPrometheus) ||
+                (isPrometheus && (currentTurnInstance.getNumberOfMove() == 1 && currentTurnInstance.getNumberOfBuild() >= 1));
+    }
 
     private void sendCommandRequest(String actingPlayer) {
         List<TurnAction> availableActions = new ArrayList<TurnAction>();
@@ -147,81 +191,45 @@ public class TurnController extends EventSource implements EventListener {
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
 
-        List<int[]> availableMovementBlocksA = new ArrayList<int[]>();
-        List<int[]> availableMovementBlocksB = new ArrayList<int[]>();
+        List<int[]> availableMovementsA = new ArrayList<int[]>();
+        List<int[]> availableMovementsB = new ArrayList<int[]>();
 
-        List<int[]> availableBuildBlocksA = new ArrayList<int[]>();
-        List<int[]> availableBuildBlocksB = new ArrayList<int[]>();
+        List<int[]> availableBuildA = new ArrayList<int[]>();
+        List<int[]> availableBuildB = new ArrayList<int[]>();
 
         //Check if the player can MOVE and set the possible moves
-        if ((behaviour.getMovementsRemaining() != 0) &&
-                ((numberOfBuild == 0) || ((isPrometheus) && (numberOfBuild == 1)))) {//MOVE is a valid action
-            availableActions.add(MOVE);
-            if (numberOfMove == 0 && numberOfBuild == 0) { // he can move with any of the two workers
+        if ((behaviour.getMovementsRemaining() > 0) &&
+                ((numberOfBuild == 0) || ((isPrometheus) && (numberOfBuild == 1)))) {//MOVE may be a valid action
 
-                //gets the possibles move for the worker A
-                availableMovementBlocksA.addAll(currentTurnInstance.validActions(IDs.A, MOVE));
-                //gets the possible moves for the worker B
-                availableMovementBlocksB.addAll(currentTurnInstance.validActions(IDs.B, MOVE));
-            } else if (behaviour.getMovementsRemaining() != 0) { // the player can make a second move with the worker used for the other actions, also PROMETHEUS that has built before move
+            setUpAvailableMovements(behaviour,availableMovementsA, availableMovementsB);
 
-                if (currentTurnInstance.getWorkerID() == IDs.A) { //the player has moved with the worker A
-                    availableMovementBlocksA.addAll(currentTurnInstance.validActions(IDs.A, MOVE));
-
-                    availableMovementBlocksB = null;
-                } else if (currentTurnInstance.getWorkerID() == IDs.B) { //the player has moved with the worker B
-                    availableMovementBlocksA = null;
-
-                    availableMovementBlocksB.addAll(currentTurnInstance.validActions(IDs.B, MOVE));
-                }
+            //if there any MOVE is actually a valid action
+            if (!availableMovementsA.isEmpty() || !availableMovementsB.isEmpty()) {
+                availableActions.add(MOVE);
             }
-        } else {
-            availableMovementBlocksA = null;
-            availableMovementBlocksB = null;
         }
-        //Double check about what actions can choose the player
-        if (availableMovementBlocksA == null && availableMovementBlocksB == null) {
-            availableActions.remove(MOVE);
-        }
+
 
         //Check if the player can BUILD and set the possible builds
-        if ((behaviour.getBlockPlacementLeft() != 0) &&
-                ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0)))) { //BUILD is a valid action
-            availableActions.add(BUILD);
-            if (numberOfMove == 0 && isPrometheus) { // the player can build with any worker (ONLY PROMETHEUS)
-                availableBuildBlocksA.addAll(currentTurnInstance.validActions(IDs.A, BUILD));
-                availableBuildBlocksB.addAll(currentTurnInstance.validActions(IDs.B, BUILD));
-            } else {
-                Worker.IDs id = currentTurnInstance.getWorkerID();
-                if (id == IDs.A) {
-                    availableBuildBlocksA.addAll(currentTurnInstance.validActions(id, BUILD));
-                    availableBuildBlocksB = null;
-                } else if (id == IDs.B) {
-                    availableBuildBlocksA = null;
-                    availableBuildBlocksB.addAll(currentTurnInstance.validActions(id, BUILD));
-                }
+        if ((behaviour.getBlockPlacementLeft()> 0) &&
+                ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0)))) { //BUILD may be a valid action
+
+            setUpAvailableBuild(behaviour, availableBuildA, availableBuildB);
+
+            //if there any BUILD is actually a valid action
+            if (!availableBuildA.isEmpty() || !availableBuildB.isEmpty()) {
+                availableActions.add(BUILD);
             }
-        } else {
-            availableBuildBlocksA = null;
-            availableBuildBlocksB = null;
         }
 
-        //Double check about what actions can choose the player
-        if (availableBuildBlocksA == null && availableBuildBlocksB == null) {
-            availableActions.remove(BUILD);
-        }
-
-        //todo check se c'è un errrore
-        if ((numberOfMove > 0 && numberOfBuild > 0 && !isPrometheus) ||
-                (isPrometheus && (numberOfMove == 1 && numberOfBuild >= 1))) { //the player can terminate the turn
+        if (canPassTurn()) { //the player can terminate the turn
             availableActions.add(PASS);
         }
 
-        if (availableActions.isEmpty()) { //the player has no actions possibles so he loses
-            lose(actingPlayer);
-        }
-        CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildBlocksA, availableMovementBlocksA,
-                availableBuildBlocksB, availableMovementBlocksB, actingPlayer);
+        checkLose(availableActions, actingPlayer);
+
+        CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildA, availableMovementsA,
+                availableBuildB, availableMovementsB, actingPlayer);
         notifyAllObserverByType(VIEW, requestEvent);
     }
 
@@ -304,12 +312,8 @@ public class TurnController extends EventSource implements EventListener {
         boolean isPrometheus;
         isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
 
-        System.out.println("DEBUG: he/her's not playing with Prometheus");
-
-        Worker wa = currentPlayer.getWorker(IDs.A);
-        Worker wb = currentPlayer.getWorker(IDs.B);
-
-        boolean isWorkerALocked, isWorkerBLocked;
+        boolean isWorkerALocked;
+        boolean isWorkerBLocked;
 
         //Checks if it's able to perform at least one movement
         if (!isPrometheus) {
@@ -317,8 +321,8 @@ public class TurnController extends EventSource implements EventListener {
             //get available movement cells for each worker
             List<int[]> availableCells_Worker_A = currentTurnInstance.validActions(IDs.A, MOVE);
             List<int[]> availableCells_Worker_B = currentTurnInstance.validActions(IDs.B, MOVE);
-            isWorkerALocked = availableCells_Worker_A == null;
-            isWorkerBLocked = availableCells_Worker_B == null;
+            isWorkerALocked = availableCells_Worker_A.isEmpty();
+            isWorkerBLocked = availableCells_Worker_B.isEmpty();
 
             if (isWorkerALocked && isWorkerBLocked) {
                 lose(currentPlayer.getUsername());
@@ -327,13 +331,13 @@ public class TurnController extends EventSource implements EventListener {
             //you can move at least one time.
 
             //TODO
-        } else if (isPrometheus) {
+        } else{
             List<int[]> availableCells_Worker_A = currentTurnInstance.validActions(IDs.A, MOVE);
             List<int[]> availableCells_Worker_B = currentTurnInstance.validActions(IDs.B, MOVE);
             List<int[]> availableBuildCells_Worker_A = currentTurnInstance.validActions(IDs.A, BUILD);
             List<int[]> availableBuildCells_Worker_B = currentTurnInstance.validActions(IDs.B, BUILD);
-            isWorkerALocked = availableCells_Worker_A == null && availableBuildCells_Worker_A == null;
-            isWorkerBLocked = availableCells_Worker_B == null && availableBuildCells_Worker_B == null;
+            isWorkerALocked = availableCells_Worker_A.isEmpty() && availableBuildCells_Worker_A.isEmpty();
+            isWorkerBLocked = availableCells_Worker_B.isEmpty() && availableBuildCells_Worker_B.isEmpty();
 
             if (isWorkerALocked && isWorkerBLocked) {
                 lose(currentPlayer.getUsername());
@@ -359,12 +363,14 @@ public class TurnController extends EventSource implements EventListener {
         boolean hasAlreadyMovedAndBuilt = false;
         //checks if the player requesting next turn is the one that is playing the turn
         if (currentTurnInstance.getCurrentPlayer().getUsername().equals(player.getUsername())) {
-            hasAlreadyMovedAndBuilt = currentTurnInstance.getNumberOfMove() > 0
-                    && currentTurnInstance.getNumberOfBuild() > 0;
+            hasAlreadyMovedAndBuilt = (currentTurnInstance.getNumberOfMove() > 0
+                    && currentTurnInstance.getNumberOfBuild() > 0);
             if (hasAlreadyMovedAndBuilt) {
+                player.getCard().resetBehaviour();
                 nextTurn();
             } else {
-                return; //request ignored
+                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can't pass turn!", player.getUsername());
+                notifyAllObserverByType(VIEW, errorEvent);
             }
         }
     }
@@ -450,7 +456,7 @@ public class TurnController extends EventSource implements EventListener {
         List<int[]> availableCells_Worker = currentTurnInstance.validActions(workerChosen, MOVE);
         List<int[]> availableCells_Worker_build = currentTurnInstance.validActions(workerChosen, BUILD);
 
-        return (availableCells_Worker == null && availableCells_Worker_build == null);
+        return (availableCells_Worker.isEmpty() && availableCells_Worker_build.isEmpty());
 
     }
 
@@ -496,112 +502,112 @@ public class TurnController extends EventSource implements EventListener {
     //NOT IMPLEMENTED
     @Override
     public void handleEvent(GameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CC_ConnectionRequestGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
-    /* TurnController doesn't have to implement this handleEvent*/
+
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(VC_PlayerCardChosenEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_WaitGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_CommandRequestEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_GameOverEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-
+        /* TurnController doesn't have to implement this handleEvent*/
     }
 }
