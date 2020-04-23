@@ -5,7 +5,7 @@ import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
 import event.gameEvents.CV_GameErrorGameEvent;
-import event.gameEvents.CV_WaitGameEvent;
+import event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
@@ -141,7 +141,7 @@ public class VirtualView extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(CV_WaitGameEvent event) {
+    public void handleEvent(CV_WaitPreMatchGameEvent event) {
         if (event.getRecipient().equals(this.username)) {
             sendEventToClient(event);
         }
@@ -201,6 +201,11 @@ public class VirtualView extends EventSource implements EventListener {
         } else {
             sendEventToClient(event);
         }
+    }
+
+    @Override
+    public void handleEvent(CV_WaitMatchGameEvent event) {
+        sendEventToClient(event);
     }
 
 

@@ -5,7 +5,7 @@ import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
 import event.gameEvents.CV_GameErrorGameEvent;
-import event.gameEvents.CV_WaitGameEvent;
+import event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
@@ -253,7 +253,7 @@ public class TurnController extends EventSource implements EventListener {
 
         for (Player recipient : players) {
             if (!recipient.getUsername().equals(currentPlayerUsername)) {
-                CV_WaitGameEvent requestEvent = new CV_WaitGameEvent("Is the turn of", currentPlayerUsername, recipient.getUsername());
+                CV_WaitMatchGameEvent requestEvent = new CV_WaitMatchGameEvent("Is the turn of", currentPlayerUsername, recipient.getUsername());
                 notifyAllObserverByType(VIEW, requestEvent);
             }
         }
@@ -404,7 +404,7 @@ public class TurnController extends EventSource implements EventListener {
             } catch (InvalidMovementException e) {
                 System.out.println(e.toString());
                 e.printStackTrace();
-                
+
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid move!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
@@ -531,6 +531,11 @@ public class TurnController extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_WaitMatchGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
         /* TurnController doesn't have to implement this handleEvent*/
     }
@@ -577,7 +582,7 @@ public class TurnController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(CV_WaitGameEvent event) {
+    public void handleEvent(CV_WaitPreMatchGameEvent event) {
         /* TurnController doesn't have to implement this handleEvent*/
     }
 

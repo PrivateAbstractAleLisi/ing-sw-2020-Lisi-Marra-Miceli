@@ -5,7 +5,7 @@ import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
 import event.gameEvents.CV_GameErrorGameEvent;
-import event.gameEvents.CV_WaitGameEvent;
+import event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
@@ -143,7 +143,7 @@ public class Lobby extends EventSource implements EventListener {
             if(activeUsersList.contains(username)){
                 for (Room room:activeRooms) {
                     if(room.getActiveUsers().contains(username)){
-                       room.beginGame();
+                        room.beginGame();
                     }
                 }
             }
@@ -206,6 +206,11 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_WaitMatchGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
 
     }
@@ -250,7 +255,7 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(CV_WaitGameEvent event) {
+    public void handleEvent(CV_WaitPreMatchGameEvent event) {
 
     }
 

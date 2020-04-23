@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.gameEvents.CV_GameErrorGameEvent;
-import event.gameEvents.CV_WaitGameEvent;
+import event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import event.gameEvents.GameEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
@@ -19,6 +19,7 @@ import view.CLI.utility.*;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -80,22 +81,34 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     private int askGameRoomSize() {
+        System.out.print("You're the first player: ");
+        Integer sizeIn = readRoomSize();
 
+        while (sizeIn<0){
+            sizeIn=readRoomSize();
+        }
+
+        return sizeIn;
+    }
+
+    private int readRoomSize(){
         input = new Scanner(System.in);
         Integer sizeIn = null;
         Range validSize = new Range(2, 3);
-        System.out.println("You're the first player, please choose a valid room size (2-3):");
-        sizeIn = input.nextInt();
-
-        while (!validSize.contains(sizeIn)) {
-            System.err.println("Invalid size: please enter 2 or 3");
+        System.out.println("Please choose a valid room size (2-3):");
+        try {
             sizeIn = input.nextInt();
+            while (!validSize.contains(sizeIn)) {
+                System.err.println("Invalid size: please enter 2 or 3");
+                sizeIn = input.nextInt();
+            }
+            MessageUtility.printValidMessage("room size is valid!");
+            return sizeIn;
+        } catch (InputMismatchException e) {
+            System.err.println("Please insert a valid NUMBER");
         }
 
-        MessageUtility.printValidMessage("room size is valid!");
-        return sizeIn;
-
-
+        return -1;
     }
 
 
@@ -304,7 +317,7 @@ public class CLIView extends EventSource implements EventListener {
         }
         clearScreen();
         MessageUtility.printValidMessage("You're the challenger!");
-        output.println("Choose " + event.getRoomSize() + "cards for this match:");
+        output.println("Choose " + event.getRoomSize() + " cards for this match:");
         CardUtility.displayAllCards();
         List<CardEnum> gameCards = challengerPickCards(event.getRoomSize());
         VC_ChallengerCardsChosenEvent response = new VC_ChallengerCardsChosenEvent("", gameCards);
@@ -348,10 +361,16 @@ public class CLIView extends EventSource implements EventListener {
     /*
     waiting both because of the challenger or because of other players choice is made
      */
-    public void handleEvent(CV_WaitGameEvent event) {
+    public void handleEvent(CV_WaitPreMatchGameEvent event) {
         clearScreen();
         System.out.println("⌛︎ WAITING ︎⌛︎");
         System.out.println(event.getActingPlayer().toUpperCase() + " " + event.getEventDescription());
+    }
+
+    @Override
+    public void handleEvent(CV_WaitMatchGameEvent event) {
+        System.out.println("\n⌛︎ WAITING ︎⌛︎");
+        System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
     }
 
     @Override
@@ -374,7 +393,7 @@ public class CLIView extends EventSource implements EventListener {
 
         input = new Scanner(System.in);
 
-        String choice = input.nextLine();
+        String choice = input.nextLine().toLowerCase();
 
         while (!players.contains(choice)) {
             clearScreen();
@@ -390,7 +409,7 @@ public class CLIView extends EventSource implements EventListener {
 
             input = new Scanner(System.in);
 
-            choice = input.nextLine();
+            choice = input.nextLine().toLowerCase();
         }
 
         MessageUtility.printValidMessage("You chose " + choice + " as the first player.");
@@ -439,8 +458,8 @@ public class CLIView extends EventSource implements EventListener {
 
             if (command.equals("help")) {
                 displayCommandHelp();
-            }else if(command.equals("pass")){
-                request = new VC_PlayerCommandGameEvent("action request", TurnAction.PASS, myUsername,null,null,null);
+            } else if (command.equals("pass")) {
+                request = new VC_PlayerCommandGameEvent("action request", TurnAction.PASS, myUsername, null, null, null);
                 client.sendEvent(request);
                 keepAsking = false;
             } else if (split.length == 4 || split.length == 5) {
@@ -460,14 +479,13 @@ public class CLIView extends EventSource implements EventListener {
 
                 if (isCommandValid) {
 
-                    if (checkCellInput(com.getFRow(), com.getFColumn())){
+                    if (checkCellInput(com.getFRow(), com.getFColumn())) {
                         keepAsking = false;
                         request = new VC_PlayerCommandGameEvent("action request",
                                 com.getFAction(), event.getActingPlayer(), new int[]{com.getFRow() - 1, com.getFColumn() - 1},
                                 com.getFWorker(), com.getFBlock());
                         client.sendEvent(request);
-                    }
-                    else {
+                    } else {
 
                         MessageUtility.displayErrorMessage("invalid row or column");
                     }

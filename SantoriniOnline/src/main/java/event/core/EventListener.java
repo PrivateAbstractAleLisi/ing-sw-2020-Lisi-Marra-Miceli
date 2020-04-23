@@ -15,12 +15,9 @@ public interface EventListener {
     /* one handler for each event class */
     void handleEvent(GameEvent event);
 
-    void handleEvent(CV_WaitGameEvent event);
-
     void handleEvent(CV_GameErrorGameEvent event);
 
     //LOBBY EVENT
-
     void handleEvent(CC_ConnectionRequestGameEvent event);
 
     void handleEvent(CV_ConnectionRejectedErrorGameEvent event);
@@ -35,7 +32,6 @@ public interface EventListener {
 
 
     //PREMATCH
-
     void handleEvent(CV_CardChoiceRequestGameEvent event);
 
     void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event);
@@ -43,6 +39,8 @@ public interface EventListener {
     void handleEvent(CV_PlayerPlaceWorkerRequestEvent event);
 
     void handleEvent(CV_ChallengerChosenEvent event);
+
+    void handleEvent(CV_WaitPreMatchGameEvent event);
 
     void handleEvent(VC_ChallengerCardsChosenEvent event);
 
@@ -52,8 +50,8 @@ public interface EventListener {
 
     void handleEvent(VC_PlayerPlacedWorkerEvent event);
 
-    //MATCH
 
+    //MATCH
     void handleEvent(CV_CommandRequestEvent event);
 
     void handleEvent(CV_GameOverEvent event);
@@ -63,6 +61,8 @@ public interface EventListener {
     void handleEvent(CV_NewTurnEvent event);
 
     void handleEvent(CV_IslandUpdateEvent event);
+
+    void handleEvent(CV_WaitMatchGameEvent event);
 
     void handleEvent(VC_PlayerCommandGameEvent event);
 }

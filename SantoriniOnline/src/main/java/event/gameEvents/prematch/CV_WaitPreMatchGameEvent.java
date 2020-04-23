@@ -1,6 +1,7 @@
-package event.gameEvents;
+package event.gameEvents.prematch;
 
 import event.core.EventListener;
+import event.gameEvents.GameEvent;
 
 /**
  * sent by the PreGame when another player is choosing a card (challenger or not)
@@ -11,12 +12,12 @@ import event.core.EventListener;
  * NB: /TODO esplicitare perchè stai aspettando e chi stai aspettando (scelta carta o scelta CARTE del challenger)
  * tutto in description (ale) è l'unica cosa che stampo quando mi arriva questo evento.
  */
-public class CV_WaitGameEvent extends GameEvent {
+public class CV_WaitPreMatchGameEvent extends GameEvent {
 
     private final String actingPlayer;
     private final String recipient;
 
-    public CV_WaitGameEvent(String description, String actingPlayer, String recipient) {
+    public CV_WaitPreMatchGameEvent(String description, String actingPlayer, String recipient) {
         super(description);
         this.actingPlayer = actingPlayer;
         this.recipient = recipient;
