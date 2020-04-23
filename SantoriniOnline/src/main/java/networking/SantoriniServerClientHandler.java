@@ -44,7 +44,8 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         try {
             handleClientConnection();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            //e.printStackTrace();
         }
     }
 
@@ -71,12 +72,16 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
 
         //read further events
         while (true) {
-            GameEvent received = (GameEvent) input.readObject();
+
+            GameEvent received = null;
+            received = (GameEvent) input.readObject();
+
 
             try {
                 if (received!= null)
                 notifyAllObserverByType(VIEW, received);
             } catch (Exception e) {
+
                 e.printStackTrace();
             }
             //keaps reading

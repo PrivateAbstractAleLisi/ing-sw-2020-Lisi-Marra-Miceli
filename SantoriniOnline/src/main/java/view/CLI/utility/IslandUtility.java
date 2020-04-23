@@ -1,6 +1,7 @@
 package view.CLI.utility;
 
 import model.WorkerColors;
+import model.gamemap.Worker;
 import placeholders.CellClusterData;
 import placeholders.IslandData;
 
@@ -19,48 +20,48 @@ public class IslandUtility {
         String cellClusterContent = "| ";
         if(data.getCellCluster(x,y).isFree()) {
             //System.out.print("| " + " " + " ");
-            cellClusterContent = cellClusterContent + "     ";
+            cellClusterContent = cellClusterContent + "     "; //EMPTY : + 5 CHARS
         }
         else if (data.getCellCluster(x,y).isDomeOnTop()) {
             //System.out.print("| " + "O" + " ");
-            cellClusterContent = cellClusterContent + "O  ";
+            cellClusterContent = cellClusterContent + "  ◉  "; //DOME   +5 CHARS (4 EMPTY)
         }
         else{
             CellClusterData xy = data.getCellCluster(x, y);
             int height = xy.getBlocks().length;
 
+
             switch (height) {
                 case 1:
                     //System.out.print("| " + "1" + " ");
-                    cellClusterContent += "1";
+                    cellClusterContent += " 1 ";
                     break;
                 case 2:
                     //System.out.print("| " + "2" + " ");
-                    cellClusterContent += "2";
+                    cellClusterContent += " 2 ";
                     break;
                 case 3:
                     //System.out.print("| " + "3" + " ");
-                    cellClusterContent += "3";
+                    cellClusterContent += " 3 ";
                     break;
-
+                default:
+                    cellClusterContent += "   ";
+                    break;
             }
 
             if (xy.getWorkerOnTop() != null) {
 
                 WorkerColors color = xy.getWorkerColor();
-
+                Character workerLetter = xy.getWorkerOnTop().equals(Worker.IDs.A) ? 'A' : 'B';
                 switch (color) {
                     case BEIGE:
-                        //System.out.print("| " + ANSI_YELLOW + "♦︎" + ANSI_BLACK + " ");
-                        cellClusterContent += ANSI_YELLOW + "♦︎" + ANSI_RESET;
+                        cellClusterContent += ANSI_YELLOW + workerLetter + " " + ANSI_RESET;
                         break;
                     case BLUE:
-                        //System.out.print("| " + CYAN_BRIGHT + "♦︎" + ANSI_BLACK + " ");
-                        cellClusterContent += CYAN_BRIGHT + "♦︎" + ANSI_RESET;
+                        cellClusterContent += CYAN_BRIGHT + workerLetter + " " + ANSI_RESET;
                         break;
                     case WHITE:
-                        //System.out.print("| " + ANSI_WHITE + "♦︎" + ANSI_BLACK + " ");
-                        cellClusterContent += ANSI_WHITE + "♦︎" + ANSI_RESET;
+                        cellClusterContent += ANSI_WHITE + workerLetter + " " + ANSI_RESET;
                         break;
                 }
 

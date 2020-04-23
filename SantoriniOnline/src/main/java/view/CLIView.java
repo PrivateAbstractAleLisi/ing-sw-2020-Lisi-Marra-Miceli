@@ -74,7 +74,7 @@ public class CLIView extends EventSource implements EventListener {
             str = input.nextLine();
         }
 
-        return str;
+        return str.toLowerCase();
 
 
     }
@@ -304,7 +304,7 @@ public class CLIView extends EventSource implements EventListener {
         }
         clearScreen();
         MessageUtility.printValidMessage("You're the challenger!");
-        output.println("Choose 3 cards for this match:");
+        output.println("Choose " + event.getRoomSize() + "cards for this match:");
         CardUtility.displayAllCards();
         List<CardEnum> gameCards = challengerPickCards(event.getRoomSize());
         VC_ChallengerCardsChosenEvent response = new VC_ChallengerCardsChosenEvent("", gameCards);
