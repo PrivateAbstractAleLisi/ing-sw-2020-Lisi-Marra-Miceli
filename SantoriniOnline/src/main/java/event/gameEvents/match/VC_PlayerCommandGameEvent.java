@@ -6,6 +6,8 @@ import model.TurnAction;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.Worker;
 
+import java.util.Arrays;
+
 public class VC_PlayerCommandGameEvent extends GameEvent {
 
     public final TurnAction command;
@@ -44,11 +46,41 @@ public class VC_PlayerCommandGameEvent extends GameEvent {
         return position;
     }
 
-    public boolean isBlockSet(){
+    public boolean isBlockSet() {
         return blockToBuild != null;
     }
 
     public BlockTypeEnum getBlockToBuild() {
         return blockToBuild;
+    }
+
+    @Override
+    public String toString() {
+        String block;
+        if (blockToBuild == null) {
+            block = "Not defined";
+        } else {
+            block = blockToBuild.toString();
+        }
+
+        return "Command=" + command +
+                ", from Player='" + fromPlayer + '\'' +
+                ", Position=" + Arrays.toString(position) +
+                ", workerID=" + workerID +
+                ", BlockToBuild=" + block;
+    }
+
+    public String toStringSmall() {
+        String block;
+        if (blockToBuild == null) {
+            block = "Not defined";
+        } else {
+            block = blockToBuild.toString();
+        }
+
+        return "Command=" + command +
+                ", Position=" + Arrays.toString(position) +
+                ", workerID=" + workerID +
+                ", BlockToBuild=" + block;
     }
 }

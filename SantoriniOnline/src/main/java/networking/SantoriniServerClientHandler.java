@@ -1,25 +1,15 @@
 package networking;
 
+import event.core.EventSource;
+import event.gameEvents.GameEvent;
+import view.VirtualView;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.Buffer;
 
-import auxiliary.ANSIColors;
-import com.google.gson.Gson;
-import controller.Lobby;
-import event.core.EventListener;
-import event.core.EventSource;
-import event.core.ListenerType;
-import event.gameEvents.GameEvent;
-import event.gameEvents.lobby.*;
-import event.gameEvents.prematch.*;
-import view.VirtualView;
-
-import static event.core.ListenerType.CONTROLLER;
 import static event.core.ListenerType.VIEW;
 
 public class SantoriniServerClientHandler extends EventSource implements Runnable {
@@ -29,14 +19,16 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     private InetAddress localUserIP;
     private int localUserPort;
     private ObjectInputStream input;
+    private String threadID;
 
     VirtualView clientVV;
 
-    public SantoriniServerClientHandler(Socket client) {
+    public SantoriniServerClientHandler(Socket client, String threadID) {
         this.client = client;
         this.clientVV = new VirtualView(client);
         makeConnections();
         input=null;
+        this.threadID=threadID;
     }
 
     @Override
@@ -90,6 +82,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         //staccaStacca();
     }
 
-
-
+    public String getThreadID() {
+        return threadID;
+    }
 }

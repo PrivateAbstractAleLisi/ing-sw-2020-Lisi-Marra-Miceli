@@ -23,20 +23,20 @@ public class SantoriniServer {
             System.exit(1);
             return;
         }
-        System.out.println("server is running");
+        System.out.println("SERVER: The server is running");
         while (true) { //waiting for a client to connect
 
 
             Socket clientIncoming = socket.accept(); //get the client socket
-            String clientIpAddress = clientIncoming.getInetAddress().toString();
-            System.out.println("New client accepted:\tIPAddress: " + clientIpAddress + "\tPort: " + clientIncoming.getPort());
-            SantoriniServerClientHandler handler = new SantoriniServerClientHandler((clientIncoming));
+            String clientIpAddress = clientIncoming.getInetAddress().toString().substring(1);
+            System.out.println("SERVER: New client accepted:\tIPAddress: " + clientIpAddress + "\tPort: " + clientIncoming.getPort());
+            String threadID = clientIpAddress + "@" + clientIncoming.getPort();
+            SantoriniServerClientHandler handler = new SantoriniServerClientHandler(clientIncoming,threadID);
 
             //Starts a new thread to handle this client
-            String threadID = clientIncoming.getInetAddress() + "@" + clientIncoming.getPort();
             Thread t = new Thread(handler, "santorini_server_" + threadID);
             t.start();
-            System.out.println("Client " + clientIpAddress + " in thread: " + threadID);
+            System.out.println("SERVER: Client " + clientIpAddress + " in thread: " + threadID);
         }
 
 

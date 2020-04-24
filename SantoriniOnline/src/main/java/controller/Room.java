@@ -6,9 +6,7 @@ import event.gameEvents.lobby.CV_RoomUpdateGameEvent;
 import event.gameEvents.match.CV_GameStartedGameEvent;
 import model.BoardManager;
 import model.Player;
-import model.WorkerColors;
 import model.exception.AlreadyExistingPlayerException;
-import model.gamemap.Worker;
 import view.VirtualView;
 
 import javax.naming.LimitExceededException;
@@ -27,12 +25,13 @@ public class Room extends EventSource {
     private TurnController turnController;
     private Map<Integer, Player> turnSequence;
     private boolean gameCanStart;
+    private String roomID;
 
     //    todo AFTER DEBUG: make private
-    public PreGameController preGame;
+    private PreGameController preGame;
 //    private PreGameController preGame;
 
-    public Room(int size) {
+    public Room(int size, String roomID) {
         this.SIZE = size;
         activeUsers = new ArrayList<String>();
         lastOccupiedPosition = activeUsers.size();
@@ -40,9 +39,9 @@ public class Room extends EventSource {
         virtualViewMap = new HashMap<>(SIZE);
         gameCanStart = false;
         this.turnSequence = new HashMap<Integer, Player>();
+        this.roomID = roomID;
 
-//        DEBUG
-        System.out.println("DEBUG: ROOM: Stanza creata");
+        printLogMessage("Room created");
     }
 
     public void addUser(String username, VirtualView virtualView) {
@@ -54,9 +53,8 @@ public class Room extends EventSource {
             attachListenerByType(ListenerType.VIEW, virtualView);
             this.lastOccupiedPosition = activeUsers.size();
 
-//            setColor(username);
             //        DEBUG
-            System.out.println("DEBUG: ROOM: username aggiunto");
+            printLogMessage("New player " + username.toUpperCase() + " added in the room");
 
             CV_RoomUpdateGameEvent updateEvent = new CV_RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
             notifyAllObserverByType(ListenerType.VIEW, updateEvent);
@@ -68,6 +66,7 @@ public class Room extends EventSource {
         } catch (LimitExceededException e) {
             e.printStackTrace();
         } catch (AlreadyExistingPlayerException e) {
+            printLogMessage("ERROR: The username is already in BoardManager");
             e.printStackTrace();
         }
     }
@@ -80,7 +79,7 @@ public class Room extends EventSource {
     }
 
     public boolean isFull() {
-        return ((lastOccupiedPosition == SIZE));
+        return (lastOccupiedPosition == SIZE);
     }
 
     public void beginPreGame() {
@@ -100,14 +99,13 @@ public class Room extends EventSource {
 
     private void startPreGame() {
         preGame.start();
-        System.out.println("pregame started");
     }
 
     //    public void beginGame(Map<Integer, Player> turnSequence) {
 //        turnController = new TurnController (boardManager, turnSequence, SIZE);
 //    }
     public void beginGame() {
-        turnController = new TurnController(boardManager, this.turnSequence, SIZE);
+        turnController = new TurnController(boardManager, this.turnSequence, SIZE, this);
 
         for (int i = 0; i < SIZE; i++) {
             String tempUser = activeUsers.get(i);
@@ -118,6 +116,7 @@ public class Room extends EventSource {
         CV_GameStartedGameEvent event = new CV_GameStartedGameEvent("", turnSequence.get(0).getUsername());
         notifyAllObserverByType(ListenerType.VIEW, event);
         turnController.firstTurn();
+
     }
 
     public int getSIZE() {
@@ -151,5 +150,27 @@ public class Room extends EventSource {
 
     public void setTurnSequence(Map<Integer, Player> turnSequence) {
         this.turnSequence = turnSequence;
+    }
+
+    public String getRoomID() {
+        return roomID;
+    }
+
+    /**
+     * Print in the Server console a Log from the current Class
+     *
+     * @param messageToPrint a {@link String} with the message to print
+     */
+    private void printLogMessage(String messageToPrint) {
+        System.out.println("\t \tROOM(" + this.roomID + "): " + messageToPrint);
+    }
+
+    /**
+     * Print in the Server console Error Stream an Errror Log from the current Class
+     *
+     * @param messageToPrint a {@link String} with the message to print
+     */
+    private void printErrorLogMessage(String messageToPrint) {
+        System.err.println("\t \tROOM(" + roomID + "): " + messageToPrint);
     }
 }

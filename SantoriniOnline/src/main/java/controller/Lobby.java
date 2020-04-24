@@ -27,6 +27,7 @@ public class Lobby extends EventSource implements EventListener {
         canCreateNewRoom.set(true);
         activeRooms = new ArrayList<Room>();
         activeUsersList = new ArrayList<String>();
+        roomCounter = 0;
     }
 
     private synchronized static Lobby createInstance() { // crea l oggetto solo se non esiste:
@@ -45,15 +46,12 @@ public class Lobby extends EventSource implements EventListener {
     private AtomicBoolean canCreateNewRoom;
     private String pendingUsername;
     private VirtualView pendingVirtualView;
+    private int roomCounter;
 
     private ReentrantLock lock1 = new ReentrantLock();
 
     //todo only one room for now
     private final int MAX_ROOMS = 1;
-
-    public void debug() {
-        System.out.println("debug");
-    }
 
     public boolean isRoomAlreadyCreated() {
         return isRoomAlreadyCreated;
@@ -65,10 +63,13 @@ public class Lobby extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CC_ConnectionRequestGameEvent event) {
-        System.out.println("debug, lobby gestisce una richiesta di connessione");
+        printLogMessage("Connection request to lobby from: " + event.getUserIP().toString().substring(1) +
+                "@" + event.getUserPort() + " with proposed username: " + event.getUsername().toUpperCase());
+
         if (activeUsersList.contains(event.getUsername())) {
             CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
             notifyAllObserverByType(ListenerType.VIEW, msgError);
+            printErrorLogMessage("Connection rejected because the username " + event.getUsername().toUpperCase()+" is already used in this Server");
         } else {
             if (!allRoomsAreFull()) {
                 activeUsersList.add(event.getUsername());
@@ -90,7 +91,7 @@ public class Lobby extends EventSource implements EventListener {
                     pendingVirtualView = event.getVirtualView();
 
                     canCreateNewRoom.set(false);
-                    CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Inserisci la dimensione della stanza: ", event.getUsername());
+                    CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert the desired size of the room: ", event.getUsername());
                     notifyAllObserverByType(ListenerType.VIEW, request);
                 } finally {
                     lock1.unlock();
@@ -98,25 +99,34 @@ public class Lobby extends EventSource implements EventListener {
             } else if (MAX_ROOMS == activeRooms.size()) {
                 CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
                 notifyAllObserverByType(ListenerType.VIEW, msgError);
-            } else if (canCreateNewRoom.get() == false) {
+
+                printErrorLogMessage("Connection rejected because the Room is actually full");
+            } else if (!canCreateNewRoom.get()) {
                 CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "WAIT_FOR_CREATION", "A room is being created by another user, please wait few seconds.", event.getUserIP(), event.getUserPort(), event.getUsername());
                 notifyAllObserverByType(ListenerType.VIEW, msgError);
+
+                printErrorLogMessage("Connection rejected because a room is being created by " + event.getUsername().toUpperCase());
             }
         }
     }
 
     @Override
     public synchronized void handleEvent(VC_RoomSizeResponseGameEvent event) {
-        Room newRoom = new Room(event.getSize());
+        String roomID = "Room_#" + roomCounter;
+        Room newRoom = new Room(event.getSize(), roomID);
         activeRooms.add(newRoom);
+        roomCounter++;
 
         newRoom.addUser(pendingUsername, pendingVirtualView);
 
         setIsRoomAlreadyCreated(true);
         canCreateNewRoom.set(true);
 
+        printLogMessage("Successfully created new room (" + roomID + "). Size:" + event.getSize());
+
         pendingUsername = null;
         pendingVirtualView = null;
+
     }
 
     public boolean canStartPreRoom0() {
@@ -128,9 +138,9 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     public boolean canStartGameForThisUser(String username) {
-        if(activeUsersList.contains(username)){
-            for (Room room:activeRooms) {
-                if(room.getActiveUsers().contains(username)){
+        if (activeUsersList.contains(username)) {
+            for (Room room : activeRooms) {
+                if (room.getActiveUsers().contains(username)) {
                     return room.isGameCanStart();
                 }
             }
@@ -138,11 +148,11 @@ public class Lobby extends EventSource implements EventListener {
         return false;
     }
 
-    public void startGameForThisUser(String username){
-        if(canStartGameForThisUser(username)){
-            if(activeUsersList.contains(username)){
-                for (Room room:activeRooms) {
-                    if(room.getActiveUsers().contains(username)){
+    public void startGameForThisUser(String username) {
+        if (canStartGameForThisUser(username)) {
+            if (activeUsersList.contains(username)) {
+                for (Room room : activeRooms) {
+                    if (room.getActiveUsers().contains(username)) {
                         room.beginGame();
                     }
                 }
@@ -184,6 +194,24 @@ public class Lobby extends EventSource implements EventListener {
         return -1;
     }
 
+    /**
+     * Print in the Server console a Log from the current Class
+     *
+     * @param messageToPrint a {@link String} with the message to print
+     */
+    private void printLogMessage(String messageToPrint) {
+        System.out.println("\tLOBBY: " + messageToPrint);
+    }
+
+    /**
+     * Print in the Server console Error Stream an Errror Log from the current Class
+     *
+     * @param messageToPrint a {@link String} with the message to print
+     */
+    private void printErrorLogMessage(String messageToPrint) {
+        System.err.println("\tLOBBY: " + messageToPrint);
+
+    }
 
     //    NOT IMPLMENTED
     @Override

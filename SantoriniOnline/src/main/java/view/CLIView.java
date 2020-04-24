@@ -256,6 +256,11 @@ public class CLIView extends EventSource implements EventListener {
         System.out.println("\nROOM CREATED: ");
         String[] playersIn = event.getUsersInRoom();
         RoomUtility.printPlayersInRoom(playersIn, event.getRoomSize());
+        if(playersIn.length==event.getRoomSize()){
+            System.out.println("The Pre-Match is starting!!");
+        }else {
+            System.out.println("⌛   WAITING FOR OTHER USERS   ⌛");
+        }
     }
 
 
@@ -308,10 +313,10 @@ public class CLIView extends EventSource implements EventListener {
     this user is the challenger, it has to choose the 3 cards
      */
     public void handleEvent(CV_ChallengerChosenEvent event) {
-        System.out.println("⌛︎ WAITING   ⌛︎");
-        System.out.println("The game is choosing the challenger\n");
+        System.out.println("⌛   WAITING   ⌛");
+        System.out.println("The game is choosing the challenger...\n");
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -336,7 +341,7 @@ public class CLIView extends EventSource implements EventListener {
 
         System.out.println("It's time to choose the card to play with");
         CardUtility.displayAllAvailableCards(event.getAvailableCards());
-        System.out.println("\nPlease insert a card number");
+        System.out.println("\nPlease insert a card number:");
 
         Integer id;
 
@@ -350,7 +355,7 @@ public class CLIView extends EventSource implements EventListener {
         }
 
         CardEnum selected = CardEnum.getValueFromInt(id);
-        MessageUtility.printValidMessage("you made your choice");
+        MessageUtility.printValidMessage("You made your choice");
 
         //notify the server
         VC_PlayerCardChosenEvent choice = new VC_PlayerCardChosenEvent(event.getUsername(), selected);
@@ -363,13 +368,13 @@ public class CLIView extends EventSource implements EventListener {
      */
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
         clearScreen();
-        System.out.println("⌛︎ WAITING ︎⌛︎");
+        System.out.println("⌛   WAITING   ⌛");
         System.out.println(event.getActingPlayer().toUpperCase() + " " + event.getEventDescription());
     }
 
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
-        System.out.println("\n⌛︎ WAITING ︎⌛︎");
+        System.out.println("\n⌛   WAITING   ⌛");
         System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
     }
 
@@ -387,7 +392,7 @@ public class CLIView extends EventSource implements EventListener {
         List<String> players = event.getPlayers();
 
         for (String player : players) {
-            System.out.println("- " + player);
+            System.out.println("- " + player.toUpperCase());
         }
         System.out.println("\nPlease choose a player name from this list:");
 
@@ -403,7 +408,7 @@ public class CLIView extends EventSource implements EventListener {
             players = event.getPlayers();
 
             for (String player : players) {
-                System.out.println("- " + player);
+                System.out.println("- " + player.toUpperCase());
             }
             System.out.println("\nPlease choose a player name from this list:");
 
@@ -425,7 +430,7 @@ public class CLIView extends EventSource implements EventListener {
         System.out.println("MOVE " + "<WORKER_ID> " + "<row> " + "<column> ");
         System.out.println("BUILD " + "<WORKER ID> " + "<row> " + "<column> " + "<BLOCK> ");
         System.out.println("(BLOCK: 1,2,3,D)");
-
+        System.out.println("");
     }
 
     private void displayAvailableBehaviour(CV_CommandRequestEvent event) {
@@ -505,7 +510,11 @@ public class CLIView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_GameOverEvent event) {
-
+        if(event.getWinner().equals(myUsername)){
+            System.out.println("!! YOU WIN !!");
+        }else {
+            System.out.println("YOU LOSE :(");
+        }
     }
 
     public boolean checkCellInput(int x, int y) {
@@ -544,16 +553,16 @@ public class CLIView extends EventSource implements EventListener {
 
         int x, y;
         System.out.println("It's your turn to place your " + workerFirstOrSecond + " worker");
-        System.out.print(" please enter a row :");
+        System.out.print(" Please enter a row:\t");
         x = input.nextInt();
-        System.out.print(" and a column :");
+        System.out.print("\t \tand a column:\t");
         y = input.nextInt();
 
         while (!checkCellInput(x, y)) {
-            MessageUtility.displayErrorMessage("invalid row or column");
-            System.out.print("please enter a row :");
+            MessageUtility.displayErrorMessage("Invalid row or column");
+            System.out.print("Please enter a row:\t");
             x = input.nextInt();
-            System.out.print(" and a column :");
+            System.out.print("\t \tand a column:\t");
             y = input.nextInt();
 
         }

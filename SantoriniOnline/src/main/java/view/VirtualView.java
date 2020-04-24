@@ -23,9 +23,9 @@ public class VirtualView extends EventSource implements EventListener {
     private final Lobby lobby;
 
     //todo AFTER DEBUG: make private
-    public InetAddress userIP;
-    public int userPort;
-    public String username;
+    private InetAddress userIP;
+    private int userPort;
+    private String username;
     private ObjectOutputStream output;
 
     Socket client;
@@ -57,9 +57,6 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
-
-        //todo modificare con Server/socket
-        System.out.println("virtual view ha ricevuto");
         this.userIP = client.getInetAddress();
         this.userPort = client.getPort();
         this.username = event.getUsername();
@@ -67,6 +64,12 @@ public class VirtualView extends EventSource implements EventListener {
         notifyAllObserverByType(ListenerType.VIEW, newServerRequest);
         if (lobby.canStartPreRoom0()) {
             detachListenerByType(ListenerType.VIEW, lobby);
+            try {
+                //Sleep 2 second to show the Room
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             Lobby.instance().startPreGameForRoom0();
         }
     }

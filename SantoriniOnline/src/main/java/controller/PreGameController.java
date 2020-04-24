@@ -41,6 +41,7 @@ public class PreGameController extends EventSource implements EventListener {
     }
 
     public void start() {
+        printLogMessage("Pregame started");
         setColors();
         chooseChallenger();
     }
@@ -63,6 +64,7 @@ public class PreGameController extends EventSource implements EventListener {
 
         CV_ChallengerChosenEvent event = new CV_ChallengerChosenEvent(challenger, room.getSIZE());
         notifyAllObserverByType(VIEW, event);
+        printLogMessage(challenger.toUpperCase() + " is the Challenger");
     }
 
     public Map<String, CardEnum> getPlayersCardsCorrespondence() {
@@ -115,6 +117,7 @@ public class PreGameController extends EventSource implements EventListener {
                 CV_ChallengerChosenEvent requestEvent = new CV_ChallengerChosenEvent("", room.getSIZE());
                 notifyAllObserverByType(VIEW, requestEvent);
 
+                printLogMessage(challenger.toUpperCase() + " has selected invalid cards. New request sent!");
             } catch (LimitExceededException e) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("too many cards selected!", challenger);
                 notifyAllObserverByType(VIEW, errorEvent);
@@ -122,7 +125,7 @@ public class PreGameController extends EventSource implements EventListener {
                 CV_ChallengerChosenEvent requestEvent = new CV_ChallengerChosenEvent("", room.getSIZE());
                 notifyAllObserverByType(VIEW, requestEvent);
 
-
+                printLogMessage(challenger.toUpperCase() + " has selected too many cards. New request sent!");
             }
         }
         List<String> players = room.getActiveUsers();
@@ -235,6 +238,8 @@ public class PreGameController extends EventSource implements EventListener {
             }
         }
 
+        printLogMessage("The challenger chosen " + turnSequence.get(0).getUsername().toUpperCase() + " as first player");
+
         room.setTurnSequence(turnSequence);
         currentTurnIndex = 0;
         askPlaceFirstWorkerForCurrentUser();
@@ -337,11 +342,31 @@ public class PreGameController extends EventSource implements EventListener {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid placement of the worker!", event.getActingPlayer());
             notifyAllObserverByType(VIEW, errorEvent);
 
+            printErrorLogMessage(e.toString()+" - A new PlacementRequest has been send.");
+
             CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
             notifyAllObserverByType(VIEW, requestEvent);
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException();
         }
+    }
+
+    /**
+     * Print in the Server console a Log from the current Class
+     *
+     * @param messageToPrint a {@link String} with the message to print
+     */
+    private void printLogMessage(String messageToPrint) {
+        System.out.println("\t \tROOM(" + room.getRoomID() + ")-PREGAME: " + messageToPrint);
+    }
+
+    /**
+     * Print in the Server console Error Stream an Errror Log from the current Class
+     *
+     * @param messageToPrint a {@link String} with the message to print
+     */
+    private void printErrorLogMessage(String messageToPrint) {
+        System.err.println("\t \tROOM(" + room.getRoomID() + ")-GAME: " + messageToPrint);
     }
 
     @Override

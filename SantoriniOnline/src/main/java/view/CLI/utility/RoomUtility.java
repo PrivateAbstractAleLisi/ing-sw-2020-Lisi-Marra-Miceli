@@ -8,7 +8,7 @@ public class RoomUtility {
         breaker();
         for (int i = 0; i<3; i++) {
             if (i<players.length) {
-                System.out.print(i);
+                System.out.print(i+1);
                 System.out.println(" | " + players[i].toUpperCase());
             }
 

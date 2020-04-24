@@ -28,8 +28,6 @@ import static model.gamemap.Worker.IDs;
 
 /**
  * This class filters VirtualView events, it creates a turn(on model) for current player and manages it
- *
- *
  */
 
 public class TurnController extends EventSource implements EventListener {
@@ -41,14 +39,16 @@ public class TurnController extends EventSource implements EventListener {
 
     private int numberOfPlayers;
     private Player currentPlayer;
-    private BoardManager board;
+    private final BoardManager board;
+    private final Room room;
 
-    public TurnController(BoardManager boardManager, Map<Integer, Player> turnSequence, int numberOfPlayers) {
+    public TurnController(BoardManager boardManager, Map<Integer, Player> turnSequence, int numberOfPlayers, Room room) {
         this.board = boardManager;
         this.turnSequence = turnSequence;
         this.currentTurnIndex = -1;
         this.numberOfPlayers = numberOfPlayers;
         this.currentTurnNumber = 0;
+        this.room = room;
     }
 
     /**
@@ -73,6 +73,7 @@ public class TurnController extends EventSource implements EventListener {
      */
     public void firstTurn() {
         if (currentTurnNumber == 0) {
+            printLogMessage("First turn is starting");
             nextTurn();
         }
     }
@@ -139,6 +140,7 @@ public class TurnController extends EventSource implements EventListener {
         }
         return players;
     }
+
     public void setUpAvailableMovements(BehaviourManager behaviour, List<int[]> availableMovementsA, List<int[]> availableMovementsB) {
         if (currentTurnInstance.getNumberOfMove() == 0 && currentTurnInstance.getNumberOfBuild() == 0) { // he can move with any of the two workers
 
@@ -201,7 +203,7 @@ public class TurnController extends EventSource implements EventListener {
         if ((behaviour.getMovementsRemaining() > 0) &&
                 ((numberOfBuild == 0) || ((isPrometheus) && (numberOfBuild == 1)))) {//MOVE may be a valid action
 
-            setUpAvailableMovements(behaviour,availableMovementsA, availableMovementsB);
+            setUpAvailableMovements(behaviour, availableMovementsA, availableMovementsB);
 
             //if there any MOVE is actually a valid action
             if (!availableMovementsA.isEmpty() || !availableMovementsB.isEmpty()) {
@@ -211,7 +213,7 @@ public class TurnController extends EventSource implements EventListener {
 
 
         //Check if the player can BUILD and set the possible builds
-        if ((behaviour.getBlockPlacementLeft()> 0) &&
+        if ((behaviour.getBlockPlacementLeft() > 0) &&
                 ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0)))) { //BUILD may be a valid action
 
             setUpAvailableBuild(behaviour, availableBuildA, availableBuildB);
@@ -259,6 +261,7 @@ public class TurnController extends EventSource implements EventListener {
         }
         sendIslandUpdate();
         sendCommandRequest(currentPlayerUsername);
+        printLogMessage("New turn for " + currentPlayerUsername.toUpperCase());
     }
 
     //TODO
@@ -271,10 +274,12 @@ public class TurnController extends EventSource implements EventListener {
         }
         CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose", winner.getUsername(), losingPlayers);
         notifyAllObserverByType(VIEW, gameOverEvent);
+        printLogMessage(winner.getUsername().toUpperCase() + "IS THE WINNER");
     }
 
     //TODO
     private void lose(String player) {
+        printLogMessage(player.toUpperCase() + "LOST THE GAME");
         if (numberOfPlayers == 3) {
             //removes the player from the list
             for (Integer integer : turnSequence.keySet()) {
@@ -287,6 +292,7 @@ public class TurnController extends EventSource implements EventListener {
             losers.add(player);
             CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose", null, losers);
             notifyAllObserverByType(VIEW, gameOverEvent);
+
         } else if (numberOfPlayers == 2) {
             //perde direttamente
             if (turnSequence.get(0).getUsername().equals(player)) { //the loser
@@ -331,7 +337,7 @@ public class TurnController extends EventSource implements EventListener {
             //you can move at least one time.
 
             //TODO
-        } else{
+        } else {
             List<int[]> availableCells_Worker_A = currentTurnInstance.validActions(IDs.A, MOVE);
             List<int[]> availableCells_Worker_B = currentTurnInstance.validActions(IDs.B, MOVE);
             List<int[]> availableBuildCells_Worker_A = currentTurnInstance.validActions(IDs.A, BUILD);
@@ -401,11 +407,10 @@ public class TurnController extends EventSource implements EventListener {
                     lose(currentPlayer.getUsername());
                 }
                 sendCommandRequest(player.getUsername());
-            } catch (InvalidMovementException e) {
-                System.out.println(e.toString());
-                e.printStackTrace();
+            } catch (InvalidMovementException |IllegalArgumentException e) {
+                printErrorLogMessage(e.toString()+" - A new CommandRequest has been send.");
 
-                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid move!", player.getUsername());
+                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("This is a invalid move!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
             } catch (WinningException e) {
@@ -434,7 +439,9 @@ public class TurnController extends EventSource implements EventListener {
                 currentTurnInstance.setNumberOfBuild(currentTurnInstance.getNumberOfBuild() + 1);
                 sendIslandUpdate();
                 sendCommandRequest(player.getUsername());
-            } catch (InvalidBuildException e) {
+            } catch (InvalidBuildException|IllegalArgumentException e) {
+                printErrorLogMessage(e.toString()+" - A new CommandRequest has been send.");
+
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
@@ -462,6 +469,8 @@ public class TurnController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
+        printLogMessage("New Command from " + event.getFromPlayer().toUpperCase() + " -> " + event.toStringSmall());
+
         if (event.getFromPlayer().equals(currentPlayer.getUsername())) {
             Worker worker;
             int[] position;
@@ -469,6 +478,7 @@ public class TurnController extends EventSource implements EventListener {
                 case MOVE:
                     worker = currentPlayer.getWorker(event.getWorkerID());
                     position = event.getPosition();
+
                     invokeMovement(currentPlayer, worker, position[0], position[1]);
                     break;
                 case BUILD:
@@ -480,12 +490,14 @@ public class TurnController extends EventSource implements EventListener {
                             blockToBuild = event.getBlockToBuild();
                         } else {
                             blockToBuild = board.getIsland().getCellCluster(position[0], position[1]).nextBlockToBuild();
+                            printLogMessage("Block to build found: " + blockToBuild);
                         }
                         invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);
                     } catch (InvalidBuildException e) {
                         CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("Automatic block selection failed, please select a valid block", event.fromPlayer);
                         notifyAllObserverByType(VIEW, errorGameEvent);
                         sendCommandRequest(currentPlayer.getUsername());
+                        printLogMessage("Block to build not found. New command request sent.");
                     }
                     break;
                 case PASS:
@@ -493,11 +505,29 @@ public class TurnController extends EventSource implements EventListener {
                     break;
             }
         } else {
+            printLogMessage(event.fromPlayer.toUpperCase() + " is not the current player. Command rejected");
             CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("It's not your turn, please wait!", event.fromPlayer);
             notifyAllObserverByType(VIEW, errorGameEvent);
         }
     }
 
+    /**
+     * Print in the Server console a Log from the current Class
+     *
+     * @param messageToPrint a {@link String} with the message to print
+     */
+    private void printLogMessage(String messageToPrint) {
+        System.out.println("\t \tROOM(" + room.getRoomID() + ")-GAME: " + messageToPrint);
+    }
+
+    /**
+     * Print in the Server console Error Stream an Errror Log from the current Class
+     *
+     * @param messageToPrint a {@link String} with the message to print
+     */
+    private void printErrorLogMessage(String messageToPrint) {
+        System.err.println("\t \tROOM(" + room.getRoomID() + ")-GAME: " + messageToPrint);
+    }
 
     //NOT IMPLEMENTED
     @Override
