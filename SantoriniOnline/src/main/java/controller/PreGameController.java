@@ -13,10 +13,10 @@ import model.BoardManager;
 import model.CardEnum;
 import model.Player;
 import model.WorkerColors;
-import model.exception.InvalidCardException;
-import model.exception.InvalidMovementException;
+import exceptions.InvalidCardException;
+import exceptions.InvalidMovementException;
 import model.gamemap.Worker;
-import placeholders.IslandData;
+import auxiliary.IslandData;
 
 import javax.naming.LimitExceededException;
 import java.util.*;

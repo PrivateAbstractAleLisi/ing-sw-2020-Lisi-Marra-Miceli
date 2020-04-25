@@ -1,7 +1,5 @@
 package model;
 
-import model.Gods.Artemis;
-
 public enum CardEnum {
     APOLLO(1, "Apollo", "Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated."),
     ARTEMIS(2,"Artemis", "Your Worker may move one additional time, but not back to its initial space."),

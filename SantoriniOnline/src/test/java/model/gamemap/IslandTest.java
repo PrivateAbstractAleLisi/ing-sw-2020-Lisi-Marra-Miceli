@@ -1,8 +1,8 @@
 package model.gamemap;
 
-import model.exception.InvalidBuildException;
-import model.exception.InvalidMovementException;
-import model.exception.InvalidWorkerRemovalException;
+import exceptions.InvalidBuildException;
+import exceptions.InvalidMovementException;
+import exceptions.InvalidWorkerRemovalException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

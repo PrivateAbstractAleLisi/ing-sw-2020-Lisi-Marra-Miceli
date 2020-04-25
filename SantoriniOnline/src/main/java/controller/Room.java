@@ -6,7 +6,7 @@ import event.gameEvents.lobby.CV_RoomUpdateGameEvent;
 import event.gameEvents.match.CV_GameStartedGameEvent;
 import model.BoardManager;
 import model.Player;
-import model.exception.AlreadyExistingPlayerException;
+import exceptions.AlreadyExistingPlayerException;
 import view.VirtualView;
 
 import javax.naming.LimitExceededException;

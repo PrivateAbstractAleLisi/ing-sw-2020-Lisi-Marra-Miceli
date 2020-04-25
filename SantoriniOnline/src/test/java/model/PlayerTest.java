@@ -1,7 +1,7 @@
 package model;
 
-import model.exception.AlreadyExistingPlayerException;
-import model.exception.InvalidWorkerException;
+import exceptions.AlreadyExistingPlayerException;
+import exceptions.InvalidWorkerException;
 import model.gamemap.Worker;
 import org.junit.After;
 import org.junit.Before;

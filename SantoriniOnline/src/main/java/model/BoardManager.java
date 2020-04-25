@@ -2,10 +2,10 @@ package model;
 
 import java.util.*;
 
-import model.exception.AlreadyExistingPlayerException;
-import model.exception.InvalidCardException;
-import model.exception.InvalidWorkerRemovalException;
-import model.exception.NoRemainingBlockException;
+import exceptions.AlreadyExistingPlayerException;
+import exceptions.InvalidCardException;
+import exceptions.InvalidWorkerRemovalException;
+import exceptions.NoRemainingBlockException;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.Island;
 import model.gamemap.Worker;

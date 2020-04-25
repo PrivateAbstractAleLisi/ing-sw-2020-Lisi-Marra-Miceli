@@ -2,7 +2,6 @@ package event.gameEvents.lobby;
 
 import event.core.EventListener;
 import event.gameEvents.GameEvent;
-import networking.SantoriniServerClientHandler;
 import view.VirtualView;
 
 import java.net.InetAddress;

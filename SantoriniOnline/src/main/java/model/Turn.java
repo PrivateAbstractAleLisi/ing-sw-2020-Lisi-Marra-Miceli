@@ -1,6 +1,6 @@
 package model;
 
-import model.exception.DefeatException;
+import exceptions.DefeatException;
 import model.gamemap.Worker;
 
 import java.util.ArrayList;

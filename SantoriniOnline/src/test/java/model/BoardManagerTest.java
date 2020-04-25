@@ -1,6 +1,6 @@
 package model;
 
-import model.exception.*;
+import exceptions.*;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.Worker;
 import org.junit.After;

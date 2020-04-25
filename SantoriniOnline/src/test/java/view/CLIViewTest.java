@@ -5,6 +5,7 @@ import networking.client.SantoriniClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import view.UI.CLI.CLIView;
 
 import java.util.ArrayList;
 import java.util.List;

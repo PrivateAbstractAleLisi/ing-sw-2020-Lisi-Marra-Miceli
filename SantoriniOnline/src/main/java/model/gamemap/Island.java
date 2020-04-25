@@ -2,9 +2,11 @@ package model.gamemap;
 
 
 import auxiliary.Range;
-import model.exception.*;
-import placeholders.CellClusterData;
-import placeholders.IslandData;
+import exceptions.InvalidBuildException;
+import exceptions.InvalidMovementException;
+import exceptions.InvalidWorkerRemovalException;
+import auxiliary.CellClusterData;
+import auxiliary.IslandData;
 
 public class Island {
 

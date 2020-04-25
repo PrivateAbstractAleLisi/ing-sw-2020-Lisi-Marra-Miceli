@@ -3,9 +3,9 @@ package networking.client;
 import auxiliary.ANSIColors;
 import event.core.EventSource;
 import event.gameEvents.GameEvent;
-import networking.SantoriniServer;
-import view.CLI.utility.MessageUtility;
-import view.CLIView;
+import networking.server.SantoriniServer;
+import view.UI.CLI.utility.MessageUtility;
+import view.UI.CLI.CLIView;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

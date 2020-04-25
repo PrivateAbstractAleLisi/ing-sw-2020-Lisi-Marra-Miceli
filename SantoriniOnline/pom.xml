@@ -1,8 +1,8 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>it.polimi.ingsw.psp58</groupId>
-<!--    <artifactId>clientJDK11</artifactId>-->
-        <artifactId>serverJDK11</artifactId>
+    <artifactId>clientJDK11</artifactId>
+<!--        <artifactId>serverJDK11</artifactId>-->
     <version>1.0</version>
 
     <dependencies>
@@ -66,8 +66,8 @@
                     <archive>
                         <manifest>
                             <!-- Jar file entry point -->
-<!--                            <mainClass>networking.client.ClientMain</mainClass>-->
-                                                        <mainClass>networking.SantoriniServer</mainClass>
+                            <mainClass>networking.client.ClientMain</mainClass>
+<!--                                                        <mainClass>networking.server.SantoriniServer</mainClass>-->
                         </manifest>
                     </archive>
                 </configuration>
@@ -96,7 +96,7 @@
 <!--                <version>1.2.0</version>-->
 <!--                <configuration>-->
 <!--                    <mainClass>networking.client.ClientMain</mainClass>-->
-                    <!--                            <mainClass>networking.SantoriniServer</mainClass>-->
+                    <!--                            <mainClass>networking.server.SantoriniServer</mainClass>-->
 
 <!--                </configuration>-->
 <!--                <executions>-->

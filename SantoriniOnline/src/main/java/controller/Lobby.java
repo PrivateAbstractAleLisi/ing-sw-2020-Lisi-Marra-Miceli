@@ -1,6 +1,6 @@
 package controller;
 
-import controller.exceptions.NotFreeRoomAvailableException;
+import exceptions.NotFreeRoomAvailableException;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;

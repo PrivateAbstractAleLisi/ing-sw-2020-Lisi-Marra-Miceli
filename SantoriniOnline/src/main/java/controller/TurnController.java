@@ -11,12 +11,12 @@ import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
 import model.*;
-import model.exception.InvalidBuildException;
-import model.exception.InvalidMovementException;
-import model.exception.WinningException;
+import exceptions.InvalidBuildException;
+import exceptions.InvalidMovementException;
+import exceptions.WinningException;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.Worker;
-import placeholders.IslandData;
+import auxiliary.IslandData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -387,34 +387,32 @@ public class TurnController extends EventSource implements EventListener {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("is not your turn!", player.getUsername());
             notifyAllObserverByType(VIEW, errorEvent);
         } else {
-            //check if it's not the first time he moves / build
-            if (currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) {
-                if (w.getWorkerID() != currentTurnInstance.getWorkerID()) {
-                    CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can move only with the same used during the turn!", player.getUsername());
-                    notifyAllObserverByType(VIEW, errorEvent);
-                    sendCommandRequest(player.getUsername());
-                }
-            }
-
-            //is your turn, you may move:
-            try {
-                player.getCard().move(w, x, y, board.getIsland());
-                currentTurnInstance.setNumberOfMove(currentTurnInstance.getNumberOfMove() + 1);
-                currentTurnInstance.chooseWorker(w.getWorkerID());
-
-                sendIslandUpdate();
-                if (isCompletelyLocked(currentTurnInstance.getWorkerID())) {
-                    lose(currentPlayer.getUsername());
-                }
-                sendCommandRequest(player.getUsername());
-            } catch (InvalidMovementException |IllegalArgumentException e) {
-                printErrorLogMessage(e.toString()+" - A new CommandRequest has been send.");
-
-                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("This is a invalid move!", player.getUsername());
+            //check if it's not the first time he moves / build, if yes check if he's using the same worker
+            if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
+                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can move only with the same used during the turn!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
-            } catch (WinningException e) {
-                win(player);
+            } else {
+                //is your turn and your worker is ok, you may try to move:
+                try {
+                    player.getCard().move(w, x, y, board.getIsland());
+                    currentTurnInstance.setNumberOfMove(currentTurnInstance.getNumberOfMove() + 1);
+                    currentTurnInstance.chooseWorker(w.getWorkerID());
+
+                    sendIslandUpdate();
+                    if (isCompletelyLocked(currentTurnInstance.getWorkerID())) {
+                        lose(currentPlayer.getUsername());
+                    }
+                    sendCommandRequest(player.getUsername());
+                } catch (InvalidMovementException | IllegalArgumentException e) {
+                    printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
+
+                    CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("This is a invalid move!", player.getUsername());
+                    notifyAllObserverByType(VIEW, errorEvent);
+                    sendCommandRequest(player.getUsername());
+                } catch (WinningException e) {
+                    win(player);
+                }
             }
         }
     }
@@ -426,27 +424,27 @@ public class TurnController extends EventSource implements EventListener {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("is not your turn!", player.getUsername());
             notifyAllObserverByType(VIEW, errorEvent);
         } else {
-            //check if it's building with the same worker
-            if (currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) {
-                if (w.getWorkerID() != currentTurnInstance.getWorkerID()) {
-                    CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can build only with the same used during the turn!", player.getUsername());
-                    notifyAllObserverByType(VIEW, errorEvent);
-                    sendCommandRequest(player.getUsername());
-                }
-            }
-            try {
-                player.getCard().build(w, block, x, y, board.getIsland());
-                currentTurnInstance.setNumberOfBuild(currentTurnInstance.getNumberOfBuild() + 1);
-                sendIslandUpdate();
-                sendCommandRequest(player.getUsername());
-            } catch (InvalidBuildException|IllegalArgumentException e) {
-                printErrorLogMessage(e.toString()+" - A new CommandRequest has been send.");
-
-                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
+            //check if it's not the first time he moves / build, if yes check if he's using the same worker
+            if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
+                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can build only with the same used during the turn!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException();
+            } else {
+                //is your turn and your worker is ok, you may try build:
+                try {
+                    player.getCard().build(w, block, x, y, board.getIsland());
+                    currentTurnInstance.setNumberOfBuild(currentTurnInstance.getNumberOfBuild() + 1);
+                    sendIslandUpdate();
+                    sendCommandRequest(player.getUsername());
+                } catch (InvalidBuildException | IllegalArgumentException e) {
+                    printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
+
+                    CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
+                    notifyAllObserverByType(VIEW, errorEvent);
+                    sendCommandRequest(player.getUsername());
+                } catch (CloneNotSupportedException e) {
+                    throw new RuntimeException();
+                }
             }
         }
     }

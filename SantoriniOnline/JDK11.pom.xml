@@ -67,7 +67,7 @@
                         <manifest>
                             <!-- Jar file entry point -->
                             <mainClass>networking.client.ClientMain</mainClass>
-                            <!--                            <mainClass>networking.SantoriniServer</mainClass>-->
+                            <!--                            <mainClass>networking.server.SantoriniServer</mainClass>-->
                         </manifest>
                     </archive>
                 </configuration>
@@ -96,7 +96,7 @@
 <!--                <version>1.2.0</version>-->
 <!--                <configuration>-->
 <!--                    <mainClass>networking.client.ClientMain</mainClass>-->
-                    <!--                            <mainClass>networking.SantoriniServer</mainClass>-->
+                    <!--                            <mainClass>networking.server.SantoriniServer</mainClass>-->
 
 <!--                </configuration>-->
 <!--                <executions>-->

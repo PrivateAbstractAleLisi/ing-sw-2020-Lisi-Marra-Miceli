@@ -1,6 +1,6 @@
 package model;
 
-import model.Gods.*;
+import model.gods.*;
 import model.gamemap.Worker;
 
 import java.util.ArrayList;

@@ -1,7 +1,8 @@
 package model.gamemap;
 
+import exceptions.InvalidBuildException;
+import exceptions.InvalidMovementException;
 import model.WorkerColors;
-import model.exception.*;
 
 import java.util.ArrayList;
 import java.util.List;

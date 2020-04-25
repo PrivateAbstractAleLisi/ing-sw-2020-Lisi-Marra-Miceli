@@ -1,10 +1,10 @@
 package model;
 
 import auxiliary.Range;
-import model.exception.InvalidBuildException;
-import model.exception.InvalidMovementException;
-import model.exception.NoRemainingBlockException;
-import model.exception.WinningException;
+import exceptions.InvalidBuildException;
+import exceptions.InvalidMovementException;
+import exceptions.NoRemainingBlockException;
+import exceptions.WinningException;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.CellCluster;
 import model.gamemap.Island;
