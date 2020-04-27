@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MessageUtility</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">view.UI.CLI.utility</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MessageUtility (view.UI.CLI.utility)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MessageUtility</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package view.UI.CLI.utility;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import auxiliary.ANSIColors;
+<i>4</i>&nbsp;import view.UI.CLI.CLIView;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import java.io.PrintStream;
+<i>7</i>&nbsp;
+<b class="nc"><i>8</i>&nbsp;public class MessageUtility {</b>
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;    //Called both by invalid username already taken (via server) or invalid username not alphanumeric
+<i>11</i>&nbsp;    public static void displayErrorMessage(String errorMessage) {
+<b class="nc"><i>12</i>&nbsp;        System.out.println(ANSIColors.ANSI_RED + &quot;⚠ ERROR: &quot;  + errorMessage + ANSIColors.ANSI_RESET);</b>
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;    }
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    /**
+<i>17</i>&nbsp;     * prints (message) is valid in green
+<i>18</i>&nbsp;     *
+<i>19</i>&nbsp;     * @param message
+<i>20</i>&nbsp;     */
+<i>21</i>&nbsp;    public static void printValidMessage(String message) {
+<b class="nc"><i>22</i>&nbsp;        System.out.println(ANSIColors.ANSI_GREEN + &quot;✓ &quot; + message + ANSIColors.ANSI_RESET);</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    public static void setBackground() {
+<i>26</i>&nbsp;        //System.out.println(&quot;\033[40m\033[30m&quot;);
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    }
+<i>30</i>&nbsp;    public static void  displayTitle() {
+<i>31</i>&nbsp;
+<b class="nc"><i>32</i>&nbsp;        CLIView.clearScreen();</b>
+<b class="nc"><i>33</i>&nbsp;        PrintStream output = (PrintStream) System.out;</b>
+<b class="nc"><i>34</i>&nbsp;        output.println(&quot;\n\t\t\t\t\tWELCOME TO:\t\t&quot;);</b>
+<b class="nc"><i>35</i>&nbsp;        output.println(&quot;  __   ___  __  __ ______   ___   ____  __ __  __ __\n&quot; +</b>
+<i>36</i>&nbsp;                &quot; (( \\ // \\\\ ||\\ || | || |  // \\\\  || \\\\ || ||\\ || ||\n&quot; +
+<i>37</i>&nbsp;                &quot;  \\\\  ||=|| ||\\\\||   ||   ((   )) ||_// || ||\\\\|| ||\n&quot; +
+<i>38</i>&nbsp;                &quot; \\_)) || || || \\||   ||    \\\\_//  || \\\\ || || \\|| ||\n&quot; +
+<i>39</i>&nbsp;                &quot;                                                    &quot;);
+<i>40</i>&nbsp;
+<b class="nc"><i>41</i>&nbsp;        output.println(&quot; _______  __    _  ___      ___   __    _  _______ \n&quot; +</b>
+<i>42</i>&nbsp;                &quot;|       ||  |  | ||   |    |   | |  |  | ||       |\n&quot; +
+<i>43</i>&nbsp;                &quot;|   _   ||   |_| ||   |    |   | |   |_| ||    ___|\n&quot; +
+<i>44</i>&nbsp;                &quot;|  | |  ||       ||   |    |   | |       ||   |___ \n&quot; +
+<i>45</i>&nbsp;                &quot;|  |_|  ||  _    ||   |___ |   | |  _    ||    ___|\n&quot; +
+<i>46</i>&nbsp;                &quot;|       || | |   ||       ||   | | | |   ||   |___ \n&quot; +
+<i>47</i>&nbsp;                &quot;|_______||_|  |__||_______||___| |_|  |__||_______|&quot;);
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    }
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    public static void bigTitle() {
+<b class="nc"><i>53</i>&nbsp;        System.out.println(ANSIColors.CYAN_BRIGHT);</b>
+<b class="nc"><i>54</i>&nbsp;        System.out.println(&quot;                                                                                                                                                                \n&quot; +</b>
+<i>55</i>&nbsp;                &quot;                                                                                                                                                                \n&quot; +
+<i>56</i>&nbsp;                &quot;             ▒░░░░░░░░░░░░░░▒                                                                   ░▒▒▒▒▒░                                      ▒░░░░░░▒           \n&quot; +
+<i>57</i>&nbsp;                &quot;          ░░░░░   ░░░ ░░░░ ░░░░░                          ▒▒░░░░░░░░░░░▒░                   ░░░░  ░  ░░░░░░░░░░░░░░░░░░░░░                ░░░░ ▒ ░░ ░░░░░       \n&quot; +
+<i>58</i>&nbsp;                &quot;         ░░░░ ░ ░░▓▓▓▓▓▓   ░ ░░░░░░              ░▒░░░░░░░░░░     ░   ░░░░░░░░░░░░▒      ░░░░░   ░░░░▒░░░░░░░░▒░░▒    ░ ░░░░░         ▒░░░░░ ░░░  ░░░ ░░░░      \n&quot; +
+<i>59</i>&nbsp;                &quot;       ░░░░░ ▒░░▓▓▓ ▓ ▒ ▓▓░ ░ ░░░░░░░  ░░░░░░░░░░░░░ ░░░░░░░░░░  ░░░░         ░░ ░░░░░░░░░░░░░░░ ▓▓▓▓ ░░ ▓▓▓▓░░▒▒░ ▓▓▒░░░░░░░░░░░░░░░  ░░░░░▒▒ ▓▓▓▓  ░░░░░░     \n&quot; +
+<i>60</i>&nbsp;                &quot;       ░░░░░░  ▓▓▓▓  ░  ▓▓▓ ░░░░░░  ░░░░▒░  ░░░░░░ ░░░ ▓▓▓ ░░░▒▓▓▓▓▓▓▓▓▓▓▓▓▒░   ░░      ░░░ ░░░ ▓▓▓▓▓▓▓  ▓▓▓▓▓▓   ▓▓▓▓▒░░  ░  ░░░ ░░░░░░░░ ░ ░  ▓▓    ░░░░░░    \n&quot; +
+<i>61</i>&nbsp;                &quot;      ▒░░░░░░  ▓▓▓▓         ░ ░░░ ░░▓▓▓▓▓ ░░░░▓  ░░░ ▓▓ ▓▓▓▓ ░      ▒▓▓▓▓ ▒▒▒▒▒  ░░░░  ░░░░░ ▓▓▓▓▓▓▓▓    ▓▓▓▓▓▓▓     ▓ ░░░░░░░░░░░░ ▓▓▓▓  ░░░░         ░░░░░    \n&quot; +
+<i>62</i>&nbsp;                &quot;      ░░░░░░    ▓▓▓▓         ░░░ ░░ ▓▓▓▓▓▓ ░░ ▓▓▓▓  ▓   ▓▓▓▓▒ ░ ░   ▓▓▓▓▓         ▒    ▓ ▓▓     ▓▓▓▓▓    ▒▓▓▓▓▓▓   ▒▓▓  ░  ▓▓▓ ░░ ▓▓ ▓▓▓▓▓      ▓▓▓▓   ░░░░░▒   \n&quot; +
+<i>63</i>&nbsp;                &quot;      ░░░░░░░    ▓▓▓▓    ░░░░░░░ ░ ▓▓▓▒▓▓▓  ░  ▓▓▓▓▓    ▓▓▓▓▓       ▓▓▓▓▓   ░   ▓▓▓▓       ▓▓   ▓▓▓▓▓    ▓▓▓▓▓     ▓▓▓▓    ▓▓▓▓  ▓    ▓▓▓▓▒     ▓▓▓▓   ░░░░░░   \n&quot; +
+<i>64</i>&nbsp;                &quot;      ▒░░░░░░     ▓▓▓▓▓    ░░░░░   ▓▓▓ ▓▓▓▓    ▓▓▓▓▓     ▓▓▓▓▒      ▓▓▓▓▓     ▓▓▓▓▓▓▓▓▓▓   ▓▓▒  ▓▓▓▓▓    ▓▓▓▓      ▓▓▓▓    ▓▓▓▓▓▓     ▓▓▓▓▓     ▓▓▓▓   ░░░░░░   \n&quot; +
+<i>65</i>&nbsp;                &quot;       ░░░░░░░     ▓▓▓▓▓    ░░░   ▓▓▓░ ▓▓▓▓    ▒▓▓▓▓    ▒▓▓▓▓▓     ▒▓▓▓▓▒    ▓▓▓▓▓    ▓▓▓  ▓▓▓  ▓▓▓▓▓   ▓▓▓        ▓▓▓▓    ▓▓▓▓▓     ▓▓▓▓▓▓    ▓▓▓▓▓   ░░░░░░   \n&quot; +
+<i>66</i>&nbsp;                &quot;       ░░░░░░░░░░   ▓▓▓▓▓▓    ░   ▓▓▓▒ ▓▓▓▓▓    ▓▓▓▓    ▓▓▓▓▓▓     ▓▓▓▓▓    ▓▓▓▓▓      ▓▓  ▓▓▓░ ▓▓▓▓▓░▓▓▓          ▓▓▓▓    ▓▓▓▓▓     ▓▓▓▓▓▓    ▒▓▓▓▓   ░░░░░░   \n&quot; +
+<i>67</i>&nbsp;                &quot;      ░░░░░         ░▓▓▓▓▓▓▒      ▓▓▓   ▓▓▓▓    ▓▓▓▓     ▓▓▓▓▓     ▓▓▓▓▓   ▓▓▓▓▓▓      ▓▓  ▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓         ▓▓▓▓    ▓▓▓▓▓     ▓▓▓▓▓▓    ▓▓▓▓▓   ░░░░░░   \n&quot; +
+<i>68</i>&nbsp;                &quot;     ░░░░    ▒▓       ▓▓▓▓▓▓▓    ▓▓▓▓   ▓▓▓▓▓   ▓▓▓▓▓    ▓▓▓▓▓     ▓▓▓▓▓  ░▓▓▓▓▓       ▓▓  ▓▓▓░ ▓▓▓▓▓   ▓▓▓▓       ▓▓▓▓    ▓▓▓▓▓     ▓▓▓▓▓▓    ▓▓▓▓▓   ░░░░░░   \n&quot; +
+<i>69</i>&nbsp;                &quot;    ░░░░   ▓▓▓▓        ▓▓▓▓▓▓▓   ▓▓▓▓   ▓▓▓▓▓   ▒▓▓▓▓    ▓▓▓▓▓░   ▒▓▓▓▓▓  ▓▓▓▓▓▓  ▓▓▓ ░▓  ▓▓▓▓  ▓▓▓▓▓   ░▓▓▓▓   ░  ▓▓▓▓░   ▓▓▓▓▓     ▓▓▓▓▓▓    ▓▓▓▓▓   ░░░░░░   \n&quot; +
+<i>70</i>&nbsp;                &quot;   ░░░░░   ▓▓▓▓   ░░    ▓▓▓▓▓▓▓  ▓▓▓▓   ░▓▓▓▓▓   ▓▓▓▓    ▓▓▓▓▓▓   ▓▓▓▓▓▓  ▓▓▓▓▓▓  ▓▓▓▓    ▓▓▓░ ▓▓▓▓▓▓     ▓▓▓▓     ▓▓▓▓▓   ▓▓▓▓▓     ▓▓▓▓▓▓    ▓▓▓▓▓   ░░░░░░   \n&quot; +
+<i>71</i>&nbsp;                &quot;   ░░░░░   ▒▓▓▓▓    ░   ▓▓▓▓▓▓▓  ▓▓▓▓    ▓▓▓▓▓   ▓▓▓▓    ▒▓▓▓▓▓▒  ▓▓▓▓▓▓  ▒▓▓▓▓▓    ▓    ▓▓▓   ▒▓▓▓▓▓     ▓▓▓▓▓    ▓▓▓▓▓    ▓▓▓▓     ▓▓▓▓▓▓    ▓▓▓▓▓   ░░░░░░   \n&quot; +
+<i>72</i>&nbsp;                &quot;  ░░░░░░░   ▓▓▓▓▓   ░░  ▓▓▓▓▓▓▓  ▓▓▓▒     ▓▓▓▓▓  ▒▓▓▓▒      ▓▓▓   ▓▓▓▓▓▓    ▓▓▓▓▓     ░ ▓▓▓    ▓▓▓▓▓▓     ▒▓▓▓▓▓   ▓▓▓▓▓    ▓▓▓▓     ▓▓▓▓▓▓    ▓▓▓▓▓▒ ░░ ░░░░░  \n&quot; +
+<i>73</i>&nbsp;                &quot;   ░░░░░░    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ▓▓▓▓░ ░ ░ ▒▓▓▓▓▓                  ▓▓▓▓▓▓      ▓▓▓▓  ░░ ▓▓▓      ▓▓▓▓▓▓     ▓▓▓▓▓▓   ▓▓▓ ▒  ░▓▓▓▓     ▓▓▓▓▓▓   ▒▓▓▓▓▓   ░ ░░░░▒  \n&quot; +
+<i>74</i>&nbsp;                &quot;   ░░░░░░░     ▓▓▓▓▓▓▓▓▓▓▓▓▓    ▒ ▓▓ ░░  ░   ▓▓▓▓  ░  ▒▒▒▒▒       ▓▓▓▓▓▓       ▓  ▓▓▓▓▓▓   ░  ░   ▒▒   ░ ░ ▒▓▓▓▓▓▒       ░  ▓▓▓▓  ░░ ▓▓▓▓▓▓▓▓   ▒▓   ░░ ░░░░░░  \n&quot; +
+<i>75</i>&nbsp;                &quot;   ░░░░░░░░░     ▓        ▒   ░░░   ░░ ░░ ░░  ▒▒  ░ ░░░░░░░░░░░ ░   ▓▓▓▓  ░              ░░ ▒░▒ ░░░░░░ ░░░░   ▓▓    ░   ▒ ░░     ░  ░  ▒      ░░░░░░░ ░░░░░░░░  \n&quot; +
+<i>76</i>&nbsp;                &quot;    ░░░░░░░░░░   ░     ░░░░░ ░▒▒     ░░░░░░ ░░░░░░ ░░░░░░░░░░░░░▒░░░     ░ ▒▒▒▒░  ░░░░░  ░░░░░░░░░░░░░░░░░░░░     ░░▒░░░░░░  ░░░ ░▒▒░ ░░░  ░░░▒▒░░░░░░░░░░░░░░  \n&quot; +
+<i>77</i>&nbsp;                &quot;     ░░░░░░░░░░░░░░░░▒░▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ░░░ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    ▒░░░░░░░░░░░░░░░░░░░░░░░░▒░░░░░░░░░░░░░░░░░▒   \n&quot; +
+<i>78</i>&nbsp;                &quot;      ▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    \n&quot; +
+<i>79</i>&nbsp;                &quot;        ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒░▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░       \n&quot; +
+<i>80</i>&nbsp;                &quot;          ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒       ▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▒░░▒▒▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒           \n&quot; +
+<i>81</i>&nbsp;                &quot;              ░▒░░░░░░░░░░░░░▒░              ░▒▒░              ░░░░░░░░░░░░░▒░    ░░▒░░                  ▒░░░░░░░░░░▒░             ░▒░░░░░░░░░▒                 \n&quot; +
+<i>82</i>&nbsp;                &quot;                                                                                                                                                                &quot;);
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    public static void online() {
+<b class="nc"><i>89</i>&nbsp;        System.out.println(&quot; _______  __    _  ___      ___   __    _  _______ \n&quot; +</b>
+<i>90</i>&nbsp;                &quot;|       ||  |  | ||   |    |   | |  |  | ||       |\n&quot; +
+<i>91</i>&nbsp;                &quot;|   _   ||   |_| ||   |    |   | |   |_| ||    ___|\n&quot; +
+<i>92</i>&nbsp;                &quot;|  | |  ||       ||   |    |   | |       ||   |___ \n&quot; +
+<i>93</i>&nbsp;                &quot;|  |_|  ||  _    ||   |___ |   | |  _    ||    ___|\n&quot; +
+<i>94</i>&nbsp;                &quot;|       || | |   ||       ||   | | | |   ||   |___ \n&quot; +
+<i>95</i>&nbsp;                &quot;|_______||_|  |__||_______||___| |_|  |__||_______|&quot;);
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    }
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    public static void printDivider() {
+<b class="nc"><i>101</i>&nbsp;        for (int i = 0; i &lt; 11; i++) {</b>
+<b class="nc"><i>102</i>&nbsp;            System.out.print(&quot;-&quot;);</b>
+<i>103</i>&nbsp;        }
+<b class="nc"><i>104</i>&nbsp;        System.out.print(&quot;\n&quot;);</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-27 18:27</div>
+</div>
+</body>
+</html>

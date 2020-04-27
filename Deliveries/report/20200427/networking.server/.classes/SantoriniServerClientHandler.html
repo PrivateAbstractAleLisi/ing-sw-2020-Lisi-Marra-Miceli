@@ -1,0 +1,171 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SantoriniServerClientHandler</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">networking.server</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SantoriniServerClientHandler (networking.server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SantoriniServerClientHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package networking.server;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import event.core.EventSource;
+<i>4</i>&nbsp;import event.gameEvents.GameEvent;
+<i>5</i>&nbsp;import view.VirtualView;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.io.BufferedInputStream;
+<i>8</i>&nbsp;import java.io.IOException;
+<i>9</i>&nbsp;import java.io.ObjectInputStream;
+<i>10</i>&nbsp;import java.net.InetAddress;
+<i>11</i>&nbsp;import java.net.Socket;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;import static event.core.ListenerType.VIEW;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;public class SantoriniServerClientHandler extends EventSource implements Runnable {
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;    private Socket client;
+<i>18</i>&nbsp;    private String localUsername;
+<i>19</i>&nbsp;    private InetAddress localUserIP;
+<i>20</i>&nbsp;    private int localUserPort;
+<i>21</i>&nbsp;    private ObjectInputStream input;
+<i>22</i>&nbsp;    private String threadID;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    VirtualView clientVV;
+<i>25</i>&nbsp;
+<b class="nc"><i>26</i>&nbsp;    public SantoriniServerClientHandler(Socket client, String threadID) {</b>
+<b class="nc"><i>27</i>&nbsp;        this.client = client;</b>
+<b class="nc"><i>28</i>&nbsp;        this.clientVV = new VirtualView(client);</b>
+<b class="nc"><i>29</i>&nbsp;        makeConnections();</b>
+<b class="nc"><i>30</i>&nbsp;        input=null;</b>
+<b class="nc"><i>31</i>&nbsp;        this.threadID=threadID;</b>
+<i>32</i>&nbsp;    }
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    @Override
+<i>35</i>&nbsp;    public void run() {
+<i>36</i>&nbsp;        try {
+<b class="nc"><i>37</i>&nbsp;            handleClientConnection();</b>
+<b class="nc"><i>38</i>&nbsp;        } catch (IOException | ClassNotFoundException e) {</b>
+<b class="nc"><i>39</i>&nbsp;            Thread.currentThread().interrupt();</b>
+<i>40</i>&nbsp;            //e.printStackTrace();
+<b class="nc"><i>41</i>&nbsp;        }</b>
+<i>42</i>&nbsp;    }
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    private void makeConnections() {
+<b class="nc"><i>45</i>&nbsp;        this.attachListenerByType(VIEW, clientVV);</b>
+<i>46</i>&nbsp;    }
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    private void staccaStacca() {
+<i>50</i>&nbsp;        try {
+<b class="nc"><i>51</i>&nbsp;            client.close();</b>
+<b class="nc"><i>52</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>53</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>54</i>&nbsp;        }</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    private void handleClientConnection() throws IOException, ClassNotFoundException {
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;        //Client is connected via socket, creating a virtual view for it
+<b class="nc"><i>60</i>&nbsp;        ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(client.getInputStream()));</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;        GameEvent eventReceived;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;        //read further events
+<i>66</i>&nbsp;        while (true) {
+<i>67</i>&nbsp;
+<b class="nc"><i>68</i>&nbsp;            GameEvent received = null;</b>
+<b class="nc"><i>69</i>&nbsp;            received = (GameEvent) input.readObject();</b>
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;            try {
+<b class="nc"><i>73</i>&nbsp;                if (received!= null)</b>
+<b class="nc"><i>74</i>&nbsp;                notifyAllObserverByType(VIEW, received);</b>
+<b class="nc"><i>75</i>&nbsp;            } catch (Exception e) {</b>
+<i>76</i>&nbsp;
+<b class="nc"><i>77</i>&nbsp;                e.printStackTrace();</b>
+<b class="nc"><i>78</i>&nbsp;            }</b>
+<i>79</i>&nbsp;            //keaps reading
+<i>80</i>&nbsp;
+<b class="nc"><i>81</i>&nbsp;        }</b>
+<i>82</i>&nbsp;        //staccaStacca();
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    public String getThreadID() {
+<b class="nc"><i>86</i>&nbsp;        return threadID;</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-27 18:27</div>
+</div>
+</body>
+</html>

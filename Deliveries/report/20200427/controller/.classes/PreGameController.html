@@ -1,0 +1,549 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PreGameController</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">controller</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PreGameController (controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PreGameController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 186)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package controller;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.google.gson.Gson;
+<i>4</i>&nbsp;import event.core.EventListener;
+<i>5</i>&nbsp;import event.core.EventSource;
+<i>6</i>&nbsp;import event.gameEvents.CV_GameErrorGameEvent;
+<i>7</i>&nbsp;import event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
+<i>8</i>&nbsp;import event.gameEvents.GameEvent;
+<i>9</i>&nbsp;import event.gameEvents.lobby.*;
+<i>10</i>&nbsp;import event.gameEvents.match.*;
+<i>11</i>&nbsp;import event.gameEvents.prematch.*;
+<i>12</i>&nbsp;import model.BoardManager;
+<i>13</i>&nbsp;import model.CardEnum;
+<i>14</i>&nbsp;import model.Player;
+<i>15</i>&nbsp;import model.WorkerColors;
+<i>16</i>&nbsp;import exceptions.InvalidCardException;
+<i>17</i>&nbsp;import exceptions.InvalidMovementException;
+<i>18</i>&nbsp;import model.gamemap.Worker;
+<i>19</i>&nbsp;import auxiliary.IslandData;
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;import javax.naming.LimitExceededException;
+<i>22</i>&nbsp;import java.util.*;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import static event.core.ListenerType.VIEW;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;public class PreGameController extends EventSource implements EventListener {
+<i>27</i>&nbsp;    private BoardManager boardManager;
+<i>28</i>&nbsp;    private String challenger;
+<i>29</i>&nbsp;    private Room room;
+<i>30</i>&nbsp;    private Map&lt;String, CardEnum&gt; playersCardsCorrespondence;
+<i>31</i>&nbsp;    private List&lt;CardEnum&gt; availableCards;
+<i>32</i>&nbsp;    private Map&lt;Integer, Player&gt; turnSequence;
+<i>33</i>&nbsp;    private int currentTurnIndex;
+<i>34</i>&nbsp;
+<b class="nc"><i>35</i>&nbsp;    public PreGameController(BoardManager boardManager, Room room) {</b>
+<b class="nc"><i>36</i>&nbsp;        this.boardManager = boardManager;</b>
+<b class="nc"><i>37</i>&nbsp;        this.room = room;</b>
+<b class="nc"><i>38</i>&nbsp;        this.playersCardsCorrespondence = new HashMap&lt;String, CardEnum&gt;();</b>
+<b class="nc"><i>39</i>&nbsp;        this.availableCards = new ArrayList&lt;CardEnum&gt;();</b>
+<b class="nc"><i>40</i>&nbsp;        this.turnSequence = new HashMap&lt;Integer, Player&gt;();</b>
+<i>41</i>&nbsp;    }
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    public void start() {
+<b class="nc"><i>44</i>&nbsp;        printLogMessage(&quot;Pregame started&quot;);</b>
+<b class="nc"><i>45</i>&nbsp;        setColors();</b>
+<b class="nc"><i>46</i>&nbsp;        chooseChallenger();</b>
+<i>47</i>&nbsp;    }
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    public void chooseChallenger() {
+<i>50</i>&nbsp;        //choose the challenger in a random way
+<b class="nc"><i>51</i>&nbsp;        Random random = new Random();</b>
+<b class="nc"><i>52</i>&nbsp;        int number = random.nextInt(room.getSIZE());</b>
+<b class="nc"><i>53</i>&nbsp;        List&lt;String&gt; players = room.getActiveUsers();</b>
+<b class="nc"><i>54</i>&nbsp;        challenger = players.get(number);</b>
+<b class="nc"><i>55</i>&nbsp;        for (String recipient : players) {</b>
+<b class="nc"><i>56</i>&nbsp;            if (!recipient.equals(challenger)) {</b>
+<b class="nc"><i>57</i>&nbsp;                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent(&quot;is the challenger, he&#39;s now choosing the cards&quot;, challenger, recipient);</b>
+<b class="nc"><i>58</i>&nbsp;                notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>59</i>&nbsp;            }
+<b class="nc"><i>60</i>&nbsp;        }</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;        //DEBUG
+<i>63</i>&nbsp;//        System.out.println(&quot;Il challenger è &quot;+challenger);
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;        CV_ChallengerChosenEvent event = new CV_ChallengerChosenEvent(challenger, room.getSIZE());</b>
+<b class="nc"><i>66</i>&nbsp;        notifyAllObserverByType(VIEW, event);</b>
+<b class="nc"><i>67</i>&nbsp;        printLogMessage(challenger.toUpperCase() + &quot; is the Challenger&quot;);</b>
+<i>68</i>&nbsp;    }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    public Map&lt;String, CardEnum&gt; getPlayersCardsCorrespondence() {
+<b class="nc"><i>71</i>&nbsp;        return playersCardsCorrespondence;</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    public Map&lt;Integer, Player&gt; getTurnSequence() {
+<b class="nc"><i>75</i>&nbsp;        return turnSequence;</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    public void setColors() {
+<b class="nc"><i>79</i>&nbsp;        List&lt;String&gt; players = room.getActiveUsers();</b>
+<b class="nc"><i>80</i>&nbsp;        for (String p : players) {</b>
+<b class="nc"><i>81</i>&nbsp;            int i = players.indexOf(p);</b>
+<b class="nc"><i>82</i>&nbsp;            Player player = boardManager.getPlayer(p);</b>
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;            WorkerColors color = WorkerColors.values()[i];</b>
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;            player.setColor(color);</b>
+<i>87</i>&nbsp;
+<b class="nc"><i>88</i>&nbsp;            for (Worker.IDs id : Worker.IDs.values()) {</b>
+<b class="nc"><i>89</i>&nbsp;                player.getWorker(id).setColor(color);</b>
+<i>90</i>&nbsp;            }
+<b class="nc"><i>91</i>&nbsp;        }</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /**
+<i>95</i>&nbsp;     * This method return the {@code turnSequence} as List
+<i>96</i>&nbsp;     *
+<i>97</i>&nbsp;     * @return return the turn sequence as List
+<i>98</i>&nbsp;     */
+<i>99</i>&nbsp;    private List&lt;Player&gt; getPlayersSequenceAsList() {
+<b class="nc"><i>100</i>&nbsp;        List&lt;Player&gt; players = new ArrayList&lt;Player&gt;();</b>
+<b class="nc"><i>101</i>&nbsp;        for (Map.Entry&lt;Integer, Player&gt; player : turnSequence.entrySet()) {</b>
+<b class="nc"><i>102</i>&nbsp;            players.add(player.getValue());</b>
+<b class="nc"><i>103</i>&nbsp;        }</b>
+<b class="nc"><i>104</i>&nbsp;        return players;</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    @Override
+<i>108</i>&nbsp;    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
+<b class="nc"><i>109</i>&nbsp;        availableCards = event.getCardsChosen();</b>
+<b class="nc"><i>110</i>&nbsp;        for (CardEnum card : availableCards) {</b>
+<i>111</i>&nbsp;            try {
+<b class="nc"><i>112</i>&nbsp;                boardManager.selectCard(card);</b>
+<b class="nc"><i>113</i>&nbsp;            } catch (InvalidCardException e) {</b>
+<b class="nc"><i>114</i>&nbsp;                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;invalid cards chosen!&quot;, challenger);</b>
+<b class="nc"><i>115</i>&nbsp;                notifyAllObserverByType(VIEW, errorEvent);</b>
+<i>116</i>&nbsp;
+<b class="nc"><i>117</i>&nbsp;                CV_ChallengerChosenEvent requestEvent = new CV_ChallengerChosenEvent(&quot;&quot;, room.getSIZE());</b>
+<b class="nc"><i>118</i>&nbsp;                notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>119</i>&nbsp;
+<b class="nc"><i>120</i>&nbsp;                printLogMessage(challenger.toUpperCase() + &quot; has selected invalid cards. New request sent!&quot;);</b>
+<b class="nc"><i>121</i>&nbsp;            } catch (LimitExceededException e) {</b>
+<b class="nc"><i>122</i>&nbsp;                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;too many cards selected!&quot;, challenger);</b>
+<b class="nc"><i>123</i>&nbsp;                notifyAllObserverByType(VIEW, errorEvent);</b>
+<i>124</i>&nbsp;
+<b class="nc"><i>125</i>&nbsp;                CV_ChallengerChosenEvent requestEvent = new CV_ChallengerChosenEvent(&quot;&quot;, room.getSIZE());</b>
+<b class="nc"><i>126</i>&nbsp;                notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>127</i>&nbsp;
+<b class="nc"><i>128</i>&nbsp;                printLogMessage(challenger.toUpperCase() + &quot; has selected too many cards. New request sent!&quot;);</b>
+<b class="nc"><i>129</i>&nbsp;            }</b>
+<b class="nc"><i>130</i>&nbsp;        }</b>
+<b class="nc"><i>131</i>&nbsp;        List&lt;String&gt; players = room.getActiveUsers();</b>
+<b class="nc"><i>132</i>&nbsp;        int indexOfNextChoosingPlayer = players.indexOf(challenger);</b>
+<b class="nc"><i>133</i>&nbsp;        if (indexOfNextChoosingPlayer &lt; room.getSIZE() - 1) {</b>
+<b class="nc"><i>134</i>&nbsp;            indexOfNextChoosingPlayer++;</b>
+<b class="nc"><i>135</i>&nbsp;        } else if (indexOfNextChoosingPlayer == room.getSIZE() - 1) {</b>
+<b class="nc"><i>136</i>&nbsp;            indexOfNextChoosingPlayer = 0;</b>
+<i>137</i>&nbsp;        }
+<b class="nc"><i>138</i>&nbsp;        for (String recipient : players) {</b>
+<b class="nc"><i>139</i>&nbsp;            if (!recipient.equals(players.get(indexOfNextChoosingPlayer))) {</b>
+<b class="nc"><i>140</i>&nbsp;                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent(&quot;is choosing his card&quot;, players.get(indexOfNextChoosingPlayer), recipient);</b>
+<b class="nc"><i>141</i>&nbsp;                notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>142</i>&nbsp;            }
+<b class="nc"><i>143</i>&nbsp;        }</b>
+<b class="nc"><i>144</i>&nbsp;        CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent(&quot;Choose one card from the list&quot;, availableCards, players.get(indexOfNextChoosingPlayer));</b>
+<b class="nc"><i>145</i>&nbsp;        notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>146</i>&nbsp;    }
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    @Override
+<i>149</i>&nbsp;    public void handleEvent(VC_PlayerCardChosenEvent event) {
+<i>150</i>&nbsp;        try {
+<b class="nc"><i>151</i>&nbsp;            boardManager.takeCard(event.getCard());</b>
+<b class="nc"><i>152</i>&nbsp;            boardManager.getPlayer(event.getPlayer()).setCard(event.getCard());</b>
+<b class="nc"><i>153</i>&nbsp;            playersCardsCorrespondence.put(event.getPlayer(), event.getCard());</b>
+<b class="nc"><i>154</i>&nbsp;            availableCards.remove(event.getCard());</b>
+<b class="nc"><i>155</i>&nbsp;            List&lt;String&gt; players = room.getActiveUsers();</b>
+<i>156</i>&nbsp;
+<b class="nc"><i>157</i>&nbsp;            int indexOfChoosingPlayer = players.indexOf(event.getPlayer());</b>
+<b class="nc"><i>158</i>&nbsp;            int indexOfNextChoosingPlayer = indexOfChoosingPlayer;</b>
+<b class="nc"><i>159</i>&nbsp;            if (availableCards.size() &gt; 0) { //there are cards remaining</b>
+<b class="nc"><i>160</i>&nbsp;                if ((indexOfChoosingPlayer &lt; room.getSIZE() - 1)) {</b>
+<b class="nc"><i>161</i>&nbsp;                    indexOfNextChoosingPlayer++;</b>
+<b class="nc"><i>162</i>&nbsp;                } else if ((indexOfChoosingPlayer == room.getSIZE() - 1)) {</b>
+<b class="nc"><i>163</i>&nbsp;                    indexOfNextChoosingPlayer = 0;</b>
+<i>164</i>&nbsp;                }
+<b class="nc"><i>165</i>&nbsp;                for (String recipient : players) {</b>
+<b class="nc"><i>166</i>&nbsp;                    if (!recipient.equals(players.get(indexOfNextChoosingPlayer))) {</b>
+<b class="nc"><i>167</i>&nbsp;                        CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent(&quot;is choosing his card&quot;, players.get(indexOfNextChoosingPlayer), recipient);</b>
+<b class="nc"><i>168</i>&nbsp;                        notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>169</i>&nbsp;                    }
+<b class="nc"><i>170</i>&nbsp;                }</b>
+<i>171</i>&nbsp;                //send the event to the next player that has to choose the card
+<b class="nc"><i>172</i>&nbsp;                CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent(&quot;Choose one card from the list&quot;, availableCards, players.get(indexOfNextChoosingPlayer));</b>
+<b class="nc"><i>173</i>&nbsp;                notifyAllObserverByType(VIEW, requestEvent);</b>
+<b class="nc"><i>174</i>&nbsp;            } else { // there are no more cards remaining</b>
+<b class="nc"><i>175</i>&nbsp;                ChallengerChooseFirstPlayer();</b>
+<i>176</i>&nbsp;            }
+<b class="nc"><i>177</i>&nbsp;        } catch (InvalidCardException e) {</b>
+<b class="nc"><i>178</i>&nbsp;            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;invalid card chosen!&quot;, challenger);</b>
+<b class="nc"><i>179</i>&nbsp;            notifyAllObserverByType(VIEW, errorEvent);</b>
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;            CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent(&quot;Choose one card from the list&quot;, availableCards, event.getPlayer());</b>
+<b class="nc"><i>182</i>&nbsp;            notifyAllObserverByType(VIEW, requestEvent);</b>
+<b class="nc"><i>183</i>&nbsp;        }</b>
+<i>184</i>&nbsp;    }
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;    public void ChallengerChooseFirstPlayer() {
+<b class="nc"><i>187</i>&nbsp;        List&lt;String&gt; players = room.getActiveUsers();</b>
+<b class="nc"><i>188</i>&nbsp;        for (String recipient : players) {</b>
+<b class="nc"><i>189</i>&nbsp;            if (!recipient.equals(challenger)) {</b>
+<b class="nc"><i>190</i>&nbsp;                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent(&quot;is choosing the first player&quot;, challenger, recipient);</b>
+<b class="nc"><i>191</i>&nbsp;                notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>192</i>&nbsp;            }
+<b class="nc"><i>193</i>&nbsp;        }</b>
+<i>194</i>&nbsp;        //the challenger has to choose the first player
+<b class="nc"><i>195</i>&nbsp;        CV_ChallengerChooseFirstPlayerRequestEvent requestEvent = new CV_ChallengerChooseFirstPlayerRequestEvent(&quot;Choose the first player&quot;, challenger, players);</b>
+<b class="nc"><i>196</i>&nbsp;        notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>197</i>&nbsp;    }
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;    @Override
+<i>200</i>&nbsp;    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
+<b class="nc"><i>201</i>&nbsp;        boardManager.setPlayersCardsCorrespondence(playersCardsCorrespondence);</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;        String firstPlayer = event.getUsername();</b>
+<b class="nc"><i>204</i>&nbsp;        int turnSequenceIndex = 0;</b>
+<b class="nc"><i>205</i>&nbsp;        turnSequence.put(turnSequenceIndex, boardManager.getPlayer(firstPlayer));</b>
+<b class="nc"><i>206</i>&nbsp;        turnSequenceIndex++;</b>
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;
+<b class="nc"><i>209</i>&nbsp;        String[] players = room.getActiveUsersCopy();</b>
+<b class="nc"><i>210</i>&nbsp;        int indexOfChosenPlayer = 0;</b>
+<i>211</i>&nbsp;        //get the index of the chosen player
+<b class="nc"><i>212</i>&nbsp;        for (int i = 0; i &lt; players.length; i++) {</b>
+<b class="nc"><i>213</i>&nbsp;            if (players[i].equals(firstPlayer)) indexOfChosenPlayer = i;</b>
+<i>214</i>&nbsp;        }
+<i>215</i>&nbsp;        //create the turnSequence based on the challenger choice
+<b class="nc"><i>216</i>&nbsp;        int indexOfPlayerToAdd = 0;</b>
+<b class="nc"><i>217</i>&nbsp;        if (indexOfChosenPlayer == players.length - 1) { //the chosen player is the last in the list of the room</b>
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;            while (indexOfPlayerToAdd &lt; players.length - 1) { //adds all the players before the last one</b>
+<b class="nc"><i>220</i>&nbsp;                turnSequence.put(turnSequenceIndex, boardManager.getPlayer(players[indexOfPlayerToAdd]));</b>
+<b class="nc"><i>221</i>&nbsp;                turnSequenceIndex++;</b>
+<b class="nc"><i>222</i>&nbsp;                indexOfPlayerToAdd++;</b>
+<i>223</i>&nbsp;            }
+<i>224</i>&nbsp;        } else { // the chosen player is not the last in the list of the room
+<b class="nc"><i>225</i>&nbsp;            indexOfPlayerToAdd = indexOfChosenPlayer + 1;</b>
+<b class="nc"><i>226</i>&nbsp;            while (indexOfPlayerToAdd &lt; players.length) { //adds all the player past the chosen player</b>
+<b class="nc"><i>227</i>&nbsp;                turnSequence.put(turnSequenceIndex, boardManager.getPlayer(players[indexOfPlayerToAdd]));</b>
+<b class="nc"><i>228</i>&nbsp;                turnSequenceIndex++;</b>
+<b class="nc"><i>229</i>&nbsp;                indexOfPlayerToAdd++;</b>
+<i>230</i>&nbsp;            }
+<b class="nc"><i>231</i>&nbsp;            if (turnSequence.size() &lt; players.length) { // if there are, adds all the player before the chosen one</b>
+<b class="nc"><i>232</i>&nbsp;                indexOfPlayerToAdd = 0;</b>
+<b class="nc"><i>233</i>&nbsp;                while (indexOfPlayerToAdd &lt; indexOfChosenPlayer) {</b>
+<b class="nc"><i>234</i>&nbsp;                    turnSequence.put(turnSequenceIndex, boardManager.getPlayer(players[indexOfPlayerToAdd]));</b>
+<b class="nc"><i>235</i>&nbsp;                    turnSequenceIndex++;</b>
+<b class="nc"><i>236</i>&nbsp;                    indexOfPlayerToAdd++;</b>
+<i>237</i>&nbsp;                }
+<i>238</i>&nbsp;            }
+<i>239</i>&nbsp;        }
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;        printLogMessage(&quot;The challenger chosen &quot; + turnSequence.get(0).getUsername().toUpperCase() + &quot; as first player&quot;);</b>
+<i>242</i>&nbsp;
+<b class="nc"><i>243</i>&nbsp;        room.setTurnSequence(turnSequence);</b>
+<b class="nc"><i>244</i>&nbsp;        currentTurnIndex = 0;</b>
+<b class="nc"><i>245</i>&nbsp;        askPlaceFirstWorkerForCurrentUser();</b>
+<i>246</i>&nbsp;    }
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;    /**
+<i>249</i>&nbsp;     * This method ask to the current Active player to place the first worker (IDs.A) and send a WaitEvent to the other players
+<i>250</i>&nbsp;     * The first time currentTurnIndex should be 0
+<i>251</i>&nbsp;     */
+<i>252</i>&nbsp;    private void askPlaceFirstWorkerForCurrentUser() {
+<b class="nc"><i>253</i>&nbsp;        List&lt;Player&gt; players = getPlayersSequenceAsList();</b>
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;        Player activePlayer = turnSequence.get(currentTurnIndex);</b>
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;        for (Player recipient : players) {</b>
+<b class="nc"><i>258</i>&nbsp;            if (!recipient.getUsername().equals(activePlayer.getUsername())) {</b>
+<b class="nc"><i>259</i>&nbsp;                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent(&quot;is placing his workers&quot;, activePlayer.getUsername(), recipient.getUsername());</b>
+<b class="nc"><i>260</i>&nbsp;                notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>261</i>&nbsp;            }
+<b class="nc"><i>262</i>&nbsp;        }</b>
+<i>263</i>&nbsp;
+<b class="nc"><i>264</i>&nbsp;        IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();</b>
+<b class="nc"><i>265</i>&nbsp;        Gson gson = new Gson();</b>
+<b class="nc"><i>266</i>&nbsp;        String islandDataJson = gson.toJson(currentIsland);</b>
+<b class="nc"><i>267</i>&nbsp;        CV_PlayerPlaceWorkerRequestEvent event = new CV_PlayerPlaceWorkerRequestEvent(&quot;Choose where to put your workers&quot;, activePlayer.getUsername(),</b>
+<i>268</i>&nbsp;                islandDataJson, Worker.IDs.A);
+<b class="nc"><i>269</i>&nbsp;        notifyAllObserverByType(VIEW, event);</b>
+<i>270</i>&nbsp;    }
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;    /**
+<i>273</i>&nbsp;     * This method is called by handleEvent(VC_PlayerPlacedWorkerEvent event) to place the worker
+<i>274</i>&nbsp;     *
+<i>275</i>&nbsp;     * @param event
+<i>276</i>&nbsp;     * @throws InvalidMovementException
+<i>277</i>&nbsp;     * @throws CloneNotSupportedException
+<i>278</i>&nbsp;     */
+<i>279</i>&nbsp;    public void placeInvoke(VC_PlayerPlacedWorkerEvent event) throws InvalidMovementException, CloneNotSupportedException {
+<b class="nc"><i>280</i>&nbsp;        Player actingPlayer = boardManager.getPlayer(event.getActingPlayer());</b>
+<b class="nc"><i>281</i>&nbsp;        Worker worker = actingPlayer.getWorker(event.getId());</b>
+<b class="nc"><i>282</i>&nbsp;        int x = event.getPosX();</b>
+<b class="nc"><i>283</i>&nbsp;        int y = event.getPosY();</b>
+<i>284</i>&nbsp;
+<b class="nc"><i>285</i>&nbsp;        if (worker.getPosition() == null) {</b>
+<b class="nc"><i>286</i>&nbsp;            actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());</b>
+<i>287</i>&nbsp;        } else {
+<b class="nc"><i>288</i>&nbsp;            throw new InvalidMovementException(&quot;Worker already placed&quot;);</b>
+<i>289</i>&nbsp;        }
+<i>290</i>&nbsp;    }
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;    public void sendIslandUpdate(String recipient) {
+<b class="nc"><i>293</i>&nbsp;        IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();</b>
+<b class="nc"><i>294</i>&nbsp;        Gson gson = new Gson();</b>
+<b class="nc"><i>295</i>&nbsp;        String islandDataJson = gson.toJson(currentIsland);</b>
+<b class="nc"><i>296</i>&nbsp;        CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent(&quot;island update&quot;, islandDataJson, recipient);</b>
+<b class="nc"><i>297</i>&nbsp;        notifyAllObserverByType(VIEW, islandUpdateEvent);</b>
+<i>298</i>&nbsp;    }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;    public String getCurrentIslandJson() {
+<b class="nc"><i>301</i>&nbsp;        IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();</b>
+<b class="nc"><i>302</i>&nbsp;        Gson gson = new Gson();</b>
+<b class="nc"><i>303</i>&nbsp;        String islandDataJson = gson.toJson(currentIsland);</b>
+<b class="nc"><i>304</i>&nbsp;        return islandDataJson;</b>
+<i>305</i>&nbsp;    }
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;    /**
+<i>308</i>&nbsp;     * this method handle the VC_PlayerPlacedWorkerEvent.
+<i>309</i>&nbsp;     * if the worker placed is the IDs.A it sends an event asking for the placement of IDs.B worker to the same player
+<i>310</i>&nbsp;     * if the worker placed is the IDs.B the method increment the currentTurnIndex and call askPlaceFirstWorkerForCurrentUser()
+<i>311</i>&nbsp;     *
+<i>312</i>&nbsp;     * @param event
+<i>313</i>&nbsp;     */
+<i>314</i>&nbsp;    @Override
+<i>315</i>&nbsp;    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+<i>316</i>&nbsp;        try {
+<b class="nc"><i>317</i>&nbsp;            placeInvoke(event);</b>
+<i>318</i>&nbsp;
+<i>319</i>&nbsp;            //done only if no exception is thrown
+<i>320</i>&nbsp;
+<b class="nc"><i>321</i>&nbsp;            List&lt;Player&gt; players = getPlayersSequenceAsList();</b>
+<b class="nc"><i>322</i>&nbsp;            for (Player recipient : players) {</b>
+<b class="nc"><i>323</i>&nbsp;                if (!recipient.getUsername().equals(event.getActingPlayer())) {</b>
+<b class="nc"><i>324</i>&nbsp;                    sendIslandUpdate(recipient.getUsername());</b>
+<i>325</i>&nbsp;                }
+<b class="nc"><i>326</i>&nbsp;            }</b>
+<i>327</i>&nbsp;
+<b class="nc"><i>328</i>&nbsp;            if (event.getId() == Worker.IDs.A) {</b>
+<b class="nc"><i>329</i>&nbsp;                CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent(&quot;Choose where to put your workers&quot;,</b>
+<b class="nc"><i>330</i>&nbsp;                        event.getActingPlayer(), getCurrentIslandJson(), Worker.IDs.B);</b>
+<b class="nc"><i>331</i>&nbsp;                notifyAllObserverByType(VIEW, newEvent);</b>
+<b class="nc"><i>332</i>&nbsp;            } else {</b>
+<b class="nc"><i>333</i>&nbsp;                if (currentTurnIndex + 1 &lt; turnSequence.size()) {</b>
+<b class="nc"><i>334</i>&nbsp;                    currentTurnIndex++;</b>
+<b class="nc"><i>335</i>&nbsp;                    askPlaceFirstWorkerForCurrentUser();</b>
+<i>336</i>&nbsp;                } else {
+<b class="nc"><i>337</i>&nbsp;                    room.setGameCanStart(true);</b>
+<i>338</i>&nbsp;                }
+<i>339</i>&nbsp;            }
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;        } catch (InvalidMovementException e) {</b>
+<b class="nc"><i>342</i>&nbsp;            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;invalid placement of the worker!&quot;, event.getActingPlayer());</b>
+<b class="nc"><i>343</i>&nbsp;            notifyAllObserverByType(VIEW, errorEvent);</b>
+<i>344</i>&nbsp;
+<b class="nc"><i>345</i>&nbsp;            printErrorLogMessage(e.toString()+&quot; - A new PlacementRequest has been send.&quot;);</b>
+<i>346</i>&nbsp;
+<b class="nc"><i>347</i>&nbsp;            CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent(&quot;&quot;, event.getActingPlayer(), getCurrentIslandJson(), event.getId());</b>
+<b class="nc"><i>348</i>&nbsp;            notifyAllObserverByType(VIEW, requestEvent);</b>
+<b class="nc"><i>349</i>&nbsp;        } catch (CloneNotSupportedException e) {</b>
+<b class="nc"><i>350</i>&nbsp;            throw new RuntimeException();</b>
+<b class="nc"><i>351</i>&nbsp;        }</b>
+<i>352</i>&nbsp;    }
+<i>353</i>&nbsp;
+<i>354</i>&nbsp;    /**
+<i>355</i>&nbsp;     * Print in the Server console a Log from the current Class
+<i>356</i>&nbsp;     *
+<i>357</i>&nbsp;     * @param messageToPrint a {@link String} with the message to print
+<i>358</i>&nbsp;     */
+<i>359</i>&nbsp;    private void printLogMessage(String messageToPrint) {
+<b class="nc"><i>360</i>&nbsp;        System.out.println(&quot;\t \tROOM(&quot; + room.getRoomID() + &quot;)-PREGAME: &quot; + messageToPrint);</b>
+<i>361</i>&nbsp;    }
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;    /**
+<i>364</i>&nbsp;     * Print in the Server console Error Stream an Errror Log from the current Class
+<i>365</i>&nbsp;     *
+<i>366</i>&nbsp;     * @param messageToPrint a {@link String} with the message to print
+<i>367</i>&nbsp;     */
+<i>368</i>&nbsp;    private void printErrorLogMessage(String messageToPrint) {
+<b class="nc"><i>369</i>&nbsp;        System.err.println(&quot;\t \tROOM(&quot; + room.getRoomID() + &quot;)-GAME: &quot; + messageToPrint);</b>
+<i>370</i>&nbsp;    }
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;    @Override
+<i>373</i>&nbsp;    public void handleEvent(CV_CommandRequestEvent event) {
+<i>374</i>&nbsp;
+<i>375</i>&nbsp;    }
+<i>376</i>&nbsp;
+<i>377</i>&nbsp;    @Override
+<i>378</i>&nbsp;    public void handleEvent(CV_GameOverEvent event) {
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;    }
+<i>381</i>&nbsp;
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;    @Override //NO IMPL
+<i>384</i>&nbsp;    public void handleEvent(CV_ChallengerChosenEvent event) {
+<i>385</i>&nbsp;    }
+<i>386</i>&nbsp;
+<i>387</i>&nbsp;    @Override
+<i>388</i>&nbsp;    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;    }
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;    @Override
+<i>393</i>&nbsp;    public void handleEvent(CV_WaitPreMatchGameEvent event) {
+<i>394</i>&nbsp;
+<i>395</i>&nbsp;    }
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;    @Override
+<i>398</i>&nbsp;    public void handleEvent(CV_GameErrorGameEvent event) {
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;    }
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;    @Override
+<i>403</i>&nbsp;    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
+<i>404</i>&nbsp;
+<i>405</i>&nbsp;    }
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;    @Override
+<i>408</i>&nbsp;    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
+<i>409</i>&nbsp;
+<i>410</i>&nbsp;    }
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;    @Override
+<i>413</i>&nbsp;    public void handleEvent(GameEvent event) {
+<i>414</i>&nbsp;    }
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;    @Override
+<i>417</i>&nbsp;    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
+<i>418</i>&nbsp;    }
+<i>419</i>&nbsp;
+<i>420</i>&nbsp;    @Override
+<i>421</i>&nbsp;    public void handleEvent(CV_RoomUpdateGameEvent event) {
+<i>422</i>&nbsp;
+<i>423</i>&nbsp;    }
+<i>424</i>&nbsp;
+<i>425</i>&nbsp;    @Override
+<i>426</i>&nbsp;    public void handleEvent(CV_GameStartedGameEvent event) {
+<i>427</i>&nbsp;
+<i>428</i>&nbsp;    }
+<i>429</i>&nbsp;
+<i>430</i>&nbsp;    @Override
+<i>431</i>&nbsp;    public void handleEvent(CV_NewTurnEvent event) {
+<i>432</i>&nbsp;
+<i>433</i>&nbsp;    }
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;    @Override
+<i>436</i>&nbsp;    public void handleEvent(CV_IslandUpdateEvent event) {
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;    }
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;    @Override
+<i>441</i>&nbsp;    public void handleEvent(CV_WaitMatchGameEvent event) {
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;    }
+<i>444</i>&nbsp;
+<i>445</i>&nbsp;    @Override
+<i>446</i>&nbsp;    public void handleEvent(VC_PlayerCommandGameEvent event) {
+<i>447</i>&nbsp;
+<i>448</i>&nbsp;    }
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;    @Override
+<i>451</i>&nbsp;    public void handleEvent(VC_ConnectionRequestGameEvent event) {
+<i>452</i>&nbsp;    }
+<i>453</i>&nbsp;
+<i>454</i>&nbsp;    @Override
+<i>455</i>&nbsp;    public void handleEvent(CC_ConnectionRequestGameEvent event) {
+<i>456</i>&nbsp;
+<i>457</i>&nbsp;    }
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;    @Override
+<i>460</i>&nbsp;    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
+<i>461</i>&nbsp;    }
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;    @Override
+<i>464</i>&nbsp;    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
+<i>465</i>&nbsp;    }
+<i>466</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-27 18:27</div>
+</div>
+</body>
+</html>
