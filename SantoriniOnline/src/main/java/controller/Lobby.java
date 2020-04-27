@@ -1,5 +1,6 @@
 package controller;
 
+import event.PlayerDisconnectedGameEvent;
 import exceptions.NotFreeRoomAvailableException;
 import event.core.EventListener;
 import event.core.EventSource;
@@ -48,7 +49,9 @@ public class Lobby extends EventSource implements EventListener {
     private VirtualView pendingVirtualView;
     private int roomCounter;
 
-    private ReentrantLock lock1 = new ReentrantLock();
+    private ReentrantLock creatingRoomLock = new ReentrantLock();
+    private ReentrantLock closingRoomLock = new ReentrantLock();
+
 
     //todo only one room for now
     private final int MAX_ROOMS = 1;
@@ -57,12 +60,80 @@ public class Lobby extends EventSource implements EventListener {
         return isRoomAlreadyCreated;
     }
 
+    private void updateRoomCounter() {
+        roomCounter = activeRooms.size();
+    }
+
+    private Room getRoomWithUser(String username) {
+        for (Room room : activeRooms) {
+            if (room.getActiveUsers().contains(username.toLowerCase())) {
+                return room;
+            }
+        }
+        return null;
+    }
     public void setIsRoomAlreadyCreated(boolean isRoomAlreadyCreated) {
         this.isRoomAlreadyCreated = isRoomAlreadyCreated;
     }
 
     @Override
-    public void handleEvent(CC_ConnectionRequestGameEvent event) {
+    public synchronized void attachListenerByType(ListenerType type, EventListener listener) {
+        super.attachListenerByType(type, listener);
+    }
+
+    @Override
+    public synchronized void detachListenerByType(ListenerType type, EventListener listener) {
+        super.detachListenerByType(type, listener);
+    }
+
+    public synchronized void handleClientDisconnected(String username) {
+
+        closingRoomLock.lock();
+
+        boolean userAlreadyInRoom = getRoomWithUser(username.toLowerCase()) != null;
+
+        if (!userAlreadyInRoom && pendingUsername.toLowerCase().equals(username.toLowerCase())) { //Waiting user to type room size
+
+            printLogMessage("disconnecting user creating room" + username);
+            if (activeUsersList != null) {
+                activeUsersList.remove(username.toLowerCase());
+            }
+            creatingRoomLock.lock();
+            canCreateNewRoom.set(true);
+            pendingUsername = null;
+            pendingVirtualView = null;
+            creatingRoomLock.unlock();
+
+
+        } else if (userAlreadyInRoom) {  //at least one room has been created, the room can be 1..2/3 full
+            printLogMessage("disconnecting user already in room " + getRoomWithUser(username).getActiveUsers().toString());
+            Room roomWithUser = getRoomWithUser(username.toLowerCase());
+            List<String> usersInRoom = new ArrayList<>(roomWithUser.getActiveUsers());
+            roomWithUser.disconnectAllUsers(username.toLowerCase());
+            activeRooms.remove(roomWithUser);
+            updateRoomCounter();
+            for (String user : usersInRoom) {
+                activeUsersList.remove(user);
+            }
+
+
+        }
+        else {
+            printErrorLogMessage("error in client " + username + " disconnection");
+        }
+
+        closingRoomLock.unlock();
+
+    }
+
+
+
+    @Override
+    public synchronized void handleEvent(CC_ConnectionRequestGameEvent event) {
+
+
+        System.out.println("beginning connection req");
+        closingRoomLock.lock();
         printLogMessage("Connection request to lobby from: " + event.getUserIP().toString().substring(1) +
                 "@" + event.getUserPort() + " with proposed username: " + event.getUsername().toUpperCase());
 
@@ -83,8 +154,8 @@ public class Lobby extends EventSource implements EventListener {
                 if (!room.isFull()) {
                     room.addUser(event.getUsername(), event.getVirtualView());
                 }
-            } else if (canCreateNewRoom.get() && !lock1.isLocked() && MAX_ROOMS > activeRooms.size()) {
-                lock1.lock();
+            } else if (canCreateNewRoom.get() && !creatingRoomLock.isLocked() && MAX_ROOMS > activeRooms.size()) {
+                creatingRoomLock.lock();
                 activeUsersList.add(event.getUsername());
                 try {
                     pendingUsername = event.getUsername();
@@ -94,7 +165,7 @@ public class Lobby extends EventSource implements EventListener {
                     CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert the desired size of the room: ", event.getUsername());
                     notifyAllObserverByType(ListenerType.VIEW, request);
                 } finally {
-                    lock1.unlock();
+                    creatingRoomLock.unlock();
                 }
             } else if (MAX_ROOMS == activeRooms.size()) {
                 CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
@@ -108,6 +179,8 @@ public class Lobby extends EventSource implements EventListener {
                 printErrorLogMessage("Connection rejected because a room is being created by " + event.getUsername().toUpperCase());
             }
         }
+        closingRoomLock.unlock();
+        System.out.println("beginning connection req");
     }
 
     @Override
@@ -240,6 +313,11 @@ public class Lobby extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(PlayerDisconnectedGameEvent event) {
 
     }
 

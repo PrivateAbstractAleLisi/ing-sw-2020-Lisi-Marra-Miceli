@@ -1,5 +1,6 @@
 package controller;
 
+import event.PlayerDisconnectedGameEvent;
 import event.core.EventSource;
 import event.core.ListenerType;
 import event.gameEvents.lobby.CV_RoomUpdateGameEvent;
@@ -44,8 +45,23 @@ public class Room extends EventSource {
         printLogMessage("Room created");
     }
 
+    public void disconnectAllUsers(String causedByUsername) {
+
+
+        PlayerDisconnectedGameEvent disconnectedGameEvent = new PlayerDisconnectedGameEvent("an user has disconnected", causedByUsername,
+                causedByUsername + "has lost connection to the server ");
+
+        notifyAllObserverByType(ListenerType.VIEW, disconnectedGameEvent);
+
+        activeUsers = null;
+        virtualViewMap = null;
+
+
+    }
+
     public void addUser(String username, VirtualView virtualView) {
         try {
+
             boardManager.addPlayer(username);
 
             this.activeUsers.add(username);

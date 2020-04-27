@@ -9,6 +9,7 @@ import java.net.Socket;
 public class SantoriniServer {
 
     public final static int SOCKET_PORT = 7557;
+    public final static int SOCKET_TIMEOUT_S = 5;
 
     public static void main(String[] args) throws IOException {
 
@@ -28,6 +29,7 @@ public class SantoriniServer {
 
 
             Socket clientIncoming = socket.accept(); //get the client socket
+            clientIncoming.setSoTimeout(SOCKET_TIMEOUT_S*1000);
             String clientIpAddress = clientIncoming.getInetAddress().toString().substring(1);
             System.out.println("SERVER: New client accepted:\tIPAddress: " + clientIpAddress + "\tPort: " + clientIncoming.getPort());
             String threadID = clientIpAddress + "@" + clientIncoming.getPort();

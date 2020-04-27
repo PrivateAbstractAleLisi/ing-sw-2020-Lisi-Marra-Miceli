@@ -1,6 +1,7 @@
 package controller;
 
 import com.google.gson.Gson;
+import event.PlayerDisconnectedGameEvent;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.gameEvents.CV_GameErrorGameEvent;
@@ -444,6 +445,11 @@ public class PreGameController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(PlayerDisconnectedGameEvent event) {
 
     }
 
