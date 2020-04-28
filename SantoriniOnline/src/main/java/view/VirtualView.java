@@ -4,11 +4,9 @@ import controller.Lobby;
 import event.PlayerDisconnectedGameEvent;
 import event.core.EventListener;
 import event.core.EventSource;
-import event.core.ListenerType;
 import event.gameEvents.CV_GameErrorGameEvent;
-import event.gameEvents.PingEvent;
-import event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import event.gameEvents.GameEvent;
+import event.gameEvents.PingEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
@@ -31,6 +29,7 @@ public class VirtualView extends EventSource implements EventListener {
     private int userPort;
     private String username;
     private ObjectOutputStream output;
+    private boolean anotherPlayerInRoomCrashed;
 
     Socket client;
 
@@ -45,6 +44,8 @@ public class VirtualView extends EventSource implements EventListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        anotherPlayerInRoomCrashed = false;
     }
 
 
@@ -56,6 +57,10 @@ public class VirtualView extends EventSource implements EventListener {
             System.out.println("virtual view: unable to send socket to client");
         }
 
+    }
+
+    public boolean isAnotherPlayerInRoomCrashed() {
+        return anotherPlayerInRoomCrashed;
     }
 
     public String getUsername() {
@@ -120,20 +125,28 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(PlayerDisconnectedGameEvent event) {
-
         if (!event.getDisconnectedUsername().equals(this.username)) {
             sendEventToClient(event);
+            anotherPlayerInRoomCrashed = true;
             try {
                 client.close();
                 System.out.println("closing connection for client " + username);
             } catch (IOException e) {
                 System.err.println("Error when handling quit connection event");
                 e.printStackTrace();
+            } finally {
+                //deatch for all user in room
+                lobby.detachListenerByType(VIEW, this);
+                this.detachListenerByType(VIEW, lobby);
             }
+        } else {
+            //for the user that crashed
+            lobby.detachListenerByType(VIEW, this);
+            this.detachListenerByType(VIEW, lobby);
         }
     }
 
-    private void removeListener () {
+    private void removeListener() {
         Lobby.instance().detachListenerByType(VIEW, this);
         detachListenerByType(VIEW, lobby);
 

@@ -72,6 +72,7 @@ public class Lobby extends EventSource implements EventListener {
         }
         return null;
     }
+
     public void setIsRoomAlreadyCreated(boolean isRoomAlreadyCreated) {
         this.isRoomAlreadyCreated = isRoomAlreadyCreated;
     }
@@ -104,7 +105,6 @@ public class Lobby extends EventSource implements EventListener {
             pendingVirtualView = null;
             creatingRoomLock.unlock();
 
-
         } else if (userAlreadyInRoom) {  //at least one room has been created, the room can be 1..2/3 full
             printLogMessage("disconnecting user already in room " + getRoomWithUser(username).getActiveUsers().toString());
             Room roomWithUser = getRoomWithUser(username.toLowerCase());
@@ -115,24 +115,18 @@ public class Lobby extends EventSource implements EventListener {
             for (String user : usersInRoom) {
                 activeUsersList.remove(user);
             }
-
-
-        }
-        else {
+            isRoomAlreadyCreated=false;
+        } else {
             printErrorLogMessage("error in client " + username + " disconnection");
         }
 
         closingRoomLock.unlock();
-
     }
-
 
 
     @Override
     public synchronized void handleEvent(CC_ConnectionRequestGameEvent event) {
-
-
-        System.out.println("beginning connection req");
+        printLogMessage("beginning connection req");
         closingRoomLock.lock();
         printLogMessage("Connection request to lobby from: " + event.getUserIP().toString().substring(1) +
                 "@" + event.getUserPort() + " with proposed username: " + event.getUsername().toUpperCase());
@@ -140,7 +134,7 @@ public class Lobby extends EventSource implements EventListener {
         if (activeUsersList.contains(event.getUsername())) {
             CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
             notifyAllObserverByType(ListenerType.VIEW, msgError);
-            printErrorLogMessage("Connection rejected because the username " + event.getUsername().toUpperCase()+" is already used in this Server");
+            printErrorLogMessage("Connection rejected because the username " + event.getUsername().toUpperCase() + " is already used in this Server");
         } else {
             if (!allRoomsAreFull()) {
                 activeUsersList.add(event.getUsername());
@@ -162,6 +156,7 @@ public class Lobby extends EventSource implements EventListener {
                     pendingVirtualView = event.getVirtualView();
 
                     canCreateNewRoom.set(false);
+                    //todo usare userIP e userPort??
                     CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert the desired size of the room: ", event.getUsername());
                     notifyAllObserverByType(ListenerType.VIEW, request);
                 } finally {
@@ -180,7 +175,7 @@ public class Lobby extends EventSource implements EventListener {
             }
         }
         closingRoomLock.unlock();
-        System.out.println("beginning connection req");
+        printLogMessage("closing connection req");
     }
 
     @Override

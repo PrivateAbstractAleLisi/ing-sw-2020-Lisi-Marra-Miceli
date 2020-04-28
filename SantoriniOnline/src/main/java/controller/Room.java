@@ -46,17 +46,13 @@ public class Room extends EventSource {
     }
 
     public void disconnectAllUsers(String causedByUsername) {
-
-
         PlayerDisconnectedGameEvent disconnectedGameEvent = new PlayerDisconnectedGameEvent("an user has disconnected", causedByUsername,
-                causedByUsername + "has lost connection to the server ");
+                causedByUsername + " has lost connection to the server ");
 
         notifyAllObserverByType(ListenerType.VIEW, disconnectedGameEvent);
 
         activeUsers = null;
         virtualViewMap = null;
-
-
     }
 
     public void addUser(String username, VirtualView virtualView) {
