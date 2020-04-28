@@ -77,7 +77,7 @@ public class SantoriniClient extends EventSource implements Runnable {
 
                     try {
                         while (true) {
-                            Thread.sleep(1000);
+                            Thread.sleep(15000);
                             sendEvent(new PingEvent("is there anybody in there?"));
                         }
                     } catch (InterruptedException e) {

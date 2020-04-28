@@ -39,35 +39,6 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     public void run() {
         try {
 
-            ping = new Thread() {
-                public void run() {
-
-                    try {
-                        while (true) {
-                            Thread.sleep(1000);
-                            if (!client.isClosed()) {
-                                try {
-                                    clientVV.handleEvent(new PingEvent("is there anybody in there?"));
-                                }
-                                catch (Exception e) {
-                                    Thread.sleep(2000);
-                                }
-                            }
-                        }
-                    } catch (InterruptedException e) {
-
-                    } finally {
-                        System.out.println("thread di ping interrotto");
-                        Thread.currentThread().interrupt();
-                    }
-
-                }
-            };
-
-
-
-            ping.start();
-
             handleClientConnection();
 
         } catch (IOException | ClassNotFoundException e) { //TODO Disconnects?
