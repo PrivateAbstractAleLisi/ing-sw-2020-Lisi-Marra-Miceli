@@ -4,9 +4,8 @@ import auxiliary.ANSIColors;
 import event.core.EventSource;
 import event.gameEvents.GameEvent;
 import event.gameEvents.PingEvent;
-import networking.server.SantoriniServer;
-import view.UI.CLI.utility.MessageUtility;
 import view.UI.CLI.CLIView;
+import view.UI.CLI.utility.MessageUtility;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -28,6 +27,7 @@ public class SantoriniClient extends EventSource implements Runnable {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private Socket serverSocket;
+    public static final int SERVER_PORT=7557;
 
     private boolean connectionClosed = false;
 
@@ -59,7 +59,7 @@ public class SantoriniClient extends EventSource implements Runnable {
         serverSocket = null;
         //Open a connection with the server
         try {
-            serverSocket = new Socket(IP, SantoriniServer.SOCKET_PORT);
+            serverSocket = new Socket(IP, SERVER_PORT);
         } catch (IOException e) {
             System.err.println("Client: Unable to open a socket");
             e.printStackTrace();
@@ -77,12 +77,15 @@ public class SantoriniClient extends EventSource implements Runnable {
 
                     try {
                         while (true) {
-                            Thread.sleep(15000);
-                            sendEvent(new PingEvent("is there anybody in there?"));
+                            Thread.sleep(5000);
+                            out.writeObject(new PingEvent("is there anybody in there?"));
                         }
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException  e) {
                         e.printStackTrace();
-                    } finally {
+                    }catch (IOException e){
+                        System.out.println("Unable to send event to server");
+                    }
+                    finally {
                         Thread.currentThread().interrupt();
                     }
 
