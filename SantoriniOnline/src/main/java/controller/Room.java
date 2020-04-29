@@ -1,6 +1,5 @@
 package controller;
 
-import event.PlayerDisconnectedGameEvent;
 import event.core.EventSource;
 import event.core.ListenerType;
 import event.gameEvents.lobby.CV_RoomUpdateGameEvent;
@@ -45,22 +44,8 @@ public class Room extends EventSource {
         printLogMessage("Room created");
     }
 
-    public void disconnectAllUsers(String causedByUsername) {
-        PlayerDisconnectedGameEvent disconnectedGameEvent = new PlayerDisconnectedGameEvent("an user has disconnected", causedByUsername,
-                causedByUsername + " has lost connection to the server ");
-
-        preGame=null;
-        turnController=null;
-
-        notifyAllObserverByType(ListenerType.VIEW, disconnectedGameEvent);
-
-        activeUsers = null;
-        virtualViewMap = null;
-    }
-
     public void addUser(String username, VirtualView virtualView) {
         try {
-
             boardManager.addPlayer(username);
 
             this.activeUsers.add(username);
@@ -120,8 +105,6 @@ public class Room extends EventSource {
 //        turnController = new TurnController (boardManager, turnSequence, SIZE);
 //    }
     public void beginGame() {
-        preGame=null;
-
         turnController = new TurnController(boardManager, this.turnSequence, SIZE, this);
 
         for (int i = 0; i < SIZE; i++) {
@@ -133,6 +116,7 @@ public class Room extends EventSource {
         CV_GameStartedGameEvent event = new CV_GameStartedGameEvent("", turnSequence.get(0).getUsername());
         notifyAllObserverByType(ListenerType.VIEW, event);
         turnController.firstTurn();
+
     }
 
     public int getSIZE() {
