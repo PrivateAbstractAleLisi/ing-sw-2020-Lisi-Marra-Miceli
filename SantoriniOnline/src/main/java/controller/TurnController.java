@@ -1,6 +1,7 @@
 package controller;
 
 import com.google.gson.Gson;
+import event.PlayerDisconnectedGameEvent;
 import event.core.EventListener;
 import event.core.EventSource;
 import event.core.ListenerType;
@@ -471,6 +472,11 @@ public class TurnController extends EventSource implements EventListener {
             CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("It's not your turn, please wait!", event.fromPlayer);
             notifyAllObserverByType(VIEW, errorGameEvent);
         }
+    }
+
+    @Override
+    public void handleEvent(PlayerDisconnectedGameEvent event) {
+
     }
 
     /**
