@@ -1,5 +1,6 @@
 package event.core;
 
+import event.PlayerDisconnectedGameEvent;
 import event.gameEvents.*;
 import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
@@ -65,5 +66,9 @@ public interface EventListener {
     void handleEvent(CV_WaitMatchGameEvent event);
 
     void handleEvent(VC_PlayerCommandGameEvent event);
+
+    void handleEvent(PlayerDisconnectedGameEvent event);
+
+
 }
 
