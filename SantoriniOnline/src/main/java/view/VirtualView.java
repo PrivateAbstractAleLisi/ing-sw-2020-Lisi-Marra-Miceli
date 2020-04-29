@@ -1,12 +1,12 @@
 package view;
 
 import controller.Lobby;
+import event.PlayerDisconnectedGameEvent;
 import event.core.EventListener;
 import event.core.EventSource;
-import event.core.ListenerType;
 import event.gameEvents.CV_GameErrorGameEvent;
-import event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import event.gameEvents.GameEvent;
+import event.gameEvents.PingEvent;
 import event.gameEvents.lobby.*;
 import event.gameEvents.match.*;
 import event.gameEvents.prematch.*;
@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+
+import static event.core.ListenerType.VIEW;
 
 public class VirtualView extends EventSource implements EventListener {
 
@@ -28,42 +30,67 @@ public class VirtualView extends EventSource implements EventListener {
     private String username;
     private ObjectOutputStream output;
 
+    //Boolean for disconnections
+    private boolean userInLobbyList;
+    private boolean anotherPlayerInRoomCrashed;
+
     Socket client;
 
     public VirtualView(Socket clientSocket) {
         this.lobby = Lobby.instance();
         //listening to each other
-        attachListenerByType(ListenerType.VIEW, lobby);
-        lobby.attachListenerByType(ListenerType.VIEW, this);
+        attachListenerByType(VIEW, lobby);
+        lobby.attachListenerByType(VIEW, this);
         client = clientSocket;
         try {
             output = new ObjectOutputStream(client.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        anotherPlayerInRoomCrashed = false;
+        userInLobbyList = false;
     }
+
 
     private void sendEventToClient(GameEvent event) {
         try {
             output.writeObject(event);
             output.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("virtual view: unable to send socket to client");
         }
 
+    }
+
+    public boolean isAnotherPlayerInRoomCrashed() {
+        return anotherPlayerInRoomCrashed;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public boolean isUserInLobbyList() {
+        return userInLobbyList;
     }
 
     //TO CONTROLLER
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
+        //I suppose user will be added in the list of active users with the current username
+        userInLobbyList = true;
+
         this.userIP = client.getInetAddress();
         this.userPort = client.getPort();
         this.username = event.getUsername();
-        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, event.getUsername());
-        notifyAllObserverByType(ListenerType.VIEW, newServerRequest);
+        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, username);
+        notifyAllObserverByType(VIEW, newServerRequest);
+
+
         if (lobby.canStartPreRoom0()) {
-            detachListenerByType(ListenerType.VIEW, lobby);
+            detachListenerByType(VIEW, lobby);
             try {
                 //Sleep 2 second to show the Room
                 Thread.sleep(2000);
@@ -76,27 +103,27 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
-        notifyAllObserverByType(ListenerType.VIEW, event);
+        notifyAllObserverByType(VIEW, event);
     }
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-        notifyAllObserverByType(ListenerType.VIEW, event);
+        notifyAllObserverByType(VIEW, event);
     }
 
     @Override
     public void handleEvent(VC_PlayerCardChosenEvent event) {
-        notifyAllObserverByType(ListenerType.VIEW, event);
+        notifyAllObserverByType(VIEW, event);
     }
 
     @Override
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-        notifyAllObserverByType(ListenerType.VIEW, event);
+        notifyAllObserverByType(VIEW, event);
     }
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
-        notifyAllObserverByType(ListenerType.VIEW, event);
+        notifyAllObserverByType(VIEW, event);
         if (event.getId() == Worker.IDs.B) {
             if (lobby.canStartGameForThisUser(username)) {
                 lobby.startGameForThisUser(username);
@@ -106,7 +133,32 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
-        notifyAllObserverByType(ListenerType.VIEW, event);
+        notifyAllObserverByType(VIEW, event);
+    }
+
+    @Override
+    public void handleEvent(PlayerDisconnectedGameEvent event) {
+        if (!event.getDisconnectedUsername().equals(this.username)) {
+            sendEventToClient(event);
+            anotherPlayerInRoomCrashed = true;
+            try {
+                client.close();
+                System.out.println("closing connection for client " + username);
+            } catch (IOException e) {
+                System.err.println("Error when handling quit connection event");
+                e.printStackTrace();
+            } finally {
+                //deatch for all user in room
+                lobby.detachListenerByType(VIEW, this);
+                this.detachListenerByType(VIEW, lobby);
+            }
+        }
+    }
+
+    private void removeListener() {
+        Lobby.instance().detachListenerByType(VIEW, this);
+        detachListenerByType(VIEW, lobby);
+
     }
 
 
@@ -167,6 +219,8 @@ public class VirtualView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
         if (event.getUserIP().equals(userIP) && event.getUserPort() == userPort) {
+            //I set to false the boolean
+            userInLobbyList = false;
             sendEventToClient(event);
         }
     }
@@ -221,5 +275,9 @@ public class VirtualView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CC_ConnectionRequestGameEvent event) {
 
+    }
+
+    public void handleEvent(PingEvent event) {
+        sendEventToClient(event);
     }
 }
