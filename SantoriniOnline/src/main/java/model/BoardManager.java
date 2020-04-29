@@ -88,18 +88,22 @@ public class BoardManager {
             case LEVEL1:
                 if (blocksL1 > 0) {
                     blocksL1--;
+                    break;
                 } else throw new NoRemainingBlockException("No blocksL1 remaining");
             case LEVEL2:
                 if (blocksL2 > 0) {
                     blocksL2--;
+                    break;
                 } else throw new NoRemainingBlockException("No blocksL2 remaining");
             case LEVEL3:
                 if (blocksL3 > 0) {
                     blocksL3--;
+                    break;
                 } else throw new NoRemainingBlockException("No blocksL3 remaining");
             case DOME:
                 if (blocksDome > 0) {
                     blocksDome--;
+                    break;
                 } else throw new NoRemainingBlockException("No blocksDome remaining");
         }
     }

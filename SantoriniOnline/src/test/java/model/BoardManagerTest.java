@@ -62,6 +62,10 @@ public class BoardManagerTest {
         BlockTypeEnum block= BlockTypeEnum.LEVEL1;
         boardManager.drawBlock(block);
         assertEquals(21, boardManager.getNumberOfBlocksRemaining(block));
+        assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL2));
+        assertEquals(14, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL3));
+        assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.DOME));
+
     }
 
     @Test (expected = NoRemainingBlockException.class)
@@ -69,6 +73,10 @@ public class BoardManagerTest {
         BlockTypeEnum block= BlockTypeEnum.LEVEL1;
         for (int i = 0; i<=23; i ++){
             boardManager.drawBlock(block);
+            assertEquals(22- (i+1), boardManager.getNumberOfBlocksRemaining(block));
+            assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL2));
+            assertEquals(14, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL3));
+            assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.DOME));
         }
     }
 
@@ -76,7 +84,10 @@ public class BoardManagerTest {
     public void drawBlock_blockLevel2_shouldReturnNormally() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.LEVEL2;
         boardManager.drawBlock(block);
+        assertEquals(22, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL1));
         assertEquals(17, boardManager.getNumberOfBlocksRemaining(block));
+        assertEquals(14, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL3));
+        assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.DOME));
     }
 
     @Test (expected = NoRemainingBlockException.class)
@@ -84,6 +95,10 @@ public class BoardManagerTest {
         BlockTypeEnum block= BlockTypeEnum.LEVEL2;
         for (int i = 0; i<=19; i ++){
             boardManager.drawBlock(block);
+            assertEquals(22, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL1));
+            assertEquals(18 - (i+1), boardManager.getNumberOfBlocksRemaining(block));
+            assertEquals(14, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL3));
+            assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.DOME));
         }
     }
 
@@ -91,7 +106,11 @@ public class BoardManagerTest {
     public void drawBlock_blockLevel3_shouldReturnNormally() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.LEVEL3;
         boardManager.drawBlock(block);
+
+        assertEquals(22, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL1));
+        assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL2));
         assertEquals(13, boardManager.getNumberOfBlocksRemaining(block));
+        assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.DOME));
     }
 
     @Test (expected = NoRemainingBlockException.class)
@@ -99,6 +118,10 @@ public class BoardManagerTest {
         BlockTypeEnum block= BlockTypeEnum.LEVEL3;
         for (int i = 0; i<=15; i ++){
             boardManager.drawBlock(block);
+            assertEquals(22, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL1));
+            assertEquals(18 , boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL2));
+            assertEquals(14 - (i+1), boardManager.getNumberOfBlocksRemaining(block));
+            assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.DOME));
         }
     }
 
@@ -106,6 +129,9 @@ public class BoardManagerTest {
     public void drawBlock_blockDome_shouldReturnNormally() throws NoRemainingBlockException {
         BlockTypeEnum block= BlockTypeEnum.DOME;
         boardManager.drawBlock(block);
+        assertEquals(22, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL1));
+        assertEquals(18, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL2));
+        assertEquals(14, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL3));
         assertEquals(17, boardManager.getNumberOfBlocksRemaining(block));
     }
 
@@ -114,6 +140,11 @@ public class BoardManagerTest {
         BlockTypeEnum block= BlockTypeEnum.DOME;
         for (int i = 0; i<=19; i ++){
             boardManager.drawBlock(block);
+            assertEquals(22, boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL1));
+            assertEquals(18 , boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL2));
+            assertEquals(14 , boardManager.getNumberOfBlocksRemaining(BlockTypeEnum.LEVEL3));
+            assertEquals(18 - (i+1), boardManager.getNumberOfBlocksRemaining(block));
+
         }
     }
 

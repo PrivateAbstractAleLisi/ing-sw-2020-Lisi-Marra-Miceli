@@ -1,0 +1,814 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CLIView</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">view.UI.CLI</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CLIView (view.UI.CLI)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CLIView</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.4%
+  </span>
+  <span class="absValue">
+    (1/ 42)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2%
+  </span>
+  <span class="absValue">
+    (6/ 303)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CLIView$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    2.3%
+  </span>
+  <span class="absValue">
+    (1/ 43)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2%
+  </span>
+  <span class="absValue">
+    (6/ 304)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package view.UI.CLI;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import auxiliary.ANSIColors;
+<i>4</i>&nbsp;import auxiliary.IslandData;
+<i>5</i>&nbsp;import auxiliary.Range;
+<i>6</i>&nbsp;import com.google.gson.Gson;
+<i>7</i>&nbsp;import event.core.EventListener;
+<i>8</i>&nbsp;import event.core.EventSource;
+<i>9</i>&nbsp;import event.gameEvents.CV_GameErrorGameEvent;
+<i>10</i>&nbsp;import event.gameEvents.GameEvent;
+<i>11</i>&nbsp;import event.gameEvents.lobby.*;
+<i>12</i>&nbsp;import event.gameEvents.match.*;
+<i>13</i>&nbsp;import event.gameEvents.prematch.*;
+<i>14</i>&nbsp;import model.CardEnum;
+<i>15</i>&nbsp;import model.TurnAction;
+<i>16</i>&nbsp;import networking.client.SantoriniClient;
+<i>17</i>&nbsp;import view.UI.CLI.utility.*;
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;import java.io.PrintStream;
+<i>20</i>&nbsp;import java.util.ArrayList;
+<i>21</i>&nbsp;import java.util.InputMismatchException;
+<i>22</i>&nbsp;import java.util.List;
+<i>23</i>&nbsp;import java.util.Scanner;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import static event.core.ListenerType.VIEW;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;public class CLIView extends EventSource implements EventListener {
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    //IN-OUT DATA FROM CONSOLE
+<i>30</i>&nbsp;    private PrintStream output;
+<i>31</i>&nbsp;    private Scanner input;
+<i>32</i>&nbsp;    private SantoriniClient client;
+<i>33</i>&nbsp;    private String myUsername;
+<i>34</i>&nbsp;
+<b class="fc"><i>35</i>&nbsp;    public CLIView(SantoriniClient client) {</b>
+<b class="fc"><i>36</i>&nbsp;        this.output = System.out;</b>
+<b class="fc"><i>37</i>&nbsp;        this.input = new Scanner(System.in);</b>
+<b class="fc"><i>38</i>&nbsp;        this.client = client;</b>
+<i>39</i>&nbsp;        //listening to each other
+<b class="fc"><i>40</i>&nbsp;        client.attachListenerByType(VIEW, this);</b>
+<b class="fc"><i>41</i>&nbsp;    }</b>
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    //MAIN METHODS
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    public void start() {
+<i>48</i>&nbsp;
+<b class="nc"><i>49</i>&nbsp;        clearScreen();</b>
+<i>50</i>&nbsp;        //MessageUtility.displayTitle();
+<b class="nc"><i>51</i>&nbsp;        String userProposal = askUsername();</b>
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;        //use last userProposal as my username
+<b class="nc"><i>54</i>&nbsp;        myUsername = userProposal;</b>
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;        //try to connect
+<b class="nc"><i>57</i>&nbsp;        VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent(&quot;connection attempt&quot;, &quot;--&quot;, 0, userProposal);</b>
+<b class="nc"><i>58</i>&nbsp;        this.client.sendEvent(req);</b>
+<b class="nc"><i>59</i>&nbsp;        new Thread(client).start();</b>
+<b class="nc"><i>60</i>&nbsp;    }</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    private String askUsername() {
+<i>63</i>&nbsp;
+<b class="nc"><i>64</i>&nbsp;        input = new Scanner(System.in);</b>
+<i>65</i>&nbsp;
+<b class="nc"><i>66</i>&nbsp;        String str = null;</b>
+<b class="nc"><i>67</i>&nbsp;        output.println(&quot;Insert a valid username &quot;);</b>
+<b class="nc"><i>68</i>&nbsp;        output.println(&quot;[at least 3 alpha numeric characters] &quot;);</b>
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;        str = input.nextLine();</b>
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;        while (!checkLocalUsernameAlphaNumeric(str)) {</b>
+<b class="nc"><i>73</i>&nbsp;            MessageUtility.displayErrorMessage(&quot;⚠ Invalid username: please at least 3 alpha numeric characters&quot;);</b>
+<b class="nc"><i>74</i>&nbsp;            str = input.nextLine();</b>
+<i>75</i>&nbsp;        }
+<i>76</i>&nbsp;
+<b class="nc"><i>77</i>&nbsp;        return str.toLowerCase();</b>
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    private int askGameRoomSize() {
+<b class="nc"><i>83</i>&nbsp;        System.out.print(&quot;You&#39;re the first player: &quot;);</b>
+<b class="nc"><i>84</i>&nbsp;        Integer sizeIn = readRoomSize();</b>
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;        while (sizeIn &lt; 0) {</b>
+<b class="nc"><i>87</i>&nbsp;            sizeIn = readRoomSize();</b>
+<i>88</i>&nbsp;        }
+<i>89</i>&nbsp;
+<b class="nc"><i>90</i>&nbsp;        return sizeIn;</b>
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    private int readRoomSize() {
+<b class="nc"><i>94</i>&nbsp;        input = new Scanner(System.in);</b>
+<b class="nc"><i>95</i>&nbsp;        Integer sizeIn = null;</b>
+<b class="nc"><i>96</i>&nbsp;        Range validSize = new Range(2, 3);</b>
+<b class="nc"><i>97</i>&nbsp;        System.out.println(&quot;Please choose a valid room size (2-3):&quot;);</b>
+<i>98</i>&nbsp;        try {
+<b class="nc"><i>99</i>&nbsp;            sizeIn = input.nextInt();</b>
+<b class="nc"><i>100</i>&nbsp;            while (!validSize.contains(sizeIn)) {</b>
+<b class="nc"><i>101</i>&nbsp;                System.err.println(&quot;Invalid size: please enter 2 or 3&quot;);</b>
+<b class="nc"><i>102</i>&nbsp;                sizeIn = input.nextInt();</b>
+<i>103</i>&nbsp;            }
+<b class="nc"><i>104</i>&nbsp;            MessageUtility.printValidMessage(&quot;room size is valid!&quot;);</b>
+<b class="nc"><i>105</i>&nbsp;            return sizeIn;</b>
+<b class="nc"><i>106</i>&nbsp;        } catch (InputMismatchException e) {</b>
+<b class="nc"><i>107</i>&nbsp;            System.err.println(&quot;Please insert a valid NUMBER&quot;);</b>
+<i>108</i>&nbsp;        }
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;        return -1;</b>
+<i>111</i>&nbsp;    }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    //USERNAME VALIDATION:
+<i>115</i>&nbsp;    private void checkUsernameOnSever() {
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;        //TODO sends an event to the server that the username has been inserted, the server checks if it&#39;s valid
+<b class="nc"><i>118</i>&nbsp;    }</b>
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    private boolean checkLocalUsernameAlphaNumeric(String username) {
+<b class="nc"><i>122</i>&nbsp;        boolean notValid = (username == null || username.length() &lt; 3 || username.length() &gt; 16);</b>
+<b class="nc"><i>123</i>&nbsp;        if (notValid) {</b>
+<b class="nc"><i>124</i>&nbsp;            return false;</b>
+<i>125</i>&nbsp;        } else {
+<b class="nc"><i>126</i>&nbsp;            return username.matches(&quot;^[a-zA-Z0-9]*$&quot;);</b>
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;        }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    }
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    //CHALLENGER
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    private List&lt;CardEnum&gt; fromIntToCardEnum(int[] cardUID) {
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;        List&lt;CardEnum&gt; cardListEnum = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>138</i>&nbsp;        for (int i = 0; i &lt; cardUID.length; i++) {</b>
+<i>139</i>&nbsp;
+<b class="nc"><i>140</i>&nbsp;            cardListEnum.add(CardEnum.getValueFromInt(cardUID[i]));</b>
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;        }
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;        return cardListEnum;</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    }
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;    private boolean checkCardIndexValid(int i) {
+<b class="nc"><i>151</i>&nbsp;        boolean ok = false;</b>
+<b class="nc"><i>152</i>&nbsp;        for (CardEnum card : CardEnum.values()) {</b>
+<b class="nc"><i>153</i>&nbsp;            if (card.getNumber() == i) {</b>
+<b class="nc"><i>154</i>&nbsp;                ok = true;</b>
+<b class="nc"><i>155</i>&nbsp;                return true;</b>
+<i>156</i>&nbsp;            }
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;        }
+<b class="nc"><i>159</i>&nbsp;        return false;</b>
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    }
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    private boolean areInsertedCardsValid(int[] cards) {
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;        if (cards == null) {</b>
+<b class="nc"><i>166</i>&nbsp;            return false;</b>
+<i>167</i>&nbsp;        }
+<b class="nc"><i>168</i>&nbsp;        for (int i = 0; i &lt; cards.length; i++) {</b>
+<b class="nc"><i>169</i>&nbsp;            for (int j = 0; j &lt; i; j++) {</b>
+<b class="nc"><i>170</i>&nbsp;                if (cards[i] == cards[j]) {</b>
+<b class="nc"><i>171</i>&nbsp;                    return false;</b>
+<i>172</i>&nbsp;                }
+<i>173</i>&nbsp;            }
+<b class="nc"><i>174</i>&nbsp;            if (!checkCardIndexValid(cards[i])) {</b>
+<b class="nc"><i>175</i>&nbsp;                return false;</b>
+<i>176</i>&nbsp;            }
+<i>177</i>&nbsp;        }
+<i>178</i>&nbsp;
+<b class="nc"><i>179</i>&nbsp;        return true;</b>
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    /**
+<i>183</i>&nbsp;     * reads 2 or 3 cards IDs from the input as integers
+<i>184</i>&nbsp;     *
+<i>185</i>&nbsp;     * @param roomSize how many cards you want to read from the challenger
+<i>186</i>&nbsp;     * @return a list of enum representing chosen cards
+<i>187</i>&nbsp;     */
+<i>188</i>&nbsp;    private List&lt;CardEnum&gt; challengerPickCards(int roomSize) {
+<i>189</i>&nbsp;
+<b class="nc"><i>190</i>&nbsp;        output.println(&quot;\nPlease insert &quot; + roomSize + &quot; cards numbers&quot;);</b>
+<b class="nc"><i>191</i>&nbsp;        output.println(&quot;(one number each line)&quot;);</b>
+<i>192</i>&nbsp;
+<b class="nc"><i>193</i>&nbsp;        int[] choosenCardsIndex = null;</b>
+<b class="nc"><i>194</i>&nbsp;        choosenCardsIndex = new int[roomSize];</b>
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;        //read 3 numbers
+<b class="nc"><i>197</i>&nbsp;        for (int i = 0; i &lt; roomSize; i++) {</b>
+<b class="nc"><i>198</i>&nbsp;            Integer readCard = input.nextInt();</b>
+<b class="nc"><i>199</i>&nbsp;            choosenCardsIndex[i] = readCard;</b>
+<i>200</i>&nbsp;        }
+<i>201</i>&nbsp;
+<b class="nc"><i>202</i>&nbsp;        while (!areInsertedCardsValid(choosenCardsIndex)) {</b>
+<b class="nc"><i>203</i>&nbsp;            MessageUtility.displayErrorMessage(&quot;the cards you inserted are not valid&quot;);</b>
+<b class="nc"><i>204</i>&nbsp;            output.println(&quot;please insert &quot; + roomSize + &quot; cards numbers&quot;);</b>
+<b class="nc"><i>205</i>&nbsp;            output.println(&quot;(one number each line)&quot;);</b>
+<b class="nc"><i>206</i>&nbsp;            choosenCardsIndex = new int[roomSize];</b>
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;            //read 3 numbers
+<b class="nc"><i>209</i>&nbsp;            for (int i = 0; i &lt; roomSize; i++) {</b>
+<b class="nc"><i>210</i>&nbsp;                Integer readCard = input.nextInt();</b>
+<b class="nc"><i>211</i>&nbsp;                choosenCardsIndex[i] = readCard;</b>
+<i>212</i>&nbsp;            }
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;        }
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;        MessageUtility.printValidMessage(&quot;cards are valid, thank you Challenger. &quot;);</b>
+<b class="nc"><i>217</i>&nbsp;        output.println(&quot;Now wait for the other players to choose their cards...&quot;);</b>
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;
+<b class="nc"><i>220</i>&nbsp;        return fromIntToCardEnum(choosenCardsIndex);</b>
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;        //check if they are all different
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;    }
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;    //CARD CHOICE
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    private boolean isSelectedCardValid(int cardID, List&lt;CardEnum&gt; available) {
+<b class="nc"><i>230</i>&nbsp;        boolean ok = false;</b>
+<b class="nc"><i>231</i>&nbsp;        for (CardEnum card : available) {</b>
+<b class="nc"><i>232</i>&nbsp;            if (card.getNumber() == cardID) {</b>
+<b class="nc"><i>233</i>&nbsp;                ok = true;</b>
+<b class="nc"><i>234</i>&nbsp;                return true;</b>
+<i>235</i>&nbsp;            }
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;        }</b>
+<b class="nc"><i>238</i>&nbsp;        return false;</b>
+<i>239</i>&nbsp;    }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;    //EVENT HANDLING
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    @Override
+<i>244</i>&nbsp;    public void handleEvent(GameEvent e) {
+<b class="nc"><i>245</i>&nbsp;        System.err.println(&quot;generic &lt;handleEvent&gt; has been called &quot;);</b>
+<b class="nc"><i>246</i>&nbsp;    }</b>
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;    @Override
+<i>249</i>&nbsp;    /**
+<i>250</i>&nbsp;     * room created, it clears and display an updated current room player list.
+<i>251</i>&nbsp;     */
+<i>252</i>&nbsp;    public void handleEvent(CV_RoomUpdateGameEvent event) {
+<i>253</i>&nbsp;
+<b class="nc"><i>254</i>&nbsp;        clearScreen();</b>
+<b class="nc"><i>255</i>&nbsp;        System.out.println(&quot;\nROOM CREATED: &quot;);</b>
+<b class="nc"><i>256</i>&nbsp;        String[] playersIn = event.getUsersInRoom();</b>
+<b class="nc"><i>257</i>&nbsp;        RoomUtility.printPlayersInRoom(playersIn, event.getRoomSize());</b>
+<b class="nc"><i>258</i>&nbsp;        if (playersIn.length == event.getRoomSize()) {</b>
+<b class="nc"><i>259</i>&nbsp;            System.out.println(&quot;The Pre-Match is starting!!&quot;);</b>
+<i>260</i>&nbsp;        } else {
+<b class="nc"><i>261</i>&nbsp;            System.out.println(&quot;⌛   WAITING FOR OTHER USERS   ⌛&quot;);</b>
+<i>262</i>&nbsp;        }
+<b class="nc"><i>263</i>&nbsp;    }</b>
+<i>264</i>&nbsp;
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;    @Override
+<i>267</i>&nbsp;    /**
+<i>268</i>&nbsp;     * connection has been rejected for username already taken of room is full. It may ask to insert a new username
+<i>269</i>&nbsp;     */
+<i>270</i>&nbsp;    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
+<b class="nc"><i>271</i>&nbsp;        String userProposal = &quot;&quot;;</b>
+<b class="nc"><i>272</i>&nbsp;        switch (event.getErrorCode()) {</b>
+<i>273</i>&nbsp;            case &quot;USER_TAKEN&quot;:
+<i>274</i>&nbsp;                //notify the error on screen
+<b class="nc"><i>275</i>&nbsp;                MessageUtility.displayErrorMessage(event.getErrorMessage());</b>
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;                //read a new username if it&#39;s already taken
+<b class="nc"><i>278</i>&nbsp;                userProposal = askUsername();</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;                break;</b>
+<i>281</i>&nbsp;            case &quot;WAIT_FOR_CREATION&quot;:
+<b class="nc"><i>282</i>&nbsp;                MessageUtility.displayErrorMessage(event.getErrorMessage());</b>
+<i>283</i>&nbsp;                try {
+<b class="nc"><i>284</i>&nbsp;                    Thread.sleep(5000);</b>
+<b class="nc"><i>285</i>&nbsp;                    userProposal = event.getWrongUsername();</b>
+<b class="nc"><i>286</i>&nbsp;                } catch (InterruptedException e) {</b>
+<b class="nc"><i>287</i>&nbsp;                    e.printStackTrace();</b>
+<b class="nc"><i>288</i>&nbsp;                }</b>
+<b class="nc"><i>289</i>&nbsp;                break;</b>
+<i>290</i>&nbsp;            case &quot;ROOM_FULL&quot;:
+<b class="nc"><i>291</i>&nbsp;                MessageUtility.displayErrorMessage(event.getErrorMessage());</b>
+<b class="nc"><i>292</i>&nbsp;                return;</b>
+<i>293</i>&nbsp;        }
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;        //Force to select an username
+<b class="nc"><i>296</i>&nbsp;        if (userProposal.equals(&quot;&quot;)) {</b>
+<i>297</i>&nbsp;            //send the new connection request
+<b class="nc"><i>298</i>&nbsp;            userProposal = askUsername();</b>
+<i>299</i>&nbsp;        }
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;        //use last userProposal as my username
+<i>302</i>&nbsp;        //TODO da fare evento apposta &quot;username approvato&quot;
+<b class="nc"><i>303</i>&nbsp;        myUsername = userProposal;</b>
+<i>304</i>&nbsp;
+<i>305</i>&nbsp;        VC_ConnectionRequestGameEvent req;
+<b class="nc"><i>306</i>&nbsp;        req = new VC_ConnectionRequestGameEvent(&quot;Tentativo di connessione&quot;, &quot;--&quot;, 0, userProposal);</b>
+<b class="nc"><i>307</i>&nbsp;        this.client.sendEvent(req);</b>
+<b class="nc"><i>308</i>&nbsp;    }</b>
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;    @Override
+<i>311</i>&nbsp;    /*
+<i>312</i>&nbsp;    this user is the challenger, it has to choose the 3 cards
+<i>313</i>&nbsp;     */
+<i>314</i>&nbsp;    public void handleEvent(CV_ChallengerChosenEvent event) {
+<b class="nc"><i>315</i>&nbsp;        System.out.println(&quot;⌛   WAITING   ⌛&quot;);</b>
+<b class="nc"><i>316</i>&nbsp;        System.out.println(&quot;The game is choosing the challenger...\n&quot;);</b>
+<i>317</i>&nbsp;        try {
+<b class="nc"><i>318</i>&nbsp;            Thread.sleep(2000);</b>
+<b class="nc"><i>319</i>&nbsp;        } catch (InterruptedException e) {</b>
+<b class="nc"><i>320</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>321</i>&nbsp;        }</b>
+<b class="nc"><i>322</i>&nbsp;        clearScreen();</b>
+<b class="nc"><i>323</i>&nbsp;        MessageUtility.printValidMessage(&quot;You&#39;re the challenger!&quot;);</b>
+<b class="nc"><i>324</i>&nbsp;        output.println(&quot;Choose &quot; + event.getRoomSize() + &quot; cards for this match:&quot;);</b>
+<b class="nc"><i>325</i>&nbsp;        CardUtility.displayAllCards();</b>
+<b class="nc"><i>326</i>&nbsp;        List&lt;CardEnum&gt; gameCards = challengerPickCards(event.getRoomSize());</b>
+<b class="nc"><i>327</i>&nbsp;        VC_ChallengerCardsChosenEvent response = new VC_ChallengerCardsChosenEvent(&quot;&quot;, gameCards);</b>
+<b class="nc"><i>328</i>&nbsp;        client.sendEvent(response);</b>
+<b class="nc"><i>329</i>&nbsp;    }</b>
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;    //CARD CHOICE
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;    @Override
+<i>334</i>&nbsp;    /*
+<i>335</i>&nbsp;    this user has to choose a card from the remaining list
+<i>336</i>&nbsp;     */
+<i>337</i>&nbsp;    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
+<i>338</i>&nbsp;
+<b class="nc"><i>339</i>&nbsp;        clearScreen();</b>
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;        System.out.println(&quot;It&#39;s time to choose the card to play with&quot;);</b>
+<b class="nc"><i>342</i>&nbsp;        CardUtility.displayAllAvailableCards(event.getAvailableCards());</b>
+<b class="nc"><i>343</i>&nbsp;        System.out.println(&quot;\nPlease insert a card number:&quot;);</b>
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;        Integer id;
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;        //read from the console
+<b class="nc"><i>348</i>&nbsp;        input = new Scanner(System.in);</b>
+<b class="nc"><i>349</i>&nbsp;        id = input.nextInt();</b>
+<i>350</i>&nbsp;
+<b class="nc"><i>351</i>&nbsp;        while (!isSelectedCardValid(id, event.getAvailableCards())) {</b>
+<b class="nc"><i>352</i>&nbsp;            MessageUtility.displayErrorMessage(id + &quot; is not a valid card number&quot;);</b>
+<b class="nc"><i>353</i>&nbsp;            id = input.nextInt();</b>
+<i>354</i>&nbsp;        }
+<i>355</i>&nbsp;
+<b class="nc"><i>356</i>&nbsp;        CardEnum selected = CardEnum.getValueFromInt(id);</b>
+<b class="nc"><i>357</i>&nbsp;        MessageUtility.printValidMessage(&quot;You made your choice&quot;);</b>
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;        //notify the server
+<b class="nc"><i>360</i>&nbsp;        VC_PlayerCardChosenEvent choice = new VC_PlayerCardChosenEvent(event.getUsername(), selected);</b>
+<b class="nc"><i>361</i>&nbsp;        this.client.sendEvent(choice);</b>
+<b class="nc"><i>362</i>&nbsp;    }</b>
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;    @Override
+<i>365</i>&nbsp;    /*
+<i>366</i>&nbsp;    waiting both because of the challenger or because of other players choice is made
+<i>367</i>&nbsp;     */
+<i>368</i>&nbsp;    public void handleEvent(CV_WaitPreMatchGameEvent event) {
+<b class="nc"><i>369</i>&nbsp;        clearScreen();</b>
+<b class="nc"><i>370</i>&nbsp;        System.out.println(&quot;⌛   WAITING   ⌛&quot;);</b>
+<b class="nc"><i>371</i>&nbsp;        System.out.println(event.getActingPlayer().toUpperCase() + &quot; &quot; + event.getEventDescription());</b>
+<b class="nc"><i>372</i>&nbsp;    }</b>
+<i>373</i>&nbsp;
+<i>374</i>&nbsp;    @Override
+<i>375</i>&nbsp;    public void handleEvent(CV_WaitMatchGameEvent event) {
+<b class="nc"><i>376</i>&nbsp;        System.out.println(&quot;\n⌛   WAITING   ⌛&quot;);</b>
+<b class="nc"><i>377</i>&nbsp;        System.out.println(event.getEventDescription() + &quot; &quot; + event.getActingPlayer().toUpperCase() + &quot;\n&quot;);</b>
+<b class="nc"><i>378</i>&nbsp;    }</b>
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;    @Override
+<i>381</i>&nbsp;    public void handleEvent(CV_GameErrorGameEvent event) {
+<b class="nc"><i>382</i>&nbsp;        MessageUtility.displayErrorMessage(event.getEventDescription().toUpperCase());</b>
+<b class="nc"><i>383</i>&nbsp;    }</b>
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;    @Override
+<i>386</i>&nbsp;    /*
+<i>387</i>&nbsp;    this user is the challenger, he has to choose the first player
+<i>388</i>&nbsp;     */
+<i>389</i>&nbsp;    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
+<b class="nc"><i>390</i>&nbsp;        System.out.println(&quot;Since you are the Challenger, please choose the player who starts first &quot;);</b>
+<b class="nc"><i>391</i>&nbsp;        List&lt;String&gt; players = event.getPlayers();</b>
+<i>392</i>&nbsp;
+<b class="nc"><i>393</i>&nbsp;        for (String player : players) {</b>
+<b class="nc"><i>394</i>&nbsp;            System.out.println(&quot;- &quot; + player.toUpperCase());</b>
+<b class="nc"><i>395</i>&nbsp;        }</b>
+<b class="nc"><i>396</i>&nbsp;        System.out.println(&quot;\nPlease choose a player name from this list:&quot;);</b>
+<i>397</i>&nbsp;
+<b class="nc"><i>398</i>&nbsp;        input = new Scanner(System.in);</b>
+<i>399</i>&nbsp;
+<b class="nc"><i>400</i>&nbsp;        String choice = input.nextLine().toLowerCase();</b>
+<i>401</i>&nbsp;
+<b class="nc"><i>402</i>&nbsp;        while (!players.contains(choice)) {</b>
+<b class="nc"><i>403</i>&nbsp;            clearScreen();</b>
+<b class="nc"><i>404</i>&nbsp;            MessageUtility.displayErrorMessage(&quot;Invalid username&quot;);</b>
+<i>405</i>&nbsp;
+<b class="nc"><i>406</i>&nbsp;            System.out.println(&quot;Since you are the Challenger, please choose the player who starts first &quot;);</b>
+<b class="nc"><i>407</i>&nbsp;            players = event.getPlayers();</b>
+<i>408</i>&nbsp;
+<b class="nc"><i>409</i>&nbsp;            for (String player : players) {</b>
+<b class="nc"><i>410</i>&nbsp;                System.out.println(&quot;- &quot; + player.toUpperCase());</b>
+<b class="nc"><i>411</i>&nbsp;            }</b>
+<b class="nc"><i>412</i>&nbsp;            System.out.println(&quot;\nPlease choose a player name from this list:&quot;);</b>
+<i>413</i>&nbsp;
+<b class="nc"><i>414</i>&nbsp;            input = new Scanner(System.in);</b>
+<i>415</i>&nbsp;
+<b class="nc"><i>416</i>&nbsp;            choice = input.nextLine().toLowerCase();</b>
+<i>417</i>&nbsp;        }
+<i>418</i>&nbsp;
+<b class="nc"><i>419</i>&nbsp;        MessageUtility.printValidMessage(&quot;You chose &quot; + choice + &quot; as the first player.&quot;);</b>
+<i>420</i>&nbsp;
+<b class="nc"><i>421</i>&nbsp;        VC_ChallengerChosenFirstPlayerEvent choiceEvent = new VC_ChallengerChosenFirstPlayerEvent(choice);</b>
+<i>422</i>&nbsp;
+<b class="nc"><i>423</i>&nbsp;        client.sendEvent(choiceEvent);</b>
+<b class="nc"><i>424</i>&nbsp;    }</b>
+<i>425</i>&nbsp;
+<i>426</i>&nbsp;
+<i>427</i>&nbsp;    private void displayCommandHelp() {
+<b class="nc"><i>428</i>&nbsp;        System.out.println(&quot;COMMAND HELP:&quot;);</b>
+<b class="nc"><i>429</i>&nbsp;        System.out.println(&quot;MOVE &quot; + &quot;&lt;WORKER_ID&gt; &quot; + &quot;&lt;row&gt; &quot; + &quot;&lt;column&gt; &quot;);</b>
+<b class="nc"><i>430</i>&nbsp;        System.out.println(&quot;BUILD &quot; + &quot;&lt;WORKER ID&gt; &quot; + &quot;&lt;row&gt; &quot; + &quot;&lt;column&gt; &quot; + &quot;&lt;BLOCK&gt; &quot;);</b>
+<b class="nc"><i>431</i>&nbsp;        System.out.println(&quot;(BLOCK: 1,2,3,D)&quot;);</b>
+<b class="nc"><i>432</i>&nbsp;        System.out.println(&quot;&quot;);</b>
+<b class="nc"><i>433</i>&nbsp;    }</b>
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;    private void displayAvailableBehaviour(CV_CommandRequestEvent event) {
+<i>436</i>&nbsp;        boolean canBuild, canMove;
+<i>437</i>&nbsp;
+<b class="nc"><i>438</i>&nbsp;    }</b>
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;
+<i>441</i>&nbsp;    @Override
+<i>442</i>&nbsp;    public void handleEvent(CV_CommandRequestEvent event) {
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;
+<b class="nc"><i>445</i>&nbsp;        boolean keepAsking = true;</b>
+<b class="nc"><i>446</i>&nbsp;        Command com = null;</b>
+<b class="nc"><i>447</i>&nbsp;        while (keepAsking) {</b>
+<b class="nc"><i>448</i>&nbsp;            System.out.println(&quot;Please insert a new command (type HELP to get command help box)&quot;);</b>
+<i>449</i>&nbsp;
+<b class="nc"><i>450</i>&nbsp;            System.out.println(&quot;Available actions to select: &quot;);</b>
+<i>451</i>&nbsp;
+<b class="nc"><i>452</i>&nbsp;            for (TurnAction action : event.getAvailableActions()) {</b>
+<b class="nc"><i>453</i>&nbsp;                System.out.println(&quot; - &quot; + action.toString());</b>
+<b class="nc"><i>454</i>&nbsp;            }</b>
+<b class="nc"><i>455</i>&nbsp;            System.out.println(&quot; &quot;);</b>
+<i>456</i>&nbsp;
+<b class="nc"><i>457</i>&nbsp;            input = new Scanner(System.in);</b>
+<b class="nc"><i>458</i>&nbsp;            String typed = input.nextLine().toLowerCase();</b>
+<b class="nc"><i>459</i>&nbsp;            String[] split = typed.split(&quot;\\s&quot;);</b>
+<i>460</i>&nbsp;            String command, id, block, row, column;
+<b class="nc"><i>461</i>&nbsp;            command = split[0];</b>
+<i>462</i>&nbsp;            VC_PlayerCommandGameEvent request;
+<i>463</i>&nbsp;
+<b class="nc"><i>464</i>&nbsp;            if (command.equals(&quot;help&quot;)) {</b>
+<b class="nc"><i>465</i>&nbsp;                displayCommandHelp();</b>
+<b class="nc"><i>466</i>&nbsp;            } else if (command.equals(&quot;pass&quot;)) {</b>
+<b class="nc"><i>467</i>&nbsp;                request = new VC_PlayerCommandGameEvent(&quot;action request&quot;, TurnAction.PASS, myUsername, null, null, null);</b>
+<b class="nc"><i>468</i>&nbsp;                client.sendEvent(request);</b>
+<b class="nc"><i>469</i>&nbsp;                keepAsking = false;</b>
+<b class="nc"><i>470</i>&nbsp;            } else if (split.length == 4 || split.length == 5) {</b>
+<i>471</i>&nbsp;
+<b class="nc"><i>472</i>&nbsp;                id = split[1];</b>
+<b class="nc"><i>473</i>&nbsp;                row = split[2];</b>
+<b class="nc"><i>474</i>&nbsp;                column = split[3];</b>
+<b class="nc"><i>475</i>&nbsp;                if (split.length == 5) {</b>
+<b class="nc"><i>476</i>&nbsp;                    block = split[4];</b>
+<i>477</i>&nbsp;                } else {
+<b class="nc"><i>478</i>&nbsp;                    block = null;</b>
+<i>479</i>&nbsp;                }
+<i>480</i>&nbsp;
+<b class="nc"><i>481</i>&nbsp;                com = new Command(command, row, column, id, block);</b>
+<b class="nc"><i>482</i>&nbsp;                boolean isCommandValid = com.extract();</b>
+<i>483</i>&nbsp;
+<i>484</i>&nbsp;
+<b class="nc"><i>485</i>&nbsp;                if (isCommandValid) {</b>
+<i>486</i>&nbsp;
+<b class="nc"><i>487</i>&nbsp;                    if (checkCellInput(com.getFRow(), com.getFColumn())) {</b>
+<b class="nc"><i>488</i>&nbsp;                        keepAsking = false;</b>
+<b class="nc"><i>489</i>&nbsp;                        request = new VC_PlayerCommandGameEvent(&quot;action request&quot;,</b>
+<b class="nc"><i>490</i>&nbsp;                                com.getFAction(), event.getActingPlayer(), new int[]{com.getFRow() - 1, com.getFColumn() - 1},</b>
+<b class="nc"><i>491</i>&nbsp;                                com.getFWorker(), com.getFBlock());</b>
+<b class="nc"><i>492</i>&nbsp;                        client.sendEvent(request);</b>
+<i>493</i>&nbsp;                    } else {
+<i>494</i>&nbsp;
+<b class="nc"><i>495</i>&nbsp;                        MessageUtility.displayErrorMessage(&quot;invalid row or column&quot;);</b>
+<i>496</i>&nbsp;                    }
+<i>497</i>&nbsp;                } else {
+<b class="nc"><i>498</i>&nbsp;                    MessageUtility.displayErrorMessage(&quot;wrong command&quot;);</b>
+<i>499</i>&nbsp;
+<i>500</i>&nbsp;                }
+<i>501</i>&nbsp;
+<b class="nc"><i>502</i>&nbsp;            } else {</b>
+<b class="nc"><i>503</i>&nbsp;                MessageUtility.displayErrorMessage(&quot;wrong command&quot;);</b>
+<i>504</i>&nbsp;            }
+<i>505</i>&nbsp;
+<i>506</i>&nbsp;
+<b class="nc"><i>507</i>&nbsp;        }</b>
+<i>508</i>&nbsp;
+<b class="nc"><i>509</i>&nbsp;    }</b>
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;    @Override
+<i>512</i>&nbsp;    public void handleEvent(CV_GameOverEvent event) {
+<b class="nc"><i>513</i>&nbsp;        if (event.getWinner().equals(myUsername)) {</b>
+<b class="nc"><i>514</i>&nbsp;            System.out.println(&quot;!! YOU WIN !!&quot;);</b>
+<i>515</i>&nbsp;        } else {
+<b class="nc"><i>516</i>&nbsp;            System.out.println(&quot;YOU LOSE :(&quot;);</b>
+<i>517</i>&nbsp;        }
+<b class="nc"><i>518</i>&nbsp;    }</b>
+<i>519</i>&nbsp;
+<i>520</i>&nbsp;    public boolean checkCellInput(int x, int y) {
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;        Range oneToFive = new Range(1, 5);</b>
+<b class="nc"><i>523</i>&nbsp;        return oneToFive.contains(x) &amp;&amp; oneToFive.contains(y);</b>
+<i>524</i>&nbsp;    }
+<i>525</i>&nbsp;
+<i>526</i>&nbsp;    private void displayIslandUpdateFromJson(String islaJson) {
+<i>527</i>&nbsp;        //display island
+<b class="nc"><i>528</i>&nbsp;        Gson gson = new Gson();</b>
+<b class="nc"><i>529</i>&nbsp;        final IslandData isla = (IslandData) gson.fromJson(islaJson, IslandData.class);</b>
+<i>530</i>&nbsp;
+<b class="nc"><i>531</i>&nbsp;        IslandUtility temp = new IslandUtility(isla);</b>
+<i>532</i>&nbsp;
+<b class="nc"><i>533</i>&nbsp;        temp.displayIsland();</b>
+<b class="nc"><i>534</i>&nbsp;    }</b>
+<i>535</i>&nbsp;
+<i>536</i>&nbsp;    @Override
+<i>537</i>&nbsp;    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;
+<b class="nc"><i>540</i>&nbsp;        displayIslandUpdateFromJson(event.getIsland());</b>
+<b class="nc"><i>541</i>&nbsp;        String workerFirstOrSecond = null;</b>
+<b class="nc"><i>542</i>&nbsp;        switch (event.getWorkerToPlace()) {</b>
+<i>543</i>&nbsp;
+<i>544</i>&nbsp;            case A:
+<b class="nc"><i>545</i>&nbsp;                workerFirstOrSecond = &quot;first&quot;;</b>
+<b class="nc"><i>546</i>&nbsp;                break;</b>
+<i>547</i>&nbsp;            case B:
+<b class="nc"><i>548</i>&nbsp;                workerFirstOrSecond = &quot;second&quot;;</b>
+<i>549</i>&nbsp;                break;
+<i>550</i>&nbsp;        }
+<i>551</i>&nbsp;
+<b class="nc"><i>552</i>&nbsp;        input = new Scanner(System.in);</b>
+<i>553</i>&nbsp;
+<i>554</i>&nbsp;        int x, y;
+<b class="nc"><i>555</i>&nbsp;        System.out.println(&quot;It&#39;s your turn to place your &quot; + workerFirstOrSecond + &quot; worker&quot;);</b>
+<b class="nc"><i>556</i>&nbsp;        System.out.print(&quot;Please enter a row:\t&quot;);</b>
+<b class="nc"><i>557</i>&nbsp;        x = input.nextInt();</b>
+<b class="nc"><i>558</i>&nbsp;        System.out.print(&quot;\tand a column:\t&quot;);</b>
+<b class="nc"><i>559</i>&nbsp;        y = input.nextInt();</b>
+<i>560</i>&nbsp;
+<b class="nc"><i>561</i>&nbsp;        while (!checkCellInput(x, y)) {</b>
+<b class="nc"><i>562</i>&nbsp;            MessageUtility.displayErrorMessage(&quot;Invalid row or column&quot;);</b>
+<b class="nc"><i>563</i>&nbsp;            System.out.print(&quot;Please enter a row:\t&quot;);</b>
+<b class="nc"><i>564</i>&nbsp;            x = input.nextInt();</b>
+<b class="nc"><i>565</i>&nbsp;            System.out.print(&quot;\tand a column:\t&quot;);</b>
+<b class="nc"><i>566</i>&nbsp;            y = input.nextInt();</b>
+<i>567</i>&nbsp;
+<i>568</i>&nbsp;        }
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;        //subtracting  1 &#39;cause 1...5 --&gt; 0...4 on model, controller
+<b class="nc"><i>571</i>&nbsp;        VC_PlayerPlacedWorkerEvent response =</b>
+<i>572</i>&nbsp;                new VC_PlayerPlacedWorkerEvent(&quot;sending an x, y proposal &quot;,
+<b class="nc"><i>573</i>&nbsp;                        event.getActingPlayer(),</b>
+<i>574</i>&nbsp;                        x - 1,
+<i>575</i>&nbsp;                        y - 1,
+<b class="nc"><i>576</i>&nbsp;                        event.getWorkerToPlace());</b>
+<i>577</i>&nbsp;
+<b class="nc"><i>578</i>&nbsp;        client.sendEvent(response);</b>
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;    }</b>
+<i>581</i>&nbsp;
+<i>582</i>&nbsp;    @Override
+<i>583</i>&nbsp;    /**
+<i>584</i>&nbsp;     * you&#39;re the first player so you have to insert a room size to create a room.
+<i>585</i>&nbsp;     */
+<i>586</i>&nbsp;    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
+<b class="nc"><i>587</i>&nbsp;        int size = askGameRoomSize();</b>
+<i>588</i>&nbsp;        VC_RoomSizeResponseGameEvent response;
+<b class="nc"><i>589</i>&nbsp;        response = new VC_RoomSizeResponseGameEvent(&quot;first player sends the chosen size&quot;, size);</b>
+<b class="nc"><i>590</i>&nbsp;        client.sendEvent(response);</b>
+<b class="nc"><i>591</i>&nbsp;    }</b>
+<i>592</i>&nbsp;
+<i>593</i>&nbsp;    //
+<i>594</i>&nbsp;
+<i>595</i>&nbsp;    @Override
+<i>596</i>&nbsp;    public void handleEvent(CV_GameStartedGameEvent event) {
+<i>597</i>&nbsp;
+<i>598</i>&nbsp;        //TODO BIG TITLE
+<b class="nc"><i>599</i>&nbsp;        clearScreen();</b>
+<b class="nc"><i>600</i>&nbsp;        System.out.println(&quot;GAME IS STARTING&quot;);</b>
+<i>601</i>&nbsp;
+<i>602</i>&nbsp;
+<b class="nc"><i>603</i>&nbsp;    }</b>
+<i>604</i>&nbsp;
+<i>605</i>&nbsp;    //TURN
+<i>606</i>&nbsp;
+<i>607</i>&nbsp;    @Override
+<i>608</i>&nbsp;    public void handleEvent(CV_NewTurnEvent event) {
+<i>609</i>&nbsp;
+<b class="nc"><i>610</i>&nbsp;        String yourUsername = myUsername;</b>
+<b class="nc"><i>611</i>&nbsp;        if (myUsername == null) {</b>
+<b class="nc"><i>612</i>&nbsp;            System.err.println(&quot;username not set&quot;);</b>
+<i>613</i>&nbsp;        }
+<b class="nc"><i>614</i>&nbsp;        String currentPlayerUsername = event.getTurnRotation().get(0);</b>
+<i>615</i>&nbsp;
+<b class="nc"><i>616</i>&nbsp;        boolean yourTurn = yourUsername.toLowerCase().equals(currentPlayerUsername.toLowerCase());</b>
+<b class="nc"><i>617</i>&nbsp;        clearScreen();</b>
+<b class="nc"><i>618</i>&nbsp;        System.out.println(&quot;GAME:&quot;);</b>
+<b class="nc"><i>619</i>&nbsp;        printTurnSequence(event);</b>
+<i>620</i>&nbsp;
+<b class="nc"><i>621</i>&nbsp;        if (yourTurn) {</b>
+<b class="nc"><i>622</i>&nbsp;            System.out.println(&quot;\nIt&#39;s your turn.&quot;);</b>
+<i>623</i>&nbsp;        }
+<i>624</i>&nbsp;
+<i>625</i>&nbsp;
+<b class="nc"><i>626</i>&nbsp;    }</b>
+<i>627</i>&nbsp;
+<i>628</i>&nbsp;
+<i>629</i>&nbsp;    private void printTurnSequence(CV_NewTurnEvent event) {
+<b class="nc"><i>630</i>&nbsp;        MessageUtility.printDivider();</b>
+<i>631</i>&nbsp;
+<b class="nc"><i>632</i>&nbsp;        List&lt;String&gt; turnRotation = event.getTurnRotation();</b>
+<b class="nc"><i>633</i>&nbsp;        System.out.print(&quot;TURN: &quot;);</b>
+<i>634</i>&nbsp;
+<b class="nc"><i>635</i>&nbsp;        for (String s : turnRotation) {</b>
+<b class="nc"><i>636</i>&nbsp;            if (turnRotation.indexOf(s) == 0) {</b>
+<b class="nc"><i>637</i>&nbsp;                System.out.print(ANSIColors.GREEN_UNDERLINED + s.toUpperCase() + ANSIColors.ANSI_RESET);</b>
+<i>638</i>&nbsp;            } else {
+<b class="nc"><i>639</i>&nbsp;                System.out.print(&quot; &lt;&lt;&lt; &quot;);</b>
+<b class="nc"><i>640</i>&nbsp;                System.out.print(ANSIColors.ANSI_RESET + s.toUpperCase() + ANSIColors.ANSI_RESET);</b>
+<i>641</i>&nbsp;            }
+<b class="nc"><i>642</i>&nbsp;        }</b>
+<b class="nc"><i>643</i>&nbsp;    }</b>
+<i>644</i>&nbsp;
+<i>645</i>&nbsp;    @Override
+<i>646</i>&nbsp;    public void handleEvent(CV_IslandUpdateEvent event) {
+<b class="nc"><i>647</i>&nbsp;        displayIslandUpdateFromJson(event.getNewIsland());</b>
+<b class="nc"><i>648</i>&nbsp;        System.out.println(&quot;&quot;);</b>
+<b class="nc"><i>649</i>&nbsp;    }</b>
+<i>650</i>&nbsp;
+<i>651</i>&nbsp;
+<i>652</i>&nbsp;    public static void clearScreen() {
+<b class="nc"><i>653</i>&nbsp;        System.out.print(&quot;\033[H\033[2J&quot;);</b>
+<b class="nc"><i>654</i>&nbsp;        System.out.flush();</b>
+<b class="nc"><i>655</i>&nbsp;    }</b>
+<i>656</i>&nbsp;
+<i>657</i>&nbsp;
+<i>658</i>&nbsp;    /*                              /*
+<i>659</i>&nbsp;
+<i>660</i>&nbsp;                NOT IMPLEMENTED
+<i>661</i>&nbsp;     */                             //
+<i>662</i>&nbsp;
+<i>663</i>&nbsp;    @Override
+<i>664</i>&nbsp;    public void handleEvent(VC_PlayerCommandGameEvent event) {
+<i>665</i>&nbsp;
+<b class="nc"><i>666</i>&nbsp;    }</b>
+<i>667</i>&nbsp;
+<i>668</i>&nbsp;    @Override //NO IMPL
+<i>669</i>&nbsp;    public void handleEvent(VC_ConnectionRequestGameEvent event) {
+<b class="nc"><i>670</i>&nbsp;        return;</b>
+<i>671</i>&nbsp;    }
+<i>672</i>&nbsp;
+<i>673</i>&nbsp;    @Override //NO IMPL
+<i>674</i>&nbsp;    public void handleEvent(CC_ConnectionRequestGameEvent event) {
+<b class="nc"><i>675</i>&nbsp;        return;</b>
+<i>676</i>&nbsp;    }
+<i>677</i>&nbsp;
+<i>678</i>&nbsp;    @Override
+<i>679</i>&nbsp;
+<i>680</i>&nbsp;    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
+<b class="nc"><i>681</i>&nbsp;        return;</b>
+<i>682</i>&nbsp;    }
+<i>683</i>&nbsp;
+<i>684</i>&nbsp;
+<i>685</i>&nbsp;    @Override //NO IMPL
+<i>686</i>&nbsp;    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
+<b class="nc"><i>687</i>&nbsp;        return;</b>
+<i>688</i>&nbsp;    }
+<i>689</i>&nbsp;
+<i>690</i>&nbsp;    @Override
+<i>691</i>&nbsp;    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
+<i>692</i>&nbsp;
+<b class="nc"><i>693</i>&nbsp;    }</b>
+<i>694</i>&nbsp;
+<i>695</i>&nbsp;    @Override
+<i>696</i>&nbsp;    public void handleEvent(VC_PlayerCardChosenEvent event) {
+<i>697</i>&nbsp;
+<b class="nc"><i>698</i>&nbsp;    }</b>
+<i>699</i>&nbsp;
+<i>700</i>&nbsp;    @Override
+<i>701</i>&nbsp;    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+<i>702</i>&nbsp;
+<b class="nc"><i>703</i>&nbsp;    }</b>
+<i>704</i>&nbsp;
+<i>705</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-27 18:27</div>
+</div>
+</body>
+</html>

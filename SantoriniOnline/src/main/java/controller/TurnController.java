@@ -65,8 +65,16 @@ public class TurnController extends EventSource implements EventListener {
         this.numberOfPlayers = numberOfPlayers;
     }
 
+    public int getCurrentTurnNumber() {
+        return this.currentTurnNumber;
+    }
+
     public String getCurrentPlayerUser() {
         return this.currentPlayer.getUsername();
+    }
+
+    public Turn getCurrentTurnInstance() {
+        return currentTurnInstance;
     }
 
     /**
@@ -135,7 +143,7 @@ public class TurnController extends EventSource implements EventListener {
      * @return return the turn sequence as List
      */
     private List<Player> getPlayersSequenceAsList() {
-        List<Player> players = new ArrayList<Player>();
+        List<Player> players = new ArrayList<>();
         for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
             players.add(player.getValue());
         }
@@ -161,7 +169,7 @@ public class TurnController extends EventSource implements EventListener {
         }
     }
 
-    public void setUpAvailableBuild(BehaviourManager behaviour, List<int[]> availableBuildA, List<int[]> availableBuildB) {
+    public void setUpAvailableBuild(List<int[]> availableBuildA, List<int[]> availableBuildB) {
         if (currentTurnInstance.getNumberOfMove() == 0) { // the player can build with any worker (ONLY PROMETHEUS)
             availableBuildA.addAll(currentTurnInstance.validActions(IDs.A, BUILD));
             availableBuildB.addAll(currentTurnInstance.validActions(IDs.B, BUILD));
@@ -188,17 +196,17 @@ public class TurnController extends EventSource implements EventListener {
     }
 
     private void sendCommandRequest(String actingPlayer) {
-        List<TurnAction> availableActions = new ArrayList<TurnAction>();
+        List<TurnAction> availableActions = new ArrayList<>();
         int numberOfMove = currentTurnInstance.getNumberOfMove();
         int numberOfBuild = currentTurnInstance.getNumberOfBuild();
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
 
-        List<int[]> availableMovementsA = new ArrayList<int[]>();
-        List<int[]> availableMovementsB = new ArrayList<int[]>();
+        List<int[]> availableMovementsA = new ArrayList<>();
+        List<int[]> availableMovementsB = new ArrayList<>();
 
-        List<int[]> availableBuildA = new ArrayList<int[]>();
-        List<int[]> availableBuildB = new ArrayList<int[]>();
+        List<int[]> availableBuildA = new ArrayList<>();
+        List<int[]> availableBuildB = new ArrayList<>();
 
         //Check if the player can MOVE and set the possible moves
         if ((behaviour.getMovementsRemaining() > 0) &&
@@ -217,7 +225,7 @@ public class TurnController extends EventSource implements EventListener {
         if ((behaviour.getBlockPlacementLeft() > 0) &&
                 ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0)))) { //BUILD may be a valid action
 
-            setUpAvailableBuild(behaviour, availableBuildA, availableBuildB);
+            setUpAvailableBuild(availableBuildA, availableBuildB);
 
             //if there any BUILD is actually a valid action
             if (!availableBuildA.isEmpty() || !availableBuildB.isEmpty()) {
@@ -229,8 +237,10 @@ public class TurnController extends EventSource implements EventListener {
             availableActions.add(PASS);
         }
 
+        //checks if the player loses or not
         checkLose(availableActions, actingPlayer);
 
+        //send the event for the command selection
         CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildA, availableMovementsA,
                 availableBuildB, availableMovementsB, actingPlayer);
         notifyAllObserverByType(VIEW, requestEvent);
@@ -245,7 +255,7 @@ public class TurnController extends EventSource implements EventListener {
         }
 
         currentPlayer = turnSequence.get(currentTurnIndex);
-        handleCurrentTurn();
+        currentTurnInstance = new Turn(currentPlayer, board);
         currentTurnNumber++;
 
         //Notify All Players
@@ -295,60 +305,10 @@ public class TurnController extends EventSource implements EventListener {
             notifyAllObserverByType(VIEW, gameOverEvent);
 
         } else if (numberOfPlayers == 2) {
-            //perde direttamente
             if (turnSequence.get(0).getUsername().equals(player)) { //the loser
                 win(turnSequence.get(1)); //the other one wins the game
             } else {
                 win(turnSequence.get(0)); //the other one wins the game
-            }
-        }
-    }
-
-    /**
-     * @author: alelisi
-     * creates a new {@link Turn} istance (on model) and checks immediately for each worker if you can move or not at least in one cell
-     */
-    private void handleCurrentTurn() {
-
-        //create a turn on model for this player
-        currentTurnInstance = new Turn(currentPlayer, board);
-
-
-        //current player might play with Prometheus
-
-        boolean isPrometheus;
-        isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
-
-        boolean isWorkerALocked;
-        boolean isWorkerBLocked;
-
-        //Checks if it's able to perform at least one movement
-        if (!isPrometheus) {
-
-            //get available movement cells for each worker
-            List<int[]> availableCells_Worker_A = currentTurnInstance.validActions(IDs.A, MOVE);
-            List<int[]> availableCells_Worker_B = currentTurnInstance.validActions(IDs.B, MOVE);
-            isWorkerALocked = availableCells_Worker_A.isEmpty();
-            isWorkerBLocked = availableCells_Worker_B.isEmpty();
-
-            if (isWorkerALocked && isWorkerBLocked) {
-                lose(currentPlayer.getUsername());
-                //you lost, notify the view
-            }
-            //you can move at least one time.
-
-            //TODO
-        } else {
-            List<int[]> availableCells_Worker_A = currentTurnInstance.validActions(IDs.A, MOVE);
-            List<int[]> availableCells_Worker_B = currentTurnInstance.validActions(IDs.B, MOVE);
-            List<int[]> availableBuildCells_Worker_A = currentTurnInstance.validActions(IDs.A, BUILD);
-            List<int[]> availableBuildCells_Worker_B = currentTurnInstance.validActions(IDs.B, BUILD);
-            isWorkerALocked = availableCells_Worker_A.isEmpty() && availableBuildCells_Worker_A.isEmpty();
-            isWorkerBLocked = availableCells_Worker_B.isEmpty() && availableBuildCells_Worker_B.isEmpty();
-
-            if (isWorkerALocked && isWorkerBLocked) {
-                lose(currentPlayer.getUsername());
-                //you lost, notify the view
             }
         }
     }
@@ -382,12 +342,18 @@ public class TurnController extends EventSource implements EventListener {
         }
     }
 
-    private void invokeMovement(Player player, Worker w, int x, int y) {
-
-        if (!player.getUsername().equals(getCurrentPlayerUser())) { //if is not the player turn
+    public boolean checkIsHisTurn(Player player) {
+        if (!player.getUsername().equals(getCurrentPlayerUser())) {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("is not your turn!", player.getUsername());
             notifyAllObserverByType(VIEW, errorEvent);
-        } else {
+            return false;
+        }
+        else return true;
+    }
+
+    private void invokeMovement(Player player, Worker w, int x, int y) {
+
+        if(checkIsHisTurn(player)) {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
             if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can move only with the same used during the turn!", player.getUsername());
@@ -421,10 +387,7 @@ public class TurnController extends EventSource implements EventListener {
     private void invokeBuild(Player player, Worker w, BlockTypeEnum block, int x, int y) {
 
         //are you sure it's your turn?
-        if (!player.getUsername().equals(getCurrentPlayerUser())) {
-            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("is not your turn!", player.getUsername());
-            notifyAllObserverByType(VIEW, errorEvent);
-        } else {
+        if(checkIsHisTurn(player)) {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
             if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can build only with the same used during the turn!", player.getUsername());
@@ -444,7 +407,7 @@ public class TurnController extends EventSource implements EventListener {
                     notifyAllObserverByType(VIEW, errorEvent);
                     sendCommandRequest(player.getUsername());
                 } catch (CloneNotSupportedException e) {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Clone not supported!");
                 }
             }
         }
@@ -492,7 +455,8 @@ public class TurnController extends EventSource implements EventListener {
                             printLogMessage("Block to build found: " + blockToBuild);
                         }
                         invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);
-                    } catch (InvalidBuildException e) {
+                    }
+                    catch (InvalidBuildException e) {
                         CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("Automatic block selection failed, please select a valid block", event.fromPlayer);
                         notifyAllObserverByType(VIEW, errorGameEvent);
                         sendCommandRequest(currentPlayer.getUsername());

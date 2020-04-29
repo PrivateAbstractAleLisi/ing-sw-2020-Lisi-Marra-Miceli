@@ -76,7 +76,7 @@ public class Turn {
         Worker worker = currentPlayer.getWorker(workerID);
         int[] startingPosition = worker.getPosition();
         for (int i = startingPosition[0] - 1; i <= startingPosition[0] + 1; i++) {
-            for (int j = startingPosition[1] - 1; j <= startingPosition[0] + 1; j++) {
+            for (int j = startingPosition[1] - 1; j <= startingPosition[1] + 1; j++) {
                 if (action == TurnAction.MOVE) {
                     if (currentPlayer.getCard().checkCellMovementAvailability(startingPosition[0], startingPosition[1], i, j, boardManager.getIsland())) {
                         position = new int[2];

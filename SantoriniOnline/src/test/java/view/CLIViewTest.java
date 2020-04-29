@@ -26,15 +26,15 @@ public class CLIViewTest {
     public void start() {
     }
 
-    @Test
-    public void handleEvent() {
-        List<String> turn = new ArrayList<>();
-
-        turn.add("luigi");
-        turn.add("marco");
-
-        cli.handleEvent(new CV_NewTurnEvent("marco", "marco", turn));
-    }
+//    @Test
+//    public void handleEvent() {
+//        List<String> turn = new ArrayList<>();
+//
+//        turn.add("luigi");
+//        turn.add("marco");
+//
+//        cli.handleEvent(new CV_NewTurnEvent("marco", "marco", turn));
+//    }
 
     @Test
     public void testHandleEvent() {
