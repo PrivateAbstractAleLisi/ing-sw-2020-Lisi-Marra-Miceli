@@ -61,23 +61,34 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     private void connectionLost(String reason) {
         System.out.println("Thread: " + threadID + "- Method connectionLost called: " + client.getInetAddress().toString() + " port: " + client.getPort());
 
+        //if the connection is not lost caused by another player crashed
         if (!clientVV.isAnotherPlayerInRoomCrashed()) {
-            try {
-                closeSocketConnection();
-                Thread disco = new Thread() {
-                    public void run() {
-                        Lobby.instance().handleClientDisconnected(clientVV.getUsername());
-                    }
-                };
-                disco.start();
 
-                System.out.println("client socket closed: " + client.getInetAddress() + " port: " + client.getPort());
-//            stopPing();
+            //if the Lobby has my username saved in usernameList I should clean
+            if (clientVV.isUserInLobbyList()) {
+                try {
+                    closeSocketConnection();
+                    Thread disco = new Thread() {
+                        public void run() {
+                            Lobby.instance().handleClientDisconnected(clientVV.getUsername());
+                        }
+                    };
+                    disco.start();
+
+                    //detach Lobby and the user that crashed
+                    Lobby.instance().detachListenerByType(VIEW, clientVV);
+                    clientVV.detachListenerByType(VIEW, Lobby.instance());
+
+                    System.out.println("client socket closed: " + client.getInetAddress() + " port: " + client.getPort());
+                    Thread.currentThread().interrupt();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                //Even if Lobby doesn't already saved my username, I detach myself
+                Lobby.instance().detachListenerByType(VIEW, clientVV);
+                clientVV.detachListenerByType(VIEW, Lobby.instance());
                 Thread.currentThread().interrupt();
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
 

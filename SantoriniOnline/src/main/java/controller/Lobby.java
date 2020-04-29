@@ -50,7 +50,7 @@ public class Lobby extends EventSource implements EventListener {
     private int roomCounter;
 
     private ReentrantLock creatingRoomLock = new ReentrantLock();
-    private ReentrantLock closingRoomLock = new ReentrantLock();
+    private ReentrantLock workAlreadyInActionLock = new ReentrantLock();
 
 
     //todo only one room for now
@@ -87,114 +87,128 @@ public class Lobby extends EventSource implements EventListener {
         super.detachListenerByType(type, listener);
     }
 
+    /**
+     * This method is called only if the server saved the username in the username List
+     *
+     * @param username
+     */
     public synchronized void handleClientDisconnected(String username) {
+        workAlreadyInActionLock.lock();
 
-        closingRoomLock.lock();
+        try {
+            boolean userAlreadyInRoom = getRoomWithUser(username.toLowerCase()) != null;
 
-        boolean userAlreadyInRoom = getRoomWithUser(username.toLowerCase()) != null;
+            if (!userAlreadyInRoom && pendingUsername.toLowerCase().equals(username.toLowerCase())) { //Waiting user to type room size
 
-        if (!userAlreadyInRoom && pendingUsername.toLowerCase().equals(username.toLowerCase())) { //Waiting user to type room size
+                printLogMessage("Disconnecting " + username.toUpperCase() + " that was creating a room");
+                if (activeUsersList != null) {
+                    activeUsersList.remove(username.toLowerCase());
+                }
+                creatingRoomLock.lock();
+                try {
+                    canCreateNewRoom.set(true);
+                    pendingUsername = null;
+                    pendingVirtualView = null;
+                } finally {
+                    creatingRoomLock.unlock();
+                }
+            } else if (userAlreadyInRoom) {  //at least one room has been created, the room can be 1..2/3 full
+                Room roomWithUser = getRoomWithUser(username.toLowerCase());
+                printLogMessage("Disconnecting  all users already in " + roomWithUser.getRoomID() + " :" + roomWithUser.getActiveUsers().toString());
 
-            printLogMessage("disconnecting user creating room" + username);
-            if (activeUsersList != null) {
-                activeUsersList.remove(username.toLowerCase());
+                List<String> usersInRoom = new ArrayList<>(roomWithUser.getActiveUsers());
+                roomWithUser.disconnectAllUsers(username.toLowerCase());
+                activeRooms.remove(roomWithUser);
+                updateRoomCounter();
+                for (String user : usersInRoom) {
+                    activeUsersList.remove(user);
+                }
+                isRoomAlreadyCreated = false;
+            } else {
+                printErrorLogMessage("error in client " + username + " disconnection");
             }
-            creatingRoomLock.lock();
-            canCreateNewRoom.set(true);
-            pendingUsername = null;
-            pendingVirtualView = null;
-            creatingRoomLock.unlock();
-
-        } else if (userAlreadyInRoom) {  //at least one room has been created, the room can be 1..2/3 full
-            printLogMessage("disconnecting user already in room " + getRoomWithUser(username).getActiveUsers().toString());
-            Room roomWithUser = getRoomWithUser(username.toLowerCase());
-            List<String> usersInRoom = new ArrayList<>(roomWithUser.getActiveUsers());
-            roomWithUser.disconnectAllUsers(username.toLowerCase());
-            activeRooms.remove(roomWithUser);
-            updateRoomCounter();
-            for (String user : usersInRoom) {
-                activeUsersList.remove(user);
-            }
-            isRoomAlreadyCreated=false;
-        } else {
-            printErrorLogMessage("error in client " + username + " disconnection");
+        } finally {
+            workAlreadyInActionLock.unlock();
         }
-
-        closingRoomLock.unlock();
     }
 
 
     @Override
     public synchronized void handleEvent(CC_ConnectionRequestGameEvent event) {
-        printLogMessage("beginning connection req");
-        closingRoomLock.lock();
-        printLogMessage("Connection request to lobby from: " + event.getUserIP().toString().substring(1) +
-                "@" + event.getUserPort() + " with proposed username: " + event.getUsername().toUpperCase());
+        workAlreadyInActionLock.lock();
+        try {
+            printLogMessage("Connection request to lobby from: " + event.getUserIP().toString().substring(1) +
+                    "@" + event.getUserPort() + " with proposed username: " + event.getUsername().toUpperCase());
 
-        if (activeUsersList.contains(event.getUsername())) {
-            CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
-            notifyAllObserverByType(ListenerType.VIEW, msgError);
-            printErrorLogMessage("Connection rejected because the username " + event.getUsername().toUpperCase() + " is already used in this Server");
-        } else {
-            if (!allRoomsAreFull()) {
-                activeUsersList.add(event.getUsername());
-                Room room = null;
-                try {
-                    room = activeRooms.get(roomFree());
-                } catch (NotFreeRoomAvailableException e) {
-                    e.printStackTrace();
-                }
-
-                if (!room.isFull()) {
-                    room.addUser(event.getUsername(), event.getVirtualView());
-                }
-            } else if (canCreateNewRoom.get() && !creatingRoomLock.isLocked() && MAX_ROOMS > activeRooms.size()) {
-                creatingRoomLock.lock();
-                activeUsersList.add(event.getUsername());
-                try {
-                    pendingUsername = event.getUsername();
-                    pendingVirtualView = event.getVirtualView();
-
-                    canCreateNewRoom.set(false);
-                    //todo usare userIP e userPort??
-                    CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert the desired size of the room: ", event.getUsername());
-                    notifyAllObserverByType(ListenerType.VIEW, request);
-                } finally {
-                    creatingRoomLock.unlock();
-                }
-            } else if (MAX_ROOMS == activeRooms.size()) {
-                CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
+            if (activeUsersList.contains(event.getUsername())) {
+                CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
                 notifyAllObserverByType(ListenerType.VIEW, msgError);
+                printErrorLogMessage("Connection rejected because the username " + event.getUsername().toUpperCase() + " is already used in this Server");
+            } else {
+                if (!allRoomsAreFull()) {
+                    activeUsersList.add(event.getUsername());
+                    Room room = null;
+                    try {
+                        room = activeRooms.get(roomFree());
+                    } catch (NotFreeRoomAvailableException e) {
+                        e.printStackTrace();
+                    }
 
-                printErrorLogMessage("Connection rejected because the Room is actually full");
-            } else if (!canCreateNewRoom.get()) {
-                CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "WAIT_FOR_CREATION", "A room is being created by another user, please wait few seconds.", event.getUserIP(), event.getUserPort(), event.getUsername());
-                notifyAllObserverByType(ListenerType.VIEW, msgError);
+                    if (!room.isFull()) {
+                        room.addUser(event.getUsername(), event.getVirtualView());
+                    }
+                } else if (canCreateNewRoom.get() && !creatingRoomLock.isLocked() && MAX_ROOMS > activeRooms.size()) {
+                    creatingRoomLock.lock();
+                    activeUsersList.add(event.getUsername());
+                    try {
+                        pendingUsername = event.getUsername();
+                        pendingVirtualView = event.getVirtualView();
 
-                printErrorLogMessage("Connection rejected because a room is being created by " + event.getUsername().toUpperCase());
+                        canCreateNewRoom.set(false);
+                        //todo usare userIP e userPort??
+                        CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert the desired size of the room: ", event.getUsername());
+                        notifyAllObserverByType(ListenerType.VIEW, request);
+                    } finally {
+                        creatingRoomLock.unlock();
+                    }
+                } else if (MAX_ROOMS == activeRooms.size()) {
+                    CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
+                    notifyAllObserverByType(ListenerType.VIEW, msgError);
+
+                    printErrorLogMessage("Connection rejected because the Room is actually full");
+                } else if (!canCreateNewRoom.get()) {
+                    CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "WAIT_FOR_CREATION", "A room is being created by another user, please wait few seconds.", event.getUserIP(), event.getUserPort(), event.getUsername());
+                    notifyAllObserverByType(ListenerType.VIEW, msgError);
+
+                    printErrorLogMessage("Connection rejected because a room is being created by " + event.getUsername().toUpperCase());
+                }
             }
+        } finally {
+            workAlreadyInActionLock.unlock();
         }
-        closingRoomLock.unlock();
-        printLogMessage("closing connection req");
     }
 
     @Override
     public synchronized void handleEvent(VC_RoomSizeResponseGameEvent event) {
-        String roomID = "Room_#" + roomCounter;
-        Room newRoom = new Room(event.getSize(), roomID);
-        activeRooms.add(newRoom);
-        roomCounter++;
+        workAlreadyInActionLock.lock();
+        try {
+            String roomID = "Room_#" + roomCounter;
+            Room newRoom = new Room(event.getSize(), roomID);
+            activeRooms.add(newRoom);
+            updateRoomCounter();
 
-        newRoom.addUser(pendingUsername, pendingVirtualView);
+            newRoom.addUser(pendingUsername, pendingVirtualView);
 
-        setIsRoomAlreadyCreated(true);
-        canCreateNewRoom.set(true);
+            setIsRoomAlreadyCreated(true);
+            canCreateNewRoom.set(true);
 
-        printLogMessage("Successfully created new room (" + roomID + "). Size:" + event.getSize());
+            printLogMessage("Successfully created new room (" + roomID + "). Size:" + event.getSize());
 
-        pendingUsername = null;
-        pendingVirtualView = null;
-
+            pendingUsername = null;
+            pendingVirtualView = null;
+        } finally {
+            workAlreadyInActionLock.unlock();
+        }
     }
 
     public boolean canStartPreRoom0() {

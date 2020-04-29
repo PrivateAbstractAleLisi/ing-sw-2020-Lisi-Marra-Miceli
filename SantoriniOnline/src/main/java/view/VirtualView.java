@@ -29,6 +29,9 @@ public class VirtualView extends EventSource implements EventListener {
     private int userPort;
     private String username;
     private ObjectOutputStream output;
+
+    //Boolean for disconnections
+    private boolean userInLobbyList;
     private boolean anotherPlayerInRoomCrashed;
 
     Socket client;
@@ -46,6 +49,7 @@ public class VirtualView extends EventSource implements EventListener {
         }
 
         anotherPlayerInRoomCrashed = false;
+        userInLobbyList = false;
     }
 
 
@@ -67,15 +71,24 @@ public class VirtualView extends EventSource implements EventListener {
         return username;
     }
 
+    public boolean isUserInLobbyList() {
+        return userInLobbyList;
+    }
+
     //TO CONTROLLER
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
+        //I suppose user will be added in the list of active users with the current username
+        userInLobbyList = true;
+
         this.userIP = client.getInetAddress();
         this.userPort = client.getPort();
         this.username = event.getUsername();
-        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, event.getUsername());
+        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, username);
         notifyAllObserverByType(VIEW, newServerRequest);
+
+
         if (lobby.canStartPreRoom0()) {
             detachListenerByType(VIEW, lobby);
             try {
@@ -139,10 +152,6 @@ public class VirtualView extends EventSource implements EventListener {
                 lobby.detachListenerByType(VIEW, this);
                 this.detachListenerByType(VIEW, lobby);
             }
-        } else {
-            //for the user that crashed
-            lobby.detachListenerByType(VIEW, this);
-            this.detachListenerByType(VIEW, lobby);
         }
     }
 
@@ -210,6 +219,8 @@ public class VirtualView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
         if (event.getUserIP().equals(userIP) && event.getUserPort() == userPort) {
+            //I set to false the boolean
+            userInLobbyList = false;
             sendEventToClient(event);
         }
     }

@@ -49,6 +49,9 @@ public class Room extends EventSource {
         PlayerDisconnectedGameEvent disconnectedGameEvent = new PlayerDisconnectedGameEvent("an user has disconnected", causedByUsername,
                 causedByUsername + " has lost connection to the server ");
 
+        preGame=null;
+        turnController=null;
+
         notifyAllObserverByType(ListenerType.VIEW, disconnectedGameEvent);
 
         activeUsers = null;
@@ -117,6 +120,8 @@ public class Room extends EventSource {
 //        turnController = new TurnController (boardManager, turnSequence, SIZE);
 //    }
     public void beginGame() {
+        preGame=null;
+
         turnController = new TurnController(boardManager, this.turnSequence, SIZE, this);
 
         for (int i = 0; i < SIZE; i++) {
@@ -128,7 +133,6 @@ public class Room extends EventSource {
         CV_GameStartedGameEvent event = new CV_GameStartedGameEvent("", turnSequence.get(0).getUsername());
         notifyAllObserverByType(ListenerType.VIEW, event);
         turnController.firstTurn();
-
     }
 
     public int getSIZE() {
