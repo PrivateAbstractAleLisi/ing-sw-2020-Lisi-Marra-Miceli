@@ -27,13 +27,21 @@
             <artifactId>maven-jar-plugin</artifactId>
             <version>3.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>11.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>11.0.2</version>
+        </dependency>
     </dependencies>
 
     <properties>
-
-<!--        <java.home>C:\Program Files\Java\jdk-11.0.7\bin</java.home>-->
-        <maven.compiler.source>1.11</maven.compiler.source>
-        <maven.compiler.target>1.11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -46,8 +54,6 @@
                 <version>3.8.1</version>
                 <configuration>
                     <verbose>true</verbose>
-                    <!-- <fork>true</fork>
-                     <executable>${java.home}</executable> -->
                     <source>11</source>
                     <target>11</target>
                 </configuration>
@@ -66,8 +72,8 @@
                     <archive>
                         <manifest>
                             <!-- Jar file entry point -->
-                            <mainClass>networking.client.ClientMain</mainClass>
-<!--                                                        <mainClass>networking.server.SantoriniServer</mainClass>-->
+                            <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
+<!--                                                        <mainClass>it.polimi.ingsw.psp58.networking.server.SantoriniServer</mainClass>-->
                         </manifest>
                     </archive>
                 </configuration>
@@ -90,24 +96,6 @@
                 </executions>
             </plugin>
 
-<!--            <plugin>-->
-<!--                <groupId>sh.tak.appbundler</groupId>-->
-<!--                <artifactId>appbundle-maven-plugin</artifactId>-->
-<!--                <version>1.2.0</version>-->
-<!--                <configuration>-->
-<!--                    <mainClass>networking.client.ClientMain</mainClass>-->
-                    <!--                            <mainClass>networking.server.SantoriniServer</mainClass>-->
-
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>bundle</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 
