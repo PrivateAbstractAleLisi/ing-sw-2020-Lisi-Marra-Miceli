@@ -6,6 +6,7 @@ import exceptions.InvalidMovementException;
 import model.BoardManager;
 import model.CardEnum;
 import model.Player;
+import model.TurnAction;
 import model.gamemap.BlockTypeEnum;
 import model.gamemap.Worker;
 import org.junit.After;
@@ -15,6 +16,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static model.TurnAction.*;
 import static org.junit.Assert.*;
@@ -157,6 +159,52 @@ public class TurnControllerTest {
         turnController.handleEvent(commandEvent);
         assertEquals(turnSequence.get(1).getUsername(), turnController.getCurrentPlayerUser());
     }
+
+    @Test
+    public void handleEvent_VC_PlayerCommandGameEvent_random() {
+
+
+
+        turnController.firstTurn();
+        assertEquals(turnController.getCurrentPlayerUser(), "Jack");
+
+        for (int i = 0; i < 36; i++) {
+
+
+            Random random = new Random();
+            String descrition = "test";
+            TurnAction action = random.nextInt(1) == 1 ? MOVE : BUILD;
+            int workerChoice = random.nextInt(1);
+            Worker.IDs worker = workerChoice == 1 ? Worker.IDs.A : Worker.IDs.B;
+            int x, y;
+            x = random.nextInt(7)-2;
+            y = random.nextInt(7)-2;
+            int[] position = new int[] {x, y};
+
+            boolean isOutOfBound = x>4 || x<0 || y>4 || y<0;
+            VC_PlayerCommandGameEvent legalEvent = new VC_PlayerCommandGameEvent(descrition,
+                    action,
+                    "Jack",
+                    position,
+                    worker,
+                    null);
+
+            if (isOutOfBound) {
+                assertThrows(IndexOutOfBoundsException.class, () -> {
+                    turnController.handleEvent(legalEvent);
+                });
+            }
+            else {
+                turnController.handleEvent(legalEvent);
+            }
+
+
+            System.out.println(i+1 + "done");
+        }
+
+
+    }
+
 
 
 
