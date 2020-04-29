@@ -27,14 +27,17 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     private String threadID;
     private Thread ping;
 
+    private final boolean pingStamp;
+
     VirtualView clientVV;
 
-    public SantoriniServerClientHandler(Socket client, String threadID) {
+    public SantoriniServerClientHandler(Socket client, String threadID, boolean pingStamp) {
         this.client = client;
         this.clientVV = new VirtualView(client);
         makeConnections();
         input = null;
         this.threadID = threadID;
+        this.pingStamp = pingStamp;
     }
 
     @Override
@@ -84,7 +87,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }else {
+            } else {
                 //Even if Lobby doesn't already saved my username, I detach myself
                 Lobby.instance().detachListenerByType(VIEW, clientVV);
                 clientVV.detachListenerByType(VIEW, Lobby.instance());
@@ -110,11 +113,13 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
             while (true) {
 
                 received = (GameEvent) input.readObject();
-                System.out.println("received correctly");
+//                System.out.println("received correctly");
 
                 if (received != null) {
                     if (received instanceof PingEvent) {
-                        System.out.println(received.getEventDescription() + " from " + threadID);
+                        if (pingStamp) {
+                            System.out.println("SERVER: " + received.getEventDescription() + " from " + threadID);
+                        }
                     } else {
                         notifyAllObserverByType(VIEW, received);
                     }
