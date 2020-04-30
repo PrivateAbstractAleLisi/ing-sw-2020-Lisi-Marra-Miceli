@@ -1,11 +1,14 @@
 package it.polimi.ingsw.psp58.networking.client;
 
 import it.polimi.ingsw.psp58.auxiliary.ANSIColors;
+import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.PingEvent;
 import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.MessageUtility;
+import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import javafx.application.Application;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -22,39 +25,23 @@ import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
 public class SantoriniClient extends EventSource implements Runnable {
 
-    private CLIView cli;
+    private EventListener userInterface;
 
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private String IP;
     private Socket serverSocket;
     public static final int SERVER_PORT=7557;
 
     private boolean connectionClosed = false;
 
+    public SantoriniClient(EventListener userInterface, String ipAddress) {
+        this.userInterface = userInterface;
+        this.IP= IP;
+        attachListenerByType(VIEW, userInterface);
+    }
+
     public void begin() {
-
-        cli = new CLIView(this);
-        Scanner systemIn = new Scanner(System.in);
-
-        MessageUtility.bigTitle();
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-            MessageUtility.online();
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(ANSIColors.YELLOW_UNDERLINED + "Press Enter to Start:" + ANSIColors.ANSI_RESET + " ");
-        systemIn.nextLine();
-
-        //System.out.println("WELCOME, Client Started.");
-        CLIView.clearScreen();
-        System.out.println("Insert server IP Address (press ENTER for localhost): ");
-        String IP = systemIn.nextLine();
-        if (IP.equals("")) {
-            IP = "127.0.0.1";
-        }
 
         serverSocket = null;
         //Open a connection with the server
@@ -64,8 +51,6 @@ public class SantoriniClient extends EventSource implements Runnable {
             System.err.println("Client: Unable to open a socket");
             e.printStackTrace();
         }
-
-        System.out.println("CLIENT: connected ");
 
         try {
             InetAddress serverInetAddress = InetAddress.getByName(IP);
@@ -90,7 +75,6 @@ public class SantoriniClient extends EventSource implements Runnable {
                     finally {
                         Thread.currentThread().interrupt();
                     }
-
                 }
             };
 
@@ -105,8 +89,6 @@ public class SantoriniClient extends EventSource implements Runnable {
 
             in = new ObjectInputStream(new BufferedInputStream(serverSocket.getInputStream()));
             out = new ObjectOutputStream(serverSocket.getOutputStream());
-            cli.start(); //starts
-
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -145,7 +127,6 @@ public class SantoriniClient extends EventSource implements Runnable {
                 connectionClosed = true;
                 closeConnection();
             }
-
         }
 
     }
@@ -159,6 +140,5 @@ public class SantoriniClient extends EventSource implements Runnable {
         } finally {
             System.exit(0);
         }
-
     }
 }

@@ -2,6 +2,8 @@ package it.polimi.ingsw.psp58.event.core;
 
 
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +44,12 @@ public abstract class EventSource {
 //                ConnectionRequestGameEvent cast = (ConnectionRequestGameEvent) it.polimi.ingsw.sp58.event;
 //                observerGameObject.handleEvent(cast); //handles the it.polimi.ingsw.sp58.event
 //            }
-            event.notifyHandler(observerGameObject);
+            if (observerGameObject instanceof GUI){
+                Platform.runLater(() -> event.notifyHandler(observerGameObject));
+            }
+            else{
+                event.notifyHandler(observerGameObject);
+            }
         }
     }
 

@@ -17,11 +17,14 @@ import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
 
+
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
@@ -33,12 +36,11 @@ public class CLIView extends EventSource implements EventListener {
     private SantoriniClient client;
     private String myUsername;
 
-    public CLIView(SantoriniClient client) {
+    public CLIView() {
         this.output = System.out;
         this.input = new Scanner(System.in);
-        this.client = client;
         //listening to each other
-        client.attachListenerByType(VIEW, this);
+
     }
 
 
@@ -46,6 +48,29 @@ public class CLIView extends EventSource implements EventListener {
 
 
     public void start() {
+
+        MessageUtility.bigTitle();
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+            MessageUtility.online();
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(ANSIColors.YELLOW_UNDERLINED + "Press Enter to Start:" + ANSIColors.ANSI_RESET + " ");
+        input.nextLine();
+
+        //System.out.println("WELCOME, Client Started.");
+        CLIView.clearScreen();
+
+        String IP= askIPAddress();
+
+        //set up the client
+        client = new SantoriniClient(this,  IP);
+        client.begin();
+
+        System.out.println("CLIENT: connected ");
 
         clearScreen();
         //MessageUtility.displayTitle();
@@ -58,6 +83,19 @@ public class CLIView extends EventSource implements EventListener {
         VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
         this.client.sendEvent(req);
         new Thread(client).start();
+    }
+
+    private String askIPAddress(){
+        System.out.println("Insert server IP Address (press ENTER for localhost): ");
+        String IP = input.nextLine();
+        if (IP.equals("")) {
+            IP = "127.0.0.1";
+        }
+        while (!checkValidIP(IP)) {
+            MessageUtility.displayErrorMessage("⚠ Invalid IP: please insert a valid one!");
+            IP = input.nextLine();
+        }
+        return IP;
     }
 
     private String askUsername() {
@@ -125,9 +163,15 @@ public class CLIView extends EventSource implements EventListener {
             return false;
         } else {
             return username.matches("^[a-zA-Z0-9]*$");
-
         }
+    }
 
+    private boolean checkValidIP(String IP){
+        boolean notValid = (IP==null || IP.length() < 7 || IP.length() >15);
+        if(notValid) return false;
+        else{
+            return IP.matches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+        }
     }
 
 

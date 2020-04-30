@@ -3,7 +3,6 @@ package it.polimi.ingsw.psp58.view.UI.GUI;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
 import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
@@ -22,7 +21,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
 
 public class GUI extends Application implements EventListener {
@@ -62,8 +60,6 @@ public class GUI extends Application implements EventListener {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-
-
         stage = primaryStage;
 
         //set up the starting scene
@@ -198,7 +194,7 @@ public class GUI extends Application implements EventListener {
 
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-        ErrorMessage.display(event.getEventDescription());
+        Message.show("Username already in use! Choose another one");
     }
 
     @Override
@@ -220,12 +216,14 @@ public class GUI extends Application implements EventListener {
 
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-
+        int number= Message.askRoomSize("Choose the size of the room:");
+        System.out.println();
+        VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", number);
+        sendEvent(responseEvent);
     }
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
-
     }
 
     @Override
