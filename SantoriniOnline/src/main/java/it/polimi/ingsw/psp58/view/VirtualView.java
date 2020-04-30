@@ -89,7 +89,7 @@ public class VirtualView extends EventSource implements EventListener {
         notifyAllObserverByType(VIEW, newServerRequest);
 
 
-        if (lobby.canStartPreRoom0()) {
+        if (lobby.canStartPreGameForThisUser(this.username)) {
             detachListenerByType(VIEW, lobby);
             try {
                 //Sleep 2 second to show the Room
@@ -97,7 +97,7 @@ public class VirtualView extends EventSource implements EventListener {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Lobby.instance().startPreGameForRoom0();
+            lobby.startPreGameForThisUser(username);
         }
     }
 
