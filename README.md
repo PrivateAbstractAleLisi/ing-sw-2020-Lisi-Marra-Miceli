@@ -1,5 +1,5 @@
 # ing-sw-2020-Lisi-Marra-Miceli
-## Gruppo 58
+## Gruppo SPS58
 
 - ###    Alessandro Lisi ([@PrivateAbstractAleLisi](https://github.com/PrivateAbstractAleLisi))<br>alessandro.lisi@mail.polimi.it
 - ###    Gabriele Marra ([@gabrielemarra](https://github.com/gabrielemarra))<br>gabriele.marra@mail.polimi.it
@@ -12,7 +12,7 @@
 | Socket | [![YELLOW](https://placehold.it/15/ffdd00/ffdd00)](#) |
 | CLI | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
 | GUI | [![RED](https://placehold.it/15/f03c15/f03c15)](#) |
-| Multiple games | [![RED](https://placehold.it/15/f03c15/f03c15)](#) |
+| Multiple games | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
 | Persistence | [![RED](https://placehold.it/15/f03c15/f03c15)](#) |
 | Advanced Gods | [![RED](https://placehold.it/15/f03c15/f03c15)](#) |
 | Undo | [![RED](https://placehold.it/15/f03c15/f03c15)](#) |

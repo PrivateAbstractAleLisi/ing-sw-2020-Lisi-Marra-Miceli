@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
@@ -29,6 +31,12 @@ public class VirtualView extends EventSource implements EventListener {
     private int userPort;
     private String username;
     private ObjectOutputStream output;
+
+    //boolean for first connection
+    private AtomicBoolean userConnectionAccepted;
+    //lock for first connection
+    private ReentrantLock userConnectionAcceptedLock = new ReentrantLock();
+
 
     //Boolean for disconnections
     private boolean userInLobbyList;
@@ -50,6 +58,7 @@ public class VirtualView extends EventSource implements EventListener {
 
         anotherPlayerInRoomCrashed = false;
         userInLobbyList = false;
+        userConnectionAccepted = new AtomicBoolean(false);
     }
 
 
@@ -82,22 +91,33 @@ public class VirtualView extends EventSource implements EventListener {
         //I suppose user will be added in the list of active users with the current username
         userInLobbyList = true;
 
+        userConnectionAcceptedLock.lock();
+        userConnectionAccepted.set(true);
+        userConnectionAcceptedLock.unlock();
+
         this.userIP = client.getInetAddress();
         this.userPort = client.getPort();
         this.username = event.getUsername();
         CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, username);
         notifyAllObserverByType(VIEW, newServerRequest);
 
-
-        if (lobby.canStartPreGameForThisUser(this.username)) {
-            detachListenerByType(VIEW, lobby);
-            try {
-                //Sleep 2 second to show the Room
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        userConnectionAcceptedLock.lock();
+        try{
+            //if the connection is not accepted, don't ask for start pregame
+            if (userConnectionAccepted.get()) {
+                if (lobby.canStartPreGameForThisUser(this.username)) {
+                    detachListenerByType(VIEW, lobby);
+                    try {
+                        //Sleep 2 second to show the Room
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    lobby.startPreGameForThisUser(username);
+                }
             }
-            lobby.startPreGameForThisUser(username);
+        }finally {
+            userConnectionAcceptedLock.unlock();
         }
     }
 
@@ -167,12 +187,23 @@ public class VirtualView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         if (event.getUsername().equals(this.username)) {
+            //set to false the connection accepted
+            userConnectionAcceptedLock.lock();
+            userConnectionAccepted.set(false);
+            userConnectionAcceptedLock.unlock();
+
             sendEventToClient(event);
         }
     }
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
+
+        //set to false the connection accepted
+        userConnectionAcceptedLock.lock();
+        userConnectionAccepted.set(true);
+        userConnectionAcceptedLock.unlock();
+
         sendEventToClient(event);
     }
 
@@ -221,6 +252,12 @@ public class VirtualView extends EventSource implements EventListener {
         if (event.getUserIP().equals(userIP) && event.getUserPort() == userPort) {
             //I set to false the boolean
             userInLobbyList = false;
+
+            //set to false the connection accepted
+            userConnectionAcceptedLock.lock();
+            userConnectionAccepted.set(false);
+            userConnectionAcceptedLock.unlock();
+
             sendEventToClient(event);
         }
     }
