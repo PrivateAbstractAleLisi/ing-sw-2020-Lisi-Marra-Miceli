@@ -34,7 +34,7 @@ public class Room extends EventSource {
 
     public Room(int size, String roomID) {
         this.SIZE = size;
-        activeUsers = new ArrayList<String>();
+        activeUsers = new ArrayList<String>(SIZE);
         lastOccupiedPosition = activeUsers.size();
         boardManager = new BoardManager();
         virtualViewMap = new HashMap<>(SIZE);
@@ -60,6 +60,11 @@ public class Room extends EventSource {
 
     public void addUser(String username, VirtualView virtualView) {
         try {
+            boolean canAdd = !(boardManager.getPlayers().size()+1 > SIZE) &&
+                             activeUsers.size()<SIZE && activeUsers.size()+1 <= SIZE;
+            if (!canAdd) {
+                throw new LimitExceededException();
+            }
 
             boardManager.addPlayer(username);
 
@@ -74,10 +79,7 @@ public class Room extends EventSource {
             CV_RoomUpdateGameEvent updateEvent = new CV_RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
             notifyAllObserverByType(ListenerType.VIEW, updateEvent);
 
-            /*if (lastOccupiedPosition == SIZE) {  //when room is filled.
-                //beginPreGame();
-                throw new Exception("ROOMREADY");
-            } */
+
         } catch (LimitExceededException e) {
             e.printStackTrace();
         } catch (AlreadyExistingPlayerException e) {
@@ -116,9 +118,6 @@ public class Room extends EventSource {
         preGame.start();
     }
 
-    //    public void beginGame(Map<Integer, Player> turnSequence) {
-//        turnController = new TurnController (boardManager, turnSequence, SIZE);
-//    }
     public void beginGame() {
         preGame=null;
 

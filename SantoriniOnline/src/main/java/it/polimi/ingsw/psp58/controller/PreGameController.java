@@ -47,6 +47,10 @@ public class PreGameController extends EventSource implements EventListener {
         chooseChallenger();
     }
 
+    public String getChallenger() {
+        return challenger;
+    }
+
     public void chooseChallenger() {
         //choose the challenger in a random way
         Random random = new Random();
@@ -59,6 +63,7 @@ public class PreGameController extends EventSource implements EventListener {
                 notifyAllObserverByType(VIEW, requestEvent);
             }
         }
+
 
         //DEBUG
 //        System.out.println("Il challenger è "+challenger);
