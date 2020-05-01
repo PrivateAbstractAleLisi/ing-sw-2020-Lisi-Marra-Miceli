@@ -1,7 +1,6 @@
 package it.polimi.ingsw.psp58.controller;
 
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.CC_ConnectionRequestGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_RoomSizeResponseGameEvent;
 import it.polimi.ingsw.psp58.networking.server.SantoriniServer;
 import it.polimi.ingsw.psp58.view.VirtualView;
@@ -11,7 +10,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 
 import static org.junit.Assert.*;
@@ -42,9 +40,7 @@ public class LobbyTest {
         lobby.handleEvent(new CC_ConnectionRequestGameEvent("test",
                 InetAddress.getByName("127.0.0.1"),
                 8775,
-                mock(VirtualView.class), "first"
-
-        ));
+                mock(VirtualView.class), "first"));
 
         lobby.handleEvent(new VC_RoomSizeResponseGameEvent("test", 2));
         assertFalse(lobby.canStartPreGameForThisUser("first"));
@@ -52,9 +48,7 @@ public class LobbyTest {
         lobby.handleEvent(new CC_ConnectionRequestGameEvent("test",
                 InetAddress.getByName("127.0.0.2"),
                 8775,
-                mock(VirtualView.class), "second"
-
-        ));
+                mock(VirtualView.class), "second"));
 
         assertTrue(lobby.canStartPreGameForThisUser("second"));
 
