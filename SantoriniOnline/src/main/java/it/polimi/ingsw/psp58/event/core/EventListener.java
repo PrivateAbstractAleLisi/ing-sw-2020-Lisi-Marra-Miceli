@@ -23,13 +23,18 @@ public interface EventListener {
 
     void handleEvent(CV_ConnectionRejectedErrorGameEvent event);
 
+    void handleEvent(CV_NewGameRequestEvent event);
+
     void handleEvent(CV_RoomSizeRequestGameEvent event);
 
     void handleEvent(CV_RoomUpdateGameEvent event);
 
     void handleEvent(VC_ConnectionRequestGameEvent event);
 
+    void handleEvent(VC_NewGameResponseEvent event);
+
     void handleEvent(VC_RoomSizeResponseGameEvent event);
+
 
 
     //PREMATCH

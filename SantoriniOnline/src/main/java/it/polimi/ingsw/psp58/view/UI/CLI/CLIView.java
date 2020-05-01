@@ -8,7 +8,9 @@ import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
 import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.CV_NewGameRequestEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.VC_NewGameResponseEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
@@ -694,6 +696,16 @@ public class CLIView extends EventSource implements EventListener {
     @Override //NO IMPL
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         return;
+    }
+
+    @Override
+    public void handleEvent(VC_NewGameResponseEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_NewGameRequestEvent event) {
+
     }
 
     @Override

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.psp58.controller;
 
 import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.CV_NewGameRequestEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.VC_NewGameResponseEvent;
 import it.polimi.ingsw.psp58.exceptions.NotFreeRoomAvailableException;
 import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
@@ -279,6 +281,16 @@ public class Lobby extends EventSource implements EventListener {
 
         pendingUsername = null;
         pendingVirtualView = null;
+    }
+
+    @Override
+    public void handleEvent(VC_NewGameResponseEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_NewGameRequestEvent event) {
+
     }
 
 

@@ -6,6 +6,8 @@ import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.core.ListenerType;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.CV_NewGameRequestEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.VC_NewGameResponseEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
@@ -506,6 +508,16 @@ public class TurnController extends EventSource implements EventListener {
     @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         /* TurnController doesn't have to implement this handleEvent*/
+    }
+
+    @Override
+    public void handleEvent(VC_NewGameResponseEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_NewGameRequestEvent event) {
+
     }
 
     @Override
