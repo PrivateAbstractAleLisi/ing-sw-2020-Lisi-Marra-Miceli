@@ -20,10 +20,12 @@ import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
 
 import java.io.PrintStream;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
@@ -513,11 +515,19 @@ public class CLIView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_GameOverEvent event) {
+        clearScreen();
         if (event.getWinner().equals(myUsername)) {
-            System.out.println("!! YOU WIN !!");
+            MessageUtility.winner();
         } else {
-            System.out.println("YOU LOSE :(");
+            MessageUtility.gameOver();
         }
+        try {
+            TimeUnit.SECONDS.sleep(4);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        input.reset();
+        output.flush();
     }
 
     public boolean checkCellInput(int x, int y) {
@@ -657,6 +667,32 @@ public class CLIView extends EventSource implements EventListener {
         System.out.flush();
     }
 
+    //NEW GAME AFTER GAME OVER
+    @Override
+    public void handleEvent(VC_NewGameResponseEvent event) {
+
+
+    }
+
+    @Override
+    public void handleEvent(CV_NewGameRequestEvent event) {
+        MessageUtility.printValidMessage("Would you like to play another time?");
+        System.out.println("< type YES if you want to continue >");
+        output.flush();
+        input.reset();
+        input = new Scanner(System.in);
+        String message = input.nextLine().toUpperCase();
+        VC_NewGameResponseEvent responseEvent;
+        if (message.equals("YES")) {
+
+                    responseEvent = new VC_NewGameResponseEvent(myUsername + " wants to play gain", true);
+        }
+        else {
+            responseEvent = new VC_NewGameResponseEvent(myUsername + " doen't want to play gain", false);
+        }
+    }
+
+
 
     /*                              /*
 
@@ -698,15 +734,7 @@ public class CLIView extends EventSource implements EventListener {
         return;
     }
 
-    @Override
-    public void handleEvent(VC_NewGameResponseEvent event) {
 
-    }
-
-    @Override
-    public void handleEvent(CV_NewGameRequestEvent event) {
-
-    }
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
