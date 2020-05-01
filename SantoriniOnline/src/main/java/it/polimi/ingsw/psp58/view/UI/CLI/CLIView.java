@@ -8,9 +8,9 @@ import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
 import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_NewGameRequestEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_NewGameRequestEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.VC_NewGameResponseEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_NewGameResponseEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
@@ -20,7 +20,6 @@ import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
 
 import java.io.PrintStream;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -292,7 +291,7 @@ public class CLIView extends EventSource implements EventListener {
                     e.printStackTrace();
                 }
                 break;
-            case "ROOM_FULL":
+            case "SERVER_FULL":
                 MessageUtility.displayErrorMessage(event.getErrorMessage());
                 return;
         }
@@ -310,6 +309,26 @@ public class CLIView extends EventSource implements EventListener {
         VC_ConnectionRequestGameEvent req;
         req = new VC_ConnectionRequestGameEvent("Tentativo di connessione", "--", 0, userProposal);
         this.client.sendEvent(req);
+    }
+
+    @Override
+    public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
+        switch (event.getErrorCode()) {
+            case "WAIT_FOR_CREATION":
+                MessageUtility.displayErrorMessage(event.getErrorMessage());
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "SERVER_FULL":
+                MessageUtility.displayErrorMessage(event.getErrorMessage());
+                handleEvent(new CV_NewGameRequestEvent(""));
+                return;
+        }
+        VC_NewGameResponseEvent responseEvent=new VC_NewGameResponseEvent("", true);
+        client.sendEvent(responseEvent);
     }
 
     @Override
@@ -684,14 +703,20 @@ public class CLIView extends EventSource implements EventListener {
         String message = input.nextLine().toUpperCase();
         VC_NewGameResponseEvent responseEvent;
         if (message.equals("YES")) {
-
-                    responseEvent = new VC_NewGameResponseEvent(myUsername + " wants to play gain", true);
+            responseEvent = new VC_NewGameResponseEvent(myUsername + " wants to play gain", true);
+        } else {
+            responseEvent = new VC_NewGameResponseEvent(myUsername + " doesn't want to play gain", false);
         }
-        else {
-            responseEvent = new VC_NewGameResponseEvent(myUsername + " doen't want to play gain", false);
-        }
+        client.sendEvent(responseEvent);
     }
 
+    @Override
+    public void handleEvent(PlayerDisconnectedGameEvent event) {
+        clearScreen();
+        MessageUtility.displayErrorMessage(event.getEventDescription());
+        output.println(event.getReason());
+        System.exit(0);
+    }
 
 
     /*                              /*
@@ -702,14 +727,6 @@ public class CLIView extends EventSource implements EventListener {
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
 
-    }
-
-    @Override
-    public void handleEvent(PlayerDisconnectedGameEvent event) {
-        clearScreen();
-        MessageUtility.displayErrorMessage(event.getEventDescription());
-        output.println(event.getReason());
-        System.exit(0);
     }
 
     @Override //NO IMPL
@@ -723,6 +740,11 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CC_NewGameResponseEvent event) {
+
+    }
+
+    @Override
 
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
         return;
@@ -733,7 +755,6 @@ public class CLIView extends EventSource implements EventListener {
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         return;
     }
-
 
 
     @Override
