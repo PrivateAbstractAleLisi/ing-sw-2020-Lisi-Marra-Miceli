@@ -4,9 +4,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -43,12 +45,13 @@ public class Message {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setMinWidth(250);
         stage.setMinHeight(100);
+        stage.initStyle(StageStyle.UNDECORATED);
 
         AtomicInteger number = new AtomicInteger();
 
         Label label = new Label(message);
 
-        VBox vBox = new VBox(15);
+        HBox vBox = new HBox(15);
 
         Button button1 = new Button("2");
         Button button2 = new Button("3");

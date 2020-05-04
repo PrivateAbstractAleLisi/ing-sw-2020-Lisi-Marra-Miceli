@@ -10,11 +10,14 @@ import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
+import it.polimi.ingsw.psp58.view.UI.CLI.utility.MessageUtility;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.ConnectionSceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.RoomSceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.StartingSceneController;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -60,14 +63,23 @@ public class GUI extends Application implements EventListener {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        stage = primaryStage;
 
-        //set up the starting scene
+        stage = primaryStage;
+        stage.setResizable(false);
+
+        //set up the starting scene and controller
         FXMLLoader loaderStartingScene = new FXMLLoader(
                 getClass().getResource("/scenes/StartingScene.fxml"));
         startingScene = new Scene(loaderStartingScene.load());
+
         startingSceneController = loaderStartingScene.getController();
         startingSceneController.setGui(this);
+
+
+        //starts with the startingScene
+        stage.setTitle("Santorini Online");
+        stage.setScene(startingScene);
+        stage.show();
 
         //set up the connection scene
         FXMLLoader loaderConnectionScene = new FXMLLoader(
@@ -76,25 +88,6 @@ public class GUI extends Application implements EventListener {
         connectionSceneController =loaderConnectionScene.getController();
         connectionSceneController.setGui(this);
 
-//        //set up the room scene
-//        FXMLLoader loaderRoomScene = new FXMLLoader(
-//                getClass().getResource("/scenes/RoomScene.fxml"));
-//        roomScene = new Scene(loaderRoomScene.load());
-//        roomSceneController =loaderRoomScene.getController();
-//        connectionSceneController.setGui(this);
-//
-//        //set up the board scene
-//        FXMLLoader loaderBoardScene = new FXMLLoader(
-//                getClass().getResource("/scenes/BoardScene.fxml"));
-//        boardScene = new Scene(loaderBoardScene.load());
-//        boardSceneController =loaderBoardScene.getController();
-//        connectionSceneController.setGui(this);
-
-
-        //starts with the startingScene
-        stage.setTitle("Santorini Online");
-        stage.setScene(startingScene);
-        stage.show();
     }
 
     public void changeScene(Scene scene){
@@ -192,9 +185,21 @@ public class GUI extends Application implements EventListener {
         return boardSceneController;
     }
 
+
+
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-        Message.show("Username already in use! Choose another one");
+
+        getStartingSceneController().enableAllLoginFields();
+        //notify the error on screen
+         Message.show(event.getErrorMessage());
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -320,4 +325,6 @@ public class GUI extends Application implements EventListener {
     public void handleEvent(PlayerDisconnectedGameEvent event) {
 
     }
+
+
 }

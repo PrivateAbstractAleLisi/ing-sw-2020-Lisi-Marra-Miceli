@@ -157,7 +157,7 @@ public class CLIView extends EventSource implements EventListener {
     }
 
 
-    private boolean checkLocalUsernameAlphaNumeric(String username) {
+    public static boolean checkLocalUsernameAlphaNumeric(String username) {
         boolean notValid = (username == null || username.length() < 3 || username.length() > 16);
         if (notValid) {
             return false;
@@ -166,7 +166,7 @@ public class CLIView extends EventSource implements EventListener {
         }
     }
 
-    private boolean checkValidIP(String IP){
+    public static boolean checkValidIP(String IP){
         boolean notValid = (IP==null || IP.length() < 7 || IP.length() >15);
         if(notValid) return false;
         else{
