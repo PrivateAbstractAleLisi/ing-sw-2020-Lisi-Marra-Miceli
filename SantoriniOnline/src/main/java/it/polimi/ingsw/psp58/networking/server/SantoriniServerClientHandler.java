@@ -2,38 +2,36 @@ package it.polimi.ingsw.psp58.networking.server;
 
 import it.polimi.ingsw.psp58.controller.Lobby;
 import it.polimi.ingsw.psp58.event.core.EventSource;
+import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.PingEvent;
 import it.polimi.ingsw.psp58.view.VirtualView;
 
-import java.io.BufferedInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
+import static it.polimi.ingsw.psp58.event.core.ListenerType.CONTROLLER;
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
 public class SantoriniServerClientHandler extends EventSource implements Runnable {
 
-    private Socket client;
+    private Socket clientSocket;
     private String localUsername;
-    private InetAddress localUserIP;
-    private int localUserPort;
-    private ObjectInputStream input;
     private String threadID;
     private Thread ping;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
 
     private final boolean pingStamp;
 
     VirtualView clientVV;
 
-    public SantoriniServerClientHandler(Socket client, String threadID, boolean pingStamp) {
-        this.client = client;
-        this.clientVV = new VirtualView(client);
+    public SantoriniServerClientHandler(Socket clientSocket, String threadID, boolean pingStamp) {
+        this.clientSocket = clientSocket;
+        this.clientVV = new VirtualView(this);
         makeConnections();
         input = null;
         this.threadID = threadID;
@@ -51,7 +49,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     }
 
     private void makeConnections() {
-        this.attachListenerByType(VIEW, clientVV);
+        this.attachListenerByType(CONTROLLER, clientVV);
     }
 
     private void stopPing() {
@@ -62,7 +60,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
      * called when this client disconnects because socket timeout has expired
      */
     private void connectionLost(String reason) {
-        System.out.println("Thread: " + threadID + "- Method connectionLost called: " + client.getInetAddress().toString() + " port: " + client.getPort());
+        System.out.println("Thread: " + threadID + "- Method connectionLost called: " + clientSocket.getInetAddress().toString() + " port: " + clientSocket.getPort());
 
         //if the connection is not lost caused by another player crashed
         if (!clientVV.isAnotherPlayerInRoomCrashed()) {
@@ -80,9 +78,9 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
 
                     //detach Lobby and the user that crashed
                     Lobby.instance().detachListenerByType(VIEW, clientVV);
-                    clientVV.detachListenerByType(VIEW, Lobby.instance());
+                    clientVV.detachListenerByType(CONTROLLER,Lobby.instance());
 
-                    System.out.println("client socket closed: " + client.getInetAddress() + " port: " + client.getPort());
+                    System.out.println("client socket closed: " + clientSocket.getInetAddress() + " port: " + clientSocket.getPort());
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -90,7 +88,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
             } else {
                 //Even if Lobby doesn't already saved my username, I detach myself
                 Lobby.instance().detachListenerByType(VIEW, clientVV);
-                clientVV.detachListenerByType(VIEW, Lobby.instance());
+                clientVV.detachListenerByType(CONTROLLER,Lobby.instance());
                 Thread.currentThread().interrupt();
             }
         }
@@ -100,17 +98,20 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     private void handleClientConnection() throws IOException, ClassNotFoundException {
 
         //Client is connected via socket, creating a virtual it.polimi.ingsw.sp58.view for it
-        ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(client.getInputStream()));
 
+        try {
+            output = new ObjectOutputStream(clientSocket.getOutputStream());
+            input = new ObjectInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        GameEvent eventReceived;
 
         //read further events
-
-
         GameEvent received = null;
         try {
             while (true) {
+
 
                 received = (GameEvent) input.readObject();
 //                System.out.println("received correctly");
@@ -121,22 +122,40 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
                             System.out.println("SERVER: " + received.getEventDescription() + " from " + threadID);
                         }
                     } else {
-                        notifyAllObserverByType(VIEW, received);
+                        notifyAllObserverByType(CONTROLLER,(ControllerGameEvent) received);
                     }
                 }
 
 
             }
         } catch (SocketTimeoutException | SocketException | EOFException to) { //No message from the client
-            System.out.println(client.isClosed());
+            System.out.println(clientSocket.isClosed());
             System.out.println("This client is AFK, Disconnecting");
-            System.out.println(client.getInetAddress().toString() + " port: " + client.getPort());
+            System.out.println(clientSocket.getInetAddress().toString() + " port: " + clientSocket.getPort());
 
             connectionLost("this client has crashed");
         } finally {
-            if (client != null) {
-                client.close();
+            if (clientSocket != null) {
+                clientSocket.close();
             }
+        }
+    }
+
+    public void sendEvent(GameEvent event){
+        try {
+            output.writeObject(event);
+            output.flush();
+        } catch (IOException e) {
+            System.out.println("virtual it.polimi.ingsw.sp58.view: unable to send socket to client");
+        }
+    }
+
+    public void disconnect(){
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error closing socket after NewGameResponseEvent");
         }
     }
 
@@ -146,7 +165,14 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
 
     public void closeSocketConnection() throws IOException {
 
-        client.close();
+        clientSocket.close();
     }
 
+    public InetAddress getLocalUserIP() {
+        return clientSocket.getInetAddress();
+    }
+
+    public int getLocalUserPort() {
+        return clientSocket.getLocalPort();
+    }
 }

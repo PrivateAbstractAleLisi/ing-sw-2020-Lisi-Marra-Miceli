@@ -1,14 +1,14 @@
 package it.polimi.ingsw.psp58.event.gameEvents.match;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 import java.util.Arrays;
 
-public class VC_PlayerCommandGameEvent extends GameEvent {
+public class VC_PlayerCommandGameEvent extends ControllerGameEvent {
 
     public final TurnAction command;
     public final String fromPlayer;
@@ -26,7 +26,7 @@ public class VC_PlayerCommandGameEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ControllerListener listener) {
         listener.handleEvent(this);
     }
 

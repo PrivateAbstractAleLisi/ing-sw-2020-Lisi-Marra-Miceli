@@ -1,9 +1,9 @@
 package it.polimi.ingsw.psp58.event.gameEvents.lobby;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 
-public class VC_NewGameResponseEvent extends GameEvent {
+public class VC_NewGameResponseEvent extends ControllerGameEvent {
     private final boolean createNewGame;
 
     public VC_NewGameResponseEvent(String description, boolean createNewGame) {
@@ -16,7 +16,7 @@ public class VC_NewGameResponseEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ControllerListener listener) {
         listener.handleEvent(this);
     }
 }

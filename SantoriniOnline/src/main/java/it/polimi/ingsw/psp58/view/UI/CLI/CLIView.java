@@ -1,16 +1,13 @@
 package it.polimi.ingsw.psp58.view.UI.CLI;
 
+import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.ANSIColors;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.auxiliary.Range;
-import com.google.gson.Gson;
-import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
-import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_NewGameRequestEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_NewGameResponseEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
@@ -28,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
-public class CLIView extends EventSource implements EventListener {
+public class CLIView extends EventSource implements ViewListener {
 
     //IN-OUT DATA FROM CONSOLE
     private PrintStream output;
@@ -245,11 +242,6 @@ public class CLIView extends EventSource implements EventListener {
     //EVENT HANDLING
 
     @Override
-    public void handleEvent(GameEvent e) {
-        System.err.println("generic <handleEvent> has been called ");
-    }
-
-    @Override
     /**
      * room created, it clears and display an updated current room player list.
      */
@@ -400,6 +392,7 @@ public class CLIView extends EventSource implements EventListener {
         System.out.println("\n⌛   WAITING   ⌛");
         System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
     }
+
 
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
@@ -687,11 +680,6 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     //NEW GAME AFTER GAME OVER
-    @Override
-    public void handleEvent(VC_NewGameResponseEvent event) {
-
-
-    }
 
     @Override
     public void handleEvent(CV_NewGameRequestEvent event) {
@@ -711,7 +699,7 @@ public class CLIView extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(PlayerDisconnectedGameEvent event) {
+    public void handleEvent(PlayerDisconnectedViewEvent event) {
         clearScreen();
         MessageUtility.displayErrorMessage(event.getEventDescription());
         output.println(event.getReason());
@@ -719,57 +707,6 @@ public class CLIView extends EventSource implements EventListener {
     }
 
 
-    /*                              /*
 
-                NOT IMPLEMENTED
-     */                             //
-
-    @Override
-    public void handleEvent(VC_PlayerCommandGameEvent event) {
-
-    }
-
-    @Override //NO IMPL
-    public void handleEvent(VC_ConnectionRequestGameEvent event) {
-        return;
-    }
-
-    @Override //NO IMPL
-    public void handleEvent(CC_ConnectionRequestGameEvent event) {
-        return;
-    }
-
-    @Override
-    public void handleEvent(CC_NewGameResponseEvent event) {
-
-    }
-
-    @Override
-
-    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-        return;
-    }
-
-
-    @Override //NO IMPL
-    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
-        return;
-    }
-
-
-    @Override
-    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_PlayerCardChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
-
-    }
 
 }

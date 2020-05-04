@@ -1,7 +1,7 @@
 package it.polimi.ingsw.psp58.event.gameEvents.match;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 /**
  * sent by the PreGame when another player is choosing a card (challenger or not)
@@ -12,7 +12,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
  * NB: /TODO esplicitare perchè stai aspettando e chi stai aspettando (scelta carta o scelta CARTE del challenger)
  * tutto in description (ale) è l'unica cosa che stampo quando mi arriva questo evento.
  */
-public class CV_WaitMatchGameEvent extends GameEvent {
+public class CV_WaitMatchGameEvent extends ViewGameEvent {
 
     private final String actingPlayer;
     private final String recipient;
@@ -32,7 +32,7 @@ public class CV_WaitMatchGameEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
     }
 }

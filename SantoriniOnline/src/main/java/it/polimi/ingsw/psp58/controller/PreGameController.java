@@ -1,32 +1,28 @@
 package it.polimi.ingsw.psp58.controller;
 
 import com.google.gson.Gson;
-import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
-import it.polimi.ingsw.psp58.event.core.EventListener;
+import it.polimi.ingsw.psp58.auxiliary.IslandData;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_NewGameRequestEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_NewGameResponseEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
-import it.polimi.ingsw.psp58.event.gameEvents.match.*;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_IslandUpdateEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.VC_PlayerCommandGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.exceptions.InvalidCardException;
+import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.model.BoardManager;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.Player;
 import it.polimi.ingsw.psp58.model.WorkerColors;
-import it.polimi.ingsw.psp58.exceptions.InvalidCardException;
-import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
-import it.polimi.ingsw.psp58.auxiliary.IslandData;
 
 import javax.naming.LimitExceededException;
 import java.util.*;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
-public class PreGameController extends EventSource implements EventListener {
+public class PreGameController extends EventSource implements ControllerListener {
     private BoardManager boardManager;
     private String challenger;
     private Room room;
@@ -114,6 +110,7 @@ public class PreGameController extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
+        System.out.println("CHALLENGER SCELTO LE CARTE");
         availableCards = event.getCardsChosen();
         for (CardEnum card : availableCards) {
             try {
@@ -146,11 +143,11 @@ public class PreGameController extends EventSource implements EventListener {
         for (String recipient : players) {
             if (!recipient.equals(players.get(indexOfNextChoosingPlayer))) {
                 CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing his card", players.get(indexOfNextChoosingPlayer), recipient);
-                notifyAllObserverByType(VIEW, requestEvent);
+                notifyAllObserverByType(VIEW,requestEvent);
             }
         }
         CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(indexOfNextChoosingPlayer));
-        notifyAllObserverByType(VIEW, requestEvent);
+        notifyAllObserverByType(VIEW,requestEvent);
     }
 
     @Override
@@ -173,12 +170,12 @@ public class PreGameController extends EventSource implements EventListener {
                 for (String recipient : players) {
                     if (!recipient.equals(players.get(indexOfNextChoosingPlayer))) {
                         CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing his card", players.get(indexOfNextChoosingPlayer), recipient);
-                        notifyAllObserverByType(VIEW, requestEvent);
+                        notifyAllObserverByType(VIEW,requestEvent);
                     }
                 }
                 //send the it.polimi.ingsw.sp58.event to the next player that has to choose the card
                 CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(indexOfNextChoosingPlayer));
-                notifyAllObserverByType(VIEW, requestEvent);
+                notifyAllObserverByType(VIEW,requestEvent);
             } else { // there are no more cards remaining
                 ChallengerChooseFirstPlayer();
             }
@@ -187,7 +184,7 @@ public class PreGameController extends EventSource implements EventListener {
             notifyAllObserverByType(VIEW, errorEvent);
 
             CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, event.getPlayer());
-            notifyAllObserverByType(VIEW, requestEvent);
+            notifyAllObserverByType(VIEW,requestEvent);
         }
     }
 
@@ -196,7 +193,7 @@ public class PreGameController extends EventSource implements EventListener {
         for (String recipient : players) {
             if (!recipient.equals(challenger)) {
                 CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing the first player", challenger, recipient);
-                notifyAllObserverByType(VIEW, requestEvent);
+                notifyAllObserverByType(VIEW,requestEvent);
             }
         }
         //the challenger has to choose the first player
@@ -377,49 +374,8 @@ public class PreGameController extends EventSource implements EventListener {
         System.err.println("\t \tROOM(" + room.getRoomID() + ")-GAME: " + messageToPrint);
     }
 
-    @Override
-    public void handleEvent(CV_CommandRequestEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_GameOverEvent event) {
-
-    }
 
 
-    @Override //NO IMPL
-    public void handleEvent(CV_ChallengerChosenEvent event) {
-    }
-
-    @Override
-    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_WaitPreMatchGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_GameErrorGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(GameEvent event) {
-    }
 
     @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
@@ -430,45 +386,13 @@ public class PreGameController extends EventSource implements EventListener {
 
     }
 
-    @Override
-    public void handleEvent(CV_NewGameRequestEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_RoomUpdateGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_GameStartedGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_NewTurnEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_IslandUpdateEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_WaitMatchGameEvent event) {
-
-    }
 
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
 
     }
 
-    @Override
-    public void handleEvent(PlayerDisconnectedGameEvent event) {
 
-    }
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
@@ -484,16 +408,4 @@ public class PreGameController extends EventSource implements EventListener {
 
     }
 
-    @Override
-    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-    }
-
-    @Override
-    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-    }
-
-    @Override
-    public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
-
-    }
 }
