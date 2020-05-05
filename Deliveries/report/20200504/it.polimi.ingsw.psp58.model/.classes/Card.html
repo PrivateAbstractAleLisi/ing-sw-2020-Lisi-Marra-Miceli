@@ -1,0 +1,537 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Card</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Card (it.polimi.ingsw.psp58.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Card</td>
+<td class="coverageStat">
+  <span class="percent">
+    94.1%
+  </span>
+  <span class="absValue">
+    (16/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.3%
+  </span>
+  <span class="absValue">
+    (131/ 142)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Card$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    94.4%
+  </span>
+  <span class="absValue">
+    (17/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.3%
+  </span>
+  <span class="absValue">
+    (132/ 143)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.Range;
+<i>4</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
+<i>5</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
+<i>6</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.NoRemainingBlockException;
+<i>7</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.WinningException;
+<i>8</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+<i>9</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
+<i>10</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.Island;
+<i>11</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.Worker;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;import static java.lang.StrictMath.sqrt;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;/**
+<i>16</i>&nbsp; * Generic {@code abstract class} for Gods Cards. It implements all the methods that {@link Player} needs to use like {@code move} and {@code build}.
+<i>17</i>&nbsp; * &lt;p&gt;
+<i>18</i>&nbsp; * This class has to be extended for each God and lots of method should be override to provide the correct behaviour of each God.
+<i>19</i>&nbsp; * &lt;br&gt;Each method of this class implements the standard rules of the game, not modified by the God Powers.
+<i>20</i>&nbsp; * &lt;/p&gt;
+<i>21</i>&nbsp; * &lt;p&gt;
+<i>22</i>&nbsp; * To define what action is valid or not, the methods analise the {@link Island} and the moves that any {@link Player} can do (accessing to {@link BoardManager} object in {@link Player}).
+<i>23</i>&nbsp; */
+<i>24</i>&nbsp;public abstract class Card {
+<i>25</i>&nbsp;    protected CardEnum name;
+<i>26</i>&nbsp;    private Object avatarImage;
+<i>27</i>&nbsp;    protected Player playedBy;
+<i>28</i>&nbsp;
+<b class="fc"><i>29</i>&nbsp;    public Card(Player p) {</b>
+<b class="fc"><i>30</i>&nbsp;        playedBy = p;</b>
+<b class="fc"><i>31</i>&nbsp;    }</b>
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    /**
+<i>34</i>&nbsp;     * Place a {@link Worker} at the beginning of the match in the desired coordinated.
+<i>35</i>&nbsp;     *
+<i>36</i>&nbsp;     * @param worker   A worker of the actual player
+<i>37</i>&nbsp;     * @param desiredX X Position where the player wants to place the worker
+<i>38</i>&nbsp;     * @param desiredY Y Position where the player wants to place the worker
+<i>39</i>&nbsp;     * @param island   The current board of game
+<i>40</i>&nbsp;     * @throws InvalidMovementException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
+<i>41</i>&nbsp;     */
+<i>42</i>&nbsp;    public void placeWorker(Worker worker, int desiredX, int desiredY, Island island) throws CloneNotSupportedException, InvalidMovementException {
+<b class="fc"><i>43</i>&nbsp;        if (!isValidWorkerPlacement(worker, desiredX, desiredY, island)) {</b>
+<b class="fc"><i>44</i>&nbsp;            throw new InvalidMovementException(&quot;Invalid Placement for this card&quot;);</b>
+<i>45</i>&nbsp;        }
+<i>46</i>&nbsp;
+<b class="fc"><i>47</i>&nbsp;        island.placeWorker(worker, desiredX, desiredY);</b>
+<i>48</i>&nbsp;
+<b class="fc"><i>49</i>&nbsp;        if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {</b>
+<b class="nc"><i>50</i>&nbsp;            throw new InvalidMovementException(&quot;The move is valid there was an error applying desired changes&quot;);</b>
+<i>51</i>&nbsp;        }
+<b class="fc"><i>52</i>&nbsp;    }</b>
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * Move a {@link Worker} from his actual position to the desired coordinates.
+<i>56</i>&nbsp;     *
+<i>57</i>&nbsp;     * @param worker   A worker of the actual player
+<i>58</i>&nbsp;     * @param desiredX X Position where the player wants to move the worker
+<i>59</i>&nbsp;     * @param desiredY Y Position where the player wants to move the worker
+<i>60</i>&nbsp;     * @param island   The current board of game
+<i>61</i>&nbsp;     * @throws InvalidMovementException Exception thrown when the coordinates are not valid
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
+<b class="fc"><i>64</i>&nbsp;        int actualX = worker.getPosition()[0];</b>
+<b class="fc"><i>65</i>&nbsp;        int actualY = worker.getPosition()[1];</b>
+<i>66</i>&nbsp;
+<b class="fc"><i>67</i>&nbsp;        if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {</b>
+<b class="fc"><i>68</i>&nbsp;            throw new InvalidMovementException(&quot;Invalid move for this worker&quot;);</b>
+<i>69</i>&nbsp;        }
+<i>70</i>&nbsp;        //decrementa il numero di movimenti rimasti
+<b class="fc"><i>71</i>&nbsp;        playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);</b>
+<i>72</i>&nbsp;
+<b class="fc"><i>73</i>&nbsp;        island.moveWorker(worker, desiredX, desiredY);</b>
+<b class="fc"><i>74</i>&nbsp;        if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {</b>
+<b class="nc"><i>75</i>&nbsp;            throw new InvalidMovementException(&quot;The move is valid but there was an error applying desired changes&quot;);</b>
+<i>76</i>&nbsp;        } else {
+<i>77</i>&nbsp;            //Memorizzo l&#39;altitudine del worker per poi controllare se è effettivamente salito
+<b class="fc"><i>78</i>&nbsp;            int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();</b>
+<b class="fc"><i>79</i>&nbsp;            checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);</b>
+<i>80</i>&nbsp;        }
+<b class="fc"><i>81</i>&nbsp;    }</b>
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * Build a block, near a {@link Worker}, in the the desired coordinates.
+<i>85</i>&nbsp;     *
+<i>86</i>&nbsp;     * @param worker   A worker of the actual player
+<i>87</i>&nbsp;     * @param block    level of block desired to build
+<i>88</i>&nbsp;     * @param desiredX X Position where the player wants to build the block
+<i>89</i>&nbsp;     * @param desiredY Y Position where the player wants to build the block
+<i>90</i>&nbsp;     * @param island   The current board of game
+<i>91</i>&nbsp;     * @throws InvalidBuildException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
+<i>92</i>&nbsp;     */
+<i>93</i>&nbsp;    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
+<b class="fc"><i>94</i>&nbsp;        int actualX = worker.getPosition()[0];</b>
+<b class="fc"><i>95</i>&nbsp;        int actualY = worker.getPosition()[1];</b>
+<b class="fc"><i>96</i>&nbsp;        int[] oldCellCluster = null;</b>
+<i>97</i>&nbsp;
+<b class="fc"><i>98</i>&nbsp;        CellCluster old = island.getCellCluster(desiredX, desiredY);</b>
+<b class="fc"><i>99</i>&nbsp;        if (old.getCostructionHeight() != 0) {</b>
+<b class="fc"><i>100</i>&nbsp;            oldCellCluster = old.toIntArray();</b>
+<i>101</i>&nbsp;        } else {
+<b class="fc"><i>102</i>&nbsp;            oldCellCluster = new int[1];</b>
+<i>103</i>&nbsp;        }
+<i>104</i>&nbsp;
+<b class="fc"><i>105</i>&nbsp;        if (!isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {</b>
+<b class="fc"><i>106</i>&nbsp;            throw new InvalidBuildException(&quot;Invalid build for this worker&quot;);</b>
+<i>107</i>&nbsp;        }
+<i>108</i>&nbsp;        //decrementa il numero di blocchi da costruire rimasti e ritorno true
+<b class="fc"><i>109</i>&nbsp;        playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);</b>
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;        //decrease the number of block of this type available
+<i>112</i>&nbsp;        try {
+<b class="fc"><i>113</i>&nbsp;            playedBy.getBoardManager().drawBlock(block);</b>
+<b class="nc"><i>114</i>&nbsp;        } catch (NoRemainingBlockException e) {</b>
+<b class="nc"><i>115</i>&nbsp;            throw new InvalidBuildException(&quot;The build is valid but BoardManager has no block remaining&quot;);</b>
+<b class="fc"><i>116</i>&nbsp;        }</b>
+<i>117</i>&nbsp;
+<b class="fc"><i>118</i>&nbsp;        island.buildBlock(block, desiredX, desiredY);</b>
+<b class="fc"><i>119</i>&nbsp;        if (!checkBlockPosition(island, block, desiredX, desiredY, oldCellCluster)) {</b>
+<b class="nc"><i>120</i>&nbsp;            throw new InvalidBuildException(&quot;The build is valid but there was an error applying desired changes&quot;);</b>
+<i>121</i>&nbsp;        }
+<b class="fc"><i>122</i>&nbsp;    }</b>
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    /**
+<i>125</i>&nbsp;     * Reset the {@code behaviour} of the {@link Player} to the default value of the card, some Gods need to override this method
+<i>126</i>&nbsp;     */
+<i>127</i>&nbsp;    public void resetBehaviour() {
+<b class="fc"><i>128</i>&nbsp;        BehaviourManager behaviour = playedBy.getBehaviour();</b>
+<b class="fc"><i>129</i>&nbsp;        behaviour.setBlockPlacementLeft(1);</b>
+<b class="fc"><i>130</i>&nbsp;        behaviour.setMovementsRemaining(1);</b>
+<b class="fc"><i>131</i>&nbsp;        behaviour.setCanClimb(true);</b>
+<b class="fc"><i>132</i>&nbsp;        behaviour.setCanBuildDomeEverywhere(false);</b>
+<b class="fc"><i>133</i>&nbsp;    }</b>
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    /**
+<i>136</i>&nbsp;     * Check if the destination is reachable from the actual position of the {@link Worker}.
+<i>137</i>&nbsp;     *
+<i>138</i>&nbsp;     * @param actualX  Actual X Position of the worker
+<i>139</i>&nbsp;     * @param actualY  Actual Y Position of the worker
+<i>140</i>&nbsp;     * @param desiredX X Position where the player wants to place the worker
+<i>141</i>&nbsp;     * @param desiredY Y Position where the player wants to place the worker
+<i>142</i>&nbsp;     * @param island   The current board of game
+<i>143</i>&nbsp;     * @return true when the destination is reachable from the actual position, false otherwise
+<i>144</i>&nbsp;     */
+<i>145</i>&nbsp;    protected boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+<b class="fc"><i>146</i>&nbsp;        CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);</b>
+<b class="fc"><i>147</i>&nbsp;        CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);</b>
+<b class="fc"><i>148</i>&nbsp;        BehaviourManager behaviour = playedBy.getBehaviour();</b>
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+<b class="fc"><i>151</i>&nbsp;        if (actualX == desiredX &amp;&amp; actualY == desiredY) {</b>
+<b class="fc"><i>152</i>&nbsp;            return false;</b>
+<i>153</i>&nbsp;        }
+<i>154</i>&nbsp;        //verifica il behaviour permette di muoversi
+<b class="fc"><i>155</i>&nbsp;        if (behaviour.getMovementsRemaining() &lt;= 0) {</b>
+<b class="fc"><i>156</i>&nbsp;            return false;</b>
+<i>157</i>&nbsp;        }
+<b class="fc"><i>158</i>&nbsp;        if (desiredCellCluster.hasWorkerOnTop()) {</b>
+<b class="fc"><i>159</i>&nbsp;            return false;</b>
+<i>160</i>&nbsp;        }
+<b class="fc"><i>161</i>&nbsp;        if (desiredCellCluster.isComplete()) {</b>
+<b class="fc"><i>162</i>&nbsp;            return false;</b>
+<i>163</i>&nbsp;        }
+<i>164</i>&nbsp;        //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)
+<b class="fc"><i>165</i>&nbsp;        if (distance(actualX, actualY, desiredX, desiredY) &gt;= 2) {</b>
+<b class="fc"><i>166</i>&nbsp;            return false;</b>
+<i>167</i>&nbsp;        }
+<i>168</i>&nbsp;        //verifica il behaviour permette di salire
+<b class="fc"><i>169</i>&nbsp;        if (behaviour.isCanClimb()) {</b>
+<i>170</i>&nbsp;            //al max salgo di 1
+<b class="fc"><i>171</i>&nbsp;            if (actualCellCluster.getCostructionHeight() + 1 &lt; desiredCellCluster.getCostructionHeight()) {</b>
+<b class="fc"><i>172</i>&nbsp;                return false;</b>
+<i>173</i>&nbsp;            }
+<i>174</i>&nbsp;        } else {
+<i>175</i>&nbsp;            //non posso salire
+<b class="fc"><i>176</i>&nbsp;            if (actualCellCluster.getCostructionHeight() &lt; desiredCellCluster.getCostructionHeight()) {</b>
+<b class="fc"><i>177</i>&nbsp;                return false;</b>
+<i>178</i>&nbsp;            }
+<i>179</i>&nbsp;        }
+<b class="fc"><i>180</i>&nbsp;        return true;</b>
+<i>181</i>&nbsp;    }
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;    /**
+<i>184</i>&nbsp;     * Check if the destination is reachable from the actual position of the {@link Worker}, also available GodPower.
+<i>185</i>&nbsp;     *
+<i>186</i>&nbsp;     * @param actualX  Actual X Position of the worker
+<i>187</i>&nbsp;     * @param actualY  Actual Y Position of the worker
+<i>188</i>&nbsp;     * @param desiredX X Position where the player wants to place the worker
+<i>189</i>&nbsp;     * @param desiredY Y Position where the player wants to place the worker
+<i>190</i>&nbsp;     * @param island   The current board of game
+<i>191</i>&nbsp;     * @return true when the destination is reachable from the actual position, false otherwise
+<i>192</i>&nbsp;     */
+<i>193</i>&nbsp;    protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+<b class="fc"><i>194</i>&nbsp;        Range range=new Range(0,4);</b>
+<i>195</i>&nbsp;
+<b class="fc"><i>196</i>&nbsp;        if (range.isIndexOfCellInRange(desiredX,desiredY)) {</b>
+<b class="fc"><i>197</i>&nbsp;            return this.isValidDestination(actualX, actualY, desiredX, desiredY, island);</b>
+<i>198</i>&nbsp;        }
+<b class="fc"><i>199</i>&nbsp;        return false;</b>
+<i>200</i>&nbsp;    }
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;    /**
+<i>203</i>&nbsp;     * Check if the construction can be done from the actual position of the {@link Worker}., also available GodPower.
+<i>204</i>&nbsp;     *
+<i>205</i>&nbsp;     * @param actualX  Actual X Position of the worker
+<i>206</i>&nbsp;     * @param actualY  Actual Y Position of the worker
+<i>207</i>&nbsp;     * @param desiredX X Position where the player wants to build the worker
+<i>208</i>&nbsp;     * @param desiredY Y Position where the player wants to build the worker
+<i>209</i>&nbsp;     * @param island   The current board of game
+<i>210</i>&nbsp;     * @return rue when the construction can be done from the actual position, false otherwise
+<i>211</i>&nbsp;     */
+<i>212</i>&nbsp;    protected boolean checkCellCostructionAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+<b class="fc"><i>213</i>&nbsp;        Range range=new Range(0,4);</b>
+<b class="fc"><i>214</i>&nbsp;        if (range.isIndexOfCellInRange(desiredX,desiredY)) {</b>
+<b class="fc"><i>215</i>&nbsp;            for (BlockTypeEnum block : BlockTypeEnum.values()) {</b>
+<b class="fc"><i>216</i>&nbsp;                if (this.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {</b>
+<b class="fc"><i>217</i>&nbsp;                    return true;</b>
+<i>218</i>&nbsp;                }
+<i>219</i>&nbsp;            }
+<i>220</i>&nbsp;        }
+<b class="fc"><i>221</i>&nbsp;        return false;</b>
+<i>222</i>&nbsp;    }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;    /**
+<i>225</i>&nbsp;     * Check if the desired location is free and not complete for a {@link Worker} Placement.
+<i>226</i>&nbsp;     *
+<i>227</i>&nbsp;     * @param worker   A worker of the actual player
+<i>228</i>&nbsp;     * @param desiredX X Position where the player wants to place the worker
+<i>229</i>&nbsp;     * @param desiredY Y Position where the player wants to place the worker
+<i>230</i>&nbsp;     * @param island   The current board of game
+<i>231</i>&nbsp;     * @return true if the the desired location is free and not complete, false otherwise
+<i>232</i>&nbsp;     */
+<i>233</i>&nbsp;    protected boolean isValidWorkerPlacement(Worker worker, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
+<b class="fc"><i>234</i>&nbsp;        CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);</b>
+<b class="fc"><i>235</i>&nbsp;        if (desiredCellCluster.hasWorkerOnTop()) {</b>
+<b class="fc"><i>236</i>&nbsp;            return false;</b>
+<i>237</i>&nbsp;        }
+<b class="fc"><i>238</i>&nbsp;        if (desiredCellCluster.isComplete()) {</b>
+<b class="fc"><i>239</i>&nbsp;            return false;</b>
+<i>240</i>&nbsp;        }
+<b class="fc"><i>241</i>&nbsp;        if (worker.isPlacedOnIsland()) {</b>
+<b class="nc"><i>242</i>&nbsp;            return false;</b>
+<i>243</i>&nbsp;        }
+<b class="fc"><i>244</i>&nbsp;        return true;</b>
+<i>245</i>&nbsp;    }
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;    /**
+<i>248</i>&nbsp;     * Check if the construction can be done from the actual position of the {@link Worker}.
+<i>249</i>&nbsp;     *
+<i>250</i>&nbsp;     * @param block    level of construction {@link Player} wants to build
+<i>251</i>&nbsp;     * @param actualX  Actual X Position of the worker
+<i>252</i>&nbsp;     * @param actualY  Actual Y Position of the worker
+<i>253</i>&nbsp;     * @param desiredX X Position where the player wants to place the worker
+<i>254</i>&nbsp;     * @param desiredY Y Position where the player wants to place the worker
+<i>255</i>&nbsp;     * @param island   The current board of game
+<i>256</i>&nbsp;     * @return true when the construction can be done from the actual position, false otherwise
+<i>257</i>&nbsp;     */
+<i>258</i>&nbsp;    protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
+<i>259</i>&nbsp;        //        CellCluster actualCellCluster = islandRef.getCellCluster(actualX, actualY);
+<b class="fc"><i>260</i>&nbsp;        CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);</b>
+<b class="fc"><i>261</i>&nbsp;        BehaviourManager behaviour = playedBy.getBehaviour();</b>
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+<b class="fc"><i>264</i>&nbsp;        if (actualX == desiredX &amp;&amp; actualY == desiredY) {</b>
+<b class="fc"><i>265</i>&nbsp;            return false;</b>
+<i>266</i>&nbsp;        }
+<i>267</i>&nbsp;        //verifica il behaviour permette di costruire
+<b class="fc"><i>268</i>&nbsp;        if (behaviour.getBlockPlacementLeft() &lt;= 0) {</b>
+<b class="fc"><i>269</i>&nbsp;            return false;</b>
+<i>270</i>&nbsp;        }
+<b class="fc"><i>271</i>&nbsp;        if (desiredCellCluster.hasWorkerOnTop()) {</b>
+<b class="fc"><i>272</i>&nbsp;            return false;</b>
+<i>273</i>&nbsp;        }
+<b class="fc"><i>274</i>&nbsp;        if (desiredCellCluster.isComplete()) {</b>
+<b class="fc"><i>275</i>&nbsp;            return false;</b>
+<i>276</i>&nbsp;        }
+<i>277</i>&nbsp;        //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)
+<b class="fc"><i>278</i>&nbsp;        if (distance(actualX, actualY, desiredX, desiredY) &gt;= 2) {</b>
+<b class="fc"><i>279</i>&nbsp;            return false;</b>
+<i>280</i>&nbsp;        }
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;        //genero un array contenente la struttura del cellcluster (e il nuovo blocco) e l&#39;analizzo nella funzione successiva
+<b class="fc"><i>283</i>&nbsp;        int[] desiredConstruction = desiredCellCluster.toIntArrayWithHypo(block);</b>
+<b class="fc"><i>284</i>&nbsp;        if (!isValidBlockPlacement(block, desiredConstruction, behaviour)) {</b>
+<b class="fc"><i>285</i>&nbsp;            return false;</b>
+<i>286</i>&nbsp;        }
+<b class="fc"><i>287</i>&nbsp;        return true;</b>
+<i>288</i>&nbsp;    }
+<i>289</i>&nbsp;
+<i>290</i>&nbsp;    /**
+<i>291</i>&nbsp;     * Check if the desired block can be added to the selected {@link CellCluster}.
+<i>292</i>&nbsp;     *
+<i>293</i>&nbsp;     * @param block               level of construction {@link Player} wants to build
+<i>294</i>&nbsp;     * @param desiredConstruction Array of int that represent the current {@link CellCluster} with the addition of the desired block
+<i>295</i>&nbsp;     * @param behaviour           behaviour of the {@link Card}
+<i>296</i>&nbsp;     * @return true if the block order and placement is valid, false otherwise
+<i>297</i>&nbsp;     */
+<i>298</i>&nbsp;    protected boolean isValidBlockPlacement(BlockTypeEnum block, int[] desiredConstruction, BehaviourManager behaviour) {
+<b class="fc"><i>299</i>&nbsp;        BoardManager boardManager = playedBy.getBoardManager();</b>
+<i>300</i>&nbsp;
+<b class="fc"><i>301</i>&nbsp;        if (boardManager.getNumberOfBlocksRemaining(block) &lt;= 0) {</b>
+<b class="nc"><i>302</i>&nbsp;            return false;</b>
+<i>303</i>&nbsp;        }
+<i>304</i>&nbsp;
+<b class="fc"><i>305</i>&nbsp;        int[] longArray = new int[desiredConstruction.length + 1];</b>
+<b class="fc"><i>306</i>&nbsp;        longArray[0] = 0;</b>
+<i>307</i>&nbsp;
+<b class="fc"><i>308</i>&nbsp;        for (int i = 0; i &lt; desiredConstruction.length; i++) {</b>
+<b class="fc"><i>309</i>&nbsp;            longArray[i + 1] = desiredConstruction[i];</b>
+<i>310</i>&nbsp;        }
+<i>311</i>&nbsp;
+<b class="fc"><i>312</i>&nbsp;        for (int i = 0; i &lt; desiredConstruction.length; i++) {</b>
+<b class="fc"><i>313</i>&nbsp;            longArray[i] -= desiredConstruction[i];</b>
+<b class="fc"><i>314</i>&nbsp;            if (longArray[i] &lt; -1) {</b>
+<b class="fc"><i>315</i>&nbsp;                if (block != BlockTypeEnum.DOME || !(behaviour.isCanBuildDomeEverywhere())) {</b>
+<b class="fc"><i>316</i>&nbsp;                    return false;</b>
+<i>317</i>&nbsp;                }
+<i>318</i>&nbsp;            }
+<i>319</i>&nbsp;        }
+<i>320</i>&nbsp;
+<b class="fc"><i>321</i>&nbsp;        return true;</b>
+<i>322</i>&nbsp;    }
+<i>323</i>&nbsp;
+<i>324</i>&nbsp;    /**
+<i>325</i>&nbsp;     * Calculate the Euclidean distance between two given cells.
+<i>326</i>&nbsp;     *
+<i>327</i>&nbsp;     * @param x1 Coordinate X of first Cell
+<i>328</i>&nbsp;     * @param y1 Coordinate X of first Cell
+<i>329</i>&nbsp;     * @param x2 Coordinate X of first Cell
+<i>330</i>&nbsp;     * @param y2 Coordinate X of first Cell
+<i>331</i>&nbsp;     * @return Value of Euclidean distance between the two cells
+<i>332</i>&nbsp;     */
+<i>333</i>&nbsp;    public double distance(int x1, int y1, int x2, int y2) {
+<b class="fc"><i>334</i>&nbsp;        return sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));</b>
+<i>335</i>&nbsp;    }
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;    /**
+<i>338</i>&nbsp;     * The {@code checkWorkerPosition method} check if the selected {@link Worker} is one the selected {@link CellCluster}
+<i>339</i>&nbsp;     *
+<i>340</i>&nbsp;     * @param island The current board of game
+<i>341</i>&nbsp;     * @param worker The {@code Worker} is needed to check the position
+<i>342</i>&nbsp;     * @param x      The X Coordinate where the {@code Worker} should be
+<i>343</i>&nbsp;     * @param y      The y Coordinate where the {@code Worker} should be
+<i>344</i>&nbsp;     * @return true if the {@code Worker} is on the right position, false if the {@code CellCluster}  doesn&#39;t have a player on Top or the position of worker is different.
+<i>345</i>&nbsp;     */
+<i>346</i>&nbsp;    protected boolean checkWorkerPosition(Island island, Worker worker, int x, int y) {
+<b class="fc"><i>347</i>&nbsp;        CellCluster cellCluster = island.getCellCluster(x, y);</b>
+<b class="fc"><i>348</i>&nbsp;        if (!cellCluster.hasWorkerOnTop()) {</b>
+<b class="nc"><i>349</i>&nbsp;            return false;</b>
+<i>350</i>&nbsp;        }
+<i>351</i>&nbsp;
+<b class="fc"><i>352</i>&nbsp;        int xRead = worker.getPosition()[0];</b>
+<b class="fc"><i>353</i>&nbsp;        int yRead = worker.getPosition()[1];</b>
+<b class="fc"><i>354</i>&nbsp;        if (xRead != x || yRead != y) {</b>
+<b class="nc"><i>355</i>&nbsp;            return false;</b>
+<i>356</i>&nbsp;        }
+<i>357</i>&nbsp;
+<b class="fc"><i>358</i>&nbsp;        return true;</b>
+<i>359</i>&nbsp;    }
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;    /**
+<i>362</i>&nbsp;     * NOT IMPLEMENTED - The {@code checkBlockPosition method} check if the selected {@code block} is one the right place in the right {@link CellCluster}.
+<i>363</i>&nbsp;     *
+<i>364</i>&nbsp;     * @param island         The current board of game
+<i>365</i>&nbsp;     * @param block          The {@code block} is needed to check the position
+<i>366</i>&nbsp;     * @param x              The X Coordinate where the {@code block} should be
+<i>367</i>&nbsp;     * @param y              The Y Coordinate where the {@code block} should be
+<i>368</i>&nbsp;     * @param oldCellCluster The CellCluster before the building of the block
+<i>369</i>&nbsp;     * @return true if the {@code block} is on the right position, false otherwise
+<i>370</i>&nbsp;     */
+<i>371</i>&nbsp;    protected boolean checkBlockPosition(Island island, BlockTypeEnum block, int x, int y, int[] oldCellCluster) {
+<b class="fc"><i>372</i>&nbsp;        int[] actualCellCluster = island.getCellCluster(x, y).toIntArray();</b>
+<i>373</i>&nbsp;
+<b class="fc"><i>374</i>&nbsp;        int blockToAdd = 0;</b>
+<i>375</i>&nbsp;
+<b class="fc"><i>376</i>&nbsp;        switch (block) {</b>
+<i>377</i>&nbsp;            case LEVEL1:
+<b class="fc"><i>378</i>&nbsp;                blockToAdd = 1;</b>
+<b class="fc"><i>379</i>&nbsp;                break;</b>
+<i>380</i>&nbsp;            case LEVEL2:
+<b class="fc"><i>381</i>&nbsp;                blockToAdd = 2;</b>
+<b class="fc"><i>382</i>&nbsp;                break;</b>
+<i>383</i>&nbsp;            case LEVEL3:
+<b class="fc"><i>384</i>&nbsp;                blockToAdd = 3;</b>
+<b class="fc"><i>385</i>&nbsp;                break;</b>
+<i>386</i>&nbsp;            case DOME:
+<b class="fc"><i>387</i>&nbsp;                blockToAdd = 4;</b>
+<i>388</i>&nbsp;                break;
+<i>389</i>&nbsp;        }
+<i>390</i>&nbsp;
+<b class="fc"><i>391</i>&nbsp;        int[] subCellCluster = actualCellCluster.clone();</b>
+<i>392</i>&nbsp;
+<b class="fc"><i>393</i>&nbsp;        for (int i = 0; i &lt; oldCellCluster.length; i++) {</b>
+<b class="fc"><i>394</i>&nbsp;            subCellCluster[i] -= oldCellCluster[i];</b>
+<i>395</i>&nbsp;        }
+<b class="fc"><i>396</i>&nbsp;        for (int i = 0; i &lt; subCellCluster.length; i++) {</b>
+<b class="fc"><i>397</i>&nbsp;            if (subCellCluster[i] != 0 &amp;&amp; subCellCluster[i] == blockToAdd) {</b>
+<b class="fc"><i>398</i>&nbsp;                return true;</b>
+<i>399</i>&nbsp;            }
+<i>400</i>&nbsp;        }
+<b class="nc"><i>401</i>&nbsp;        return false;</b>
+<i>402</i>&nbsp;    }
+<i>403</i>&nbsp;
+<i>404</i>&nbsp;    /**
+<i>405</i>&nbsp;     * The {@code checkWin method} throw a new {@code WinningException} when the {@link Worker} reach the 3th Level.
+<i>406</i>&nbsp;     *
+<i>407</i>&nbsp;     * @param island              The current board of game
+<i>408</i>&nbsp;     * @param x                   The X Coordinate where the Worker is
+<i>409</i>&nbsp;     * @param y                   The y Coordinate where the Worker is
+<i>410</i>&nbsp;     * @param oldAltitudeOfPlayer The altitude of worker before the move
+<i>411</i>&nbsp;     * @throws WinningException The {@code WinningException} is thrown when the Player triggered one of the Win check
+<i>412</i>&nbsp;     */
+<i>413</i>&nbsp;    protected void checkWin(Island island, int x, int y, int oldAltitudeOfPlayer) throws WinningException {
+<b class="fc"><i>414</i>&nbsp;        CellCluster cellCluster = island.getCellCluster(x, y);</b>
+<i>415</i>&nbsp;        //The Worker must increase its Altitude to win
+<b class="fc"><i>416</i>&nbsp;        if (cellCluster.hasWorkerOnTop() &amp;&amp; cellCluster.getCostructionHeight() == 3 &amp;&amp; cellCluster.getCostructionHeight() &gt; oldAltitudeOfPlayer) {</b>
+<b class="fc"><i>417</i>&nbsp;            throw new WinningException(&quot;Worker on 3th level!!&quot;);</b>
+<i>418</i>&nbsp;        }
+<b class="fc"><i>419</i>&nbsp;    }</b>
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;    public CardEnum getName() {
+<b class="fc"><i>422</i>&nbsp;        return name;</b>
+<i>423</i>&nbsp;    }
+<i>424</i>&nbsp;
+<i>425</i>&nbsp;    public String getDescription() {
+<b class="nc"><i>426</i>&nbsp;        return name.getDescription();</b>
+<i>427</i>&nbsp;    }
+<i>428</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-05-04 16:25</div>
+</div>
+</body>
+</html>

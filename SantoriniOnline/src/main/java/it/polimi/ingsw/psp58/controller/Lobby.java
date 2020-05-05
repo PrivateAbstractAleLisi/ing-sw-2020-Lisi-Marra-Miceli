@@ -1,8 +1,8 @@
 package it.polimi.ingsw.psp58.controller;
 
 import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_NewGameRequestEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.VC_NewGameResponseEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_NewGameRequestEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_NewGameResponseEvent;
 import it.polimi.ingsw.psp58.exceptions.NotFreeRoomAvailableException;
 import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
@@ -152,7 +152,7 @@ public class Lobby extends EventSource implements EventListener {
             if (isPlayerInLobby(username)) {
                 boolean userAlreadyInRoom = isUserInARoom(username);
 
-                if (!userAlreadyInRoom && pendingUsername.toLowerCase().equals(username.toLowerCase())) { //Waiting user to type room size
+                if (!userAlreadyInRoom && pendingUsername != null && pendingUsername.toLowerCase().equals(username.toLowerCase())) { //Waiting user to type room size
 
                     printLogMessage("Disconnecting " + username.toUpperCase() + " that was creating a room");
                     if (activeUsersList != null) {
@@ -166,19 +166,32 @@ public class Lobby extends EventSource implements EventListener {
                     } finally {
                         creatingRoomLock.unlock();
                     }
+                } else if (!userAlreadyInRoom) {
+                    //the user ended a game and now disconnected
+                    printLogMessage("Disconnecting " + username + " after the end of the game.");
+                    activeUsersList.remove(username);
                 } else if (userAlreadyInRoom) {  //at least one room has been created, the room can be 1..2/3 full
                     Room roomWithUser = getRoomWithUser(username.toLowerCase());
-                    printLogMessage("Disconnecting  all users already in " + roomWithUser.getRoomID() + " :" + roomWithUser.getActiveUsers().toString());
+                    if (roomWithUser.getSIZE() == 3 && roomWithUser.getSpectator() != null
+                            && roomWithUser.getSpectator().equals(username.toLowerCase())) {
+                        // the user lost the game and after closed the match
+                        printLogMessage("Disconnecting Spectator in" + roomWithUser.getRoomID() + ". The match is still working.");
 
-                    List<String> usersInRoom = new ArrayList<>(roomWithUser.getActiveUsers());
-                    roomWithUser.disconnectAllUsers(username.toLowerCase());
-                    activeRooms.remove(roomWithUser);
-                    updateRoomCounter();
-                    for (String user : usersInRoom) {
-                        activeUsersList.remove(user);
+                        roomWithUser.disconnectUser(username);
+                        activeUsersList.remove(username);
+                    } else {
+                        printLogMessage("Disconnecting  all users already in " + roomWithUser.getRoomID() + " :" + roomWithUser.getActiveUsers().toString());
+
+                        List<String> usersInRoom = new ArrayList<>(roomWithUser.getActiveUsers());
+                        roomWithUser.disconnectAllUsers(username.toLowerCase());
+                        activeRooms.remove(roomWithUser);
+                        updateRoomCounter();
+                        for (String user : usersInRoom) {
+                            activeUsersList.remove(user);
+                        }
                     }
                 } else {
-                    printErrorLogMessage("error in client " + username + " disconnection");
+                    printErrorLogMessage("error in client " + username + " disconnection... case not implemented");
                 }
             }
         } catch (UserNotFoundException e) {
@@ -206,53 +219,31 @@ public class Lobby extends EventSource implements EventListener {
 
         if (activeUsersList.contains(event.getUsername())) {
             //If the username is already taken the method send a CV_ConnectionRejectedErrorGameEvent to the client with errorCode: "USER_TAKEN"
-
-            CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "USER_TAKEN", "The choosen username is already used in this Server", event.getUserIP(), event.getUserPort(), event.getUsername());
-            notifyAllObserverByType(ListenerType.VIEW, msgError);
+            sendConnectionRefusedEvent(event, "USER_TAKEN", "The choosen username is already used in this Server");
             printErrorLogMessage("Connection rejected because the username " + event.getUsername().toUpperCase() + " is already used in this Server");
         } else {
             if (!allRoomsAreFull()) {
                 //If there's an available Room, the method add the client to the Room.
-                activeUsersList.add(event.getUsername());
-                Room room = null;
                 try {
-                    room = firstFreeRoom();
+                    addUserToRoom(event.getUsername(), event.getVirtualView());
                 } catch (NotFreeRoomAvailableException e) {
                     e.printStackTrace();
-                }
-
-                if (!room.isFull()) {
-                    room.addUser(event.getUsername(), event.getVirtualView());
+                    printErrorLogMessage("Not available rooms but entered in this section");
                 }
             } else if (canCreateNewRoom.get() && !creatingRoomLock.isLocked() && MAX_ROOMS > activeRooms.size()) {
                 // If every room is full but the server can manage a new room, the method send a CV_RoomSizeRequestGameEvent to the client asking the desired size of the room
 
-                creatingRoomLock.lock();
-                activeUsersList.add(event.getUsername());
-                try {
-                    pendingUsername = event.getUsername();
-                    pendingVirtualView = event.getVirtualView();
-
-                    canCreateNewRoom.set(false);
-                    //todo usare userIP e userPort??
-                    CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert the desired size of the room: ", event.getUsername());
-                    notifyAllObserverByType(ListenerType.VIEW, request);
-                } finally {
-                    creatingRoomLock.unlock();
-                }
+                createNewRoom(event.getUsername(), event.getVirtualView());
             } else if (MAX_ROOMS == activeRooms.size()) {
                 //If the server is full (no rooms available) the method send a CV_ConnectionRejectedErrorGameEvent to the client with  errorCode: "ROOM_FULL"
 
-                CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "ROOM_FULL", "The room is actually full, please retry later.", event.getUserIP(), event.getUserPort(), event.getUsername());
-                notifyAllObserverByType(ListenerType.VIEW, msgError);
+                sendConnectionRefusedEvent(event, "SERVER_FULL", "The room is actually full, please retry later.");
 
                 printErrorLogMessage("Connection rejected because the Server is actually full");
             } else if (!canCreateNewRoom.get()) {
                 // If another player is creating a Room the method send a {@link CV_ConnectionRejectedErrorGameEvent} to the client with errorCode: "WAIT_FOR_CREATION".
 
-
-                CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", "WAIT_FOR_CREATION", "A room is being created by another user, please wait few seconds.", event.getUserIP(), event.getUserPort(), event.getUsername());
-                notifyAllObserverByType(ListenerType.VIEW, msgError);
+                sendConnectionRefusedEvent(event, "WAIT_FOR_CREATION", "A room is being created by another user, please wait few seconds.");
 
                 printErrorLogMessage("Connection rejected because a room is being created by " + event.getUsername().toUpperCase());
             }
@@ -284,13 +275,82 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(VC_NewGameResponseEvent event) {
+    public void handleEvent(CC_NewGameResponseEvent event) {
+        printLogMessage("Reconnection request to lobby from: " + event.getUsername());
 
+
+        //todo check che c'è in activeuserlist
+        if (!allRoomsAreFull()) {
+            //If there's an available Room, the method add the client to the Room.
+            try {
+                addUserToRoom(event.getUsername(), event.getVirtualView());
+            } catch (NotFreeRoomAvailableException e) {
+                e.printStackTrace();
+                printErrorLogMessage("Not available rooms but entered in this section");
+            }
+        } else if (canCreateNewRoom.get() && !creatingRoomLock.isLocked() && MAX_ROOMS > activeRooms.size()) {
+            // If every room is full but the server can manage a new room, the method send a CV_RoomSizeRequestGameEvent to the client asking the desired size of the room
+
+            createNewRoom(event.getUsername(), event.getVirtualView());
+        } else if (MAX_ROOMS == activeRooms.size()) {
+            //If the server is full (no rooms available) the method send a CV_ConnectionRejectedErrorGameEvent to the client with  errorCode: "ROOM_FULL"
+
+            sendConnectionRefusedEvent(event, "SERVER_FULL", "The room is actually full, please retry later.");
+
+            printErrorLogMessage("Connection rejected because the Server is actually full");
+        } else if (!canCreateNewRoom.get()) {
+            // If another player is creating a Room the method send a {@link CV_ConnectionRejectedErrorGameEvent} to the client with errorCode: "WAIT_FOR_CREATION".
+
+            sendConnectionRefusedEvent(event, "WAIT_FOR_CREATION", "A room is being created by another user, please wait few seconds.");
+
+            printErrorLogMessage("Connection rejected because a room is being created by " + event.getUsername().toUpperCase());
+        }
     }
 
-    @Override
-    public void handleEvent(CV_NewGameRequestEvent event) {
+    private void addUserToRoom(String username, VirtualView virtualView) throws NotFreeRoomAvailableException {
+        if (!allRoomsAreFull()) {
+            //If there's an available Room, the method add the client to the Room.
+            activeUsersList.add(username);
+            Room room = null;
+            try {
+                room = firstFreeRoom();
+                if (!room.isFull()) {
+                    room.addUser(username, virtualView);
+                }
+            } catch (NotFreeRoomAvailableException e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new NotFreeRoomAvailableException("Room not available");
+        }
+    }
 
+    private void createNewRoom(String username, VirtualView virtualView) {
+        creatingRoomLock.lock();
+        if (!activeUsersList.contains(username)) {
+            activeUsersList.add(username);
+        }
+        try {
+            pendingUsername = username;
+            pendingVirtualView = virtualView;
+
+            canCreateNewRoom.set(false);
+            //todo usare userIP e userPort??
+            CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert the desired size of the room: ", username);
+            notifyAllObserverByType(ListenerType.VIEW, request);
+        } finally {
+            creatingRoomLock.unlock();
+        }
+    }
+
+    private void sendConnectionRefusedEvent(CC_ConnectionRequestGameEvent event, String errCode, String errorMessage) {
+        CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", errCode, errorMessage, event.getUserIP(), event.getUserPort(), event.getUsername());
+        notifyAllObserverByType(ListenerType.VIEW, msgError);
+    }
+
+    private void sendConnectionRefusedEvent(CC_NewGameResponseEvent event, String errCode, String errorMessage) {
+        CV_ReconnectionRejectedErrorGameEvent msgError = new CV_ReconnectionRejectedErrorGameEvent("", errCode, errorMessage, event.getUsername());
+        notifyAllObserverByType(ListenerType.VIEW, msgError);
     }
 
 
@@ -301,7 +361,7 @@ public class Lobby extends EventSource implements EventListener {
     /**
      * Update the roomCounter for Log purpose.
      */
-    private void updateRoomCounter() {
+    public void updateRoomCounter() {
         roomCounter = activeRooms.size();
     }
 
@@ -396,6 +456,10 @@ public class Lobby extends EventSource implements EventListener {
         return null;
     }
 
+    public void removeRoom(Room room) {
+        activeRooms.remove(room);
+    }
+
 
     /* ----------------------------------------------------------------------------------------------
                                          START GAME AND PRE-GAME
@@ -428,7 +492,7 @@ public class Lobby extends EventSource implements EventListener {
      *
      * @param username Username of a player
      */
-    public void startPreGameForThisUser(String username) {
+    public synchronized void startPreGameForThisUser(String username) {
         if (canStartPreGameForThisUser(username)) {
             try {
                 getRoomWithUser(username).beginPreGame();
@@ -460,7 +524,7 @@ public class Lobby extends EventSource implements EventListener {
      *
      * @param username Username of a player
      */
-    public void startGameForThisUser(String username) {
+    public synchronized void startGameForThisUser(String username) {
         if (canStartGameForThisUser(username)) {
             try {
                 getRoomWithUser(username).beginGame();
@@ -470,6 +534,28 @@ public class Lobby extends EventSource implements EventListener {
             }
         }
     }
+
+    public boolean canCleanRoomForThisUser(String username) {
+        try {
+            return getRoomWithUser(username).roomMustBeCleaned();
+        } catch (RoomNotFoundException | UserNotFoundException e) {
+            printErrorLogMessage("Exception: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public synchronized void cleanRoomForThisUser(String username) {
+        if (canCleanRoomForThisUser(username)) {
+            try {
+                getRoomWithUser(username).cleanRoom();
+            } catch (RoomNotFoundException | UserNotFoundException e) {
+                printErrorLogMessage("Exception: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     /* ----------------------------------------------------------------------------------------------
                                          LOG AND ERROR MESSAGE
@@ -498,6 +584,7 @@ public class Lobby extends EventSource implements EventListener {
     /* ----------------------------------------------------------------------------------------------
                                         METHODS NOT IMPLEMENTED
        ----------------------------------------------------------------------------------------------*/
+
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
     }
@@ -549,6 +636,11 @@ public class Lobby extends EventSource implements EventListener {
     }
 
     @Override
+    public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
     }
 
@@ -572,6 +664,11 @@ public class Lobby extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(VC_NewGameResponseEvent event) {
 
     }
 
@@ -602,6 +699,11 @@ public class Lobby extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_NewGameRequestEvent event) {
 
     }
 }

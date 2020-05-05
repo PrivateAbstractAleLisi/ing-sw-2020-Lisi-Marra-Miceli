@@ -128,7 +128,6 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
 
             }
         } catch (SocketTimeoutException | SocketException | EOFException to) { //No message from the client
-            System.out.println(client.isClosed());
             System.out.println("This client is AFK, Disconnecting");
             System.out.println(client.getInetAddress().toString() + " port: " + client.getPort());
 

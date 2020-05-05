@@ -27,10 +27,10 @@ public class Room extends EventSource {
     private Map<Integer, Player> turnSequence;
     private boolean gameCanStart;
     private String roomID;
+    private String spectator;
+    private boolean roomMustBeCleaned;
 
-    //    todo AFTER DEBUG: make private
     private PreGameController preGame;
-//    private PreGameController preGame;
 
     public Room(int size, String roomID) {
         this.SIZE = size;
@@ -41,6 +41,7 @@ public class Room extends EventSource {
         gameCanStart = false;
         this.turnSequence = new HashMap<Integer, Player>();
         this.roomID = roomID;
+        this.roomMustBeCleaned=false;
 
         printLogMessage("Room created");
     }
@@ -49,8 +50,8 @@ public class Room extends EventSource {
         PlayerDisconnectedGameEvent disconnectedGameEvent = new PlayerDisconnectedGameEvent("an user has disconnected", causedByUsername,
                 causedByUsername + " has lost connection to the server ");
 
-        preGame=null;
-        turnController=null;
+        preGame = null;
+        turnController = null;
 
         notifyAllObserverByType(ListenerType.VIEW, disconnectedGameEvent);
 
@@ -58,10 +59,23 @@ public class Room extends EventSource {
         virtualViewMap = null;
     }
 
+    public void disconnectUser(String username) {
+        activeUsers.remove(username);
+
+        if (spectator.equals(username)) {
+            spectator = null;
+        }
+        VirtualView virtualView = virtualViewMap.get(username);
+        virtualView.detachListenerByType(ListenerType.VIEW, turnController);
+        turnController.detachListenerByType(ListenerType.VIEW, virtualView);
+
+        virtualViewMap.remove(username);
+    }
+
     public void addUser(String username, VirtualView virtualView) {
         try {
-            boolean canAdd = !(boardManager.getPlayers().size()+1 > SIZE) &&
-                             activeUsers.size()<SIZE && activeUsers.size()+1 <= SIZE;
+            boolean canAdd = !(boardManager.getPlayers().size() + 1 > SIZE) &&
+                    activeUsers.size() < SIZE && activeUsers.size() + 1 <= SIZE;
             if (!canAdd) {
                 throw new LimitExceededException();
             }
@@ -119,7 +133,13 @@ public class Room extends EventSource {
     }
 
     public void beginGame() {
-        preGame=null;
+
+        List<VirtualView> virtualViewList = getVirtualViewList();
+        for (VirtualView virtualView : virtualViewList) {
+            preGame.detachListenerByType(ListenerType.VIEW, virtualView);
+            virtualView.detachListenerByType(ListenerType.VIEW, preGame);
+        }
+        preGame = null;
 
         turnController = new TurnController(boardManager, this.turnSequence, SIZE, this);
 
@@ -169,6 +189,44 @@ public class Room extends EventSource {
 
     public String getRoomID() {
         return roomID;
+    }
+
+    public void setSpectator(String spectator) {
+        this.spectator = spectator;
+    }
+
+    public String getSpectator() {
+        return spectator;
+    }
+
+    public List<VirtualView> getVirtualViewList() {
+        List<VirtualView> virtualViewList = new ArrayList<>();
+        for (String player : activeUsers) {
+            virtualViewList.add(virtualViewMap.get(player));
+        }
+        return virtualViewList;
+    }
+
+    public void cleanRoom() {
+
+        List<VirtualView> virtualViewList = getVirtualViewList();
+
+        for (VirtualView virtualView : virtualViewList) {
+            turnController.detachListenerByType(ListenerType.VIEW, virtualView);
+            virtualView.detachListenerByType(ListenerType.VIEW, turnController);
+            this.detachListenerByType(ListenerType.VIEW,virtualView);
+        }
+
+        Lobby.instance().removeRoom(this);
+        Lobby.instance().updateRoomCounter();
+    }
+
+    public void setRoomMustBeCleaned(boolean roomMustBeCleaned) {
+        this.roomMustBeCleaned = roomMustBeCleaned;
+    }
+
+    public boolean roomMustBeCleaned() {
+        return roomMustBeCleaned;
     }
 
     /**

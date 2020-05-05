@@ -21,7 +21,11 @@ public interface EventListener {
     //LOBBY EVENT
     void handleEvent(CC_ConnectionRequestGameEvent event);
 
+    void handleEvent(CC_NewGameResponseEvent event);
+
     void handleEvent(CV_ConnectionRejectedErrorGameEvent event);
+
+    void handleEvent(CV_ReconnectionRejectedErrorGameEvent event);
 
     void handleEvent(CV_NewGameRequestEvent event);
 
