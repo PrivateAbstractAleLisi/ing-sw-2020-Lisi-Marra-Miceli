@@ -12,18 +12,19 @@ public class CardUtility {
 
         System.out.println("AVAILABLE CARDS: \n");
         for (CardEnum c : CardEnum.values()) {
-            System.out.println(c.getNumber() + ". " + c.getName() + ":  ");
-            System.out.println("\t" + c.getDescription());
+            if (!c.equals(CardEnum.SUPERUSER)) {
+                System.out.println(c.getNumber() + ". " + c.getName() + ":  ");
+                System.out.println("\t" + c.getDescription());
+            }
 
         }
-
     }
 
     public static void displayAllAvailableCards(List<CardEnum> cards) {
         System.out.println("AVAILABLE CARDS: \n");
         for (CardEnum card : cards) {
-            System.out.println(card.getNumber() + ". " + card.getName() + ":  ");
-            System.out.println("\t" + card.getDescription());
+                System.out.println(card.getNumber() + ". " + card.getName() + ":  ");
+                System.out.println("\t" + card.getDescription());
         }
     }
 }

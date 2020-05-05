@@ -85,6 +85,9 @@ public class Player {
             case PROMETHEUS:
                 this.card = new Prometheus(this);
                 break;
+            case SUPERUSER:
+                this.card = new Superuser(this);
+                break;
             default:
                 throw new IllegalArgumentException("String doesn't match with any God");
         }
