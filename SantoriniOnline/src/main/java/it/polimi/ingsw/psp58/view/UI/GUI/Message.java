@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Box;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -40,6 +41,8 @@ public class Message {
         stage.showAndWait();
     }
 
+
+
     public static int askRoomSize(String message){
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -59,10 +62,12 @@ public class Message {
 
         button1.setOnAction(event -> {
             number.set(2);
+            stage.close();
         });
 
         button2.setOnAction(event -> {
             number.set(3);
+            stage.close();
         });
 
         vBox.getChildren().addAll(label,button1, button2);

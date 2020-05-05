@@ -1,6 +1,7 @@
 package it.polimi.ingsw.psp58.view.UI.GUI;
 
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
+import it.polimi.ingsw.psp58.controller.Lobby;
 import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
 import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
@@ -10,14 +11,11 @@ import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
-import it.polimi.ingsw.psp58.view.UI.CLI.utility.MessageUtility;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.ConnectionSceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.RoomSceneController;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.StartingSceneController;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -45,11 +43,9 @@ public class GUI extends Application implements EventListener {
     private Scene startingScene;
     private StartingSceneController startingSceneController;
 
-    private Scene connectionScene;
-    private ConnectionSceneController connectionSceneController;
 
-    private Scene roomScene;
-    private RoomSceneController roomSceneController;
+    private Scene lobbyScene;
+    private LobbySceneController lobbySceneController;
 
     private Scene boardScene;
     private BoardSceneController boardSceneController;
@@ -74,19 +70,19 @@ public class GUI extends Application implements EventListener {
 
         startingSceneController = loaderStartingScene.getController();
         startingSceneController.setGui(this);
-
+        startingSceneController.start();
 
         //starts with the startingScene
         stage.setTitle("Santorini Online");
         stage.setScene(startingScene);
         stage.show();
 
-        //set up the connection scene
-        FXMLLoader loaderConnectionScene = new FXMLLoader(
-                getClass().getResource("/scenes/ConnectionScene.fxml"));
-        connectionScene= new Scene(loaderConnectionScene.load());
-        connectionSceneController =loaderConnectionScene.getController();
-        connectionSceneController.setGui(this);
+        //set up the lobby
+        FXMLLoader lobbySceneLoader = new FXMLLoader(
+                getClass().getResource("/scenes/LobbyScene.fxml"));
+        lobbyScene = new Scene(lobbySceneLoader.load());
+        lobbySceneController =lobbySceneLoader.getController();
+        lobbySceneController.setGui(this);
 
     }
 
@@ -125,20 +121,14 @@ public class GUI extends Application implements EventListener {
         this.startingSceneController = startingSceneController;
     }
 
-    public void setConnectionScene(Scene connectionScene) {
-        this.connectionScene = connectionScene;
+
+
+    public void setLobbyScene(Scene roomScene) {
+        this.lobbyScene = roomScene;
     }
 
-    public void setConnectionSceneController(ConnectionSceneController connectionSceneController) {
-        this.connectionSceneController = connectionSceneController;
-    }
-
-    public void setRoomScene(Scene roomScene) {
-        this.roomScene = roomScene;
-    }
-
-    public void setRoomSceneController(RoomSceneController roomSceneController) {
-        this.roomSceneController = roomSceneController;
+    public void setLobbySceneController(LobbySceneController lobbySceneController) {
+        this.lobbySceneController = lobbySceneController;
     }
 
     public void setBoardScene(Scene boardScene) {
@@ -161,20 +151,13 @@ public class GUI extends Application implements EventListener {
         return startingSceneController;
     }
 
-    public Scene getConnectionScene() {
-        return connectionScene;
+
+    public Scene getLobbyScene() {
+        return lobbyScene;
     }
 
-    public ConnectionSceneController getConnectionSceneController() {
-        return connectionSceneController;
-    }
-
-    public Scene getRoomScene() {
-        return roomScene;
-    }
-
-    public RoomSceneController getRoomSceneController() {
-        return roomSceneController;
+    public LobbySceneController getLobbySceneController() {
+        return lobbySceneController;
     }
 
     public Scene getBoardScene() {
@@ -221,14 +204,19 @@ public class GUI extends Application implements EventListener {
 
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-        int number= Message.askRoomSize("Choose the size of the room:");
-        System.out.println();
+        int number= Message.askRoomSize("You're the first player, choose the size of the room:");
+        startingSceneController.complete();
+        System.out.println(number);
         VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", number);
         sendEvent(responseEvent);
     }
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
+        System.out.println("room received");
+        changeScene(lobbyScene);
+        lobbySceneController.update(event);
+
     }
 
     @Override

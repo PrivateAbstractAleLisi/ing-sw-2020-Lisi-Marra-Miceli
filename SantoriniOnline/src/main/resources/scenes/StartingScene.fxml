@@ -14,7 +14,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="406.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.psp58.view.UI.GUI.controller.StartingSceneController">
    <children>
-      <BorderPane>
+      <BorderPane prefHeight="406.0" prefWidth="655.0">
          <left>
             <Pane prefHeight="406.0" prefWidth="398.0" BorderPane.alignment="CENTER">
                <children>
@@ -44,7 +44,7 @@
                   </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <TextField fx:id="ipField" layoutX="50.0" layoutY="50.0" prefHeight="27.0" prefWidth="161.0" promptText="2.4.8.16" />
+                        <TextField fx:id="ipField" layoutX="50.0" layoutY="50.0" prefHeight="27.0" prefWidth="161.0" promptText="2.4.8.16" text="127.0.0.1" />
                         <Text layoutX="102.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Server IP">
                            <font>
                               <Font name="Avenir Book" size="13.0" />
@@ -53,14 +53,19 @@
                            <font>
                               <Font name="Avenir Book" size="13.0" />
                            </font></Text>
-                        <Button fx:id="connectButton" layoutX="83.0" layoutY="176.0" mnemonicParsing="false" onMouseClicked="#onClickEventConnectButton" text="CONNECT" />
-                        <ProgressBar layoutX="22.0" layoutY="231.0" prefHeight="11.0" prefWidth="200.0" progress="0.0" />
-                        <Text fx:id="loadText" fill="#125d8c" layoutX="44.0" layoutY="257.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&lt; establishing connection... &gt;" textAlignment="CENTER" wrappingWidth="161.77392578125">
+                        <Button fx:id="connectButton" layoutX="88.0" layoutY="176.0" mnemonicParsing="false" onMouseClicked="#onClickEventConnectButton" text="CONNECT" />
+                        <ProgressBar fx:id="loadProgress" layoutX="22.0" layoutY="221.0" prefHeight="11.0" prefWidth="200.0" progress="0.0" />
+                        <Text fx:id="loadText" fill="#125d8c" layoutX="45.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&lt; establishing connection... &gt;" textAlignment="CENTER" wrappingWidth="161.77392578125">
                            <font>
                               <Font size="9.0" />
                            </font>
                         </Text>
                         <TextField fx:id="userField" layoutX="50.0" layoutY="127.0" prefHeight="27.0" prefWidth="161.0" promptText="MastroLindo" />
+                        <Text fill="#909090" layoutX="16.0" layoutY="276.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Alessandro Lisi - Gabriele Marra - Matteo Miceli. Politecnico di Milano, 2020.">
+                           <font>
+                              <Font size="7.0" />
+                           </font>
+                        </Text>
                      </children>
                   </AnchorPane>
               </items>

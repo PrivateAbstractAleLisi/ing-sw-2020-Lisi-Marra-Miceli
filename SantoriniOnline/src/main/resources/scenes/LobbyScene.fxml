@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.gluonhq.charm.glisten.layout.Layer?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.ColorAdjust?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -9,10 +12,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="406.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="406.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController">
    <children>
       <BorderPane layoutX="-7.0" layoutY="-4.0" prefHeight="406.0" prefWidth="655.0">
          <top>
@@ -25,52 +28,90 @@
                   </ImageView>
                   <Pane prefHeight="84.0" prefWidth="429.0">
                      <children>
-                        <Label layoutX="19.0" layoutY="17.0" text="ROOM #XYZ" textFill="#3583bf">
+                        <Label fx:id="roomTitleText" layoutX="19.0" layoutY="17.0" text="ROOM #XYZ" textFill="WHITE">
                            <font>
                               <Font name="Avenir Next Condensed Bold" size="33.0" />
                            </font>
+                           <effect>
+                              <DropShadow color="#265a87" height="13.0" radius="6.5" spread="0.35" width="15.0" />
+                           </effect>
                         </Label>
-                        <Label layoutX="361.0" layoutY="17.0" text="0/3">
+                        <Label fx:id="roomPlayersNumberText" layoutX="204.0" layoutY="17.0" text="0/3" textFill="WHITE">
                            <font>
                               <Font name="Avenir Next Condensed Bold" size="33.0" />
                            </font>
+                           <effect>
+                              <DropShadow color="#265a87" height="13.0" radius="6.5" spread="0.35" width="15.0" />
+                           </effect>
                         </Label>
-                        <Line endX="327.0" endY="7.62939453125E-6" layoutX="102.0" layoutY="70.0" startX="-100.0" />
+                        <Layer layoutX="326.0" layoutY="40.0" />
+                        <ImageView fitHeight="47.0" fitWidth="71.0" layoutX="364.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/Exit.png" />
+                           </image>
+                           <effect>
+                              <ColorAdjust brightness="0.17" contrast="1.0" saturation="-0.29" />
+                           </effect>
+                        </ImageView>
                      </children>
                   </Pane>
                </children>
             </HBox>
          </top>
          <left>
-            <VBox prefHeight="308.0" prefWidth="170.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="315.0" prefWidth="240.0" BorderPane.alignment="CENTER">
                <children>
-                  <VBox prefHeight="304.0" prefWidth="163.0">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="0: 0;">
                      <children>
-                        <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="158.0" text="CONNECTED PLAYERS:" textAlignment="CENTER">
-                           <opaqueInsets>
-                              <Insets bottom="10.0" />
-                           </opaqueInsets>
-                        </Label>
-                        <Label text="Ale">
-                           <font>
-                              <Font size="19.0" />
-                           </font>
-                           <opaqueInsets>
-                              <Insets top="10.0" />
-                           </opaqueInsets>
-                        </Label>
-                        <Label text="Marra">
-                           <font>
-                              <Font size="19.0" />
-                           </font>
-                        </Label>
-                        <Label text="Teo">
-                           <font>
-                              <Font size="19.0" />
-                           </font>
-                        </Label>
+                        <VBox blendMode="SRC_ATOP" prefHeight="304.0" prefWidth="218.0" style="0: 0;">
+                           <children>
+                              <Label alignment="CENTER" prefHeight="24.0" prefWidth="222.0" text="CONNECTED PLAYERS:" textAlignment="CENTER" textFill="WHITE">
+                                 <opaqueInsets>
+                                    <Insets bottom="10.0" />
+                                 </opaqueInsets>
+                                 <font>
+                                    <Font name="Avenir Next Condensed Bold" size="13.0" />
+                                 </font>
+                                 <effect>
+                                    <DropShadow color="#4b4ca8" height="5.91" radius="3.21" width="8.93" />
+                                 </effect>
+                              </Label>
+                              <Label fx:id="player1Text" text="Ale">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                                 <opaqueInsets>
+                                    <Insets top="10.0" />
+                                 </opaqueInsets>
+                                 <padding>
+                                    <Insets bottom="15.0" left="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="player2Text" text="Marra">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets bottom="15.0" left="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="player3Text" text="Teo">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <Pane blendMode="SOFT_LIGHT" prefHeight="305.0" prefWidth="222.0" style="-fx-background-color: darkblue; -fx-view-order: 2;">
+                           <effect>
+                              <DropShadow />
+                           </effect>
+                        </Pane>
                      </children>
-                  </VBox>
+                  </AnchorPane>
                </children>
                <padding>
                   <Insets left="15.0" top="2.0" />
@@ -78,7 +119,19 @@
             </VBox>
          </left>
          <bottom>
-            <Pane prefHeight="15.0" prefWidth="655.0" BorderPane.alignment="CENTER" />
+            <Pane prefHeight="8.0" prefWidth="655.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Text blendMode="OVERLAY" layoutX="12.0" layoutY="6.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Santorini Online - Alessandro Lisi, Gabriele Marra, Matteo Miceli - Politecnico di Milano 2020" textAlignment="CENTER" wrappingWidth="649.2601385478163">
+                     <font>
+                        <Font size="7.0" />
+                     </font>
+                  </Text>
+               </children></Pane>
          </bottom></BorderPane>
+      <ImageView blendMode="SRC_ATOP" fitHeight="406.0" fitWidth="654.0" pickOnBounds="true" style="-fx-view-order: 2;">
+         <image>
+            <Image url="@../images/Odyssey-Olympus.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>
