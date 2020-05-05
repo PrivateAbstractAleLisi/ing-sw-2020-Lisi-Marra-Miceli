@@ -13,6 +13,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
 import it.polimi.ingsw.psp58.model.*;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
@@ -186,16 +187,25 @@ public class TurnController extends EventSource implements EventListener {
         }
     }
 
-    public void checkLose(List<TurnAction> availableActions, String player) {
+    public boolean checkLose(List<TurnAction> availableActions, String player) {
         if (availableActions.isEmpty()) { //the player has no actions possibles so he loses
             lose(player);
+            return true;
         }
+        return false;
     }
 
     public boolean canPassTurn() {
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
-        return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0 && !isPrometheus) ||
-                (isPrometheus && (currentTurnInstance.getNumberOfMove() == 1 && currentTurnInstance.getNumberOfBuild() >= 1));
+        if (isPrometheus) {
+            //if is Prometheus, check more things
+            boolean hasBuiltBeforeMove = currentTurnInstance.getHasBuiltBeforeMove();
+            boolean normalValidTurn = currentTurnInstance.getNumberOfBuild() == 1 && !hasBuiltBeforeMove;
+            boolean powerValidTurn = currentTurnInstance.getNumberOfBuild() == 2 && hasBuiltBeforeMove;
+
+            return (currentTurnInstance.getNumberOfMove() == 1 && (normalValidTurn || powerValidTurn));
+        }
+        return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0);
     }
 
     private void sendCommandRequest(String actingPlayer) {
@@ -226,7 +236,7 @@ public class TurnController extends EventSource implements EventListener {
 
         //Check if the player can BUILD and set the possible builds
         if ((behaviour.getBlockPlacementLeft() > 0) &&
-                ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0)))) { //BUILD may be a valid action
+                ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0) && (numberOfBuild == 0)))) { //BUILD may be a valid action
 
             setUpAvailableBuild(availableBuildA, availableBuildB);
 
@@ -241,12 +251,12 @@ public class TurnController extends EventSource implements EventListener {
         }
 
         //checks if the player loses or not
-        checkLose(availableActions, actingPlayer);
-
-        //send the it.polimi.ingsw.sp58.event for the command selection
-        CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildA, availableMovementsA,
-                availableBuildB, availableMovementsB, actingPlayer);
-        notifyAllObserverByType(VIEW, requestEvent);
+        if (!checkLose(availableActions, actingPlayer)) {
+            //send the it.polimi.ingsw.sp58.event for the command selection
+            CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildA, availableMovementsA,
+                    availableBuildB, availableMovementsB, actingPlayer);
+            notifyAllObserverByType(VIEW, requestEvent);
+        }
     }
 
     private void nextTurn() {
@@ -304,6 +314,16 @@ public class TurnController extends EventSource implements EventListener {
                     numberOfPlayers = 2;
                 }
             }
+            //removes the workers of that player from the island
+            Player defeatedPlayer = board.getPlayer(player);
+            try {
+                board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.A));
+                board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.B));
+            } catch (InvalidWorkerRemovalException e) {
+                e.printStackTrace();
+                //todo eliminare eccezione
+            }
+
             List<String> losers = new ArrayList<String>();
             losers.add(player);
             CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose", null, losers);
@@ -354,17 +374,15 @@ public class TurnController extends EventSource implements EventListener {
      * invoked by the virtual it.polimi.ingsw.sp58.view when a next turn it.polimi.ingsw.sp58.event is called
      */
     private void invokeNextTurn(Player player) {
-        boolean hasAlreadyMovedAndBuilt = false;
         //checks if the player requesting next turn is the one that is playing the turn
         if (currentTurnInstance.getCurrentPlayer().getUsername().equals(player.getUsername())) {
-            hasAlreadyMovedAndBuilt = (currentTurnInstance.getNumberOfMove() > 0
-                    && currentTurnInstance.getNumberOfBuild() > 0);
-            if (hasAlreadyMovedAndBuilt) {
+            if (canPassTurn()) {
                 player.getCard().resetBehaviour();
                 nextTurn();
             } else {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can't pass turn!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
+                sendCommandRequest(player.getUsername());
             }
         }
     }
@@ -424,6 +442,11 @@ public class TurnController extends EventSource implements EventListener {
                 try {
                     player.getCard().build(w, block, x, y, board.getIsland());
                     currentTurnInstance.setNumberOfBuild(currentTurnInstance.getNumberOfBuild() + 1);
+                    if(currentTurnInstance.getNumberOfMove()==0){
+                        currentTurnInstance.setHasBuiltBeforeMove(true);
+                    }
+
+                    if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(w.getWorkerID());
                     sendIslandUpdate();
                     sendCommandRequest(player.getUsername());
                 } catch (InvalidBuildException | IllegalArgumentException e) {

@@ -133,6 +133,12 @@ public class Room extends EventSource {
     }
 
     public void beginGame() {
+
+        List<VirtualView> virtualViewList = getVirtualViewList();
+        for (VirtualView virtualView : virtualViewList) {
+            preGame.detachListenerByType(ListenerType.VIEW, virtualView);
+            virtualView.detachListenerByType(ListenerType.VIEW, preGame);
+        }
         preGame = null;
 
         turnController = new TurnController(boardManager, this.turnSequence, SIZE, this);
