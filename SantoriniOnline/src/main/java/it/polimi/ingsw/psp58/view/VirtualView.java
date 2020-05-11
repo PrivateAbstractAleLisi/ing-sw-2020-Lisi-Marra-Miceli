@@ -78,7 +78,7 @@ public class VirtualView extends EventSource implements ViewListener, Controller
         userConnectionAccepted.set(true);
         userConnectionAcceptedLock.unlock();
         this.username = event.getUsername();
-        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), client.getLocalUserIP(), client.getLocalUserPort(), this, username);
+        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), client.getUserIP(), client.getUserPort(), this, username);
         notifyAllObserverByType(CONTROLLER, newServerRequest);
 
         tryStartPreGame();
@@ -249,7 +249,7 @@ public class VirtualView extends EventSource implements ViewListener, Controller
 
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-        if (event.getUserIP().equals(client.getLocalUserIP()) && event.getUserPort() == client.getLocalUserPort()) {
+        if (event.getUserIP().equals(client.getUserIP()) && event.getUserPort() == client.getUserPort()) {
             //I set to false the boolean
             userInLobbyList = false;
 

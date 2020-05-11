@@ -168,11 +168,11 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         clientSocket.close();
     }
 
-    public InetAddress getLocalUserIP() {
+    public InetAddress getUserIP() {
         return clientSocket.getInetAddress();
     }
 
-    public int getLocalUserPort() {
-        return clientSocket.getLocalPort();
+    public int getUserPort() {
+        return clientSocket.getPort();
     }
 }
