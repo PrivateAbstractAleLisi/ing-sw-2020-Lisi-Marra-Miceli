@@ -1,66 +1,58 @@
 package it.polimi.ingsw.psp58.view;
 
 import it.polimi.ingsw.psp58.controller.Lobby;
-import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
-import it.polimi.ingsw.psp58.event.core.EventListener;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.PingEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
+import it.polimi.ingsw.psp58.networking.server.SantoriniServerClientHandler;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
+import static it.polimi.ingsw.psp58.event.core.ListenerType.CONTROLLER;
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
-public class VirtualView extends EventSource implements EventListener {
+public class VirtualView extends EventSource implements ViewListener, ControllerListener {
 
 
     private final Lobby lobby;
-
-    //todo AFTER DEBUG: make private
-    private InetAddress userIP;
-    private int userPort;
     private String username;
-    private ObjectOutputStream output;
+
+    //boolean for first connection
+    private AtomicBoolean userConnectionAccepted;
+    //lock for first connection
+    private ReentrantLock userConnectionAcceptedLock = new ReentrantLock();
+
 
     //Boolean for disconnections
     private boolean userInLobbyList;
     private boolean anotherPlayerInRoomCrashed;
 
-    Socket client;
+    private SantoriniServerClientHandler client;
 
-    public VirtualView(Socket clientSocket) {
+    public VirtualView(SantoriniServerClientHandler client) {
         this.lobby = Lobby.instance();
         //listening to each other
-        attachListenerByType(VIEW, lobby);
+        attachListenerByType(CONTROLLER,lobby);
         lobby.attachListenerByType(VIEW, this);
-        client = clientSocket;
-        try {
-            output = new ObjectOutputStream(client.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.client = client;
 
         anotherPlayerInRoomCrashed = false;
         userInLobbyList = false;
+        userConnectionAccepted = new AtomicBoolean(false);
     }
 
 
     private void sendEventToClient(GameEvent event) {
-        try {
-            output.writeObject(event);
-            output.flush();
-        } catch (IOException e) {
-            System.out.println("virtual it.polimi.ingsw.sp58.view: unable to send socket to client");
-        }
-
+        client.sendEvent(event);
     }
 
     public boolean isAnotherPlayerInRoomCrashed() {
@@ -82,48 +74,39 @@ public class VirtualView extends EventSource implements EventListener {
         //I suppose user will be added in the list of active users with the current username
         userInLobbyList = true;
 
-        this.userIP = client.getInetAddress();
-        this.userPort = client.getPort();
+        userConnectionAcceptedLock.lock();
+        userConnectionAccepted.set(true);
+        userConnectionAcceptedLock.unlock();
         this.username = event.getUsername();
-        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), userIP, userPort, this, username);
-        notifyAllObserverByType(VIEW, newServerRequest);
+        CC_ConnectionRequestGameEvent newServerRequest = new CC_ConnectionRequestGameEvent(event.getEventDescription(), client.getUserIP(), client.getUserPort(), this, username);
+        notifyAllObserverByType(CONTROLLER, newServerRequest);
 
-
-        if (lobby.canStartPreRoom0()) {
-            detachListenerByType(VIEW, lobby);
-            try {
-                //Sleep 2 second to show the Room
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Lobby.instance().startPreGameForRoom0();
-        }
+        tryStartPreGame();
     }
 
     @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
-        notifyAllObserverByType(VIEW, event);
+        notifyAllObserverByType(CONTROLLER,event);
     }
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-        notifyAllObserverByType(VIEW, event);
+        notifyAllObserverByType(CONTROLLER,event);
     }
 
     @Override
     public void handleEvent(VC_PlayerCardChosenEvent event) {
-        notifyAllObserverByType(VIEW, event);
+        notifyAllObserverByType(CONTROLLER, event);
     }
 
     @Override
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-        notifyAllObserverByType(VIEW, event);
+        notifyAllObserverByType(CONTROLLER, event);
     }
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
-        notifyAllObserverByType(VIEW, event);
+        notifyAllObserverByType(CONTROLLER, event);
         if (event.getId() == Worker.IDs.B) {
             if (lobby.canStartGameForThisUser(username)) {
                 lobby.startGameForThisUser(username);
@@ -133,31 +116,68 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
-        notifyAllObserverByType(VIEW, event);
-    }
+        notifyAllObserverByType(CONTROLLER, event);
 
-    @Override
-    public void handleEvent(PlayerDisconnectedGameEvent event) {
-        if (!event.getDisconnectedUsername().equals(this.username)) {
-            sendEventToClient(event);
-            anotherPlayerInRoomCrashed = true;
-            try {
-                client.close();
-                System.out.println("closing connection for client " + username);
-            } catch (IOException e) {
-                System.err.println("Error when handling quit connection it.polimi.ingsw.sp58.event");
-                e.printStackTrace();
-            } finally {
-                //deatch for all user in room
-                lobby.detachListenerByType(VIEW, this);
-                this.detachListenerByType(VIEW, lobby);
-            }
+        if (lobby.canCleanRoomForThisUser(username)) {
+            lobby.cleanRoomForThisUser(username);
         }
     }
 
+    @Override
+    public void handleEvent(VC_NewGameResponseEvent event) {
+        System.out.println("È arrivata la request: la risposta è " + event.createNewGame());
+
+        if (event.createNewGame()) {
+            userConnectionAcceptedLock.lock();
+            userConnectionAccepted.set(true);
+            userConnectionAcceptedLock.unlock();
+
+            CC_NewGameResponseEvent newGameResponseEvent=new CC_NewGameResponseEvent("", this.username, this);
+            notifyAllObserverByType(CONTROLLER, newGameResponseEvent);
+
+            tryStartPreGame();
+        } else {
+            //if the player doesn't want to play i close the connection
+            client.disconnect();
+        }
+    }
+
+    private void tryStartPreGame() {
+        userConnectionAcceptedLock.lock();
+        try {
+            //if the connection is not accepted, don't ask for start pregame
+            if (userConnectionAccepted.get()) {
+                if (lobby.canStartPreGameForThisUser(this.username)) {
+                    try {
+                        //Sleep 2 second to show the Room
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    lobby.startPreGameForThisUser(username);
+                }
+            }
+        } finally {
+            userConnectionAcceptedLock.unlock();
+        }
+    }
+
+    @Override
+    public void handleEvent(PlayerDisconnectedViewEvent event) {
+        if (!event.getDisconnectedUsername().equals(this.username)) {
+            sendEventToClient(event);
+            anotherPlayerInRoomCrashed = true;
+            client.disconnect();
+            //detach for all user in room
+            lobby.detachListenerByType(VIEW,this);
+            this.detachListenerByType(CONTROLLER, lobby);
+        }
+    }
+
+
     private void removeListener() {
         Lobby.instance().detachListenerByType(VIEW, this);
-        detachListenerByType(VIEW, lobby);
+        detachListenerByType(CONTROLLER, lobby);
 
     }
 
@@ -167,12 +187,23 @@ public class VirtualView extends EventSource implements EventListener {
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         if (event.getUsername().equals(this.username)) {
+            //set to false the connection accepted
+            userConnectionAcceptedLock.lock();
+            userConnectionAccepted.set(false);
+            userConnectionAcceptedLock.unlock();
+
             sendEventToClient(event);
         }
     }
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
+
+        //set to false the connection accepted
+        userConnectionAcceptedLock.lock();
+        userConnectionAccepted.set(true);
+        userConnectionAcceptedLock.unlock();
+
         sendEventToClient(event);
     }
 
@@ -218,9 +249,27 @@ public class VirtualView extends EventSource implements EventListener {
 
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-        if (event.getUserIP().equals(userIP) && event.getUserPort() == userPort) {
+        if (event.getUserIP().equals(client.getUserIP()) && event.getUserPort() == client.getUserPort()) {
             //I set to false the boolean
             userInLobbyList = false;
+
+            //set to false the connection accepted
+            userConnectionAcceptedLock.lock();
+            userConnectionAccepted.set(false);
+            userConnectionAcceptedLock.unlock();
+
+            sendEventToClient(event);
+        }
+    }
+
+    @Override
+    public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
+        if (event.getUsername().equals(this.username)) {
+            //set to false the connection accepted
+            userConnectionAcceptedLock.lock();
+            userConnectionAccepted.set(false);
+            userConnectionAcceptedLock.unlock();
+
             sendEventToClient(event);
         }
     }
@@ -265,15 +314,22 @@ public class VirtualView extends EventSource implements EventListener {
         sendEventToClient(event);
     }
 
+    @Override
+    public void handleEvent(CV_NewGameRequestEvent event) {
+        sendEventToClient(event);
+    }
+
 
     //    NOT IMPLEMENTED
+
+
     @Override
-    public void handleEvent(GameEvent event) {
+    public void handleEvent(CC_ConnectionRequestGameEvent event) {
 
     }
 
     @Override
-    public void handleEvent(CC_ConnectionRequestGameEvent event) {
+    public void handleEvent(CC_NewGameResponseEvent event) {
 
     }
 

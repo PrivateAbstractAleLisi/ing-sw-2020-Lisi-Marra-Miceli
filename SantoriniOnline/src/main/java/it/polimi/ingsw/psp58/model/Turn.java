@@ -13,12 +13,14 @@ public class Turn {
     private int numberOfBuild;
     private int[] startingPosition;
     private BoardManager boardManager;
+    private boolean hasBuiltBeforeMove;
 
     public Turn(Player currentPlayer, BoardManager boardManager) {
         this.currentPlayer = currentPlayer;
         this.numberOfBuild = 0;
         this.numberOfMove = 0;
         this.boardManager = boardManager;
+        this.hasBuiltBeforeMove=false;
     }
 
     /**
@@ -111,5 +113,13 @@ public class Turn {
 
     public void setNumberOfBuild(int numberOfBuild) {
         this.numberOfBuild = numberOfBuild;
+    }
+
+    public boolean getHasBuiltBeforeMove() {
+        return hasBuiltBeforeMove;
+    }
+
+    public void setHasBuiltBeforeMove(boolean hasBuiltBeforeMove) {
+        this.hasBuiltBeforeMove = hasBuiltBeforeMove;
     }
 }

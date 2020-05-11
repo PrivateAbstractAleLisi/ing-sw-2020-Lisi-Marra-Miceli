@@ -1,7 +1,7 @@
 package it.polimi.ingsw.psp58.event.gameEvents.prematch;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * available cards: the list of cards from which the user must choose his god.
 
  */
-public class CV_CardChoiceRequestGameEvent extends GameEvent {
+public class CV_CardChoiceRequestGameEvent extends ViewGameEvent {
 
     private List <CardEnum> availableCards;
     private String username;
@@ -33,7 +33,7 @@ public class CV_CardChoiceRequestGameEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
     }
 }

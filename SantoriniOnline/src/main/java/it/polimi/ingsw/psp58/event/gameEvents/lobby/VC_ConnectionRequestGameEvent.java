@@ -1,9 +1,9 @@
 package it.polimi.ingsw.psp58.event.gameEvents.lobby;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 
-public class VC_ConnectionRequestGameEvent extends GameEvent {
+public class VC_ConnectionRequestGameEvent extends ControllerGameEvent {
 
     private final String IP;
     private final int port;
@@ -28,8 +28,9 @@ public class VC_ConnectionRequestGameEvent extends GameEvent {
         return username;
     }
 
+
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ControllerListener listener) {
         listener.handleEvent(this);
     }
 }

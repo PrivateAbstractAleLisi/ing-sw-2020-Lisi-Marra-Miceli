@@ -1,25 +1,25 @@
 package it.polimi.ingsw.psp58.controller;
 
 import com.google.gson.Gson;
-import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
-import it.polimi.ingsw.psp58.event.core.EventListener;
+import it.polimi.ingsw.psp58.auxiliary.IslandData;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
-import it.polimi.ingsw.psp58.event.core.ListenerType;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
 import it.polimi.ingsw.psp58.model.*;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
+import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
 import it.polimi.ingsw.psp58.exceptions.WinningException;
+import it.polimi.ingsw.psp58.model.*;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
-import it.polimi.ingsw.psp58.auxiliary.IslandData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ import static it.polimi.ingsw.psp58.model.gamemap.Worker.IDs;
  * This class filters VirtualView events, it creates a turn(on it.polimi.ingsw.sp58.model) for current player and manages it
  */
 
-public class TurnController extends EventSource implements EventListener {
+public class TurnController extends EventSource implements ControllerListener {
 
     private Map<Integer, Player> turnSequence;
     private int currentTurnIndex;
@@ -93,7 +93,7 @@ public class TurnController extends EventSource implements EventListener {
     private void sendNewTurnEvent() {
         List<String> turnList = getCurrentTurnListUsername();
         CV_NewTurnEvent event = new CV_NewTurnEvent("is your turn!", currentPlayer.getUsername(), turnList);
-        notifyAllObserverByType(ListenerType.VIEW, event);
+        notifyAllObserverByType(VIEW, event);
     }
 
     /**
@@ -183,16 +183,25 @@ public class TurnController extends EventSource implements EventListener {
         }
     }
 
-    public void checkLose(List<TurnAction> availableActions, String player) {
+    public boolean checkLose(List<TurnAction> availableActions, String player) {
         if (availableActions.isEmpty()) { //the player has no actions possibles so he loses
             lose(player);
+            return true;
         }
+        return false;
     }
 
     public boolean canPassTurn() {
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
-        return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0 && !isPrometheus) ||
-                (isPrometheus && (currentTurnInstance.getNumberOfMove() == 1 && currentTurnInstance.getNumberOfBuild() >= 1));
+        if (isPrometheus) {
+            //if is Prometheus, check more things
+            boolean hasBuiltBeforeMove = currentTurnInstance.getHasBuiltBeforeMove();
+            boolean normalValidTurn = currentTurnInstance.getNumberOfBuild() == 1 && !hasBuiltBeforeMove;
+            boolean powerValidTurn = currentTurnInstance.getNumberOfBuild() == 2 && hasBuiltBeforeMove;
+
+            return (currentTurnInstance.getNumberOfMove() == 1 && (normalValidTurn || powerValidTurn));
+        }
+        return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0);
     }
 
     private void sendCommandRequest(String actingPlayer) {
@@ -223,7 +232,7 @@ public class TurnController extends EventSource implements EventListener {
 
         //Check if the player can BUILD and set the possible builds
         if ((behaviour.getBlockPlacementLeft() > 0) &&
-                ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0)))) { //BUILD may be a valid action
+                ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0) && (numberOfBuild == 0)))) { //BUILD may be a valid action
 
             setUpAvailableBuild(availableBuildA, availableBuildB);
 
@@ -238,12 +247,12 @@ public class TurnController extends EventSource implements EventListener {
         }
 
         //checks if the player loses or not
-        checkLose(availableActions, actingPlayer);
-
-        //send the it.polimi.ingsw.sp58.event for the command selection
-        CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildA, availableMovementsA,
-                availableBuildB, availableMovementsB, actingPlayer);
-        notifyAllObserverByType(VIEW, requestEvent);
+        if (!checkLose(availableActions, actingPlayer)) {
+            //send the it.polimi.ingsw.sp58.event for the command selection
+            CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildA, availableMovementsA,
+                    availableBuildB, availableMovementsB, actingPlayer);
+            notifyAllObserverByType(VIEW, requestEvent);
+        }
     }
 
     private void nextTurn() {
@@ -267,7 +276,7 @@ public class TurnController extends EventSource implements EventListener {
         for (Player recipient : players) {
             if (!recipient.getUsername().equals(currentPlayerUsername)) {
                 CV_WaitMatchGameEvent requestEvent = new CV_WaitMatchGameEvent("Is the turn of", currentPlayerUsername, recipient.getUsername());
-                notifyAllObserverByType(VIEW, requestEvent);
+                notifyAllObserverByType(VIEW,requestEvent);
             }
         }
         sendIslandUpdate();
@@ -275,7 +284,6 @@ public class TurnController extends EventSource implements EventListener {
         printLogMessage("New turn for " + currentPlayerUsername.toUpperCase());
     }
 
-    //TODO
     private void win(Player winner) {
         List<String> losingPlayers = new ArrayList<>();
         for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
@@ -286,9 +294,12 @@ public class TurnController extends EventSource implements EventListener {
         CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose", winner.getUsername(), losingPlayers);
         notifyAllObserverByType(VIEW, gameOverEvent);
         printLogMessage(winner.getUsername().toUpperCase() + "IS THE WINNER");
+
+        room.setRoomMustBeCleaned(true);
+        CV_NewGameRequestEvent requestEvent = new CV_NewGameRequestEvent("Do you want to play with me again?");
+        notifyAllObserverByType(VIEW, requestEvent);
     }
 
-    //TODO
     private void lose(String player) {
         printLogMessage(player.toUpperCase() + "LOST THE GAME");
         if (numberOfPlayers == 3) {
@@ -299,17 +310,49 @@ public class TurnController extends EventSource implements EventListener {
                     numberOfPlayers = 2;
                 }
             }
+            //removes the workers of that player from the island
+            Player defeatedPlayer = board.getPlayer(player);
+            try {
+                board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.A));
+                board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.B));
+            } catch (InvalidWorkerRemovalException e) {
+                e.printStackTrace();
+                //todo eliminare eccezione
+            }
+
             List<String> losers = new ArrayList<String>();
             losers.add(player);
             CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose", null, losers);
-            notifyAllObserverByType(VIEW, gameOverEvent);
+            notifyAllObserverByType(VIEW,gameOverEvent);
 
+            removePlayerFromGame(player);
+            room.setSpectator(player);
+            nextTurn();
         } else if (numberOfPlayers == 2) {
             if (turnSequence.get(0).getUsername().equals(player)) { //the loser
                 win(turnSequence.get(1)); //the other one wins the game
             } else {
                 win(turnSequence.get(0)); //the other one wins the game
             }
+        }
+    }
+
+    private void removePlayerFromGame(String usernameToRemove) {
+        List<Player> players = getPlayersSequenceAsList();
+        Player playerToRemove = board.getPlayer(usernameToRemove);
+        players.remove(playerToRemove);
+        Map<Integer, Player> newTurnSequence = new HashMap<Integer, Player>();
+
+        for (int i = 0; i < players.size(); i++) {
+            newTurnSequence.put(i, players.get(i));
+        }
+
+        setTurnSequence(newTurnSequence);
+        setNumberOfPlayers(players.size());
+        if (currentTurnIndex == 0) {
+            currentTurnIndex = numberOfPlayers - 1;
+        } else {
+            currentTurnIndex--;
         }
     }
 
@@ -327,17 +370,15 @@ public class TurnController extends EventSource implements EventListener {
      * invoked by the virtual it.polimi.ingsw.sp58.view when a next turn it.polimi.ingsw.sp58.event is called
      */
     private void invokeNextTurn(Player player) {
-        boolean hasAlreadyMovedAndBuilt = false;
         //checks if the player requesting next turn is the one that is playing the turn
         if (currentTurnInstance.getCurrentPlayer().getUsername().equals(player.getUsername())) {
-            hasAlreadyMovedAndBuilt = (currentTurnInstance.getNumberOfMove() > 0
-                    && currentTurnInstance.getNumberOfBuild() > 0);
-            if (hasAlreadyMovedAndBuilt) {
+            if (canPassTurn()) {
                 player.getCard().resetBehaviour();
                 nextTurn();
             } else {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can't pass turn!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
+                sendCommandRequest(player.getUsername());
             }
         }
     }
@@ -345,19 +386,18 @@ public class TurnController extends EventSource implements EventListener {
     public boolean checkIsHisTurn(Player player) {
         if (!player.getUsername().equals(getCurrentPlayerUser())) {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("is not your turn!", player.getUsername());
-            notifyAllObserverByType(VIEW, errorEvent);
+            notifyAllObserverByType(VIEW,errorEvent);
             return false;
-        }
-        else return true;
+        } else return true;
     }
 
     private void invokeMovement(Player player, Worker w, int x, int y) {
 
-        if(checkIsHisTurn(player)) {
+        if (checkIsHisTurn(player)) {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
             if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can move only with the same used during the turn!", player.getUsername());
-                notifyAllObserverByType(VIEW, errorEvent);
+                notifyAllObserverByType(VIEW,errorEvent);
                 sendCommandRequest(player.getUsername());
             } else {
                 //is your turn and your worker is ok, you may try to move:
@@ -375,7 +415,7 @@ public class TurnController extends EventSource implements EventListener {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
 
                     CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("This is a invalid move!", player.getUsername());
-                    notifyAllObserverByType(VIEW, errorEvent);
+                    notifyAllObserverByType(VIEW,errorEvent);
                     sendCommandRequest(player.getUsername());
                 } catch (WinningException e) {
                     win(player);
@@ -387,24 +427,30 @@ public class TurnController extends EventSource implements EventListener {
     private void invokeBuild(Player player, Worker w, BlockTypeEnum block, int x, int y) {
 
         //are you sure it's your turn?
-        if(checkIsHisTurn(player)) {
+        if (checkIsHisTurn(player)) {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
             if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can build only with the same used during the turn!", player.getUsername());
-                notifyAllObserverByType(VIEW, errorEvent);
+                notifyAllObserverByType(VIEW,errorEvent);
                 sendCommandRequest(player.getUsername());
             } else {
                 //is your turn and your worker is ok, you may try build:
                 try {
                     player.getCard().build(w, block, x, y, board.getIsland());
                     currentTurnInstance.setNumberOfBuild(currentTurnInstance.getNumberOfBuild() + 1);
+                    if(currentTurnInstance.getNumberOfMove()==0){
+                        currentTurnInstance.setHasBuiltBeforeMove(true);
+                    }
+
+                    if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(w.getWorkerID());
+
                     sendIslandUpdate();
                     sendCommandRequest(player.getUsername());
                 } catch (InvalidBuildException | IllegalArgumentException e) {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
 
                     CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
-                    notifyAllObserverByType(VIEW, errorEvent);
+                    notifyAllObserverByType(VIEW,errorEvent);
                     sendCommandRequest(player.getUsername());
                 } catch (CloneNotSupportedException e) {
                     throw new RuntimeException("Clone not supported!");
@@ -455,8 +501,7 @@ public class TurnController extends EventSource implements EventListener {
                             printLogMessage("Block to build found: " + blockToBuild);
                         }
                         invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);
-                    }
-                    catch (InvalidBuildException e) {
+                    } catch (InvalidBuildException e) {
                         CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("Automatic block selection failed, please select a valid block", event.fromPlayer);
                         notifyAllObserverByType(VIEW, errorGameEvent);
                         sendCommandRequest(currentPlayer.getUsername());
@@ -474,10 +519,6 @@ public class TurnController extends EventSource implements EventListener {
         }
     }
 
-    @Override
-    public void handleEvent(PlayerDisconnectedGameEvent event) {
-
-    }
 
     /**
      * Print in the Server console a Log from the current Class
@@ -498,10 +539,6 @@ public class TurnController extends EventSource implements EventListener {
     }
 
     //NOT IMPLEMENTED
-    @Override
-    public void handleEvent(GameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
 
     @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
@@ -509,29 +546,10 @@ public class TurnController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(CV_RoomUpdateGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_GameStartedGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_NewTurnEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_IslandUpdateEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_WaitMatchGameEvent event) {
+    public void handleEvent(VC_NewGameResponseEvent event) {
 
     }
+
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
@@ -544,15 +562,10 @@ public class TurnController extends EventSource implements EventListener {
     }
 
     @Override
-    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
+    public void handleEvent(CC_NewGameResponseEvent event) {
+
     }
 
-
-    @Override
-    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
@@ -569,48 +582,11 @@ public class TurnController extends EventSource implements EventListener {
         /* TurnController doesn't have to implement this handleEvent*/
     }
 
-    @Override
-    public void handleEvent(CV_ChallengerChosenEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
 
-    @Override
-    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_GameErrorGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         /* TurnController doesn't have to implement this handleEvent*/
     }
 
-    @Override
-    public void handleEvent(CV_CommandRequestEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_GameOverEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
-
-    @Override
-    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
-    }
 }
