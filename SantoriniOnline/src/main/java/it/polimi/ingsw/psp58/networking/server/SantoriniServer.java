@@ -9,7 +9,7 @@ import java.net.Socket;
 public class SantoriniServer {
 
     public final static int SOCKET_PORT = 7557;
-    public final static int SOCKET_TIMEOUT_S = 12;
+    public final static int SOCKET_TIMEOUT_S = 20;
 
     public static void main(String[] args) throws IOException {
 

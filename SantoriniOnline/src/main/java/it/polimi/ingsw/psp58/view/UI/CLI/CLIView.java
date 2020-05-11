@@ -319,7 +319,7 @@ public class CLIView extends EventSource implements ViewListener {
                 handleEvent(new CV_NewGameRequestEvent(""));
                 return;
         }
-        VC_NewGameResponseEvent responseEvent=new VC_NewGameResponseEvent("", true);
+        VC_NewGameResponseEvent responseEvent = new VC_NewGameResponseEvent("", true);
         client.sendEvent(responseEvent);
     }
 
@@ -528,10 +528,19 @@ public class CLIView extends EventSource implements ViewListener {
     @Override
     public void handleEvent(CV_GameOverEvent event) {
         clearScreen();
-        if (event.getWinner().equals(myUsername)) {
-            MessageUtility.winner();
+        if (event.getWinner() == null) {
+            //if there is no winner it means that only one player lost
+            if (event.getLosers().contains(myUsername)) {
+                MessageUtility.gameOver();
+            } else {
+                MessageUtility.printValidMessage(event.getLosers().get(0) + " has lost the Game!");
+            }
         } else {
-            MessageUtility.gameOver();
+            if (event.getWinner().equals(myUsername)) {
+                MessageUtility.winner();
+            } else {
+                MessageUtility.gameOver();
+            }
         }
         try {
             TimeUnit.SECONDS.sleep(4);
