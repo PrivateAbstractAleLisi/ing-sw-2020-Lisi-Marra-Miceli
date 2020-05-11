@@ -1,16 +1,16 @@
 package it.polimi.ingsw.psp58.event.gameEvents.prematch;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 
-public class VC_ChallengerChosenFirstPlayerEvent extends GameEvent {
+public class VC_ChallengerChosenFirstPlayerEvent extends ControllerGameEvent {
 
     public VC_ChallengerChosenFirstPlayerEvent(String username) {
         super(username);
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ControllerListener listener) {
         listener.handleEvent(this);
     }
 

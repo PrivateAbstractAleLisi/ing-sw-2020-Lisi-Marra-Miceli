@@ -1,14 +1,13 @@
-package it.polimi.ingsw.psp58.event;
+package it.polimi.ingsw.psp58.event.gameEvents;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
 
-public class PlayerDisconnectedGameEvent extends GameEvent {
+public class PlayerDisconnectedViewEvent extends ViewGameEvent {
 
     String disconnectedUsername;
     String reason;
 
-    public PlayerDisconnectedGameEvent(String description, String disconnectedUsername, String reason) {
+    public PlayerDisconnectedViewEvent(String description, String disconnectedUsername, String reason) {
         super(description);
         this.disconnectedUsername = disconnectedUsername;
         this.reason = reason;
@@ -23,7 +22,7 @@ public class PlayerDisconnectedGameEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
     }
 }

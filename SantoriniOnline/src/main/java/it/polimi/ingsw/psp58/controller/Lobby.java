@@ -1,18 +1,14 @@
 package it.polimi.ingsw.psp58.controller;
 
-import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_NewGameRequestEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_NewGameResponseEvent;
-import it.polimi.ingsw.psp58.exceptions.NotFreeRoomAvailableException;
-import it.polimi.ingsw.psp58.event.core.EventListener;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
-import it.polimi.ingsw.psp58.event.core.ListenerType;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
-import it.polimi.ingsw.psp58.event.gameEvents.match.*;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gameEvents.match.VC_PlayerCommandGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerCardsChosenEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerChosenFirstPlayerEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerCardChosenEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEvent;
+import it.polimi.ingsw.psp58.exceptions.NotFreeRoomAvailableException;
 import it.polimi.ingsw.psp58.exceptions.RoomNotFoundException;
 import it.polimi.ingsw.psp58.exceptions.UserNotFoundException;
 import it.polimi.ingsw.psp58.view.VirtualView;
@@ -22,10 +18,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
+
 /**
  * Handle the connections to the game, create the Rooms and start PreGame and Game, implements the Singleton Pattern.
  */
-public class Lobby extends EventSource implements EventListener {
+public class Lobby extends EventSource implements ControllerListener {
 
     /* ----------------------------------------------------------------------------------------------
                                          SINGLETON IMPLEMENTATION
@@ -119,27 +117,25 @@ public class Lobby extends EventSource implements EventListener {
                                   SYNCHRONIZED AND PUBLIC METHODS IMPLEMENTATION
        ----------------------------------------------------------------------------------------------*/
 
-    /**
-     * This method attach an {@link EventListener} Object to this Lobby.
-     *
-     * @param type     the category in which the Listener will be registered.
-     * @param listener the listener that will be registered.
-     */
-    @Override
-    public synchronized void attachListenerByType(ListenerType type, EventListener listener) {
-        super.attachListenerByType(type, listener);
-    }
-
-    /**
-     * This method detach an {@link EventListener} Object to this Lobby.
-     *
-     * @param type     the category from which the listener will be detached.
-     * @param listener the listener that will be detached.
-     */
-    @Override
-    public synchronized void detachListenerByType(ListenerType type, EventListener listener) {
-        super.detachListenerByType(type, listener);
-    }
+//    /**
+//     * This method attach an {@link EventListener} Object to this Lobby.
+//     *
+//     * @param listener the listener that will be registered.
+//     */
+//    @Override
+//    public synchronized void attachListener(ListenerType type, EventListener listener) {
+//        super.attachListenerByType(type, listener);
+//    }
+//
+//    /**
+//     * This method detach an {@link EventListener} Object to this Lobby.
+//     *
+//     * @param listener the listener that will be detached.
+//     */
+//    @Override
+//    public synchronized void detachListener(ListenerType type,EventListener listener) {
+//        super.detachListenerByType(type, listener);
+//    }
 
     /**
      * This method disconnect the given Username from the server and, if the player was in a Room, clean the Room too.
@@ -337,7 +333,7 @@ public class Lobby extends EventSource implements EventListener {
             canCreateNewRoom.set(false);
             //todo usare userIP e userPort??
             CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert the desired size of the room: ", username);
-            notifyAllObserverByType(ListenerType.VIEW, request);
+            notifyAllObserverByType(VIEW, request);
         } finally {
             creatingRoomLock.unlock();
         }
@@ -345,12 +341,12 @@ public class Lobby extends EventSource implements EventListener {
 
     private void sendConnectionRefusedEvent(CC_ConnectionRequestGameEvent event, String errCode, String errorMessage) {
         CV_ConnectionRejectedErrorGameEvent msgError = new CV_ConnectionRejectedErrorGameEvent("", errCode, errorMessage, event.getUserIP(), event.getUserPort(), event.getUsername());
-        notifyAllObserverByType(ListenerType.VIEW, msgError);
+        notifyAllObserverByType(VIEW, msgError);
     }
 
     private void sendConnectionRefusedEvent(CC_NewGameResponseEvent event, String errCode, String errorMessage) {
         CV_ReconnectionRejectedErrorGameEvent msgError = new CV_ReconnectionRejectedErrorGameEvent("", errCode, errorMessage, event.getUsername());
-        notifyAllObserverByType(ListenerType.VIEW, msgError);
+        notifyAllObserverByType(VIEW, msgError);
     }
 
 
@@ -585,60 +581,21 @@ public class Lobby extends EventSource implements EventListener {
                                         METHODS NOT IMPLEMENTED
        ----------------------------------------------------------------------------------------------*/
 
-    @Override
-    public void handleEvent(CV_RoomUpdateGameEvent event) {
-    }
 
-    @Override
-    public void handleEvent(CV_GameStartedGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_NewTurnEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_IslandUpdateEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_WaitMatchGameEvent event) {
-
-    }
 
     @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
 
     }
 
-    @Override
-    public void handleEvent(PlayerDisconnectedGameEvent event) {
 
-    }
 
-    @Override
-    public void handleEvent(GameEvent event) {
-    }
 
     @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
     }
 
-    @Override
-    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-    }
 
-    @Override
-    public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
-    }
-
-    @Override
-    public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
-
-    }
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
@@ -652,58 +609,17 @@ public class Lobby extends EventSource implements EventListener {
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
     }
 
-    @Override
-    public void handleEvent(CV_ChallengerChosenEvent event) {
 
-    }
-
-    @Override
-    public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_WaitPreMatchGameEvent event) {
-
-    }
 
     @Override
     public void handleEvent(VC_NewGameResponseEvent event) {
 
     }
 
-    @Override
-    public void handleEvent(CV_GameErrorGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-
-    }
 
     @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
 
     }
 
-    @Override
-    public void handleEvent(CV_CommandRequestEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_GameOverEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(CV_NewGameRequestEvent event) {
-
-    }
 }

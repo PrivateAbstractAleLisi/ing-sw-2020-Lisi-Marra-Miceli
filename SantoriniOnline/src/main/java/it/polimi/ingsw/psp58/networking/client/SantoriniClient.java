@@ -2,8 +2,9 @@ package it.polimi.ingsw.psp58.networking.client;
 
 import it.polimi.ingsw.psp58.auxiliary.ANSIColors;
 import it.polimi.ingsw.psp58.event.core.EventSource;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.PingEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.MessageUtility;
 
@@ -113,11 +114,11 @@ public class SantoriniClient extends EventSource implements Runnable {
         }
     }
 
-    public void sendEvent(GameEvent event) {
+    public void sendEvent(ControllerGameEvent event) {
 
         if (!connectionClosed) {
             try {
-                out.writeObject(event); //it.polimi.ingsw.sp58.event is serializable
+                out.writeObject(event); //event is serializable
                 out.flush();
             } catch (IOException e) {
                 System.out.println("Unable to send it.polimi.ingsw.sp58.event to server");
@@ -134,7 +135,7 @@ public class SantoriniClient extends EventSource implements Runnable {
                 if (object instanceof PingEvent) {
 
                 } else {
-                    GameEvent event = (GameEvent) object;
+                    ViewGameEvent event = (ViewGameEvent) object;
 
                     notifyAllObserverByType(VIEW, event);
                 }

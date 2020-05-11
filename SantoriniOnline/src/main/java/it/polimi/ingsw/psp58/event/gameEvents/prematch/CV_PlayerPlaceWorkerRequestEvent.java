@@ -1,10 +1,10 @@
 package it.polimi.ingsw.psp58.event.gameEvents.prematch;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
-public class CV_PlayerPlaceWorkerRequestEvent extends GameEvent {
+public class CV_PlayerPlaceWorkerRequestEvent extends ViewGameEvent {
     private String actingPlayer;
     private String islandData;
     private Worker.IDs workerToPlace;
@@ -21,7 +21,7 @@ public class CV_PlayerPlaceWorkerRequestEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
     }
 
