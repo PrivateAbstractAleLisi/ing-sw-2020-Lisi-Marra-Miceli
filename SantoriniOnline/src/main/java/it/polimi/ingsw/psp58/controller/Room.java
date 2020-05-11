@@ -1,6 +1,7 @@
 package it.polimi.ingsw.psp58.controller;
 
 import it.polimi.ingsw.psp58.event.core.EventSource;
+import it.polimi.ingsw.psp58.event.core.ListenerType;
 import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_RoomUpdateGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameStartedGameEvent;
@@ -138,8 +139,8 @@ public class Room extends EventSource {
 
         List<VirtualView> virtualViewList = getVirtualViewList();
         for (VirtualView virtualView : virtualViewList) {
-            preGame.detachListenerByType(ListenerType.VIEW, virtualView);
-            virtualView.detachListenerByType(ListenerType.VIEW, preGame);
+            preGame.detachListenerByType(VIEW, virtualView);
+            virtualView.detachListenerByType(CONTROLLER, preGame);
         }
         preGame = null;
 
