@@ -1,18 +1,14 @@
 package it.polimi.ingsw.psp58.view.UI.GUI;
 
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
-import it.polimi.ingsw.psp58.controller.Lobby;
-import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.*;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.ConnectionSceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.StartingSceneController;
 import javafx.application.Application;
@@ -24,7 +20,7 @@ import java.io.IOException;
 
 
 
-public class GUI extends Application implements EventListener {
+public class GUI extends Application implements ViewListener {
 
     private Stage stage;
 
@@ -93,7 +89,7 @@ public class GUI extends Application implements EventListener {
         stage.show();
     }
 
-    public void sendEvent(GameEvent event){
+    public void sendEvent(ControllerGameEvent event){
         client.sendEvent(event);
     }
 
@@ -175,7 +171,7 @@ public class GUI extends Application implements EventListener {
 
         getStartingSceneController().enableAllLoginFields();
         //notify the error on screen
-         Message.show(event.getErrorMessage());
+        Message.show(event.getErrorMessage());
 
         try {
             Thread.sleep(1000);
@@ -186,7 +182,12 @@ public class GUI extends Application implements EventListener {
     }
 
     @Override
-    public void handleEvent(GameEvent event) {
+    public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_NewGameRequestEvent event) {
 
     }
 
@@ -196,11 +197,9 @@ public class GUI extends Application implements EventListener {
     }
 
     @Override
-    public void handleEvent(CC_ConnectionRequestGameEvent event) {
+    public void handleEvent(PlayerDisconnectedViewEvent event) {
 
     }
-
-
 
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
@@ -216,16 +215,6 @@ public class GUI extends Application implements EventListener {
         System.out.println("room received");
         changeScene(lobbyScene);
         lobbySceneController.update(event);
-
-    }
-
-    @Override
-    public void handleEvent(VC_ConnectionRequestGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
 
     }
 
@@ -251,26 +240,6 @@ public class GUI extends Application implements EventListener {
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_PlayerCardChosenEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
 
     }
 
@@ -303,16 +272,5 @@ public class GUI extends Application implements EventListener {
     public void handleEvent(CV_WaitMatchGameEvent event) {
 
     }
-
-    @Override
-    public void handleEvent(VC_PlayerCommandGameEvent event) {
-
-    }
-
-    @Override
-    public void handleEvent(PlayerDisconnectedGameEvent event) {
-
-    }
-
 
 }

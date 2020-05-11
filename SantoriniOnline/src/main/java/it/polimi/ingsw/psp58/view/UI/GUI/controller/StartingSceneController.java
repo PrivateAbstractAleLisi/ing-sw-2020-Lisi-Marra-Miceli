@@ -1,29 +1,16 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
-import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
-import it.polimi.ingsw.psp58.event.gameEvents.match.*;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEvent;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.sql.Time;
-import java.util.concurrent.TimeUnit;
 
 public class StartingSceneController {
     private GUI gui;
