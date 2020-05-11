@@ -1,9 +1,9 @@
 package it.polimi.ingsw.psp58.event.gameEvents.lobby;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
-public class CV_RoomUpdateGameEvent extends GameEvent {
+public class CV_RoomUpdateGameEvent extends ViewGameEvent {
 
     private final String [] usersInRoom;
     private final int roomSize;
@@ -23,7 +23,7 @@ public class CV_RoomUpdateGameEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
     }
 }

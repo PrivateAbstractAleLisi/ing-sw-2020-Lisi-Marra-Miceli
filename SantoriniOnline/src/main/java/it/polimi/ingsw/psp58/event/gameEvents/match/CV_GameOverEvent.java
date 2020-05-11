@@ -1,11 +1,11 @@
 package it.polimi.ingsw.psp58.event.gameEvents.match;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 import java.util.List;
 
-public class CV_GameOverEvent extends GameEvent {
+public class CV_GameOverEvent extends ViewGameEvent {
     private final String winner;
     private final List<String> losers;
 
@@ -16,7 +16,7 @@ public class CV_GameOverEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
     }
 

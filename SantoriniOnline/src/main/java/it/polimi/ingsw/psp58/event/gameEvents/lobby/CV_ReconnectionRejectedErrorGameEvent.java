@@ -1,11 +1,9 @@
 package it.polimi.ingsw.psp58.event.gameEvents.lobby;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
-import java.net.InetAddress;
-
-public class CV_ReconnectionRejectedErrorGameEvent extends GameEvent {
+public class CV_ReconnectionRejectedErrorGameEvent extends ViewGameEvent {
 
     private final String errorMessage;
     private final String errorCode;
@@ -34,8 +32,8 @@ public class CV_ReconnectionRejectedErrorGameEvent extends GameEvent {
         return username;
     }
 
-    @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
     }
+
 }

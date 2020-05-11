@@ -1,13 +1,13 @@
 package it.polimi.ingsw.psp58.controller;
 
-import it.polimi.ingsw.psp58.event.PlayerDisconnectedGameEvent;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.core.ListenerType;
+import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_RoomUpdateGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameStartedGameEvent;
+import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
 import it.polimi.ingsw.psp58.model.BoardManager;
 import it.polimi.ingsw.psp58.model.Player;
-import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
 import it.polimi.ingsw.psp58.view.VirtualView;
 
 import javax.naming.LimitExceededException;
@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static it.polimi.ingsw.psp58.event.core.ListenerType.CONTROLLER;
+import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
 public class Room extends EventSource {
 
@@ -47,13 +50,13 @@ public class Room extends EventSource {
     }
 
     public void disconnectAllUsers(String causedByUsername) {
-        PlayerDisconnectedGameEvent disconnectedGameEvent = new PlayerDisconnectedGameEvent("an user has disconnected", causedByUsername,
+        PlayerDisconnectedViewEvent disconnectedGameEvent = new PlayerDisconnectedViewEvent("an user has disconnected", causedByUsername,
                 causedByUsername + " has lost connection to the server ");
 
         preGame = null;
         turnController = null;
 
-        notifyAllObserverByType(ListenerType.VIEW, disconnectedGameEvent);
+        notifyAllObserverByType(VIEW, disconnectedGameEvent);
 
         activeUsers = null;
         virtualViewMap = null;
@@ -66,8 +69,8 @@ public class Room extends EventSource {
             spectator = null;
         }
         VirtualView virtualView = virtualViewMap.get(username);
-        virtualView.detachListenerByType(ListenerType.VIEW, turnController);
-        turnController.detachListenerByType(ListenerType.VIEW, virtualView);
+        virtualView.detachListenerByType(CONTROLLER,turnController);
+        turnController.detachListenerByType(VIEW, virtualView);
 
         virtualViewMap.remove(username);
     }
@@ -84,14 +87,14 @@ public class Room extends EventSource {
 
             this.activeUsers.add(username);
             this.virtualViewMap.put(username, virtualView);
-            attachListenerByType(ListenerType.VIEW, virtualView);
+            attachListenerByType(VIEW, virtualView);
             this.lastOccupiedPosition = activeUsers.size();
 
             //        DEBUG
             printLogMessage("New player " + username.toUpperCase() + " added in the room");
 
             CV_RoomUpdateGameEvent updateEvent = new CV_RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
-            notifyAllObserverByType(ListenerType.VIEW, updateEvent);
+            notifyAllObserverByType(VIEW, updateEvent);
 
 
         } catch (LimitExceededException e) {
@@ -122,8 +125,8 @@ public class Room extends EventSource {
         for (int i = 0; i < SIZE; i++) {
             String tempUser = activeUsers.get(i);
             VirtualView tempVirtualView = virtualViewMap.get(tempUser);
-            tempVirtualView.attachListenerByType(ListenerType.VIEW, preGame);
-            preGame.attachListenerByType(ListenerType.VIEW, tempVirtualView);
+            tempVirtualView.attachListenerByType(CONTROLLER, preGame);
+            preGame.attachListenerByType(VIEW, tempVirtualView);
         }
         startPreGame();
     }
@@ -136,8 +139,8 @@ public class Room extends EventSource {
 
         List<VirtualView> virtualViewList = getVirtualViewList();
         for (VirtualView virtualView : virtualViewList) {
-            preGame.detachListenerByType(ListenerType.VIEW, virtualView);
-            virtualView.detachListenerByType(ListenerType.VIEW, preGame);
+            preGame.detachListenerByType(VIEW, virtualView);
+            virtualView.detachListenerByType(CONTROLLER, preGame);
         }
         preGame = null;
 
@@ -146,11 +149,11 @@ public class Room extends EventSource {
         for (int i = 0; i < SIZE; i++) {
             String tempUser = activeUsers.get(i);
             VirtualView tempVirtualView = virtualViewMap.get(tempUser);
-            tempVirtualView.attachListenerByType(ListenerType.VIEW, turnController);
-            turnController.attachListenerByType(ListenerType.VIEW, tempVirtualView);
+            tempVirtualView.attachListenerByType(CONTROLLER,turnController);
+            turnController.attachListenerByType(VIEW,tempVirtualView);
         }
         CV_GameStartedGameEvent event = new CV_GameStartedGameEvent("", turnSequence.get(0).getUsername());
-        notifyAllObserverByType(ListenerType.VIEW, event);
+        notifyAllObserverByType(VIEW, event);
         turnController.firstTurn();
     }
 
@@ -212,9 +215,9 @@ public class Room extends EventSource {
         List<VirtualView> virtualViewList = getVirtualViewList();
 
         for (VirtualView virtualView : virtualViewList) {
-            turnController.detachListenerByType(ListenerType.VIEW, virtualView);
-            virtualView.detachListenerByType(ListenerType.VIEW, turnController);
-            this.detachListenerByType(ListenerType.VIEW,virtualView);
+            turnController.detachListenerByType(VIEW, virtualView);
+            virtualView.detachListenerByType(CONTROLLER,turnController);
+            this.detachListenerByType(VIEW, virtualView);
         }
 
         Lobby.instance().removeRoom(this);

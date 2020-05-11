@@ -1,11 +1,11 @@
 package it.polimi.ingsw.psp58.event.gameEvents.match;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 import java.util.List;
 
-public class CV_NewTurnEvent extends GameEvent {
+public class CV_NewTurnEvent extends ViewGameEvent {
     private final String currentPlayer;
     private final List<String> turnRotation;
 
@@ -24,7 +24,7 @@ public class CV_NewTurnEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
     }
 }

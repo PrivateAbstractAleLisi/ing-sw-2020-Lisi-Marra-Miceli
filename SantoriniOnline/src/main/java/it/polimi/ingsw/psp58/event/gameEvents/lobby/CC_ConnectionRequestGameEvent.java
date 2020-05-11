@@ -1,12 +1,12 @@
 package it.polimi.ingsw.psp58.event.gameEvents.lobby;
 
-import it.polimi.ingsw.psp58.event.core.EventListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.event.core.ControllerListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.view.VirtualView;
 
 import java.net.InetAddress;
 
-public class CC_ConnectionRequestGameEvent extends GameEvent {
+public class CC_ConnectionRequestGameEvent extends ControllerGameEvent {
 
     private final InetAddress userIP;
     private final int userPort;
@@ -38,7 +38,7 @@ public class CC_ConnectionRequestGameEvent extends GameEvent {
     }
 
     @Override
-    public void notifyHandler(EventListener listener) {
+    public void notifyHandler(ControllerListener listener) {
         listener.handleEvent(this);
     }
 }
