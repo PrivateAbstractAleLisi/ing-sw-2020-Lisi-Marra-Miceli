@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.gluonhq.charm.glisten.layout.Layer?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.ColorAdjust?>
@@ -44,7 +43,6 @@
                               <DropShadow color="#265a87" height="13.0" radius="6.5" spread="0.35" width="15.0" />
                            </effect>
                         </Label>
-                        <Layer layoutX="326.0" layoutY="40.0" />
                         <ImageView fitHeight="47.0" fitWidth="71.0" layoutX="364.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/Exit.png" />
