@@ -23,6 +23,6 @@ public class PlayerDisconnectedViewEvent extends ViewGameEvent {
 
     @Override
     public void notifyHandler(ViewListener listener) {
-
+        listener.handleEvent(this);
     }
 }
