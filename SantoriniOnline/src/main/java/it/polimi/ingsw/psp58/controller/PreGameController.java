@@ -62,10 +62,6 @@ public class PreGameController extends EventSource implements ControllerListener
             }
         }
 
-
-        //DEBUG
-//        System.out.println("Il challenger è "+challenger);
-
         CV_ChallengerChosenEvent event = new CV_ChallengerChosenEvent(challenger, room.getSIZE());
         notifyAllObserverByType(VIEW, event);
         printLogMessage(challenger.toUpperCase() + " is the Challenger");
@@ -110,7 +106,6 @@ public class PreGameController extends EventSource implements ControllerListener
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-        System.out.println("CHALLENGER SCELTO LE CARTE");
         availableCards = event.getCardsChosen();
         for (CardEnum card : availableCards) {
             try {

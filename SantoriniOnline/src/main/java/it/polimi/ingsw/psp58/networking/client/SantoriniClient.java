@@ -132,26 +132,20 @@ public class SantoriniClient extends EventSource implements Runnable {
     public void run() {
         while (true) {
             try {
-                Object object = in.readObject();
-                if (object instanceof PingEvent) {
-                    System.out.println("Ping");
-                } else {
-                    ViewGameEvent event = (ViewGameEvent) object;
-
+                Object received = in.readObject();
+                if (!(received instanceof PingEvent)) {
+                    ViewGameEvent event = (ViewGameEvent) received;
                     notifyAllObserverByType(VIEW, event);
                 }
-
             } catch (SocketTimeoutException e){
-                System.out.println("Error in connection with the server");
+                MessageUtility.displayErrorMessage("Lost connection with the server");
+                connectionClosed = true;
                 closeConnection();
-
             } catch (IOException | ClassNotFoundException e) {
-
                 MessageUtility.displayErrorMessage("Client: Disconnected from the server");
                 connectionClosed = true;
                 closeConnection();
             }
-
         }
     }
 
@@ -164,6 +158,5 @@ public class SantoriniClient extends EventSource implements Runnable {
         } finally {
             System.exit(0);
         }
-
     }
 }
