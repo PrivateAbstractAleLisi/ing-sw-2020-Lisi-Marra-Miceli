@@ -24,8 +24,8 @@ public class CV_WaitPreMatchGameEvent extends ViewGameEvent {
     }
 
     @Override
-    public String getEventDecription() {
-        return super.getEventDecription();
+    public String getEventDescription() {
+        return super.getEventDescription();
     }
 
     public String getActingPlayer() {

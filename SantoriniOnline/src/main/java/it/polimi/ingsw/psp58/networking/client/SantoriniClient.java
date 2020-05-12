@@ -14,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +30,7 @@ public class SantoriniClient extends EventSource implements Runnable {
     private ObjectOutputStream out;
     private Socket serverSocket;
     public static final int SERVER_PORT=7557;
+    public final static int SOCKET_TIMEOUT_S = 20;
 
     private boolean connectionClosed = false;
 
@@ -61,6 +63,7 @@ public class SantoriniClient extends EventSource implements Runnable {
         //Open a connection with the server
         try {
             serverSocket = new Socket(IP, SERVER_PORT);
+            serverSocket.setSoTimeout(SOCKET_TIMEOUT_S * 1000);
         } catch (IOException e) {
             System.err.println("Client: Unable to open a socket");
             e.printStackTrace();
@@ -91,10 +94,8 @@ public class SantoriniClient extends EventSource implements Runnable {
                     finally {
                         Thread.currentThread().interrupt();
                     }
-
                 }
             };
-
             ping.start();
 
         } catch (UnknownHostException e) {
@@ -133,12 +134,16 @@ public class SantoriniClient extends EventSource implements Runnable {
             try {
                 Object object = in.readObject();
                 if (object instanceof PingEvent) {
-
+                    System.out.println("Ping");
                 } else {
                     ViewGameEvent event = (ViewGameEvent) object;
 
                     notifyAllObserverByType(VIEW, event);
                 }
+
+            } catch (SocketTimeoutException e){
+                System.out.println("Error in connection with the server");
+                closeConnection();
 
             } catch (IOException | ClassNotFoundException e) {
 
@@ -148,7 +153,6 @@ public class SantoriniClient extends EventSource implements Runnable {
             }
 
         }
-
     }
 
     public void closeConnection() {

@@ -42,6 +42,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     public void run() {
         try {
             handleClientConnection();
+
         } catch (IOException | ClassNotFoundException e) { //TODO Disconnects?
             connectionLost("client disconnected, socket error");
             e.printStackTrace();
@@ -106,6 +107,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
             e.printStackTrace();
         }
 
+        startPing();
 
         //read further events
         GameEvent received = null;
@@ -138,6 +140,31 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
                 clientSocket.close();
             }
         }
+    }
+
+    public void startPing(){
+        Thread ping = new Thread() {
+            public void run() {
+
+                try {
+                    int counter=0;
+                    while (true) {
+                        Thread.sleep(5000);
+                        output.writeObject(new PingEvent("Ping #"+counter));
+                        counter++;
+                    }
+                } catch (InterruptedException  e) {
+                    e.printStackTrace();
+                }catch (IOException e){
+                    System.out.println("Unable to send event to client");
+                }
+                finally {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        };
+
+        ping.start();
     }
 
     public void sendEvent(GameEvent event){
