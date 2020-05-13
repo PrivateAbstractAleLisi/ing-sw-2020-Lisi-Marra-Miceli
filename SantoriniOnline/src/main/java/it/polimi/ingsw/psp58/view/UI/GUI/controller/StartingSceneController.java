@@ -56,7 +56,10 @@ public class StartingSceneController {
     }
 
     public void onClickEventConnectButton(MouseEvent mouseEvent) {
+        executeClickConnectButton();
+    }
 
+    public void executeClickConnectButton(){
         loadText.setText(updateLoadText("handling connection request"));
 
         loadProgress.setProgress(0.15f);
@@ -68,12 +71,9 @@ public class StartingSceneController {
         boolean localUserIsValid = CLIView.checkLocalUsernameAlphaNumeric(userProposal);
         boolean localIpIsValid = CLIView.checkValidIP(ipField.getText());
 
-
         if (localIpIsValid && localUserIsValid) {
             tryConnection(userProposal);
         }
-
-
     }
 
     private void tryConnection(String userProposal) {

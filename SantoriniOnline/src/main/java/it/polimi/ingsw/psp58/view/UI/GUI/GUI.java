@@ -236,6 +236,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
+        stage.setResizable(true);
         System.out.println("room received");
         preGameSceneController.update(event);
         changeScene(preGameScene);

@@ -1,14 +1,18 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_ChallengerChosenEvent;
+import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class PreGameSceneController {
@@ -16,13 +20,13 @@ public class PreGameSceneController {
 
     //CENTER
     public Text chooseXCardText;
-    public GridPane staticGripPane;
+    public GridPane staticGridPane;
 
     //LEFT
     public HBox player1;
 
     //RIGHT
-    public Button  confirmButton;
+    public Button confirmButton;
 
 
     public void setGui(GUI gui) {
@@ -34,32 +38,61 @@ public class PreGameSceneController {
         System.out.println("You're the chellenger, chose " + event.getRoomSize() + " cards");
         setTitleCenter("CHOOSE " + event.getRoomSize() + " CARDS");
 
-//        Text player1ID = (Text) player1.getChildren().get(0);
-//        player1ID.setText("FIGA HO MODIFICATO IL PLAYER1");
+//        ObservableList<Node> children = staticGripPane.getChildren();
+//        for(Node node : children){
+//            if(node instanceof HBox){
+//                HBox hBox = (HBox) node;
+//                ImageView image = (ImageView) hBox.getChildren().get(0);
+//                image.setImage(new Image(CardEnum.ARTEMIS.getImgUrl()));
+//            }
+//        }
 
-        ObservableList<Node> children = staticGripPane.getChildren();
-        for(Node node : children){
-            if(node instanceof HBox){
-                HBox hBox = (HBox) node;
-                ImageView image = (ImageView) hBox.getChildren().get(0);
-                image.setImage(new Image("/images/gods/full_0000s_0001_god_and_hero_cards_0059_Castor_and_Pollux.png"));
-            }
-        }
+        ObservableList<Node> children = staticGridPane.getChildren();
+        children.set(0,createCardHBOX(CardEnum.PAN));
+
     }
 
     private void setTitleCenter(String title) {
         chooseXCardText.setText(title.toUpperCase());
     }
 
-    private void updateCards(){
+    private void updateCards() {
 
     }
 
-    private void enableConfirmButton(){
+    private HBox createCardHBOX(CardEnum card) {
+        HBox hBox = new HBox();
+        VBox vBox = new VBox();
+
+        hBox.setId(card.getName());
+        hBox.setAlignment(Pos.CENTER);
+        hBox.setSpacing(10);
+        hBox.getStyleClass().add("card-hbox");
+
+        ImageView imageView = new ImageView(new Image(card.getImgUrl()));
+        imageView.setPreserveRatio(true);
+        imageView.setFitHeight(170);
+        imageView.setCursor(Cursor.HAND);
+        hBox.getChildren().add(imageView);
+
+        Text cardName = new Text(card.getName());
+        Text cardDescription = new Text(card.getDescription());
+        vBox.setPrefHeight(200);
+        vBox.setPrefWidth(100);
+        vBox.setSpacing(10);
+        vBox.getChildren().add(cardName);
+        vBox.getChildren().add(cardDescription);
+
+
+        hBox.getChildren().add(vBox);
+        return hBox;
+    }
+
+    private void enableConfirmButton() {
         confirmButton.setDisable(false);
     }
 
-    private void disableConfirmButton(){
+    private void disableConfirmButton() {
         confirmButton.setDisable(true);
     }
 }

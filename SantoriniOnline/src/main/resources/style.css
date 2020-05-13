@@ -1,0 +1,26 @@
+.split-pane-divider {
+    -fx-background-color: transparent;
+}
+
+.left-pane{
+    -fx-background-color: rgba(0,168,355,0.08);
+    -fx-background-radius: 12;
+}
+
+.right-pane{
+    -fx-background-color: rgba(0,168,355,0.08);
+    -fx-background-radius: 12;
+}
+
+.card-hbox{
+    -fx-background-color: rgba(0,168,355,0.08);
+    -fx-background-radius: 12;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical{
+    -fx-background-color: transparent;
+}
