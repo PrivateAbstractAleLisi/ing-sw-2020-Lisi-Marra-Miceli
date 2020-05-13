@@ -59,9 +59,9 @@
          <left>
             <VBox prefHeight="315.0" prefWidth="240.0" BorderPane.alignment="CENTER">
                <children>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="0: 0;">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" >
                      <children>
-                        <VBox blendMode="SRC_ATOP" prefHeight="304.0" prefWidth="218.0" style="0: 0;">
+                        <VBox blendMode="SRC_ATOP" prefHeight="304.0" prefWidth="218.0">
                            <children>
                               <Label alignment="CENTER" prefHeight="24.0" prefWidth="222.0" text="CONNECTED PLAYERS:" textAlignment="CENTER" textFill="WHITE">
                                  <opaqueInsets>

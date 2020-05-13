@@ -8,16 +8,13 @@ import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.StartingSceneController;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
 
 
 public class GUI extends Application implements ViewListener {
@@ -46,7 +43,8 @@ public class GUI extends Application implements ViewListener {
     private Scene boardScene;
     private BoardSceneController boardSceneController;
 
-
+    private Scene preGameScene;
+    private PreGameSceneController preGameSceneController;
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -77,19 +75,25 @@ public class GUI extends Application implements ViewListener {
         FXMLLoader lobbySceneLoader = new FXMLLoader(
                 getClass().getResource("/scenes/LobbyScene.fxml"));
         lobbyScene = new Scene(lobbySceneLoader.load());
-        lobbySceneController =lobbySceneLoader.getController();
+        lobbySceneController = lobbySceneLoader.getController();
         lobbySceneController.setGui(this);
 
+        //set up the testLoad
+        FXMLLoader preGameSceneLoader = new FXMLLoader(
+                getClass().getResource("/scenes/PreGameScene.fxml"));
+        preGameScene = new Scene(preGameSceneLoader.load());
+        preGameSceneController = preGameSceneLoader.getController();
+        preGameSceneController.setGui(this);
     }
 
-    public void changeScene(Scene scene){
+    public void changeScene(Scene scene) {
         stage.close();
         stage.setTitle("Santorini Online");
         stage.setScene(scene);
         stage.show();
     }
 
-    public void sendEvent(ControllerGameEvent event){
+    public void sendEvent(ControllerGameEvent event) {
         client.sendEvent(event);
     }
 
@@ -116,7 +120,6 @@ public class GUI extends Application implements ViewListener {
     public void setStartingSceneController(StartingSceneController startingSceneController) {
         this.startingSceneController = startingSceneController;
     }
-
 
 
     public void setLobbyScene(Scene roomScene) {
@@ -165,7 +168,6 @@ public class GUI extends Application implements ViewListener {
     }
 
 
-
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
 
@@ -203,7 +205,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-        int number= Message.askRoomSize("You're the first player, choose the size of the room:");
+        int number = Message.askRoomSize("You're the first player, choose the size of the room:");
         startingSceneController.complete();
         System.out.println(number);
         VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", number);
@@ -213,9 +215,8 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
         System.out.println("room received");
-        changeScene(lobbyScene);
         lobbySceneController.update(event);
-
+        changeScene(lobbyScene);
     }
 
     @Override
@@ -235,7 +236,9 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
-
+        System.out.println("room received");
+        preGameSceneController.update(event);
+        changeScene(preGameScene);
     }
 
     @Override

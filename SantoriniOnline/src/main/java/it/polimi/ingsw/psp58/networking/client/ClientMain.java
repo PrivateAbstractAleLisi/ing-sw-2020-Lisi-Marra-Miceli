@@ -9,10 +9,10 @@ public class ClientMain {
     public static void main(String[] args) {
         //starts the cli
         CLIView cli = new CLIView();
-        cli.start();
+//        cli.start();
 
 //        //starts the gui
-//      Application.launch(GUI.class);
+      Application.launch(GUI.class);
 
 
     }
