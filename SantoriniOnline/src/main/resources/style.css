@@ -30,6 +30,16 @@
     -fx-background-color: transparent;
 }
 
+.wait-pane{
+    -fx-background-color: rgba(0,168,355,0.30);
+    -fx-background-radius: 12;
+}
+
+.card-unavailable-overlay{
+    -fx-background-color: grey;
+    -fx-background-radius: 12;
+}
+
 .scroll-bar:vertical{
     -fx-background-color: transparent;
 }

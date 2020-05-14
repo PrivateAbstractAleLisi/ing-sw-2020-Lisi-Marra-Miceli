@@ -23,6 +23,7 @@ public class CV_CardChoiceRequestGameEvent extends ViewGameEvent {
         super(description);
         this.availableCards = availableCards;
         this.username=username;
+        this.usedCards=null;
     }
     public CV_CardChoiceRequestGameEvent(String description, List<CardEnum> availableCards, List<CardEnum> usedCards, String username) {
         super(description);

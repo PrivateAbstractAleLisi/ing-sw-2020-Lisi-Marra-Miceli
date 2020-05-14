@@ -97,12 +97,16 @@ public class GUI extends Application implements ViewListener {
         availableCards.add(CardEnum.APOLLO);
         availableCards.add(CardEnum.PAN);
         ArrayList<CardEnum> unavailableCards = new ArrayList<CardEnum>();
-        availableCards.add(CardEnum.ATLAS);
+        unavailableCards.add(CardEnum.ATLAS);
 
         stage.setScene(preGameScene);
         stage.setResizable(true);
         stage.show();
-        preGameSceneController.update(new CV_CardChoiceRequestGameEvent("", availableCards, unavailableCards, "Fake"));
+
+
+//        preGameSceneController.update(new CV_WaitPreMatchGameEvent("","","", "Gabriele","CHALLENGER_CARDS"));
+//        preGameSceneController.update(new CV_CardChoiceRequestGameEvent("", availableCards, unavailableCards, "Fake"));
+//        preGameSceneController.update(new CV_CardChoiceRequestGameEvent("", availableCards, "Fake"));
     }
 
     public void changeScene(Scene scene) {
@@ -139,7 +143,6 @@ public class GUI extends Application implements ViewListener {
     public void setStartingSceneController(StartingSceneController startingSceneController) {
         this.startingSceneController = startingSceneController;
     }
-
 
     public void setLobbyScene(Scene roomScene) {
         this.lobbyScene = roomScene;
@@ -250,7 +253,8 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-
+        System.out.println("I have to choose my card!");
+        preGameSceneController.update(event);
     }
 
     @Override
@@ -266,14 +270,17 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
         stage.setResizable(true);
-        System.out.println("room received");
+        System.out.println("I'm the challenger");
         preGameSceneController.update(event);
         changeScene(preGameScene);
     }
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-
+        stage.setResizable(true);
+        System.out.println("Wait received");
+        preGameSceneController.update(event);
+        changeScene(preGameScene);
     }
 
     @Override
