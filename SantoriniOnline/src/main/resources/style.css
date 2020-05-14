@@ -12,9 +12,18 @@
     -fx-background-radius: 12;
 }
 
-.card-hbox{
-    -fx-background-color: rgba(0,168,355,0.08);
+.challenger-card-hbox{
+    -fx-background-color: rgba(0,168,355,0.10);
     -fx-background-radius: 12;
+}
+
+.player-choise-vbox{
+    -fx-background-color: rgba(0,168,355,0.10);
+    -fx-background-radius: 12;
+}
+
+.player-tile-pane{
+    -fx-background-color: transparent;
 }
 
 .scroll-pane .viewport {
@@ -22,5 +31,9 @@
 }
 
 .scroll-bar:vertical{
+    -fx-background-color: transparent;
+}
+
+.flow-pane {
     -fx-background-color: transparent;
 }

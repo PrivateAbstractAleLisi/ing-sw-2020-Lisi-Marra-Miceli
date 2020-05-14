@@ -6,6 +6,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.*;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
@@ -15,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class GUI extends Application implements ViewListener {
@@ -50,6 +52,7 @@ public class GUI extends Application implements ViewListener {
         Application.launch(args);
     }
 
+    private String myUsername;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -84,10 +87,26 @@ public class GUI extends Application implements ViewListener {
         preGameScene = new Scene(preGameSceneLoader.load());
         preGameSceneController = preGameSceneLoader.getController();
         preGameSceneController.setGui(this);
+
+        //starts with the startingScene
+        stage.setTitle("Santorini Online");
+        preGameSceneController.update(new CV_RoomUpdateGameEvent("", new String[]{"Gabriele", "Matteo", "Ale"}, 3));
+        preGameSceneController.update(new CV_ChallengerChosenEvent("Fake", 2));
+
+        ArrayList<CardEnum> availableCards = new ArrayList<CardEnum>();
+        availableCards.add(CardEnum.APOLLO);
+        availableCards.add(CardEnum.PAN);
+        ArrayList<CardEnum> unavailableCards = new ArrayList<CardEnum>();
+        availableCards.add(CardEnum.ATLAS);
+
+        stage.setScene(preGameScene);
+        stage.setResizable(true);
+        stage.show();
+        preGameSceneController.update(new CV_CardChoiceRequestGameEvent("", availableCards, unavailableCards, "Fake"));
     }
 
     public void changeScene(Scene scene) {
-        stage.close();
+//        stage.close();
         stage.setTitle("Santorini Online");
         stage.setScene(scene);
         stage.show();
@@ -167,6 +186,13 @@ public class GUI extends Application implements ViewListener {
         return boardSceneController;
     }
 
+    public String getMyUsername() {
+        return myUsername;
+    }
+
+    public void setMyUsername(String myUsername) {
+        this.myUsername = myUsername;
+    }
 
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
@@ -216,7 +242,10 @@ public class GUI extends Application implements ViewListener {
     public void handleEvent(CV_RoomUpdateGameEvent event) {
         System.out.println("room received");
         lobbySceneController.update(event);
-        changeScene(lobbyScene);
+        if (stage.getScene().equals(startingScene)) {
+            changeScene(lobbyScene);
+        }
+        preGameSceneController.update(event);
     }
 
     @Override

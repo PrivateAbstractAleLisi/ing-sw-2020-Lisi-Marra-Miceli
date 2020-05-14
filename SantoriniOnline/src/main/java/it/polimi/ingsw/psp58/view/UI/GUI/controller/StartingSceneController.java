@@ -73,6 +73,7 @@ public class StartingSceneController {
 
         if (localIpIsValid && localUserIsValid) {
             tryConnection(userProposal);
+            gui.setUsername(userProposal.toLowerCase());
         }
     }
 
