@@ -24,7 +24,7 @@ public class CV_WaitPreMatchGameEvent extends ViewGameEvent {
         this.actingPlayer = actingPlayer;
         this.recipient = recipient;
         this.challenger = null;
-        this.waitCode = null;
+        this.waitCode = "GENERIC_WAIT";
     }
 
     public CV_WaitPreMatchGameEvent(String description, String actingPlayer, String recipient, String challenger, String waitCode) {

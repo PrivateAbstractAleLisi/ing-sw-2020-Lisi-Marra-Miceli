@@ -35,6 +35,11 @@
     -fx-background-radius: 12;
 }
 
+.glow-back-pane{
+    -fx-background-color: greenyellow;
+    -fx-background-radius: 12;
+}
+
 .card-unavailable-overlay{
     -fx-background-color: grey;
     -fx-background-radius: 12;

@@ -50,12 +50,11 @@
                 </Pane>
             </bottom>
             <center>
-                <VBox alignment="TOP_CENTER" spacing="5.0" styleClass="lighblue-background"
-                      BorderPane.alignment="CENTER">
+                <VBox alignment="TOP_CENTER" spacing="5.0" BorderPane.alignment="CENTER">
                     <children>
                         <HBox alignment="CENTER">
                             <children>
-                                <Text fx:id="chooseXCardText" fill="#023c6f" strokeType="OUTSIDE" strokeWidth="0.0"
+                                <Text fx:id="upperText" fill="#023c6f" strokeType="OUTSIDE" strokeWidth="0.0"
                                       text="PRE - GAME " textAlignment="CENTER" wrappingWidth="880">
                                     <font>
                                         <Font name="Avenir Next Condensed Bold" size="40.0"/>
@@ -70,13 +69,16 @@
                                     <children>
                                         <HBox fx:id="cardChoiceHBox" alignment="CENTER" spacing="30.0">
                                             <children>
-                                                <StackPane fx:id="choiceCard1" prefHeight="150.0" prefWidth="200.0">
+                                                <StackPane prefHeight="150.0" prefWidth="200.0">
                                                     <children>
-                                                        <VBox fx:id="cardChoice_VBox1" alignment="CENTER" spacing="15.0"
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <VBox fx:id="cardChoice_VBox1" alignment="TOP_CENTER"
+                                                              onMouseClicked="#onClickEventPlayerCard" spacing="15.0"
                                                               styleClass="player-choise-vbox" visible="false">
                                                             <children>
-                                                                <ImageView fitWidth="250.0" pickOnBounds="true"
-                                                                           preserveRatio="true">
+                                                                <ImageView disable="true" fitWidth="250.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
                                                                     <image>
                                                                         <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
                                                                     </image>
@@ -84,8 +86,8 @@
                                                                         <Cursor fx:constant="HAND"/>
                                                                     </cursor>
                                                                 </ImageView>
-                                                                <VBox alignment="CENTER" fillWidth="false"
-                                                                      spacing="10.0">
+                                                                <VBox alignment="CENTER" disable="true"
+                                                                      fillWidth="false" spacing="10.0">
                                                                     <children>
                                                                         <Text strokeType="OUTSIDE" strokeWidth="0.0"
                                                                               text="CardOK" textAlignment="CENTER">
@@ -115,18 +117,24 @@
                                                                 <Insets bottom="15.0" left="15.0" right="15.0"
                                                                         top="15.0"/>
                                                             </padding>
+                                                            <cursor>
+                                                                <Cursor fx:constant="HAND"/>
+                                                            </cursor>
                                                         </VBox>
                                                         <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
                                                               styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
                                                 </StackPane>
-                                                <StackPane fx:id="choiceCard2" prefHeight="150.0" prefWidth="200.0">
+                                                <StackPane prefHeight="150.0" prefWidth="200.0">
                                                     <children>
-                                                        <VBox fx:id="cardChoice_VBox2" alignment="CENTER" spacing="15.0"
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <VBox fx:id="cardChoice_VBox2" alignment="TOP_CENTER"
+                                                              onMouseClicked="#onClickEventPlayerCard" spacing="15.0"
                                                               styleClass="player-choise-vbox" visible="false">
                                                             <children>
-                                                                <ImageView fitWidth="250.0" pickOnBounds="true"
-                                                                           preserveRatio="true">
+                                                                <ImageView disable="true" fitWidth="250.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
                                                                     <image>
                                                                         <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
                                                                     </image>
@@ -134,8 +142,8 @@
                                                                         <Cursor fx:constant="HAND"/>
                                                                     </cursor>
                                                                 </ImageView>
-                                                                <VBox alignment="CENTER" fillWidth="false"
-                                                                      spacing="10.0">
+                                                                <VBox alignment="CENTER" disable="true"
+                                                                      fillWidth="false" spacing="10.0">
                                                                     <children>
                                                                         <Text strokeType="OUTSIDE" strokeWidth="0.0"
                                                                               text="CardOK" textAlignment="CENTER">
@@ -165,18 +173,24 @@
                                                                 <Insets bottom="15.0" left="15.0" right="15.0"
                                                                         top="15.0"/>
                                                             </padding>
+                                                            <cursor>
+                                                                <Cursor fx:constant="HAND"/>
+                                                            </cursor>
                                                         </VBox>
                                                         <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
                                                               styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
                                                 </StackPane>
-                                                <StackPane fx:id="choiceCard3" prefHeight="150.0" prefWidth="200.0">
+                                                <StackPane prefHeight="150.0" prefWidth="200.0">
                                                     <children>
-                                                        <VBox fx:id="cardChoice_VBox3" alignment="CENTER" spacing="15.0"
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <VBox fx:id="cardChoice_VBox3" alignment="TOP_CENTER"
+                                                              onMouseClicked="#onClickEventPlayerCard" spacing="15.0"
                                                               styleClass="player-choise-vbox" visible="false">
                                                             <children>
-                                                                <ImageView fitWidth="250.0" pickOnBounds="true"
-                                                                           preserveRatio="true">
+                                                                <ImageView disable="true" fitWidth="250.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
                                                                     <image>
                                                                         <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
                                                                     </image>
@@ -184,8 +198,8 @@
                                                                         <Cursor fx:constant="HAND"/>
                                                                     </cursor>
                                                                 </ImageView>
-                                                                <VBox alignment="CENTER" fillWidth="false"
-                                                                      spacing="10.0">
+                                                                <VBox alignment="CENTER" disable="true"
+                                                                      fillWidth="false" spacing="10.0">
                                                                     <children>
                                                                         <Text strokeType="OUTSIDE" strokeWidth="0.0"
                                                                               text="CardOK" textAlignment="CENTER">
@@ -215,6 +229,9 @@
                                                                 <Insets bottom="15.0" left="15.0" right="15.0"
                                                                         top="15.0"/>
                                                             </padding>
+                                                            <cursor>
+                                                                <Cursor fx:constant="HAND"/>
+                                                            </cursor>
                                                         </VBox>
                                                         <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
                                                               styleClass="card-unavailable-overlay" visible="false"/>
@@ -235,800 +252,965 @@
                                         <FlowPane fx:id="challengerCardsFlowPane" alignment="TOP_CENTER" hgap="10.0"
                                                   styleClass="flow-pane" vgap="10.0">
                                             <children>
-                                                <HBox fx:id="challengerCard01" alignment="CENTER"
-                                                      onMouseClicked="#onClickEventChallengerCard" spacing="12.0"
-                                                      styleClass="challenger-card-hbox">
+                                                <StackPane prefHeight="150.0" prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard02"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="329.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="329.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard03"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="183.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="183.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard04"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="475.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="475.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard05"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="37.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="37.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard06"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="329.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="329.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard07"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="621.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="621.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard08"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="31.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="329.0" layoutY="262.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard09"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="323.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="37.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard10"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="615.0"
-                                                      layoutY="15.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="329.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard11"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="31.0"
-                                                      layoutY="262.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="621.0" layoutY="15.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard12"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="323.0"
-                                                      layoutY="262.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="37.0" layoutY="262.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard13"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="615.0"
-                                                      layoutY="262.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="329.0" layoutY="262.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard14"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="615.0"
-                                                      layoutY="509.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="621.0" layoutY="262.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
-                                                <HBox fx:id="challengerCard15"
-                                                      onMouseClicked="#onClickEventChallengerCard" alignment="CENTER"
-                                                      layoutX="31.0"
-                                                      layoutY="756.0" spacing="12.0" styleClass="challenger-card-hbox">
+                                                </StackPane>
+                                                <StackPane layoutX="183.0" layoutY="509.0" prefHeight="150.0"
+                                                           prefWidth="200.0">
                                                     <children>
-                                                        <ImageView disable="true" fitHeight="217.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
-                                                            </image>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <HBox alignment="CENTER"
+                                                              onMouseClicked="#onClickEventChallengerCard"
+                                                              spacing="12.0" styleClass="challenger-card-hbox">
+                                                            <children>
+                                                                <ImageView disable="true" fitHeight="217.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox disable="true" fillWidth="false" maxWidth="110.0"
+                                                                      prefHeight="200.0" prefWidth="110.0"
+                                                                      spacing="10.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="CardOK">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                        <Text lineSpacing="2.0" strokeType="OUTSIDE"
+                                                                              strokeWidth="0.0"
+                                                                              text="Your Build: Your Worker may build a dome at any level."
+                                                                              wrappingWidth="110.0" VBox.vgrow="ALWAYS">
+                                                                            <VBox.margin>
+                                                                                <Insets/>
+                                                                            </VBox.margin>
+                                                                            <font>
+                                                                                <Font size="13.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                    <opaqueInsets>
+                                                                        <Insets/>
+                                                                    </opaqueInsets>
+                                                                    <HBox.margin>
+                                                                        <Insets/>
+                                                                    </HBox.margin>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="10.0" left="10.0" right="10.0"
+                                                                        top="10.0"/>
+                                                            </padding>
+                                                            <opaqueInsets>
+                                                                <Insets right="10.0"/>
+                                                            </opaqueInsets>
                                                             <cursor>
                                                                 <Cursor fx:constant="HAND"/>
                                                             </cursor>
-                                                        </ImageView>
-                                                        <VBox disable="true" fillWidth="false" maxWidth="110.0"
-                                                              prefHeight="200.0" prefWidth="110.0" spacing="10.0">
-                                                            <children>
-                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      text="CardOK">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                                <Text lineSpacing="2.0" strokeType="OUTSIDE"
-                                                                      strokeWidth="0.0"
-                                                                      text="Your Build: Your Worker may build a dome at any level."
-                                                                      wrappingWidth="110.0" VBox.vgrow="ALWAYS">
-                                                                    <VBox.margin>
-                                                                        <Insets/>
-                                                                    </VBox.margin>
-                                                                    <font>
-                                                                        <Font size="13.0"/>
-                                                                    </font>
-                                                                </Text>
-                                                            </children>
-                                                            <opaqueInsets>
-                                                                <Insets/>
-                                                            </opaqueInsets>
-                                                            <HBox.margin>
-                                                                <Insets/>
-                                                            </HBox.margin>
-                                                        </VBox>
+                                                        </HBox>
+                                                        <Pane layoutX="10.0" layoutY="10.0" opacity="0.6"
+                                                              prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                                                    </padding>
-                                                    <opaqueInsets>
-                                                        <Insets right="10.0"/>
-                                                    </opaqueInsets>
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </HBox>
+                                                </StackPane>
                                             </children>
                                             <padding>
                                                 <Insets left="5.0" right="5.0" top="5.0"/>
@@ -1067,6 +1249,141 @@
                                         </VBox>
                                     </children>
                                 </HBox>
+                                <TilePane fx:id="challengerFirstPlayerPane" alignment="CENTER" layoutX="10.0"
+                                          layoutY="10.0" styleClass="player-tile-pane" visible="false">
+                                    <children>
+                                        <HBox fx:id="challengerFirstPlayerHBox" alignment="CENTER" spacing="30.0">
+                                            <children>
+                                                <StackPane prefHeight="150.0" prefWidth="200.0">
+                                                    <children>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <VBox fx:id="challengerFirstPlayerVBox1" alignment="TOP_CENTER"
+                                                              onMouseClicked="#onClickFirsPlayerChoice" spacing="15.0"
+                                                              styleClass="player-choise-vbox" visible="false">
+                                                            <children>
+                                                                <ImageView disable="true" fitWidth="250.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox alignment="CENTER" prefHeight="200.0"
+                                                                      prefWidth="100.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="PlayerName" textAlignment="CENTER"
+                                                                              wrappingWidth="244.0">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="33.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="15.0" left="15.0" right="15.0"
+                                                                        top="15.0"/>
+                                                            </padding>
+                                                            <cursor>
+                                                                <Cursor fx:constant="HAND"/>
+                                                            </cursor>
+                                                        </VBox>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
+                                                    </children>
+                                                </StackPane>
+                                                <StackPane prefHeight="150.0" prefWidth="200.0">
+                                                    <children>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <VBox fx:id="challengerFirstPlayerVBox2" alignment="TOP_CENTER"
+                                                              onMouseClicked="#onClickFirsPlayerChoice" spacing="15.0"
+                                                              styleClass="player-choise-vbox" visible="false">
+                                                            <children>
+                                                                <ImageView disable="true" fitWidth="250.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox alignment="CENTER" prefHeight="200.0"
+                                                                      prefWidth="100.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="PlayerName" textAlignment="CENTER"
+                                                                              wrappingWidth="244.0">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="33.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="15.0" left="15.0" right="15.0"
+                                                                        top="15.0"/>
+                                                            </padding>
+                                                            <cursor>
+                                                                <Cursor fx:constant="HAND"/>
+                                                            </cursor>
+                                                        </VBox>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
+                                                    </children>
+                                                </StackPane>
+                                                <StackPane prefHeight="150.0" prefWidth="200.0">
+                                                    <children>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="glow-back-pane" visible="false"/>
+                                                        <VBox fx:id="challengerFirstPlayerVBox3" alignment="TOP_CENTER"
+                                                              onMouseClicked="#onClickFirsPlayerChoice" spacing="15.0"
+                                                              styleClass="player-choise-vbox" visible="false">
+                                                            <children>
+                                                                <ImageView disable="true" fitWidth="250.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/gods/full_0000s_0000_god_and_hero_cards_0058_Random.png"/>
+                                                                    </image>
+                                                                    <cursor>
+                                                                        <Cursor fx:constant="HAND"/>
+                                                                    </cursor>
+                                                                </ImageView>
+                                                                <VBox alignment="CENTER" prefHeight="200.0"
+                                                                      prefWidth="100.0">
+                                                                    <children>
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                                              text="PlayerName" textAlignment="CENTER"
+                                                                              wrappingWidth="244.0">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="33.0"/>
+                                                                            </font>
+                                                                        </Text>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="15.0" left="15.0" right="15.0"
+                                                                        top="15.0"/>
+                                                            </padding>
+                                                            <cursor>
+                                                                <Cursor fx:constant="HAND"/>
+                                                            </cursor>
+                                                        </VBox>
+                                                        <Pane opacity="0.6" prefHeight="200.0" prefWidth="200.0"
+                                                              styleClass="card-unavailable-overlay" visible="false"/>
+                                                    </children>
+                                                </StackPane>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </TilePane>
                             </children>
                         </StackPane>
                     </children>
@@ -1087,7 +1404,7 @@
                                 <Insets bottom="10.0" top="18.0"/>
                             </VBox.margin>
                         </Text>
-                        <HBox fx:id="player1" spacing="30.0">
+                        <HBox fx:id="playerName_HBox1" spacing="30.0">
                             <children>
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="1) PLAYER1">
                                     <font>
@@ -1113,7 +1430,7 @@
                                 <Insets left="5.0"/>
                             </opaqueInsets>
                         </HBox>
-                        <HBox fx:id="player2" spacing="30.0">
+                        <HBox fx:id="playerName_HBox2" spacing="30.0">
                             <children>
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="2) PLAYER2">
                                     <font>
@@ -1139,7 +1456,7 @@
                                 <Insets left="5.0"/>
                             </opaqueInsets>
                         </HBox>
-                        <HBox fx:id="player3" spacing="30.0">
+                        <HBox fx:id="playerName_HBox3" spacing="30.0">
                             <children>
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="3) PLAYER3">
                                     <font>
@@ -1186,7 +1503,7 @@
                                         <Font name="Avenir Next Condensed Bold" size="22.0"/>
                                     </font>
                                 </Text>
-                                <Pane fx:id="chosenCard1">
+                                <Pane fx:id="chosenCardPane1">
                                     <children>
                                         <Text fill="#115686" layoutX="61.0" layoutY="31.0" strokeType="OUTSIDE"
                                               strokeWidth="0.0" text="ATLAS" wrappingWidth="85.97477722167969">
@@ -1212,7 +1529,7 @@
                                         </Text>
                                     </children>
                                 </Pane>
-                                <Pane fx:id="chosenCard2">
+                                <Pane fx:id="chosenCardPane2">
                                     <children>
                                         <Text fill="#115686" layoutX="61.0" layoutY="31.0" strokeType="OUTSIDE"
                                               strokeWidth="0.0" text="ATLAS" wrappingWidth="85.97477722167969">
@@ -1238,7 +1555,7 @@
                                         </Text>
                                     </children>
                                 </Pane>
-                                <Pane fx:id="chosenCard3">
+                                <Pane fx:id="chosenCardPane3">
                                     <children>
                                         <Text fill="#115686" layoutX="61.0" layoutY="31.0" strokeType="OUTSIDE"
                                               strokeWidth="0.0" text="Card3" wrappingWidth="85.97477722167969">
@@ -1270,12 +1587,33 @@
                         </VBox>
                         <HBox alignment="CENTER" SplitPane.resizableWithParent="false">
                             <children>
-                                <Button fx:id="confirmButton" defaultButton="true" disable="true"
-                                        mnemonicParsing="false" prefHeight="46.0" prefWidth="114.0" text="CONFIRM">
-                                    <cursor>
-                                        <Cursor fx:constant="HAND"/>
-                                    </cursor>
-                                </Button>
+                                <StackPane>
+                                    <children>
+                                        <ImageView fitWidth="200.0" pickOnBounds="true" preserveRatio="true"
+                                                   StackPane.alignment="CENTER">
+                                            <image>
+                                                <Image url="@../images/btn_blue-bigger.png"/>
+                                            </image>
+                                        </ImageView>
+                                        <Pane maxHeight="70.0" opacity="0.6" prefHeight="75.0" prefWidth="200.0"
+                                              styleClass="glow-back-pane" visible="false" StackPane.alignment="CENTER"/>
+                                        <Button fx:id="confirmButton" defaultButton="true" mnemonicParsing="false"
+                                                onAction="#onClickEventConfirmButton" prefHeight="75.0"
+                                                prefWidth="194.0" style="-fx-background-color: transparent;"
+                                                text="CONFIRM" textFill="WHITE" StackPane.alignment="CENTER">
+                                            <cursor>
+                                                <Cursor fx:constant="HAND"/>
+                                            </cursor>
+                                            <font>
+                                                <Font name="System Bold Italic" size="25.0"/>
+                                            </font>
+                                            <StackPane.margin>
+                                                <Insets bottom="10.0"/>
+                                            </StackPane.margin>
+                                        </Button>
+                                        <Pane maxHeight="70.0" opacity="0.7" styleClass="card-unavailable-overlay"/>
+                                    </children>
+                                </StackPane>
                             </children>
                         </HBox>
                     </items>
