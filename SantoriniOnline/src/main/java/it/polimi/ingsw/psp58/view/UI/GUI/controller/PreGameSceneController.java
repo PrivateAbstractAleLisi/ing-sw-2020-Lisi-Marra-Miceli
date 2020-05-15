@@ -7,6 +7,7 @@ import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,13 +24,15 @@ public class PreGameSceneController {
     //CONSTANT
     public final double MAX_CARDS_NUMBERS = 15;
 
+    private String challengerUsername;
+
     private String STATE;
     /*
     States:
     - CARD_CHOICE
     - CHALLENGER_CARDS_CHOICE
     - FIRST_PLAYER_CHOICE
-    - WAIT_CHALLENGER_CARD
+    - WAIT_CHALLENGER_CARDS
     - WAIT_PLAYER_CARD
     - WAIT_FIRST_PLAYER
      */
@@ -66,9 +69,12 @@ public class PreGameSceneController {
 
     //RIGHT
     public Button confirmButton;
-    public Pane chosenCardPane1;
-    public Pane chosenCardPane2;
-    public Pane chosenCardPane3;
+    public HBox rightChoiceHBox1;
+    public HBox rightChoiceHBox2;
+    public HBox rightChoiceHBox3;
+    private ArrayList<HBox> rightHBoxes;
+    private int indexFirstFreeHBox;
+    private int actualEnableHBox;
 
     //BOTTOM
     public Button superUserButton;
@@ -80,6 +86,9 @@ public class PreGameSceneController {
     private Map<CardEnum, VBox> playerVBoxMapByCard;
     private Map<VBox, String> firstPlayerUsernameByVBox;
     private Map<String, VBox> firstPlayerVBoxByUsername;
+    private Map<String, CardEnum> firstPlayerCardByName;
+    private Map<CardEnum, HBox> rightHBoxesMapByCard;
+    private Map<String, HBox> rightHBoxesMapByName;
 
     //CardSelection
     private int cardToChoose;
@@ -134,45 +143,59 @@ public class PreGameSceneController {
      * @param event used to fill the list
      */
     public void update(CV_RoomUpdateGameEvent event) {
+        //Create a Queue
+        LinkedList<HBox> playerNameHBoxes = new LinkedList<>();
+        playerNameHBoxes.add(playerName_HBox1);
+        playerNameHBoxes.add(playerName_HBox2);
+        playerNameHBoxes.add(playerName_HBox3);
+
         int actualPlayersInRoom = event.getUsersInRoom().length;
-        String[] usersInRoom = event.getUsersInRoom();
-        Text text;
-        switch (actualPlayersInRoom) {
-            case 1:
-                text = (Text) playerName_HBox1.getChildren().get(0);
-                text.setText("1) " + usersInRoom[0].toUpperCase());
 
-                playerName_HBox1.setVisible(true);
-                playerName_HBox2.setVisible(false);
-                playerName_HBox3.setVisible(false);
-                break;
-            case 2:
-                text = (Text) playerName_HBox1.getChildren().get(0);
-                text.setText("1) " + usersInRoom[0].toUpperCase());
+        ArrayList<String> playerNames = new ArrayList<>();
+        for (int i = 0; i < actualPlayersInRoom; i++) {
+            playerNames.add(event.getUsersInRoom()[i]);
+        }
+        int index = 0;
+        for (String player : playerNames) {
+            //For each player i add the name to the left
+            index = playerNames.indexOf(player);
+            int position = index + 1;
+            Text text = (Text) playerNameHBoxes.get(index).getChildren().get(0);
+            text.setText(position + ") " + player.toUpperCase());
+            if (player.toLowerCase().equals(gui.getUsername().toLowerCase())) {
+                setLeftTextMyUsername(playerNameHBoxes.get(index));
+            }
+            playerNameHBoxes.get(index).setVisible(true);
+        }
+        //remove the already set HBoxes from the Queue
+        playerNameHBoxes.subList(0, index + 1).clear();
 
-                text = (Text) playerName_HBox2.getChildren().get(0);
-                text.setText("2) " + usersInRoom[1].toUpperCase());
+        int remainingHBoxes = playerNameHBoxes.size();
+        for (int i = 0; i < remainingHBoxes; i++) {
+            //set invisible remaining HBoxes (using index 0 because I remove the HBoxes)
+            playerNameHBoxes.remove(0).setVisible(false);
+        }
+    }
 
-                playerName_HBox1.setVisible(true);
-                playerName_HBox2.setVisible(true);
-                playerName_HBox3.setVisible(false);
-                break;
-            case 3:
-                text = (Text) playerName_HBox1.getChildren().get(0);
-                text.setText("1) " + usersInRoom[0].toUpperCase());
+    private void setLeftTextMyUsername(Node node) {
+        node.getStyleClass().add("my-username-hbox");
+    }
 
-                text = (Text) playerName_HBox2.getChildren().get(0);
-                text.setText("2) " + usersInRoom[1].toUpperCase());
+    private void setLeftChallenger() {
+        LinkedList<HBox> playerNameHBoxes = new LinkedList<>();
+        playerNameHBoxes.add(playerName_HBox1);
+        playerNameHBoxes.add(playerName_HBox2);
+        playerNameHBoxes.add(playerName_HBox3);
 
-                text = (Text) playerName_HBox3.getChildren().get(0);
-                text.setText("3) " + usersInRoom[2].toUpperCase());
+        for (HBox hBox : playerNameHBoxes) {
+            Text text = (Text) hBox.getChildren().get(0);
+            String textShowed = text.getText().toLowerCase();
 
-                playerName_HBox1.setVisible(true);
-                playerName_HBox2.setVisible(true);
-                playerName_HBox3.setVisible(true);
-                break;
-            default:
-                System.out.println("ERROR");
+            String textToCompare = textShowed.substring(3);
+            if (textToCompare.equals(challengerUsername.toLowerCase())) {
+                //set image to visible
+                hBox.getChildren().get(1).setVisible(true);
+            }
         }
     }
 
@@ -185,8 +208,18 @@ public class PreGameSceneController {
 
         switch (event.getWaitCode()) {
             case "CHALLENGER_CARDS":
-                STATE = "WAIT_CHALLENGER_CARD";
-                waitText.setText(event.getChallenger().toUpperCase() + " is the challenger and he's choosing the cards.\nPlease wait");
+                STATE = "WAIT_CHALLENGER_CARDS";
+                challengerUsername = event.getActingPlayer().toLowerCase();
+                waitText.setText(event.getActingPlayer().toUpperCase() + " is the challenger and he's choosing the cards.\nPlease wait");
+                setLeftChallenger();
+                break;
+            case "PLAYER_CARD":
+                STATE = "WAIT_PLAYER_CARD";
+                waitText.setText(event.getActingPlayer().toUpperCase() + " is choosing his card.\nPlease wait");
+                break;
+            case "FIRST_PLAYER":
+                STATE = "WAIT_FIRST_PLAYER";
+                waitText.setText("The challenger (" + event.getActingPlayer().toUpperCase() + ") is choosing the first player.\nPlease wait");
                 break;
             default:
                 waitText.setText("Please wait");
@@ -196,13 +229,13 @@ public class PreGameSceneController {
             hourglassRotation = new Thread(() -> {
                 ImageView hourglass = (ImageView) waitHBox.getChildren().get(1);
                 try {
+                    Thread.sleep(500);
                     while (waitHBox.isVisible()) {
                         hourglass.setRotate(hourglass.getRotate() + 2);
                         Thread.sleep(11);
                     }
                 } catch (InterruptedException e) {
                     System.out.println("Turning Off the hourGlass");
-                    ;
                 } finally {
                     Thread.currentThread().interrupt();
                     hourglass.setRotate(0);
@@ -210,6 +243,7 @@ public class PreGameSceneController {
             });
             hourglassRotation.start();
         }
+        showXRightHBoxes(0);
         setVisibleOnlyThisNode(waitHBox);
     }
 
@@ -250,6 +284,7 @@ public class PreGameSceneController {
             fillPlayerChoiceCard(vBoxes.remove(), card, event.getAvailableCards().contains(card));
         }
 
+        showXRightHBoxes(1);
         setVisibleOnlyThisNode(cardChoiceTilePane);
     }
 
@@ -285,7 +320,10 @@ public class PreGameSceneController {
      */
     public void update(CV_ChallengerChosenEvent event) {
         STATE = "CHALLENGER_CARDS_CHOICE";
+        challengerUsername = gui.getUsername();
+        setLeftChallenger();
         cardToChoose = event.getRoomSize();
+        showXRightHBoxes(cardToChoose);
         challengerSelectedCards = new ArrayList<>();
         System.out.println("You're the chellenger, chose " + event.getRoomSize() + " cards");
         setTitleCenter("YOU ARE THE CHALLENGER!! \tCHOOSE " + event.getRoomSize() + " CARDS");
@@ -382,6 +420,7 @@ public class PreGameSceneController {
 
     public void update(CV_ChallengerChooseFirstPlayerRequestEvent event) {
         STATE = "FIRST_PLAYER_CHOICE";
+        showXRightHBoxes(1);
         firstPlayerUsernameByVBox = new HashMap<>();
         firstPlayerVBoxByUsername = new HashMap<>();
         usernamesAvailable = new ArrayList<>();
@@ -410,6 +449,7 @@ public class PreGameSceneController {
     private void fillFirstPlayerChoice(VBox vBox, CardEnum card, String username) {
         firstPlayerUsernameByVBox.put(vBox, username);
         firstPlayerVBoxByUsername.put(username, vBox);
+        firstPlayerCardByName.put(username,card);
 
         ImageView image = (ImageView) vBox.getChildren().get(0);
         image.setImage(new Image(card.getImgUrl()));
@@ -458,14 +498,16 @@ public class PreGameSceneController {
         if (challengerSelectedCards.contains(card)) {
             //Already selected card is selected a second time
             challengerSelectedCards.remove(card);
-            disableChallengerCardGlow(card);
+            disableChallengerCardGreen(card);
+            cleanRightHBox(card);
             if (challengerSelectedCards.size() < cardToChoose) {
                 enableNotSelectedChallengerCards();
                 disableConfirmButton();
             }
         } else {
             challengerSelectedCards.add(card);
-            enableChallengerCardGlow(card);
+            enableChallengerCardGreen(card);
+            fillFirstFreeHBox(card);
             if (challengerSelectedCards.size() == cardToChoose) {
                 disableNotSelectedChallengerCards();
                 enableConfirmButton();
@@ -493,20 +535,20 @@ public class PreGameSceneController {
         greyPane.setVisible(true);
     }
 
-    private void enableChallengerCardGlow(CardEnum card) {
+    private void enableChallengerCardGreen(CardEnum card) {
         HBox hBox = challengerHBoxMapByCard.get(card);
 
         StackPane parentPane = (StackPane) hBox.getParent();
-        Pane glowPane = (Pane) parentPane.getChildren().get(0);
-        glowPane.setVisible(true);
+        Pane greenPane = (Pane) parentPane.getChildren().get(0);
+        greenPane.setVisible(true);
     }
 
-    private void disableChallengerCardGlow(CardEnum card) {
+    private void disableChallengerCardGreen(CardEnum card) {
         HBox hBox = challengerHBoxMapByCard.get(card);
 
         StackPane parentPane = (StackPane) hBox.getParent();
-        Pane glowPane = (Pane) parentPane.getChildren().get(0);
-        glowPane.setVisible(false);
+        Pane greenPane = (Pane) parentPane.getChildren().get(0);
+        greenPane.setVisible(false);
     }
 
     private void disableNotSelectedChallengerCards() {
@@ -543,13 +585,15 @@ public class PreGameSceneController {
 
         if (playerSelectedCard != null && playerSelectedCard.equals(card)) {
             //Already selected card is selected a second time
-            playerSelectedCard = null;
-            disablePlayerCardGlow(card);
+            disablePlayerCardGreen(card);
+            cleanRightHBox(card);
             enableNotSelectedPlayerCards();
+            playerSelectedCard = null;
             disableConfirmButton();
         } else {
             playerSelectedCard = card;
-            enablePlayerCardGlow(card);
+            enablePlayerCardGreen(card);
+            fillFirstFreeHBox(card);
             disableNotSelectedPlayerCards();
             enableConfirmButton();
         }
@@ -575,20 +619,20 @@ public class PreGameSceneController {
         greyPane.setVisible(true);
     }
 
-    private void enablePlayerCardGlow(CardEnum card) {
+    private void enablePlayerCardGreen(CardEnum card) {
         VBox vBox = playerVBoxMapByCard.get(card);
 
         StackPane parentPane = (StackPane) vBox.getParent();
-        Pane glowPane = (Pane) parentPane.getChildren().get(0);
-        glowPane.setVisible(true);
+        Pane greenPane = (Pane) parentPane.getChildren().get(0);
+        greenPane.setVisible(true);
     }
 
-    private void disablePlayerCardGlow(CardEnum card) {
+    private void disablePlayerCardGreen(CardEnum card) {
         VBox vBox = playerVBoxMapByCard.get(card);
 
         StackPane parentPane = (StackPane) vBox.getParent();
-        Pane glowPane = (Pane) parentPane.getChildren().get(0);
-        glowPane.setVisible(false);
+        Pane greenPane = (Pane) parentPane.getChildren().get(0);
+        greenPane.setVisible(false);
     }
 
     private void disableNotSelectedPlayerCards() {
@@ -626,13 +670,15 @@ public class PreGameSceneController {
 
         if (firstPlayerSelected != null && firstPlayerSelected.equals(username)) {
             //Already selected card is selected a second time
-            firstPlayerSelected = null;
-            disableFirstPlayerGlow(username);
+            disableFirstPlayerGreen(username);
+            cleanRightHBox(username);
             enableNotSelectedFirstPlayer();
+            firstPlayerSelected = null;
             disableConfirmButton();
         } else {
             firstPlayerSelected = username;
-            enableFirstPlayerGlow(username);
+            enableFirstPlayerGreen(username);
+            fillFirstFreeHBox(username);
             disableNotSelectedFirstPlayer();
             enableConfirmButton();
         }
@@ -658,20 +704,20 @@ public class PreGameSceneController {
         greyPane.setVisible(true);
     }
 
-    private void enableFirstPlayerGlow(String username) {
+    private void enableFirstPlayerGreen(String username) {
         VBox vBox = firstPlayerVBoxByUsername.get(username);
 
         StackPane parentPane = (StackPane) vBox.getParent();
-        Pane glowPane = (Pane) parentPane.getChildren().get(0);
-        glowPane.setVisible(true);
+        Pane greenPane = (Pane) parentPane.getChildren().get(0);
+        greenPane.setVisible(true);
     }
 
-    private void disableFirstPlayerGlow(String username) {
+    private void disableFirstPlayerGreen(String username) {
         VBox vBox = firstPlayerVBoxByUsername.get(username);
 
         StackPane parentPane = (StackPane) vBox.getParent();
-        Pane glowPane = (Pane) parentPane.getChildren().get(0);
-        glowPane.setVisible(false);
+        Pane greenPane = (Pane) parentPane.getChildren().get(0);
+        greenPane.setVisible(false);
     }
 
     private void disableNotSelectedFirstPlayer() {
@@ -702,5 +748,127 @@ public class PreGameSceneController {
         }
 
     }
+
+    private void showXRightHBoxes(int numberOfHBoxesToEnable) {
+        rightHBoxes = new ArrayList<>();
+        rightHBoxes.add(rightChoiceHBox1);
+        rightHBoxes.add(rightChoiceHBox2);
+        rightHBoxes.add(rightChoiceHBox3);
+
+        if (numberOfHBoxesToEnable <= 3) {
+            int index;
+            for (index = 0; index < numberOfHBoxesToEnable; index++) {
+                showCleanRightHBox(rightHBoxes.get(index));
+            }
+            while (index < 3) {
+                hideRightHBox(rightHBoxes.get(index));
+                index++;
+            }
+            indexFirstFreeHBox = 0;
+            actualEnableHBox = numberOfHBoxesToEnable;
+
+            rightHBoxesMapByCard = new HashMap<>();
+            rightHBoxesMapByName = new HashMap<>();
+            firstPlayerCardByName = new HashMap<>();
+        } else {
+            System.out.println("Not enough HBoxes");
+        }
+    }
+
+    private void showCleanRightHBox(HBox hBox) {
+        hBox.setVisible(true);
+        hBox.getChildren().get(0).setVisible(false);
+        hBox.getChildren().get(1).setVisible(false);
+        VBox vBox = (VBox) hBox.getChildren().get(1);
+        vBox.getChildren().get(0).setVisible(false);
+        vBox.getChildren().get(1).setVisible(false);
+    }
+
+    private void hideRightHBox(HBox hBox) {
+        hBox.setVisible(false);
+        hBox.getChildren().get(0).setVisible(false);
+        hBox.getChildren().get(1).setVisible(false);
+        VBox vBox = (VBox) hBox.getChildren().get(1);
+        vBox.getChildren().get(0).setVisible(false);
+        vBox.getChildren().get(1).setVisible(false);
+    }
+
+    private void fillFirstFreeHBox(CardEnum card) {
+        if (indexFirstFreeHBox < actualEnableHBox) {
+            fillFirstFreeHBox(card, card.getName(), card.getDescription());
+        }
+    }
+
+    private void fillFirstFreeHBox(String name) {
+        CardEnum card = firstPlayerCardByName.get(name);
+        if (indexFirstFreeHBox < actualEnableHBox) {
+            fillFirstFreeHBox(card, name, "");
+        }
+    }
+
+    private void fillFirstFreeHBox(CardEnum card, String bigText, String smallText) {
+        if (indexFirstFreeHBox < actualEnableHBox) {
+            rightHBoxes = new ArrayList<>();
+            rightHBoxes.add(rightChoiceHBox1);
+            rightHBoxes.add(rightChoiceHBox2);
+            rightHBoxes.add(rightChoiceHBox3);
+
+            HBox hBox = rightHBoxes.get(indexFirstFreeHBox);
+            ImageView imageView = (ImageView) hBox.getChildren().get(0);
+            imageView.setImage(new Image(card.getImgUrl()));
+            imageView.setVisible(true);
+
+            VBox vBox = (VBox) hBox.getChildren().get(1);
+            vBox.setVisible(true);
+            Text name = (Text) vBox.getChildren().get(0);
+            name.setText(bigText);
+            name.setVisible(true);
+
+            Label longText = (Label) vBox.getChildren().get(1);
+            if (smallText.equals("")) {
+                //I'm setting a player
+                longText.setVisible(false);
+                rightHBoxesMapByName.put(bigText, hBox);
+            } else {
+                //I'm setting a CardEnum
+                longText.setText(smallText);
+                longText.setVisible(true);
+                rightHBoxesMapByCard.put(card, hBox);
+            }
+
+            resetIndexFreeHBox();
+        }
+    }
+
+    private void resetIndexFreeHBox() {
+        rightHBoxes = new ArrayList<>();
+        rightHBoxes.add(rightChoiceHBox1);
+        rightHBoxes.add(rightChoiceHBox2);
+        rightHBoxes.add(rightChoiceHBox3);
+
+        for (int index = 0; index < 3; index++) {
+            ImageView imageView = (ImageView) rightHBoxes.get(index).getChildren().get(0);
+            if (!imageView.isVisible()) {
+                indexFirstFreeHBox = index;
+                return;
+            }
+        }
+        indexFirstFreeHBox = 3;
+    }
+
+    private void cleanRightHBox(CardEnum card) {
+        HBox hBox = rightHBoxesMapByCard.get(card);
+        showCleanRightHBox(hBox);
+        rightHBoxesMapByCard.remove(card);
+        resetIndexFreeHBox();
+    }
+
+    private void cleanRightHBox(String name) {
+        HBox hBox = rightHBoxesMapByName.get(name);
+        showCleanRightHBox(hBox);
+        rightHBoxesMapByName.remove(name);
+        resetIndexFreeHBox();
+    }
+
 
 }

@@ -16,22 +16,26 @@ public class CV_WaitPreMatchGameEvent extends ViewGameEvent {
 
     private final String actingPlayer;
     private final String recipient;
-    private final String challenger;
     private final String waitCode;
+
+    /*
+    waitCode:
+    - CHALLENGER_CARDS
+    - PLAYER_CARD
+    - FIRST_PLAYER
+     */
 
     public CV_WaitPreMatchGameEvent(String description, String actingPlayer, String recipient) {
         super(description);
         this.actingPlayer = actingPlayer;
         this.recipient = recipient;
-        this.challenger = null;
         this.waitCode = "GENERIC_WAIT";
     }
 
-    public CV_WaitPreMatchGameEvent(String description, String actingPlayer, String recipient, String challenger, String waitCode) {
+    public CV_WaitPreMatchGameEvent(String description, String actingPlayer, String recipient, String waitCode) {
         super(description);
         this.actingPlayer = actingPlayer;
         this.recipient = recipient;
-        this.challenger = challenger;
         this.waitCode = waitCode;
     }
 
@@ -46,10 +50,6 @@ public class CV_WaitPreMatchGameEvent extends ViewGameEvent {
 
     public String getRecipient() {
         return recipient;
-    }
-
-    public String getChallenger() {
-        return challenger;
     }
 
     public String getWaitCode() {
