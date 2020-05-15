@@ -23,6 +23,7 @@ public class CV_WaitPreMatchGameEvent extends ViewGameEvent {
     - CHALLENGER_CARDS
     - PLAYER_CARD
     - FIRST_PLAYER
+    - PLACE_WORKER
      */
 
     public CV_WaitPreMatchGameEvent(String description, String actingPlayer, String recipient) {

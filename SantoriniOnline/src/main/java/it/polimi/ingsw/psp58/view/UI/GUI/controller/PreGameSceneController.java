@@ -447,9 +447,9 @@ public class PreGameSceneController {
     }
 
     private void fillFirstPlayerChoice(VBox vBox, CardEnum card, String username) {
-        firstPlayerUsernameByVBox.put(vBox, username);
-        firstPlayerVBoxByUsername.put(username, vBox);
-        firstPlayerCardByName.put(username,card);
+        firstPlayerUsernameByVBox.put(vBox, username.toLowerCase());
+        firstPlayerVBoxByUsername.put(username.toLowerCase(), vBox);
+        firstPlayerCardByName.put(username.toLowerCase(),card);
 
         ImageView image = (ImageView) vBox.getChildren().get(0);
         image.setImage(new Image(card.getImgUrl()));
@@ -687,7 +687,7 @@ public class PreGameSceneController {
     }
 
     private void enableFistsPlayer(String username) {
-        VBox vBox = firstPlayerVBoxByUsername.get(username);
+        VBox vBox = firstPlayerVBoxByUsername.get(username.toLowerCase());
         vBox.setDisable(false);
 
         StackPane parentPane = (StackPane) vBox.getParent();
@@ -696,7 +696,7 @@ public class PreGameSceneController {
     }
 
     private void disableFirstPlayer(String username) {
-        VBox vBox = firstPlayerVBoxByUsername.get(username);
+        VBox vBox = firstPlayerVBoxByUsername.get(username.toLowerCase());
         vBox.setDisable(true);
 
         StackPane parentPane = (StackPane) vBox.getParent();
@@ -705,7 +705,7 @@ public class PreGameSceneController {
     }
 
     private void enableFirstPlayerGreen(String username) {
-        VBox vBox = firstPlayerVBoxByUsername.get(username);
+        VBox vBox = firstPlayerVBoxByUsername.get(username.toLowerCase());
 
         StackPane parentPane = (StackPane) vBox.getParent();
         Pane greenPane = (Pane) parentPane.getChildren().get(0);
@@ -713,7 +713,7 @@ public class PreGameSceneController {
     }
 
     private void disableFirstPlayerGreen(String username) {
-        VBox vBox = firstPlayerVBoxByUsername.get(username);
+        VBox vBox = firstPlayerVBoxByUsername.get(username.toLowerCase());
 
         StackPane parentPane = (StackPane) vBox.getParent();
         Pane greenPane = (Pane) parentPane.getChildren().get(0);
@@ -800,7 +800,7 @@ public class PreGameSceneController {
     }
 
     private void fillFirstFreeHBox(String name) {
-        CardEnum card = firstPlayerCardByName.get(name);
+        CardEnum card = firstPlayerCardByName.get(name.toLowerCase());
         if (indexFirstFreeHBox < actualEnableHBox) {
             fillFirstFreeHBox(card, name, "");
         }
@@ -821,16 +821,17 @@ public class PreGameSceneController {
             VBox vBox = (VBox) hBox.getChildren().get(1);
             vBox.setVisible(true);
             Text name = (Text) vBox.getChildren().get(0);
-            name.setText(bigText);
             name.setVisible(true);
 
             Label longText = (Label) vBox.getChildren().get(1);
             if (smallText.equals("")) {
                 //I'm setting a player
+                name.setText(bigText.toUpperCase());
                 longText.setVisible(false);
-                rightHBoxesMapByName.put(bigText, hBox);
+                rightHBoxesMapByName.put(bigText.toLowerCase(), hBox);
             } else {
                 //I'm setting a CardEnum
+                name.setText(bigText);
                 longText.setText(smallText);
                 longText.setVisible(true);
                 rightHBoxesMapByCard.put(card, hBox);
@@ -864,9 +865,9 @@ public class PreGameSceneController {
     }
 
     private void cleanRightHBox(String name) {
-        HBox hBox = rightHBoxesMapByName.get(name);
+        HBox hBox = rightHBoxesMapByName.get(name.toLowerCase());
         showCleanRightHBox(hBox);
-        rightHBoxesMapByName.remove(name);
+        rightHBoxesMapByName.remove(name.toLowerCase());
         resetIndexFreeHBox();
     }
 

@@ -87,47 +87,6 @@ public class GUI extends Application implements ViewListener {
         preGameScene = new Scene(preGameSceneLoader.load());
         preGameSceneController = preGameSceneLoader.getController();
         preGameSceneController.setGui(this);
-
-//        //starts with the startingScene
-//        stage.setTitle("Santorini Online");
-        username="Gabriele";
-        preGameSceneController.update(new CV_RoomUpdateGameEvent("", new String[]{"Gabriele", "Matteo", "Ale"}, 3));
-//        preGameSceneController.update(new CV_RoomUpdateGameEvent("", new String[]{"Gabriele", "Matteo"}, 3));
-//        preGameSceneController.update(new CV_RoomUpdateGameEvent("", new String[]{"Gabriele"}, 3));
-//        preGameSceneController.update(new CV_ChallengerChosenEvent("Gabriele", 3));
-
-        ArrayList<CardEnum> availableCards = new ArrayList<CardEnum>();
-        availableCards.add(CardEnum.MINOTAUR);
-        availableCards.add(CardEnum.ATLAS);
-        ArrayList<CardEnum> unavailableCards = new ArrayList<CardEnum>();
-        unavailableCards.add(CardEnum.APOLLO);
-
-
-//        preGameSceneController.update(new CV_WaitPreMatchGameEvent("","Matteo","", "CHALLENGER_CARDS"));
-//        preGameSceneController.update(new CV_CardChoiceRequestGameEvent("", availableCards, unavailableCards, "Fake"));
-//        preGameSceneController.update(new CV_CardChoiceRequestGameEvent("", availableCards, "Fake"));
-
-
-        ArrayList<String > usernamesPlayer = new ArrayList<>();
-        usernamesPlayer.add("Gabriele");
-        usernamesPlayer.add("Matteo");
-        usernamesPlayer.add("Ale");
-
-        Map<String, CardEnum> cardChosen = new HashMap<>();
-        cardChosen.put("Gabriele", CardEnum.HEPHAESTUS);
-        cardChosen.put("Matteo", CardEnum.APOLLO);
-        cardChosen.put("Ale", CardEnum.PAN);
-
-
-        CV_ChallengerChooseFirstPlayerRequestEvent event = new CV_ChallengerChooseFirstPlayerRequestEvent("",username, usernamesPlayer);
-        CV_ChallengerChooseFirstPlayerRequestEvent event1 = new CV_ChallengerChooseFirstPlayerRequestEvent("",username, usernamesPlayer, cardChosen);
-//        preGameSceneController.update(event);
-        preGameSceneController.update(event1);
-//
-        stage.setScene(preGameScene);
-        stage.setResizable(true);
-        stage.setMaximized(true);
-        stage.show();
     }
 
     public void changeScene(Scene scene) {
@@ -271,7 +230,6 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
         stage.setResizable(true);
-        stage.setMaximized(true);
         System.out.println("I have to choose my card!");
         preGameSceneController.update(event);
     }
@@ -298,6 +256,10 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
+        stage.setResizable(true);
+        if(event.getWaitCode().equals("CHALLENGERS_CARDS")){
+            stage.setMaximized(true);
+        }
         System.out.println("Wait received");
         preGameSceneController.update(event);
         changeScene(preGameScene);
