@@ -9,6 +9,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+import org.w3c.dom.events.Event;
 
 import java.io.IOException;
 
@@ -55,11 +56,7 @@ public class StartingSceneController {
         this.gui = gui;
     }
 
-    public void onClickEventConnectButton(MouseEvent mouseEvent) {
-        executeClickConnectButton();
-    }
-
-    public void executeClickConnectButton(){
+    public void onClickEventConnectButton() {
         loadText.setText(updateLoadText("handling connection request"));
 
         loadProgress.setProgress(0.15f);
@@ -73,6 +70,7 @@ public class StartingSceneController {
 
         if (localIpIsValid && localUserIsValid) {
             tryConnection(userProposal);
+            gui.setUsername(userProposal.toLowerCase());
         }
     }
 
