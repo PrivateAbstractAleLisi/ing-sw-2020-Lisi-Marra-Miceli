@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +34,7 @@ public class SantoriniClient extends EventSource implements Runnable {
     private String IP;
     private Socket serverSocket;
     public static final int SERVER_PORT=7557;
+    public final static int SOCKET_TIMEOUT_S = 20;
 
     private boolean connectionClosed = false;
 
@@ -48,6 +50,7 @@ public class SantoriniClient extends EventSource implements Runnable {
         //Open a connection with the server
         try {
             serverSocket = new Socket(IP, SERVER_PORT);
+            serverSocket.setSoTimeout(SOCKET_TIMEOUT_S * 1000);
         } catch (IOException e) {
             System.err.println("Client: Unable to open a socket");
             e.printStackTrace();
@@ -78,7 +81,6 @@ public class SantoriniClient extends EventSource implements Runnable {
                     }
                 }
             };
-
             ping.start();
 
         } catch (UnknownHostException e) {
@@ -113,23 +115,21 @@ public class SantoriniClient extends EventSource implements Runnable {
     public void run() {
         while (true) {
             try {
-                Object object = in.readObject();
-                if (object instanceof PingEvent) {
-
-                } else {
-                    ViewGameEvent event = (ViewGameEvent) object;
-
+                Object received = in.readObject();
+                if (!(received instanceof PingEvent)) {
+                    ViewGameEvent event = (ViewGameEvent) received;
                     notifyAllObserverByType(VIEW, event);
                 }
-
+            } catch (SocketTimeoutException e){
+                MessageUtility.displayErrorMessage("Lost connection with the server");
+                connectionClosed = true;
+                closeConnection();
             } catch (IOException | ClassNotFoundException e) {
-
                 MessageUtility.displayErrorMessage("Client: Disconnected from the server");
                 connectionClosed = true;
                 closeConnection();
             }
         }
-
     }
 
     public void closeConnection() {

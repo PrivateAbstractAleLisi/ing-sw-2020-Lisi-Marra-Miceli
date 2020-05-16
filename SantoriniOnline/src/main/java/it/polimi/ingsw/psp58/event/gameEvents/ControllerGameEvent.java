@@ -1,7 +1,5 @@
 package it.polimi.ingsw.psp58.event.gameEvents;
 
-import it.polimi.ingsw.psp58.event.core.ControllerListener;
-
 public abstract class ControllerGameEvent extends GameEvent {
 
 
@@ -12,7 +10,5 @@ public abstract class ControllerGameEvent extends GameEvent {
     public String getEventDescription() {
         return super.getEventDescription();
     }
-
-    public abstract void notifyHandler(ControllerListener listener);
 
 }
