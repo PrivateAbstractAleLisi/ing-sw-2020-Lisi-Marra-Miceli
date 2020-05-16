@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,6 +29,8 @@ public class GUI extends Application implements ViewListener {
     private final int socketPort = 7557;
 
     private String chosenIp;
+
+    private boolean enablePing = true;
 
     private WorkerColors playerColor;
 
@@ -56,6 +59,17 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        List<String> args = getParameters().getRaw();
+
+        if (args != null && !args.isEmpty()) {
+            for (String currentArgument : args) {
+                switch (currentArgument) {
+                    case "-ping off":
+                        enablePing = false;
+                        break;
+                }
+            }
+        }
 
         stage = primaryStage;
         stage.setResizable(false);
@@ -142,6 +156,10 @@ public class GUI extends Application implements ViewListener {
 
     public void setBoardSceneController(BoardSceneController boardSceneController) {
         this.boardSceneController = boardSceneController;
+    }
+
+    public boolean isPingEnabled() {
+        return enablePing;
     }
 
     public int getSocketPort() {

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
-import it.polimi.ingsw.psp58.event.core.ListenerType;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEvent;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.GUI.Message;
@@ -27,7 +26,7 @@ public class ConnectionSceneController {
                 gui.setChosenIp(ipAddress.getText());
 
                 //set up the client and starts it
-                SantoriniClient client = new SantoriniClient(gui, ipAddress.getText());
+                SantoriniClient client = new SantoriniClient(gui, ipAddress.getText(), gui.isPingEnabled());
                 gui.setClient(client);
                 client.begin();
 

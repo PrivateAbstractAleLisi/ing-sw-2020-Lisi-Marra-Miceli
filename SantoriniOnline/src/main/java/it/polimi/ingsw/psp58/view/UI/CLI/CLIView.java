@@ -35,12 +35,14 @@ public class CLIView extends EventSource implements ViewListener {
     private Scanner input;
     private SantoriniClient client;
     private String myUsername;
+    private String[] args;
+    private boolean enablePing=true;
 
-    public CLIView() {
+    public CLIView(String[] args) {
         this.output = System.out;
         this.input = new Scanner(System.in);
+        this.args = args.clone();
         //listening to each other
-
     }
 
 
@@ -48,6 +50,16 @@ public class CLIView extends EventSource implements ViewListener {
 
 
     public void start() {
+
+        if (args != null) {
+            for (String currentArgument : args) {
+                switch (currentArgument) {
+                    case "-ping off":
+                        enablePing = false;
+                        break;
+                }
+            }
+        }
 
         MessageUtility.bigTitle();
 
@@ -67,7 +79,7 @@ public class CLIView extends EventSource implements ViewListener {
         String IP = askIPAddress();
 
         //set up the client
-        client = new SantoriniClient(this, IP);
+        client = new SantoriniClient(this, IP, enablePing);
         client.begin();
 
         System.out.println("CLIENT: connected ");
