@@ -46,6 +46,8 @@ public class GUI extends Application implements ViewListener {
     private Scene preGameScene;
     private PreGameSceneController preGameSceneController;
 
+
+
     public static void main(String[] args) {
         Application.launch(args);
     }
@@ -68,7 +70,19 @@ public class GUI extends Application implements ViewListener {
 
         //starts with the startingScene
         stage.setTitle("Santorini Online");
-        stage.setScene(startingScene);
+
+        //stage.setScene(startingScene);
+
+
+        //DEBUG START WITH ANOTHER SCENE
+        FXMLLoader boardLoader = new FXMLLoader(
+                getClass().getResource("/scenes/BoardScene.fxml"));
+        boardScene = new Scene(boardLoader.load());
+        boardSceneController = boardLoader.getController();
+        stage.setResizable(false);
+        changeScene(boardScene);
+
+        boardSceneController.debugTest();
         stage.show();
 
         //set up the lobby

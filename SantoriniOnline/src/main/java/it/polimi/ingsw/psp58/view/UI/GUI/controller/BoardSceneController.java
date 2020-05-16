@@ -2,8 +2,12 @@ package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
+import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.WorkerColors;
+import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
+import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.collections.ObservableList;
@@ -16,6 +20,9 @@ import javafx.scene.layout.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+
+import static it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum.DOME;
 
 public class BoardSceneController {
     private GUI gui;
@@ -119,6 +126,20 @@ public class BoardSceneController {
 
     }
 
+    //utility to get a cell from the board
+    public Node getNodeByRowColumnIndex (final int row, final int column) {
+        Node result = null;
+        ObservableList<Node> childrens = board.getChildren();
+
+        for (Node node : childrens) {
+            if(board.getRowIndex(node) == row && board.getColumnIndex(node) == column) {
+                result = node;
+                break;
+            }
+        }
+
+        return result;
+    }
 
     public void updateIsland(IslandData island){
         String url = "";
@@ -139,11 +160,15 @@ public class BoardSceneController {
                 if(cellClusterData.getWorkerOnTop()!= null){
                     pane.getChildren().add(getWorkerImage(cellClusterData));
                     //if the worker is his worker he can click it
-                    if(cellClusterData.getUsernamePlayer().equals(gui.getUsername()) && gui.isHisTurn()){
+                    /* if(cellClusterData.getUsernamePlayer().equals(gui.getUsername()) && gui.isHisTurn()){
 //                        upperPane.setOnMouseClicked();
-                    }
+                    } */
                 }
                 stackPane.getChildren().addAll(pane, upperPane);
+                GridPane.setConstraints(stackPane, y, x); //node, column, row
+                board.getChildren().add(stackPane);
+               // Node xyNode = getNodeByRowColumnIndex(x, y);
+
             }
         }
 
@@ -171,15 +196,17 @@ public class BoardSceneController {
     }
 
     public String getUrlFromCellCluster(CellClusterData cellClusterData){
-        String url= "/images/cellcluster/";
+       String url= "/images/cellcluster/";
+
         int[] blocks = cellClusterData.getBlocks();
         boolean domeOnTop = cellClusterData.isDomeOnTop();
         Worker.IDs workerID = cellClusterData.getWorkerOnTop();
         WorkerColors color = cellClusterData.getWorkerColor();
 
         //construct the url of the image
-        if(blocks == null || blocks.length == 0){
+        if((blocks.length == 1 && blocks[0] == 4)){
             if (domeOnTop) url = url + "L0_DOME.png";
+            return url;
         }
         else{
             switch (blocks[blocks.length - 1]){
@@ -189,6 +216,8 @@ public class BoardSceneController {
                     break;}
                 case 3: {url = url + "L3";
                     break;}
+                case 4:
+                    System.err.println("errore if blocchi gui");
             }
             if(domeOnTop) {url = url + "_DOME";}
             url = url + ".png";
@@ -221,5 +250,22 @@ public class BoardSceneController {
             message = message + player + " ";
         }
         turnSequence.setText(message);
+    }
+
+    public void debugTest() {
+        IslandData isla;
+        Island is = new Island();
+        try {
+            is.buildBlock(BlockTypeEnum.LEVEL1, 3, 4);
+            is.buildBlock(BlockTypeEnum.LEVEL2, 1, 1);
+            is.buildBlock(DOME, 3, 3);
+
+        } catch (InvalidBuildException e) {
+            e.printStackTrace();
+        }
+        isla = is.getIslandDataCopy();
+
+
+        updateIsland(isla);
     }
 }
