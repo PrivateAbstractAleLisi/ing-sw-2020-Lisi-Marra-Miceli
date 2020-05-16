@@ -41,7 +41,7 @@ public class SantoriniClient extends EventSource implements Runnable {
 
     public SantoriniClient(EventListener userInterface, String ipAddress, boolean enablePing) {
         this.userInterface = userInterface;
-        this.IP = IP;
+        this.IP = ipAddress;
         this.enablePing = enablePing;
         attachListenerByType(VIEW, userInterface);
     }
