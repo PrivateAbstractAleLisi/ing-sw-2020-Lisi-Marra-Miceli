@@ -2,6 +2,7 @@ package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.WorkerColors;
@@ -9,12 +10,18 @@ import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
+import it.polimi.ingsw.psp58.view.UI.GUI.BoardPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateAbs;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.util.ArrayList;
@@ -23,10 +30,15 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import static it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum.DOME;
+import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState.*;
 
 public class BoardSceneController {
+
+    private WorkerColors myColor;
+    private String myUsername = "";
     private GUI gui;
 
+    GameState currentState;
     public GridPane board;
 
     public Label turnSequence;
@@ -49,7 +61,111 @@ public class BoardSceneController {
 
     private List<Label> playersList;
 
+    //BUTTONS
 
+    public Button moveButton, buildButton, passButton;
+
+    private void disableAllActionButtons() {
+        moveButton.setDisable(true);
+        buildButton.setDisable(true);
+        passButton.setDisable(true);
+    }
+
+    private void enableAllActionButtons() {
+        moveButton.setDisable(false);
+        buildButton.setDisable(false);
+        passButton.setDisable(false);
+    }
+
+    //BLOCKS
+
+    public HBox L1Box, L2Box, L3Box, DomeBox;
+
+    private void updateBlocksCounter(int lev1, int lev2, int lev3, int dome) {
+        ((Label) L1Box.getChildren().get(1)).setText(Integer.toString(lev1));
+        ((Label) L2Box.getChildren().get(1)).setText(Integer.toString(lev2));
+        ((Label) L3Box.getChildren().get(1)).setText(Integer.toString(lev3));
+        ((Label) DomeBox.getChildren().get(1)).setText(Integer.toString(dome));
+    }
+
+    public void setWaitingView() {
+        disableAllActionButtons();
+    }
+    //Workers
+
+    public ImageView workerSlotA;
+    public ImageView workerSlotB;
+
+
+    public void updateTurnSequence(Map<String, CardEnum> turnSequenceFromEvent) {
+
+        //fill turn sequence
+        Map<String, CardEnum> sequence = turnSequenceFromEvent;
+        String turnSequenceText = "";
+        boolean first = true;
+        for (String s : sequence.keySet()) {
+            if(first) {
+                turnSequenceText += " ";
+                first = false;
+            }
+            else {
+                turnSequenceText += " << ";
+            }
+            turnSequenceText += s.toUpperCase();
+
+
+        }
+        turnSequence.setText(turnSequenceText);
+    }
+    public void init(CV_WorkerPlacementGameEvent event, String myUsername) {
+
+        updateTurnSequence(event.getTurnSequence());
+        this.myUsername = myUsername;
+        myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());
+
+        String url;
+        switch (myColor) {
+
+            case BEIGE:
+                url = "images/cellcluster/W_ORANGE.png";
+                break;
+            case BLUE:
+                url = "images/cellcluster/W_BLUE.png";
+                break;
+            case WHITE:
+                url = "images/cellcluster/W_PINK.png";
+                break;
+            default:
+                System.err.println("error in casting color from event");
+                url = "";
+        }
+
+        workerSlotA.setImage(new Image(url));
+        workerSlotB.setImage(new Image(url));
+
+
+        //update blocks counter to starting state
+        updateBlocksCounter(22, 18, 14, 18);
+
+    }
+    public void setState(GameStateAbs nextState) {
+        nextState.setState(this);
+    }
+
+    public void handleWorkerPlacement(Worker.IDs workerRequested) {
+        disableAllActionButtons();
+
+        switch (workerRequested) {
+
+            case A:
+
+                workerSlotA.setEffect(new Glow(0.8));
+                BoardPopUp.show("Please place worker " + workerRequested.toString());
+                break;
+            case B:
+                break;
+        }
+    }
 
     public void setGui(GUI gui) {
         this.gui=gui;
@@ -241,31 +357,13 @@ public class BoardSceneController {
         return url;
     }
 
-    public void setUpTurnSequence(List<String> playersList){
-        String message ="";
-        for (String player : playersList){
-            if(!message.isEmpty()) {
-                message = message + "<< ";
-            }
-            message = message + player + " ";
-        }
-        turnSequence.setText(message);
+    //GRID CLICK HANDLER
+
+    public void onClickEventCellCluster(MouseEvent mouseEvent) {
+        Node source = (Node)mouseEvent.getSource() ;
+        Integer colIndex = GridPane.getColumnIndex(source);
+        Integer rowIndex = GridPane.getRowIndex(source);
+        System.out.printf("Mouse entered cell [%d, %d]%n", colIndex.intValue(), rowIndex.intValue());
     }
 
-    public void debugTest() {
-        IslandData isla;
-        Island is = new Island();
-        try {
-            is.buildBlock(BlockTypeEnum.LEVEL1, 3, 4);
-            is.buildBlock(BlockTypeEnum.LEVEL2, 1, 1);
-            is.buildBlock(DOME, 3, 3);
-
-        } catch (InvalidBuildException e) {
-            e.printStackTrace();
-        }
-        isla = is.getIslandDataCopy();
-
-
-        updateIsland(isla);
-    }
 }

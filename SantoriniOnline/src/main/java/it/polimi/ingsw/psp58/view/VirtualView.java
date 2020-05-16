@@ -11,6 +11,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.networking.server.SantoriniServerClientHandler;
 
@@ -231,6 +232,11 @@ public class VirtualView extends EventSource implements ViewListener, Controller
         if (event.getRecipient().equals(this.username)) {
             sendEventToClient(event);
         }
+    }
+
+    @Override
+    public void handleEvent(CV_WorkerPlacementGameEvent event) {
+        sendEventToClient(event);
     }
 
     @Override

@@ -6,6 +6,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 
 public interface ViewListener extends EventListener{
 
@@ -37,6 +38,8 @@ public interface ViewListener extends EventListener{
     void handleEvent(CV_WaitPreMatchGameEvent event);
 
     //MATCH
+
+    void handleEvent(CV_WorkerPlacementGameEvent event);
     void handleEvent(CV_CommandRequestEvent event);
 
     void handleEvent(CV_GameOverEvent event);

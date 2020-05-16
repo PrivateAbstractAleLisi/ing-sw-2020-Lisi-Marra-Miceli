@@ -32,6 +32,7 @@ public class ConnectionSceneController {
 
                 //send the event to the server
                 VC_ConnectionRequestGameEvent event = new VC_ConnectionRequestGameEvent("connection request", ipAddress.getText(), gui.getSocketPort() ,username.getText());
+                gui.setUsername(username.getText().toLowerCase());
                 gui.sendEvent(event);
 
                 new Thread(client).start();

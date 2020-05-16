@@ -5,7 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.effect.Glow?>
-<?import javafx.scene.effect.Light.Distant?>
+
 <?import javafx.scene.effect.Lighting?>
 <?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.image.Image?>
@@ -120,7 +120,7 @@
                               <Insets left="14.0" />
                            </VBox.margin>
                         </Label>
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="125.0" prefWidth="468.0" text="CURRENT &lt; NEXT &lt; NEXT2">
+                        <Label fx:id="turnSequence" alignment="CENTER" contentDisplay="CENTER" prefHeight="125.0" prefWidth="468.0" text="CURRENT &lt; NEXT &lt; NEXT2">
                            <font>
                               <Font size="27.0" />
                            </font>
@@ -139,7 +139,7 @@
                         </Label>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <HBox prefHeight="68.0" prefWidth="114.0" style="-fx-border-color: darkblue;">
+                              <HBox fx:id="L1Box" prefHeight="68.0" prefWidth="114.0" style="-fx-border-color: darkblue;">
                                  <children>
                                     <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -159,7 +159,7 @@
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox prefHeight="68.0" prefWidth="114.0" style="-fx-border-color: darkblue;">
+                              <HBox fx:id="L2Box" prefHeight="68.0" prefWidth="114.0" style="-fx-border-color: darkblue;">
                                  <children>
                                     <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -179,7 +179,7 @@
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox prefHeight="68.0" prefWidth="114.0" style="-fx-border-color: darkblue;">
+                              <HBox fx:id="L3Box" prefHeight="68.0" prefWidth="114.0" style="-fx-border-color: darkblue;">
                                  <children>
                                     <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -199,7 +199,7 @@
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox prefHeight="68.0" prefWidth="114.0" style="-fx-border-color: darkblue;">
+                              <HBox fx:id="DomeBox" prefHeight="68.0" prefWidth="114.0" style="-fx-border-color: darkblue;">
                                  <children>
                                     <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -238,7 +238,7 @@
                               <Shadow />
                            </bumpInput>
                            <light>
-                              <Light.Distant azimuth="347.49" />
+
                            </light>
                         </Lighting>
                      </effect>
@@ -300,7 +300,7 @@
                                        <center>
                                           <HBox prefHeight="141.0" prefWidth="300.0" BorderPane.alignment="CENTER">
                                              <children>
-                                                <ImageView fitHeight="110.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
+                                                <ImageView fx:id="workerSlotA" fitHeight="110.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
                                                       <Image url="@../images/cellcluster/W_PINK.png" />
                                                    </image>
@@ -308,7 +308,7 @@
                                                       <Glow level="0.36" />
                                                    </effect>
                                                 </ImageView>
-                                                <ImageView fitHeight="110.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
+                                                <ImageView fx:id="workerSlotB" fitHeight="110.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
                                                       <Image url="@../images/cellcluster/W_PINK.png" />
                                                    </image>
@@ -336,17 +336,17 @@
                <children>
                   <HBox alignment="CENTER" prefHeight="87.0" prefWidth="325.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="88.0" prefWidth="88.0" text="MOVE">
+                        <Button fx:id="moveButton" mnemonicParsing="false" prefHeight="88.0" prefWidth="88.0" text="MOVE">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" prefHeight="88.0" prefWidth="88.0" text="BUILD">
+                        <Button fx:id="buildButton" mnemonicParsing="false" prefHeight="88.0" prefWidth="88.0" text="BUILD">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" prefHeight="88.0" prefWidth="88.0" text="PASS">
+                        <Button fx:id="passButton" mnemonicParsing="false" prefHeight="88.0" prefWidth="88.0" text="PASS">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>
@@ -356,7 +356,7 @@
                </children></HBox>
          </bottom>
          <center>
-            <GridPane fx:id="board" alignment="CENTER" gridLinesVisible="true" hgap="12.0" style="-fx-background-repeat: no-repeat; -fx-background-image: url('/images/Board.png'); -fx-background-size: contain; -fx-background-position: center center;" vgap="12.0" BorderPane.alignment="CENTER">
+            <GridPane fx:id="board" alignment="CENTER" gridLinesVisible="true" hgap="12.0" onMouseClicked="#onClickEventCellCluster" style="-fx-background-repeat: no-repeat; -fx-background-image: url('/images/Board.png'); -fx-background-size: contain; -fx-background-position: center center;" vgap="12.0" BorderPane.alignment="CENTER">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />

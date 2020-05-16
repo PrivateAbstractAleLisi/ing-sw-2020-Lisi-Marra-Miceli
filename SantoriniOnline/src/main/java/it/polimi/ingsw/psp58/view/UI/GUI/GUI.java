@@ -6,9 +6,12 @@ import it.polimi.ingsw.psp58.event.gameEvents.*;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.PlaceWorkerGameState;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.WaitGameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -55,9 +58,12 @@ public class GUI extends Application implements ViewListener {
 
 
 
+
     public static void main(String[] args) {
         Application.launch(args);
     }
+
+
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -72,6 +78,7 @@ public class GUI extends Application implements ViewListener {
                 }
             }
         }
+
 
         stage = primaryStage;
         stage.setResizable(false);
@@ -88,18 +95,20 @@ public class GUI extends Application implements ViewListener {
         //starts with the startingScene
         stage.setTitle("Santorini Online");
 
-        //stage.setScene(startingScene);
 
 
-        //DEBUG START WITH ANOTHER SCENE
+
+
+
         FXMLLoader boardLoader = new FXMLLoader(
                 getClass().getResource("/scenes/BoardScene.fxml"));
         boardScene = new Scene(boardLoader.load());
         boardSceneController = boardLoader.getController();
         stage.setResizable(false);
-        changeScene(boardScene);
 
-        boardSceneController.debugTest();
+        boardSceneController.setGui(this);
+       // boardSceneController.debugTest();
+
         stage.show();
 
         //set up the lobby
@@ -115,6 +124,10 @@ public class GUI extends Application implements ViewListener {
         preGameScene = new Scene(preGameSceneLoader.load());
         preGameSceneController = preGameSceneLoader.getController();
         preGameSceneController.setGui(this);
+
+        stage.setScene(startingScene);
+        //DEBUG
+        stage.setScene(boardScene);
     }
 
     public void changeScene(Scene scene) {
@@ -274,7 +287,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-
+        boardSceneController.setState(new PlaceWorkerGameState(event));
     }
 
     @Override
@@ -294,7 +307,17 @@ public class GUI extends Application implements ViewListener {
         }
         System.out.println("Wait received");
         preGameSceneController.update(event);
-        changeScene(preGameScene);
+        if (!stage.getScene().equals(boardScene)) {
+            changeScene(preGameScene);
+        }
+    }
+
+    @Override
+    public void handleEvent(CV_WorkerPlacementGameEvent event) {
+        System.out.println("DEBUG: worker placement update event has arrived");
+            changeScene(boardScene);
+            boardSceneController.init(event, username);
+            boardSceneController.setState(new WaitGameState());
     }
 
     @Override
