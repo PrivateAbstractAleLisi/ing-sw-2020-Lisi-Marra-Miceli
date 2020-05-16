@@ -153,8 +153,13 @@ public class PreGameController extends EventSource implements ControllerListener
             boardManager.takeCard(event.getCard());
             boardManager.getPlayer(event.getPlayer()).setCard(event.getCard());
             playersCardsCorrespondence.put(event.getPlayer(), event.getCard());
-            availableCards.remove(event.getCard());
-            alreadyTakenCards.add(event.getCard());
+            if(event.getCard()!=CardEnum.SUPERUSER) {
+                availableCards.remove(event.getCard());
+                alreadyTakenCards.add(event.getCard());
+            }else{
+                alreadyTakenCards.add(availableCards.get(0));
+                availableCards.remove(0);
+            }
             List<String> players = room.getActiveUsers();
 
             int indexOfChoosingPlayer = players.indexOf(event.getPlayer());
@@ -207,7 +212,6 @@ public class PreGameController extends EventSource implements ControllerListener
         int turnSequenceIndex = 0;
         turnSequence.put(turnSequenceIndex, boardManager.getPlayer(firstPlayer));
         turnSequenceIndex++;
-
 
         String[] players = room.getActiveUsersCopy();
         int indexOfChosenPlayer = 0;

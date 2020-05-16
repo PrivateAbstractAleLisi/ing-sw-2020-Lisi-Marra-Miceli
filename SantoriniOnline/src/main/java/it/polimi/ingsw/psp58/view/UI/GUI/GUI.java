@@ -101,6 +101,28 @@ public class GUI extends Application implements ViewListener {
         preGameScene = new Scene(preGameSceneLoader.load());
         preGameSceneController = preGameSceneLoader.getController();
         preGameSceneController.setGui(this);
+
+        username="Player2";
+//        CV_RoomUpdateGameEvent roomUpdateGameEvent = new CV_RoomUpdateGameEvent("", new String[]{"Player1", "Player2"},2);
+//        preGameSceneController.update(new CV_WaitPreMatchGameEvent("","Player1", "Player2", "CHALLENGER_CARDS"));
+//        CV_ChallengerChosenEvent event = new CV_ChallengerChosenEvent("Player2",2);
+//        preGameSceneController.update(roomUpdateGameEvent);
+//        preGameSceneController.update(event);
+//        ArrayList<CardEnum> availableCards = new ArrayList<CardEnum>();
+//        availableCards.add(CardEnum.APOLLO);
+//        availableCards.add(CardEnum.PAN);
+//        ArrayList<CardEnum> unavailableCards = new ArrayList<CardEnum>();
+//        unavailableCards.add(CardEnum.ATLAS);
+
+//        preGameSceneController.update(new CV_CardChoiceRequestGameEvent("", availableCards, unavailableCards, "Player2"));
+//        preGameSceneController.update(new CV_CardChoiceRequestGameEvent("", availableCards, "Player2"));
+
+        //starts with the startingScene
+//        stage.setTitle("Santorini Online");
+//        stage.setMaximized(true);
+//        stage.setResizable(true);
+//        stage.setScene(preGameScene);
+//        stage.show();
     }
 
     public void changeScene(Scene scene) {

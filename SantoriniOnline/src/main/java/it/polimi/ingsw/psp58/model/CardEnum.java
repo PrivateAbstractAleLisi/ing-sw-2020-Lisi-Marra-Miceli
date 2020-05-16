@@ -9,8 +9,8 @@ public enum CardEnum {
     HEPHAESTUS(6, "Hephaestus", "Your Worker may build one additional block (not dome) on top of your first block.", "/images/gods/06_Hephaestus.png"),
     MINOTAUR(8, "Minotaur", "Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level.", "/images/gods/08_Minotaur.png"),
     PAN(9, "Pan", "You also win if your Worker moves down two or more levels.", "/images/gods/09_Pan.png"),
-    PROMETHEUS(10, "Prometheus", "If your Worker does not move up, it may build both before and after moving.", "/images/gods/10_Prometheus.png");
-SUPERUSER(99, "Superuser", "for testing purposes", "/images/gods/full_0000s_0014_god_and_hero_cards_0042_zeus.png");
+    PROMETHEUS(10, "Prometheus", "If your Worker does not move up, it may build both before and after moving.", "/images/gods/10_Prometheus.png"),
+    SUPERUSER(99, "Superuser", "You can do what the F**k you want", "/images/gods/full_0000s_0014_god_and_hero_cards_0042_zeus.png");
 
     private int number;
     private String name;

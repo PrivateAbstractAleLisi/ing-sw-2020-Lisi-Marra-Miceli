@@ -66,6 +66,7 @@ public class PreGameSceneController {
     public HBox playerName_HBox1;
     public HBox playerName_HBox2;
     public HBox playerName_HBox3;
+    public Button superUserButton;
 
     //RIGHT
     public Button confirmButton;
@@ -76,8 +77,6 @@ public class PreGameSceneController {
     private int indexFirstFreeHBox;
     private int actualEnableHBox;
 
-    //BOTTOM
-    public Button superUserButton;
 
     //Maps
     private Map<HBox, CardEnum> challengerCardMapByHBox;
@@ -286,6 +285,8 @@ public class PreGameSceneController {
 
         showXRightHBoxes(1);
         setVisibleOnlyThisNode(cardChoiceTilePane);
+        //enable SuperUserVBox
+        superUserButton.setDisable(false);
     }
 
     private void fillPlayerChoiceCard(VBox vBox, CardEnum card, boolean available) {
@@ -351,20 +352,22 @@ public class PreGameSceneController {
 
         int actualNode = 0;
         for (CardEnum card : CardEnum.values()) {
-            if (actualNode < MAX_CARDS_NUMBERS) {
-                if (children.get(actualNode) instanceof StackPane) {
-                    StackPane stackPane = (StackPane) children.get(actualNode);
-                    HBox hBox = (HBox) stackPane.getChildren().get(1);
-                    fillSingleChallengerHBox(hBox, card);
-                    challengerCardMapByHBox.put(hBox, card);
-                    challengerHBoxMapByCard.put(card, hBox);
+            if (card != CardEnum.SUPERUSER) {
+                if (actualNode < MAX_CARDS_NUMBERS) {
+                    if (children.get(actualNode) instanceof StackPane) {
+                        StackPane stackPane = (StackPane) children.get(actualNode);
+                        HBox hBox = (HBox) stackPane.getChildren().get(1);
+                        fillSingleChallengerHBox(hBox, card);
+                        challengerCardMapByHBox.put(hBox, card);
+                        challengerHBoxMapByCard.put(card, hBox);
+                    } else {
+                        hideNextCardsHBoxes(actualNode);
+                    }
+                    actualNode++;
                 } else {
-                    hideNextCardsHBoxes(actualNode);
+                    System.out.println("ERROR TOO MUCH CARDS");
+                    break;
                 }
-                actualNode++;
-            } else {
-                System.out.println("ERROR TOO MUCH CARDS");
-                break;
             }
         }
         if (actualNode < MAX_CARDS_NUMBERS) {
@@ -449,7 +452,7 @@ public class PreGameSceneController {
     private void fillFirstPlayerChoice(VBox vBox, CardEnum card, String username) {
         firstPlayerUsernameByVBox.put(vBox, username.toLowerCase());
         firstPlayerVBoxByUsername.put(username.toLowerCase(), vBox);
-        firstPlayerCardByName.put(username.toLowerCase(),card);
+        firstPlayerCardByName.put(username.toLowerCase(), card);
 
         ImageView image = (ImageView) vBox.getChildren().get(0);
         image.setImage(new Image(card.getImgUrl()));
@@ -553,7 +556,7 @@ public class PreGameSceneController {
 
     private void disableNotSelectedChallengerCards() {
         for (CardEnum card : CardEnum.values()) {
-            if (!challengerSelectedCards.contains(card)) {
+            if (!challengerSelectedCards.contains(card) && card != CardEnum.SUPERUSER) {
                 disableChallengerCard(card);
             }
         }
@@ -561,7 +564,7 @@ public class PreGameSceneController {
 
     private void enableNotSelectedChallengerCards() {
         for (CardEnum card : CardEnum.values()) {
-            if (!challengerSelectedCards.contains(card)) {
+            if (!challengerSelectedCards.contains(card) && card != CardEnum.SUPERUSER) {
                 enableChallengerCard(card);
             }
         }
@@ -871,5 +874,23 @@ public class PreGameSceneController {
         resetIndexFreeHBox();
     }
 
+    public void onClickSuperUserButton(MouseEvent mouseEvent) {
+        CardEnum card = CardEnum.SUPERUSER;
+
+        if (playerSelectedCard != null && playerSelectedCard.equals(card)) {
+            //Already selected card is selected a second time
+            cleanRightHBox(card);
+            enableNotSelectedPlayerCards();
+            playerSelectedCard = null;
+            disableConfirmButton();
+        } else {
+            playerSelectedCard = card;
+            fillFirstFreeHBox(card);
+            disableNotSelectedPlayerCards();
+            enableConfirmButton();
+        }
+
+        System.out.println("Card clicked: " + card);
+    }
 
 }

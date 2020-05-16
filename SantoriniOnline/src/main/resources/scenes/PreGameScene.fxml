@@ -1177,7 +1177,7 @@
                 </VBox>
             </left>
             <right>
-                <SplitPane dividerPositions="0.8270440251572327" orientation="VERTICAL" styleClass="right-pane" BorderPane.alignment="CENTER">
+                <SplitPane dividerPositions="0.8846153846153846" orientation="VERTICAL" styleClass="right-pane" BorderPane.alignment="CENTER">
                     <items>
                         <VBox alignment="TOP_CENTER" spacing="8.0">
                             <children>
@@ -1273,32 +1273,37 @@
                                 <Insets bottom="15.0" left="10.0" right="10.0" top="15.0" />
                             </padding>
                         </VBox>
-                        <HBox alignment="CENTER" SplitPane.resizableWithParent="false">
+                        <VBox alignment="BOTTOM_CENTER">
                             <children>
-                                <StackPane>
+                                <HBox alignment="CENTER">
                                     <children>
-                                        <ImageView fitWidth="200.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
-                                            <image>
-                                                <Image url="@../images/btn_blue-bigger.png" />
-                                            </image>
-                                        </ImageView>
-                                        <Button fx:id="confirmButton" defaultButton="true" mnemonicParsing="false" onAction="#onClickEventConfirmButton" prefHeight="75.0" prefWidth="194.0" style="-fx-background-color: transparent;" text="CONFIRM" textFill="WHITE" StackPane.alignment="CENTER">
-                                            <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                            </cursor>
-                                            <font>
-                                                <Font name="System Bold Italic" size="25.0" />
-                                            </font>
-                                            <StackPane.margin>
-                                                <Insets bottom="10.0" />
-                                            </StackPane.margin>
-                                        </Button>
-                                        <Pane blendMode="MULTIPLY" disable="true" maxHeight="70.0" opacity="0.6" prefHeight="75.0" prefWidth="200.0" styleClass="glow-back-pane" visible="false" StackPane.alignment="CENTER" />
-                                        <Pane blendMode="MULTIPLY" maxHeight="70.0" styleClass="card-unavailable-overlay" />
+                                        <StackPane>
+                                            <children>
+                                                <ImageView fitWidth="200.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+                                                    <image>
+                                                        <Image url="@../images/btn_blue-bigger.png" />
+                                                    </image>
+                                                </ImageView>
+                                                <Button fx:id="confirmButton" defaultButton="true" mnemonicParsing="false" onAction="#onClickEventConfirmButton" prefHeight="75.0" prefWidth="194.0" style="-fx-background-color: transparent;" text="CONFIRM" textFill="WHITE" StackPane.alignment="CENTER">
+                                                    <cursor>
+                                                        <Cursor fx:constant="HAND" />
+                                                    </cursor>
+                                                    <font>
+                                                        <Font name="System Bold Italic" size="25.0" />
+                                                    </font>
+                                                    <StackPane.margin>
+                                                        <Insets bottom="10.0" />
+                                                    </StackPane.margin>
+                                                </Button>
+                                                <Pane blendMode="MULTIPLY" disable="true" maxHeight="70.0" opacity="0.6" prefHeight="75.0" prefWidth="200.0" styleClass="glow-back-pane" visible="false" StackPane.alignment="CENTER" />
+                                                <Pane blendMode="MULTIPLY" maxHeight="70.0" styleClass="card-unavailable-overlay" />
+                                            </children>
+                                        </StackPane>
                                     </children>
-                                </StackPane>
+                                </HBox>
+                                  <Button fx:id="superUserButton" disable="true" mnemonicParsing="false" onMouseClicked="#onClickSuperUserButton" prefHeight="25.0" prefWidth="266.0" style="-fx-background-color: transparent;" />
                             </children>
-                        </HBox>
+                        </VBox>
                     </items>
                     <BorderPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

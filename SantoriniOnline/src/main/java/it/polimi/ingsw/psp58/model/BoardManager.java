@@ -53,7 +53,6 @@ public class BoardManager {
     }
 
     /**
-     *
      * @param blockType type of the block that you what to know the amount
      * @return the number of the blocks of the blockType remaining
      * @throws IllegalArgumentException if there are no more blocks of blockType remaining
@@ -79,7 +78,6 @@ public class BoardManager {
 
 
     /**
-     *
      * @param blockType type of the block to decrement from the remaining blocks
      * @throws NoRemainingBlockException if there are no block of blockType remaining
      */
@@ -128,7 +126,7 @@ public class BoardManager {
      */
     public void addPlayer(String username) throws LimitExceededException, AlreadyExistingPlayerException {
         if (players.size() < 3) {
-            for (Player p: players) {
+            for (Player p : players) {
                 if (p.getUsername().equals(username))
                     throw new AlreadyExistingPlayerException("Player already existing");
             }
@@ -138,17 +136,16 @@ public class BoardManager {
     }
 
     /**
-     *
      * @param player that should be removed from the game
      * @throws InvalidWorkerRemovalException
      */
     public void removePlayer(Player player) throws InvalidWorkerRemovalException {
-        if(player.getWorker(Worker.IDs.A)!= null){
+        if (player.getWorker(Worker.IDs.A) != null) {
             Worker worker1 = player.getWorker(Worker.IDs.A);
             island.removeWorker(worker1);
             player.removeWorker(Worker.IDs.A);
         }
-        if (player.getWorker(Worker.IDs.B)!= null){
+        if (player.getWorker(Worker.IDs.B) != null) {
             Worker worker2 = player.getWorker(Worker.IDs.B);
             island.removeWorker(worker2);
             player.removeWorker(Worker.IDs.B);
@@ -157,7 +154,6 @@ public class BoardManager {
     }
 
     /**
-     *
      * @param username the username of the player that should be removed from the game
      * @throws InvalidWorkerRemovalException
      */
@@ -166,12 +162,12 @@ public class BoardManager {
         for (Player p : players) {
             if (p.getUsername().equals(username)) player = p;
         }
-        if(player.getWorker(Worker.IDs.A)!= null){
+        if (player.getWorker(Worker.IDs.A) != null) {
             Worker worker1 = player.getWorker(Worker.IDs.A);
             player.removeWorker(Worker.IDs.A);
             island.removeWorker(worker1);
         }
-        if (player.getWorker(Worker.IDs.B)!= null){
+        if (player.getWorker(Worker.IDs.B) != null) {
             Worker worker2 = player.getWorker(Worker.IDs.B);
             player.removeWorker(Worker.IDs.B);
             island.removeWorker(worker2);
@@ -232,9 +228,8 @@ public class BoardManager {
     }
 
     /**
-     *
      * @param card the card selected by the user
-     * @throws InvalidCardException if the card is not in the card list
+     * @throws InvalidCardException   if the card is not in the card list
      * @throws LimitExceededException if there already three cards selected
      */
     public void selectCard(CardEnum card) throws InvalidCardException, LimitExceededException {
@@ -260,14 +255,13 @@ public class BoardManager {
      * @throws InvalidCardException if the card passed as input is not in the card list
      */
     public void takeCard(CardEnum card) throws InvalidCardException {
-        if (selectedCards.contains(card)) {
+        if (selectedCards.contains(card) || card == CardEnum.SUPERUSER) {
             takenCards.add(card);
             selectedCards.remove(card);
         } else throw new InvalidCardException("Card is not a selected one");
     }
 
     /**
-     *
      * @param playersCardsCorrespondence a map that memorize the correspondence of the players and the cards
      */
     public void setPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence) {
@@ -277,11 +271,12 @@ public class BoardManager {
     /**
      * Resets all the player behaviour using their cards
      */
-    public void resetAllPlayerBehaviour () {
+    public void resetAllPlayerBehaviour() {
         for (Player p : players) {
             p.getCard().resetBehaviour();
         }
     }
+
     /**
      * @return a copy of the list of the cards taken
      */
