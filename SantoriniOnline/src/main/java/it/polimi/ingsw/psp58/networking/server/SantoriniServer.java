@@ -35,7 +35,7 @@ public class SantoriniServer {
                         pingStamp = true;
                         System.out.println("SERVER SETTINGS: <Ping Stamp> ON");
                         break;
-                    case "-no-ping":
+                    case "-pingOff":
                         enablePing = false;
                         System.out.println("SERVER SETTINGS: <Ping System> OFF");
                         break;
