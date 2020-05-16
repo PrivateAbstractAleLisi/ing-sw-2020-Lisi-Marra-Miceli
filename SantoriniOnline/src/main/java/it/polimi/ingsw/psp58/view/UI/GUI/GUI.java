@@ -6,6 +6,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.*;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
@@ -15,6 +16,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class GUI extends Application implements ViewListener {
@@ -24,6 +29,8 @@ public class GUI extends Application implements ViewListener {
     private final int socketPort = 7557;
 
     private String chosenIp;
+
+    private boolean enablePing = true;
 
     private WorkerColors playerColor;
 
@@ -52,9 +59,19 @@ public class GUI extends Application implements ViewListener {
         Application.launch(args);
     }
 
-
     @Override
     public void start(Stage primaryStage) throws IOException {
+        List<String> args = getParameters().getRaw();
+
+        if (args != null && !args.isEmpty()) {
+            for (String currentArgument : args) {
+                switch (currentArgument) {
+                    case "-ping off":
+                        enablePing = false;
+                        break;
+                }
+            }
+        }
 
         stage = primaryStage;
         stage.setResizable(false);
@@ -101,7 +118,7 @@ public class GUI extends Application implements ViewListener {
     }
 
     public void changeScene(Scene scene) {
-        stage.close();
+//        stage.close();
         stage.setTitle("Santorini Online");
         stage.setScene(scene);
         stage.show();
@@ -117,6 +134,10 @@ public class GUI extends Application implements ViewListener {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void setClient(SantoriniClient client) {
@@ -135,7 +156,6 @@ public class GUI extends Application implements ViewListener {
         this.startingSceneController = startingSceneController;
     }
 
-
     public void setLobbyScene(Scene roomScene) {
         this.lobbyScene = roomScene;
     }
@@ -150,6 +170,10 @@ public class GUI extends Application implements ViewListener {
 
     public void setBoardSceneController(BoardSceneController boardSceneController) {
         this.boardSceneController = boardSceneController;
+    }
+
+    public boolean isPingEnabled() {
+        return enablePing;
     }
 
     public int getSocketPort() {
@@ -180,7 +204,6 @@ public class GUI extends Application implements ViewListener {
     public BoardSceneController getBoardSceneController() {
         return boardSceneController;
     }
-
 
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
@@ -230,17 +253,23 @@ public class GUI extends Application implements ViewListener {
     public void handleEvent(CV_RoomUpdateGameEvent event) {
         System.out.println("room received");
         lobbySceneController.update(event);
-        changeScene(lobbyScene);
+        if (stage.getScene().equals(startingScene)) {
+            changeScene(lobbyScene);
+        }
+        preGameSceneController.update(event);
     }
 
     @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-
+        stage.setResizable(true);
+        System.out.println("I have to choose my card!");
+        preGameSceneController.update(event);
     }
 
     @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-
+        System.out.println("Choose the first player!");
+        preGameSceneController.update(event);
     }
 
     @Override
@@ -251,14 +280,21 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
         stage.setResizable(true);
-        System.out.println("room received");
+        stage.setMaximized(true);
+        System.out.println("I'm the challenger");
         preGameSceneController.update(event);
         changeScene(preGameScene);
     }
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-
+        stage.setResizable(true);
+        if(event.getWaitCode().equals("CHALLENGERS_CARDS")){
+            stage.setMaximized(true);
+        }
+        System.out.println("Wait received");
+        preGameSceneController.update(event);
+        changeScene(preGameScene);
     }
 
     @Override

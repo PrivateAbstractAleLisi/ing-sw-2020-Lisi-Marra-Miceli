@@ -16,12 +16,20 @@ import java.util.List;
 public class CV_CardChoiceRequestGameEvent extends ViewGameEvent {
 
     private List <CardEnum> availableCards;
+    private List <CardEnum> usedCards;
     private String username;
 
     public CV_CardChoiceRequestGameEvent(String description, List<CardEnum> availableCards, String username) {
         super(description);
         this.availableCards = availableCards;
         this.username=username;
+        this.usedCards=null;
+    }
+    public CV_CardChoiceRequestGameEvent(String description, List<CardEnum> availableCards, List<CardEnum> usedCards, String username) {
+        super(description);
+        this.availableCards = availableCards;
+        this.username=username;
+        this.usedCards=usedCards;
     }
 
     public List<CardEnum> getAvailableCards() {
@@ -30,6 +38,10 @@ public class CV_CardChoiceRequestGameEvent extends ViewGameEvent {
 
     public String getUsername() {
         return username;
+    }
+
+    public List<CardEnum> getUsedCards() {
+        return usedCards;
     }
 
     @Override

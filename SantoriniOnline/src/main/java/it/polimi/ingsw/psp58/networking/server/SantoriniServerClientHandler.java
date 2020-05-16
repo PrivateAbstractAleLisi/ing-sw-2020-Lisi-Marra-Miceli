@@ -26,22 +26,25 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     private ObjectOutputStream output;
 
     private final boolean pingStamp;
+    private final boolean enablePing;
 
     VirtualView clientVV;
 
-    public SantoriniServerClientHandler(Socket clientSocket, String threadID, boolean pingStamp) {
+    public SantoriniServerClientHandler(Socket clientSocket, String threadID, boolean pingStamp, boolean enablePing) {
         this.clientSocket = clientSocket;
         this.clientVV = new VirtualView(this);
         makeConnections();
         input = null;
         this.threadID = threadID;
         this.pingStamp = pingStamp;
+        this.enablePing = enablePing;
     }
 
     @Override
     public void run() {
         try {
             handleClientConnection();
+
         } catch (IOException | ClassNotFoundException e) { //TODO Disconnects?
             connectionLost("client disconnected, socket error");
             e.printStackTrace();
@@ -78,7 +81,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
 
                     //detach Lobby and the user that crashed
                     Lobby.instance().detachListenerByType(VIEW, clientVV);
-                    clientVV.detachListenerByType(CONTROLLER,Lobby.instance());
+                    clientVV.detachListenerByType(CONTROLLER, Lobby.instance());
 
                     System.out.println("client socket closed: " + clientSocket.getInetAddress() + " port: " + clientSocket.getPort());
                     Thread.currentThread().interrupt();
@@ -88,7 +91,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
             } else {
                 //Even if Lobby doesn't already saved my username, I detach myself
                 Lobby.instance().detachListenerByType(VIEW, clientVV);
-                clientVV.detachListenerByType(CONTROLLER,Lobby.instance());
+                clientVV.detachListenerByType(CONTROLLER, Lobby.instance());
                 Thread.currentThread().interrupt();
             }
         }
@@ -106,6 +109,10 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
             e.printStackTrace();
         }
 
+        //For testing purpose it's possible to disable ping
+        if (enablePing) {
+            startPing();
+        }
 
         //read further events
         GameEvent received = null;
@@ -122,7 +129,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
                             System.out.println("SERVER: " + received.getEventDescription() + " from " + threadID);
                         }
                     } else {
-                        notifyAllObserverByType(CONTROLLER,(ControllerGameEvent) received);
+                        notifyAllObserverByType(CONTROLLER, (ControllerGameEvent) received);
                     }
                 }
 
@@ -140,7 +147,31 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         }
     }
 
-    public void sendEvent(GameEvent event){
+    public void startPing() {
+        Thread ping = new Thread() {
+            public void run() {
+
+                try {
+                    int counter = 0;
+                    while (true) {
+                        Thread.sleep(5000);
+                        output.writeObject(new PingEvent("Ping #" + counter));
+                        counter++;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    System.out.println("Unable to send event to client");
+                } finally {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        };
+
+        ping.start();
+    }
+
+    public void sendEvent(GameEvent event) {
         try {
             output.writeObject(event);
             output.flush();
@@ -149,7 +180,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         }
     }
 
-    public void disconnect(){
+    public void disconnect() {
         try {
             clientSocket.close();
         } catch (IOException e) {

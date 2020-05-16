@@ -53,7 +53,7 @@
                            <font>
                               <Font name="Avenir Book" size="13.0" />
                            </font></Text>
-                        <Button fx:id="connectButton" defaultButton="true" layoutX="88.0" layoutY="176.0" mnemonicParsing="false" onAction="#executeClickConnectButton" onMouseClicked="#onClickEventConnectButton" text="CONNECT" />
+                        <Button fx:id="connectButton" defaultButton="true" layoutX="88.0" layoutY="176.0" mnemonicParsing="false" onAction="#onClickEventConnectButton" text="CONNECT" />
                         <ProgressBar fx:id="loadProgress" layoutX="22.0" layoutY="221.0" prefHeight="11.0" prefWidth="200.0" progress="0.0" />
                         <Text fx:id="loadText" fill="#125d8c" layoutX="45.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&lt; establishing connection... &gt;" textAlignment="CENTER" wrappingWidth="161.77392578125">
                            <font>
