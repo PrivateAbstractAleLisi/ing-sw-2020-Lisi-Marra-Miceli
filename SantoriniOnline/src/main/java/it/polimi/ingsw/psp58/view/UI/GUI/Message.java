@@ -6,7 +6,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Box;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -15,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Message {
 
-    public static void show(String message) {
+    public static void show(String message, Stage parentStage) {
 
         Stage stage = new Stage();
 
@@ -38,12 +37,13 @@ public class Message {
 
         Scene scene = new Scene(vBox);
         stage.setScene(scene);
+        stage.initOwner(parentStage);
         stage.showAndWait();
     }
 
 
 
-    public static int askRoomSize(String message){
+    public static int askRoomSize(String message, Stage parentStage){
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setMinWidth(250);
@@ -76,6 +76,7 @@ public class Message {
 
         Scene scene = new Scene(vBox);
         stage.setScene(scene);
+        stage.initOwner(parentStage);
         stage.showAndWait();
 
         return number.get();

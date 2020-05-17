@@ -32,16 +32,17 @@ public class ConnectionSceneController {
 
                 //send the event to the server
                 VC_ConnectionRequestGameEvent event = new VC_ConnectionRequestGameEvent("connection request", ipAddress.getText(), gui.getSocketPort() ,username.getText());
+                gui.setUsername(username.getText().toLowerCase());
                 gui.sendEvent(event);
 
                 new Thread(client).start();
             }
             else {
-                Message.show("Username must be at least 3 alpha numeric characters!");
+                Message.show("Username must be at least 3 alpha numeric characters!",gui.getStage());
             }
         }
         else {
-            Message.show("Invalid IP Address!");
+            Message.show("Invalid IP Address!", gui.getStage());
         }
     }
 

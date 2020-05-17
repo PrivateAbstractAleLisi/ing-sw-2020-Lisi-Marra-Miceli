@@ -11,6 +11,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
@@ -504,6 +505,11 @@ public class CLIView extends EventSource implements ViewListener {
         clearScreen();
         System.out.println("⌛   WAITING   ⌛");
         System.out.println(event.getActingPlayer().toUpperCase() + " " + event.getEventDescription());
+    }
+
+    @Override
+    public void handleEvent(CV_WorkerPlacementGameEvent event) {
+
     }
 
     @Override

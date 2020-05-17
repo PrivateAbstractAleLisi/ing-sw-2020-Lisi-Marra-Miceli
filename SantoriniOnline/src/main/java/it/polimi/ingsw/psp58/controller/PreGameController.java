@@ -9,6 +9,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_IslandUpdateEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.VC_PlayerCommandGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.exceptions.InvalidCardException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.model.BoardManager;
@@ -248,6 +249,19 @@ public class PreGameController extends EventSource implements ControllerListener
         printLogMessage("The challenger chosen " + turnSequence.get(0).getUsername().toUpperCase() + " as first player");
 
         room.setTurnSequence(turnSequence);
+        //send an event to clients: pre game done, game is starting
+        CV_WorkerPlacementGameEvent upEvent;
+        Map<String, CardEnum> turnMap = new HashMap<>();
+        Map<String, WorkerColors> colorMap = new HashMap<>();
+        for (int t = 0; t < turnSequence.size(); t++) {
+            String user = turnSequence.get(t).getUsername();
+            turnMap.put(user, turnSequence.get(t).getCard().getName());
+            colorMap.put(turnSequence.get(t).getUsername(), boardManager.getPlayer(user).getColor());
+
+        }
+
+        upEvent = new CV_WorkerPlacementGameEvent("game is starting with worker placement", turnMap, colorMap);
+        notifyAllObserverByType(VIEW, upEvent);
         currentTurnIndex = 0;
         askPlaceFirstWorkerForCurrentUser();
     }
@@ -336,7 +350,9 @@ public class PreGameController extends EventSource implements ControllerListener
                 CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
                         event.getActingPlayer(), getCurrentIslandJson(), Worker.IDs.B);
                 notifyAllObserverByType(VIEW, newEvent);
+
             } else {
+                sendIslandUpdate(event.getActingPlayer());
                 if (currentTurnIndex + 1 < turnSequence.size()) {
                     currentTurnIndex++;
                     askPlaceFirstWorkerForCurrentUser();
