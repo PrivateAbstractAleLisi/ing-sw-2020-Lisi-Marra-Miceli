@@ -346,7 +346,9 @@ public class PreGameController extends EventSource implements ControllerListener
                 CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
                         event.getActingPlayer(), getCurrentIslandJson(), Worker.IDs.B);
                 notifyAllObserverByType(VIEW, newEvent);
+
             } else {
+                sendIslandUpdate(event.getActingPlayer());
                 if (currentTurnIndex + 1 < turnSequence.size()) {
                     currentTurnIndex++;
                     askPlaceFirstWorkerForCurrentUser();

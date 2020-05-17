@@ -1,28 +1,39 @@
 package it.polimi.ingsw.psp58.view.UI.GUI;
 
+import com.google.gson.Gson;
+import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
-import it.polimi.ingsw.psp58.event.gameEvents.*;
+import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
-import it.polimi.ingsw.psp58.model.CardEnum;
+import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
+import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.model.WorkerColors;
+import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
+import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.CommandGameState;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.PlaceWorkerGameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.WaitGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.PreGameSceneController;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.StartingSceneController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 
 
 public class GUI extends Application implements ViewListener {
@@ -92,42 +103,92 @@ public class GUI extends Application implements ViewListener {
         startingSceneController.setGui(this);
         startingSceneController.start();
 
-        //starts with the startingScene
-        stage.setTitle("Santorini Online");
-
-
-
-
-
-
-        FXMLLoader boardLoader = new FXMLLoader(
-                getClass().getResource("/scenes/BoardScene.fxml"));
-        boardScene = new Scene(boardLoader.load());
-        boardSceneController = boardLoader.getController();
-        stage.setResizable(false);
-
-        boardSceneController.setGui(this);
-       // boardSceneController.debugTest();
-
-        stage.show();
-
-        //set up the lobby
+        //set up the lobby scene and controller
         FXMLLoader lobbySceneLoader = new FXMLLoader(
                 getClass().getResource("/scenes/LobbyScene.fxml"));
         lobbyScene = new Scene(lobbySceneLoader.load());
         lobbySceneController = lobbySceneLoader.getController();
         lobbySceneController.setGui(this);
 
-        //set up the testLoad
+        //set up the pregame scene and controller
         FXMLLoader preGameSceneLoader = new FXMLLoader(
                 getClass().getResource("/scenes/PreGameScene.fxml"));
         preGameScene = new Scene(preGameSceneLoader.load());
         preGameSceneController = preGameSceneLoader.getController();
         preGameSceneController.setGui(this);
 
+
+        //set up the board scene and controller
+        FXMLLoader boardLoader = new FXMLLoader(
+                getClass().getResource("/scenes/BoardScene.fxml"));
+        boardScene = new Scene(boardLoader.load());
+        boardSceneController = boardLoader.getController();
+        stage.setResizable(false);
+        boardSceneController.setGui(this);
+
+        //starts with the startingScene
+        stage.setTitle("Santorini Online");
         stage.setScene(startingScene);
-        //DEBUG
-        stage.setScene(boardScene);
+        stage.show();
+    }
+
+    public IslandData generateRandomIsland() throws InvalidBuildException, InvalidMovementException {
+        Random random = new Random();
+        CellClusterData[][] islandData = new CellClusterData[5][5];
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
+                CellCluster cellCluster = new CellCluster();
+                switch (random.nextInt(5)) {
+                    case 0:
+                        break;
+                    case 1:
+                        cellCluster.build(BlockTypeEnum.LEVEL1);
+                        break;
+                    case 2:
+                        cellCluster.build(BlockTypeEnum.LEVEL1);
+                        cellCluster.build(BlockTypeEnum.LEVEL2);
+                        break;
+                    case 3:
+                        cellCluster.build(BlockTypeEnum.LEVEL1);
+                        cellCluster.build(BlockTypeEnum.LEVEL2);
+                        cellCluster.build(BlockTypeEnum.LEVEL3);
+                        break;
+                    case 4:
+                        cellCluster.build(BlockTypeEnum.LEVEL1);
+                        cellCluster.build(BlockTypeEnum.LEVEL2);
+                        cellCluster.build(BlockTypeEnum.LEVEL3);
+                        cellCluster.build(BlockTypeEnum.DOME);
+                        break;
+                }
+                if(random.nextInt(8)==1 && !cellCluster.isComplete()) cellCluster.build(BlockTypeEnum.DOME);
+
+                Worker worker = new Worker(Worker.IDs.A, "matteo");
+
+                switch (random.nextInt(5)) {
+
+                    case 0:
+                    case 4:
+                        worker = null;
+                        break;
+                    case 1:
+                        worker.setColor(WorkerColors.WHITE);
+                        break;
+                    case 2:
+                        worker.setColor(WorkerColors.BEIGE);
+                        break;
+                    case 3:
+                        worker.setColor(WorkerColors.BLUE);
+                        break;
+                }
+                int [] array = cellCluster.toIntArray();
+                if (worker != null && array.length>0 && array[array.length - 1]!=4) cellCluster.addWorker(worker);
+                islandData[x][y] = new CellClusterData(cellCluster);
+            }
+        }
+        IslandData island = new IslandData();
+        island.fillIsland(islandData);
+
+        return island;
     }
 
     public void changeScene(Scene scene) {
@@ -206,6 +267,10 @@ public class GUI extends Application implements ViewListener {
         return lobbyScene;
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     public LobbySceneController getLobbySceneController() {
         return lobbySceneController;
     }
@@ -223,7 +288,7 @@ public class GUI extends Application implements ViewListener {
 
         getStartingSceneController().enableAllLoginFields();
         //notify the error on screen
-        Message.show(event.getErrorMessage());
+        Message.show(event.getErrorMessage(),stage);
 
         try {
             Thread.sleep(1000);
@@ -245,17 +310,17 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
-
+        Message.show(event.getEventDescription(), stage);
     }
 
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
-
+        Message.show(event.getDisconnectedUsername()+ event.getReason(), stage);
     }
 
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-        int number = Message.askRoomSize("You're the first player, choose the size of the room:");
+        int number = Message.askRoomSize("You're the first player, choose the size of the room:", stage);
         startingSceneController.complete();
         System.out.println(number);
         VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", number);
@@ -287,7 +352,8 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-        boardSceneController.setState(new PlaceWorkerGameState(event));
+        boardSceneController.setStateInstance(new PlaceWorkerGameState(event));
+        boardSceneController.setWorkerOnAction(event.getWorkerToPlace());
     }
 
     @Override
@@ -315,14 +381,17 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
         System.out.println("DEBUG: worker placement update event has arrived");
-            changeScene(boardScene);
-            boardSceneController.init(event, username);
-            boardSceneController.setState(new WaitGameState());
+        changeScene(boardScene);
+        boardSceneController.setStateInstance(new WaitGameState());
+        boardSceneController.init(event, username);
     }
 
     @Override
     public void handleEvent(CV_CommandRequestEvent event) {
-
+        boardSceneController.setStateInstance(new CommandGameState(event));
+        if(!boardSceneController.hasAlreadyMadeAMove()){
+            boardSceneController.setCurrentState(GameState.SELECT_WORKER);
+        }
     }
 
     @Override
@@ -337,17 +406,25 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
-
+        boardSceneController.updateTurnSequence(event.getTurnRotation());
+        if(event.getCurrentPlayerUsername().equals(username)){
+            Message.show("IT'S YOUR TURN!", stage);
+            boardSceneController.setAlreadyMadeAMoveThisTurn(false);
+        }
     }
 
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
-
+        Gson gson = new Gson();
+        final IslandData island = gson.fromJson(event.getNewIsland(), IslandData.class);
+       boardSceneController.updateIsland(island);
     }
 
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
-
+        if(!event.getActingPlayer().equals(username)){
+            Message.show(event.getEventDescription().toUpperCase() +" " + event.getActingPlayer().toUpperCase(), stage);
+        }
     }
 
 }

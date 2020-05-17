@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 public class BoardPopUp {
 
-    public static void show(String message) {
+    public static void show(String message, Stage parentStage) {
 
         Stage stage = new Stage();
 
@@ -31,8 +31,11 @@ public class BoardPopUp {
 
         vBox.setAlignment(Pos.CENTER);
 
+
+
         Scene scene = new Scene(vBox);
         stage.setScene(scene);
+        stage.initOwner(parentStage);
         stage.showAndWait();
     }
 }
