@@ -379,6 +379,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
+        stage.setResizable(false);
         System.out.println("DEBUG: worker placement update event has arrived");
         changeScene(boardScene);
         boardSceneController.setStateInstance(new WaitGameState());
