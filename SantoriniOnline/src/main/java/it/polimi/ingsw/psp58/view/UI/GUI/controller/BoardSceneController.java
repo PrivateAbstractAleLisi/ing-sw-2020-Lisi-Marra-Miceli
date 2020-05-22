@@ -206,7 +206,7 @@ public class BoardSceneController {
     }
 
     public void hideWorkerPlacementBox() {
-        workerPrePlaceHBox.setVisible(false);
+        //workerPrePlaceHBox.setVisible(false);
     }
     /**
      *
