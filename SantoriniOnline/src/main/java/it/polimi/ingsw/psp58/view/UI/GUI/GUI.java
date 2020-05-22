@@ -57,7 +57,6 @@ public class GUI extends Application implements ViewListener {
     private Scene startingScene;
     private StartingSceneController startingSceneController;
 
-
     private Scene lobbyScene;
     private LobbySceneController lobbySceneController;
 
@@ -66,9 +65,6 @@ public class GUI extends Application implements ViewListener {
 
     private Scene preGameScene;
     private PreGameSceneController preGameSceneController;
-
-
-
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -89,7 +85,6 @@ public class GUI extends Application implements ViewListener {
                 }
             }
         }
-
 
         stage = primaryStage;
         stage.setResizable(false);
@@ -123,7 +118,6 @@ public class GUI extends Application implements ViewListener {
                 getClass().getResource("/scenes/BoardScene.fxml"));
         boardScene = new Scene(boardLoader.load());
         boardSceneController = boardLoader.getController();
-        stage.setResizable(false);
         boardSceneController.setGui(this);
 
 
@@ -196,6 +190,11 @@ public class GUI extends Application implements ViewListener {
 //        stage.close();
         stage.setTitle("Santorini Online");
         stage.setScene(scene);
+        if(scene.equals(preGameScene)){
+            stage.setResizable(true);
+        }else {
+            stage.setResizable(false);
+        }
         stage.show();
     }
 
@@ -340,7 +339,6 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-        stage.setResizable(true);
         System.out.println("I have to choose my card!");
         preGameSceneController.update(event);
     }
@@ -360,8 +358,6 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
-        stage.setResizable(true);
-        stage.setMaximized(true);
         System.out.println("I'm the challenger");
         preGameSceneController.update(event);
         changeScene(preGameScene);
@@ -369,8 +365,8 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        stage.setResizable(true);
         if(event.getWaitCode().equals("CHALLENGERS_CARDS")){
+            stage.setResizable(true);
             stage.setMaximized(true);
         }
         System.out.println("Wait received");
