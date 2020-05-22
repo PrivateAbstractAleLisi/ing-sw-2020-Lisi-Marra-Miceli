@@ -126,6 +126,7 @@ public class GUI extends Application implements ViewListener {
         stage.setResizable(false);
         boardSceneController.setGui(this);
 
+
         //starts with the startingScene
         stage.setTitle("Santorini Online");
         stage.setScene(startingScene);
@@ -354,6 +355,7 @@ public class GUI extends Application implements ViewListener {
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
         boardSceneController.setStateInstance(new PlaceWorkerGameState(event));
         boardSceneController.setWorkerOnAction(event.getWorkerToPlace());
+        boardSceneController.getTurnStatus().setSelectedWorker(event.getWorkerToPlace());
     }
 
     @Override
@@ -376,8 +378,12 @@ public class GUI extends Application implements ViewListener {
         if (!stage.getScene().equals(boardScene)) {
             changeScene(preGameScene);
         }
+        else if (stage.getScene().equals(boardScene)) {
+            boardSceneController.setStateInstance(new WaitGameState());
+        }
     }
 
+    /* called when it's time to switch to board scene, locks view for everyone */
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
         System.out.println("DEBUG: worker placement update event has arrived");
@@ -389,9 +395,10 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_CommandRequestEvent event) {
         boardSceneController.setStateInstance(new CommandGameState(event));
+        /*
         if(!boardSceneController.hasAlreadyMadeAMove()){
             boardSceneController.setCurrentState(GameState.SELECT_WORKER);
-        }
+        } */
     }
 
     @Override
@@ -399,17 +406,25 @@ public class GUI extends Application implements ViewListener {
 
     }
 
+    /**
+     * notifies that the game is started
+     * @param event sent by room when the game starts after pregame, contains first username (0) in turn sequence
+     */
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
-
+            boardSceneController.setStateInstance(new WaitGameState());
+            boardSceneController.displayMessage("game is starting!");
     }
 
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
         boardSceneController.updateTurnSequence(event.getTurnRotation());
         if(event.getCurrentPlayerUsername().equals(username)){
-            Message.show("IT'S YOUR TURN!", stage);
-            boardSceneController.setAlreadyMadeAMoveThisTurn(false);
+            boardSceneController.resetTurnStatus();
+            boardSceneController.displayMessage("IT'S YOUR TURN!");
+            boardSceneController.setCurrentState(GameState.SELECT_WORKER);
+          // boardSceneController.setAlreadyMadeAMoveThisTurn(false);
+
         }
     }
 

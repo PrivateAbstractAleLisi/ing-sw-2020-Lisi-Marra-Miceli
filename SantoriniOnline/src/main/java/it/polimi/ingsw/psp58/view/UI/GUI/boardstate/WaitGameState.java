@@ -7,6 +7,8 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
 public class WaitGameState extends GameStateAbs {
+
+    private final GameState state = GameState.NOT_YOUR_TURN;
     @Override
     public void setState(BoardSceneController boardController) {
         boardController.setWaitingView();
@@ -22,6 +24,10 @@ public class WaitGameState extends GameStateAbs {
         return null;
     }
 
+    @Override
+    public GameState getState() {
+        return state;
+    }
 
     //@Overload
     public void setState(BoardSceneController boardController, CV_WaitMatchGameEvent event) {

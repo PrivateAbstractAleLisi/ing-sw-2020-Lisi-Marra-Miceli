@@ -13,6 +13,8 @@ public class CommandGameState extends GameStateAbs {
     private CV_CommandRequestEvent eventArrived;
     private BoardSceneController boardSceneController;
 
+    private final GameState state = GameState.COMMAND;
+
     public CommandGameState(CV_CommandRequestEvent eventArrived) {
         this.eventArrived = eventArrived;
     }
@@ -20,13 +22,31 @@ public class CommandGameState extends GameStateAbs {
     @Override
     public void setState(BoardSceneController boardController) {
 
+
         boardSceneController = boardController;
-
+        boardSceneController.hideWorkerPlacementBox();
         boardController.enableActionButtons(eventArrived.getAvailableActions());
+        boardController.initCommandRequest();
 
+
+        /*
         if(!boardController.hasAlreadyMadeAMove()){
             boardController.setWorkerOnAction(null);
         }
+
+
+
+        if(!boardSceneController.hasAlreadyMadeAMove()){
+            boardController.displayMessage("please select a worker");
+            boardSceneController.setCurrentState(GameState.SELECT_WORKER);
+        }
+        */
+
+    }
+
+    @Override
+    public GameState getState() {
+        return state;
     }
 
     @Override
@@ -39,9 +59,15 @@ public class CommandGameState extends GameStateAbs {
                 return new VC_PlayerCommandGameEvent("", TurnAction.MOVE , username, new int[]{x, y}, workerID, null  );
             case BUILD:
                 return new VC_PlayerCommandGameEvent("", TurnAction.BUILD , username, new int[]{x, y}, workerID, null  );
+            case WAIT_COMMAND_BUTTON_:
+                boardSceneController.displayMessage("please select a command first");
         }
         return null;
 }
+
+    public void workerClick(Worker.IDs workerID, BoardSceneController board) {
+
+    }
 
     @Override
     public ViewGameEvent getEvent() {

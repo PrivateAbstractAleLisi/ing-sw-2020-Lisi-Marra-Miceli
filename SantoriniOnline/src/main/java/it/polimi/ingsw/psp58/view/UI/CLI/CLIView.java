@@ -754,7 +754,7 @@ public class CLIView extends EventSource implements ViewListener {
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
 
-        //TODO BIG TITLE
+
         clearScreen();
         System.out.println("GAME IS STARTING");
 

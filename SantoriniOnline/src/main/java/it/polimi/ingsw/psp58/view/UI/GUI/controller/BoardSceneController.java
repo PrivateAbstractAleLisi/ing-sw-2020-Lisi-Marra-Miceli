@@ -17,14 +17,17 @@ import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.CommandGameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateAbs;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,8 +36,31 @@ import java.util.Map;
 
 import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState.*;
 
+ class WorkerGlow {
+     int x, y;
+     Worker.IDs id;
+
+     public WorkerGlow(int x, int y, Worker.IDs id) {
+         this.x = x;
+         this.y = y;
+         this.id = id;
+     }
+
+     public Worker.IDs getId() {
+         return id;
+     }
+
+     public int getX() {
+         return x;
+     }
+
+     public int getY() {
+         return y;
+     }
+ }
 public class BoardSceneController {
 
+    private WorkerGlow currentGlow = null;
     private WorkerColors myColor;
     private String myUsername = "";
     private GUI gui;
@@ -44,9 +70,23 @@ public class BoardSceneController {
     private IslandData lastIslandUpdate;
     private StackPane[][] lastGridPane;
 
+    //STATE PATTERN
     private GameState currentState;
+    private TurnStatus turnStatus;
     private GameStateAbs currentStateInstance;
     public GridPane board;
+
+    public Node workerSelectedNode;
+
+    public void resetTurnStatus() {
+        turnStatus = new TurnStatus();
+
+    }
+
+    public TurnStatus getTurnStatus() {
+        return turnStatus;
+    }
+
 
     public Label turnSequence;
 
@@ -65,6 +105,9 @@ public class BoardSceneController {
     public Label player1;
     public Label player2;
     public Label player3;
+
+    public HBox workerPrePlaceHBox;
+
 
     private List<Label> playersList;
 
@@ -107,6 +150,7 @@ public class BoardSceneController {
 
     public void setWaitingView() {
         disableAllActionButtons();
+
     }
     //Workers
 
@@ -154,11 +198,21 @@ public class BoardSceneController {
         workerSlotA.setImage(new Image(url));
         workerSlotB.setImage(new Image(url));
 
+        resetTurnStatus();
+
 
         //update blocks counter to starting state
         updateBlocksCounter(22, 18, 14, 18);
     }
 
+    public void hideWorkerPlacementBox() {
+        workerPrePlaceHBox.setVisible(false);
+    }
+    /**
+     *
+     * updates the current state of the GUI
+     * @param nextState the next state to commute to
+     */
     public void setStateInstance(GameStateAbs nextState) {
         nextState.setState(this);
         this.currentStateInstance = nextState;
@@ -184,6 +238,15 @@ public class BoardSceneController {
                 BoardPopUp.show("Please place worker " + workerRequested.toString(), gui.getStage());
                 break;
         }
+    }
+
+    /**
+     * displays a message to the user
+     * @param message the message you would like to display
+     */
+    public void displayMessage(String message) {
+        //TODO messaggio sotto e non popup
+       BoardPopUp.show(message.toUpperCase(), gui.getStage());
     }
 
     public void setGui(GUI gui) {
@@ -314,19 +377,27 @@ public class BoardSceneController {
                     //if there is a worker adds the image
                     if (cellClusterData.getWorkerOnTop() != null) {
                         pane.getChildren().add(getWorkerImage(cellClusterData));
-                        //if the worker is his worker he can click it
+
+
 
                     }
                     stackPane.getChildren().addAll(pane, upperPane);
                     stackPane.setOnMouseClicked(this::onClickEventCellCluster);
 
-                    GridPane.setConstraints(stackPane, x, y); //node, column, row
+                    GridPane.setConstraints(stackPane, x, y);
 
                     board.getChildren().remove(lastGridPane[x][y]);
                     board.getChildren().add(stackPane);
 
                     lastGridPane[x][y] = stackPane;
 
+                    if (cellClusterData.getWorkerOnTop() != null) {
+                        if (currentGlow != null && cellClusterData.getWorkerColor().equals(myColor) && currentGlow.getId().equals(cellClusterData.getWorkerOnTop())) {
+                            setWorkerGlow(true, x, y);
+
+                            System.out.println("DEBUG: RESTORING GLOW");
+                        }
+                    }
                 }
             }
         });
@@ -409,16 +480,83 @@ public class BoardSceneController {
         return url;
     }
 
+    private void setWorkerGlow(boolean active, int x, int y) {
+        Node point = getNodeByRowColumnIndex(x, y);
+        if (active) {
+
+            //point.setEffect(new Glow(0.7));
+            System.out.println("DEBUG: setWorkerGlow on " + x + " " +y);
+            workerSelectedNode = point;
+
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setRadius(14.5);
+            dropShadow.setWidth(30);
+            dropShadow.setHeight(30);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(0);
+            dropShadow.setSpread(0.6);
+            dropShadow.setColor(Color.rgb(255, 234, 5));
+            point.setEffect(dropShadow);
+        }
+        else {
+            point.setEffect(null);
+            point = null;
+        }
+    }
+
+    public void initCommandRequest() {
+        currentState = WAIT_COMMAND_BUTTON_;
+
+    }
     //GRID CLICK HANDLER
 
     public void onClickEventCellCluster(MouseEvent mouseEvent) {
-        if (currentState!=NOT_YOUR_TURN) {
+        if (!currentStateInstance.getState().equals(NOT_YOUR_TURN)) {
+
             StackPane source = (StackPane) mouseEvent.getSource();
             Integer colIndex = GridPane.getColumnIndex(source);
             Integer rowIndex = GridPane.getRowIndex(source);
             System.out.printf("Mouse clicked cell [%d, %d]%n", colIndex, rowIndex);
 
+            //gets the id of the clicked worker
             Worker.IDs workerID = getWorkerID(colIndex, rowIndex);
+
+            ControllerGameEvent event = currentStateInstance.handleClick(gui.getUsername(), colIndex, rowIndex, turnStatus.getSelectedWorker(), currentState);
+
+            if (currentStateInstance instanceof CommandGameState) { //when it's my turn and I have to answer with a command request
+                if (workerID == null) {
+                    if (!getTurnStatus().isAlreadySelectedWorker()) {  //your turn, no worker selected
+                        getTurnStatus().setAlreadySelectedWorker(false);
+                        displayMessage("please select a valid worker");
+                    }
+                }
+                else {
+
+                    if (!getTurnStatus().isAlreadySelectedWorker()) {
+                        if (lastIslandUpdate.getCellCluster(colIndex, rowIndex).getWorkerColor().equals(myColor)) {
+                            setWorkerGlow(true, colIndex, rowIndex);
+                            System.out.println("DEBUG: worker set, glow set");
+                            currentGlow = new WorkerGlow(colIndex, rowIndex, workerID);
+                            getTurnStatus().setAlreadySelectedWorker(true);
+                            getTurnStatus().setSelectedWorker(workerID);
+                        }
+                    }
+
+
+                }
+            }
+
+            if (event != null) {
+                gui.sendEvent(event);
+               /* if (currentState == MOVE || currentState == BUILD) {
+                    alreadyMadeAMoveThisTurn = true;
+                } */
+            }
+
+
+
+
+            /*
             if ((workerID != null || workerOnAction != null)) {
                 if (workerOnAction == null) {
                     setWorkerOnAction(workerID);
@@ -432,7 +570,7 @@ public class BoardSceneController {
                         }
                     }
                 }
-            }
+            } */
         }
     }
 
@@ -501,5 +639,7 @@ public class BoardSceneController {
         disableAllActionButtons();
         currentState = NOT_YOUR_TURN;
         workerOnAction = null;
+        currentGlow = null;
+        resetTurnStatus();
     }
 }

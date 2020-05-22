@@ -286,7 +286,7 @@
                                     <Font name="Avenir Book" size="20.0" />
                                  </font>
                               </Label>
-                              <HBox prefHeight="132.0" prefWidth="297.0">
+                              <HBox fx:id="workerPrePlaceHBox" prefHeight="132.0" prefWidth="297.0">
                                  <children>
                                     <BorderPane prefHeight="132.0" prefWidth="297.0">
                                        <top>

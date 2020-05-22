@@ -12,6 +12,7 @@ import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 public class PlaceWorkerGameState extends GameStateAbs {
     private  CV_PlayerPlaceWorkerRequestEvent eventArrived;
 
+    private final GameState state = GameState.PLACE_WORKER;
     public PlaceWorkerGameState(CV_PlayerPlaceWorkerRequestEvent eventArrived) {
         this.eventArrived = eventArrived;
     }
@@ -21,6 +22,7 @@ public class PlaceWorkerGameState extends GameStateAbs {
         b.setLastIslandUpdate(islandDataFromJson(eventArrived.getIsland()));
         b.updateIsland(islandDataFromJson(eventArrived.getIsland()));
         b.handleWorkerPlacement(eventArrived.getWorkerToPlace());
+
     }
 
     @Override
@@ -31,6 +33,11 @@ public class PlaceWorkerGameState extends GameStateAbs {
     @Override
     public ViewGameEvent getEvent() {
         return eventArrived;
+    }
+
+    @Override
+    public GameState getState() {
+        return state;
     }
 
     private IslandData islandDataFromJson(String islaJson) {
