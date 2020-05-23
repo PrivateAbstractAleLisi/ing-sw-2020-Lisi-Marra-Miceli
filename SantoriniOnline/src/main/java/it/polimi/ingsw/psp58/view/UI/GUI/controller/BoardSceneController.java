@@ -36,28 +36,29 @@ import java.util.Map;
 
 import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState.*;
 
- class WorkerGlow {
-     int x, y;
-     Worker.IDs id;
+class WorkerGlow {
+    int x, y;
+    Worker.IDs id;
 
-     public WorkerGlow(int x, int y, Worker.IDs id) {
-         this.x = x;
-         this.y = y;
-         this.id = id;
-     }
+    public WorkerGlow(int x, int y, Worker.IDs id) {
+        this.x = x;
+        this.y = y;
+        this.id = id;
+    }
 
-     public Worker.IDs getId() {
-         return id;
-     }
+    public Worker.IDs getId() {
+        return id;
+    }
 
-     public int getX() {
-         return x;
-     }
+    public int getX() {
+        return x;
+    }
 
-     public int getY() {
-         return y;
-     }
- }
+    public int getY() {
+        return y;
+    }
+}
+
 public class BoardSceneController {
 
     private WorkerGlow currentGlow = null;
@@ -208,9 +209,10 @@ public class BoardSceneController {
     public void hideWorkerPlacementBox() {
         //workerPrePlaceHBox.setVisible(false);
     }
+
     /**
-     *
      * updates the current state of the GUI
+     *
      * @param nextState the next state to commute to
      */
     public void setStateInstance(GameStateAbs nextState) {
@@ -222,7 +224,6 @@ public class BoardSceneController {
             }
         }
     }
-
 
 
     public void handleWorkerPlacement(Worker.IDs workerRequested) {
@@ -242,11 +243,12 @@ public class BoardSceneController {
 
     /**
      * displays a message to the user
+     *
      * @param message the message you would like to display
      */
     public void displayMessage(String message) {
         //TODO messaggio sotto e non popup
-       BoardPopUp.show(message.toUpperCase(), gui.getStage());
+        BoardPopUp.show(message.toUpperCase(), gui.getStage());
     }
 
     public void setGui(GUI gui) {
@@ -379,7 +381,6 @@ public class BoardSceneController {
                         pane.getChildren().add(getWorkerImage(cellClusterData));
 
 
-
                     }
                     stackPane.getChildren().addAll(pane, upperPane);
                     stackPane.setOnMouseClicked(this::onClickEventCellCluster);
@@ -485,7 +486,7 @@ public class BoardSceneController {
         if (active) {
 
             //point.setEffect(new Glow(0.7));
-            System.out.println("DEBUG: setWorkerGlow on " + x + " " +y);
+            System.out.println("DEBUG: setWorkerGlow on " + x + " " + y);
             workerSelectedNode = point;
 
             DropShadow dropShadow = new DropShadow();
@@ -497,8 +498,7 @@ public class BoardSceneController {
             dropShadow.setSpread(0.6);
             dropShadow.setColor(Color.rgb(255, 234, 5));
             point.setEffect(dropShadow);
-        }
-        else {
+        } else {
             point.setEffect(null);
             point = null;
         }
@@ -529,8 +529,7 @@ public class BoardSceneController {
                         getTurnStatus().setAlreadySelectedWorker(false);
                         displayMessage("please select a valid worker");
                     }
-                }
-                else {
+                } else {
 
                     if (!getTurnStatus().isAlreadySelectedWorker()) {
                         if (lastIslandUpdate.getCellCluster(colIndex, rowIndex).getWorkerColor().equals(myColor)) {
@@ -547,7 +546,16 @@ public class BoardSceneController {
             }
 
             if (event != null) {
-                gui.sendEvent(event);
+                if (event instanceof VC_PlayerCommandGameEvent) {
+                    if (isCommandEventValid((VC_PlayerCommandGameEvent) event)) {
+                        gui.sendEvent(event);
+                    }else{
+                        //restore turn status
+                        System.out.println("Something in the Event was wrong");
+                    }
+                } else {
+                    gui.sendEvent(event);
+                }
                /* if (currentState == MOVE || currentState == BUILD) {
                     alreadyMadeAMoveThisTurn = true;
                 } */
@@ -572,6 +580,10 @@ public class BoardSceneController {
                 }
             } */
         }
+    }
+
+    private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
+        return commandEvent.isCommandEventValid() && myUsername.equals(commandEvent.getFromPlayer());
     }
 
     public Worker.IDs getWorkerID(int x, int y) {
@@ -608,20 +620,20 @@ public class BoardSceneController {
 
     public void activateGlowOnPanels(List<int[]> panelPositions) {
 
-            for (int[] position : panelPositions) {
-                StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
-                if (currentState == MOVE) {
-                    Pane pane = (Pane) stackPane.getChildren().get(1);
-                    pane.setVisible(true);
-                    pane.setStyle("-fx-background-color: #00FFFF");
-                }
-                if (currentState == BUILD) {
-                    stackPane.getChildren().get(1).setVisible(true);
-                    stackPane.getChildren().get(1).setStyle("-fx-background-color: #A52A2A");
-                }
-                board.getChildren().remove(position[0],position[1]);
-                board.add(stackPane, position[0], position[1]);
+        for (int[] position : panelPositions) {
+            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
+            if (currentState == MOVE) {
+                Pane pane = (Pane) stackPane.getChildren().get(1);
+                pane.setVisible(true);
+                pane.setStyle("-fx-background-color: #00FFFF");
             }
+            if (currentState == BUILD) {
+                stackPane.getChildren().get(1).setVisible(true);
+                stackPane.getChildren().get(1).setStyle("-fx-background-color: #A52A2A");
+            }
+            board.getChildren().remove(position[0], position[1]);
+            board.add(stackPane, position[0], position[1]);
+        }
     }
 
     public void setMove() {
