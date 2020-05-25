@@ -19,8 +19,7 @@ import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.CommandGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.PlaceWorkerGameState;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateEnum;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.WaitGameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController;
@@ -69,7 +68,6 @@ public class GUI extends Application implements ViewListener {
     public static void main(String[] args) {
         Application.launch(args);
     }
-
 
 
     @Override
@@ -155,7 +153,7 @@ public class GUI extends Application implements ViewListener {
                         cellCluster.build(BlockTypeEnum.DOME);
                         break;
                 }
-                if(random.nextInt(8)==1 && !cellCluster.isComplete()) cellCluster.build(BlockTypeEnum.DOME);
+                if (random.nextInt(8) == 1 && !cellCluster.isComplete()) cellCluster.build(BlockTypeEnum.DOME);
 
                 Worker worker = new Worker(Worker.IDs.A, "matteo");
 
@@ -175,8 +173,8 @@ public class GUI extends Application implements ViewListener {
                         worker.setColor(WorkerColors.BLUE);
                         break;
                 }
-                int [] array = cellCluster.toIntArray();
-                if (worker != null && array.length>0 && array[array.length - 1]!=4) cellCluster.addWorker(worker);
+                int[] array = cellCluster.toIntArray();
+                if (worker != null && array.length > 0 && array[array.length - 1] != 4) cellCluster.addWorker(worker);
                 islandData[x][y] = new CellClusterData(cellCluster);
             }
         }
@@ -190,9 +188,9 @@ public class GUI extends Application implements ViewListener {
 //        stage.close();
         stage.setTitle("Santorini Online");
         stage.setScene(scene);
-        if(scene.equals(preGameScene)){
+        if (scene.equals(preGameScene)) {
             stage.setResizable(true);
-        }else {
+        } else {
             stage.setResizable(false);
         }
         stage.show();
@@ -288,7 +286,7 @@ public class GUI extends Application implements ViewListener {
 
         getStartingSceneController().enableAllLoginFields();
         //notify the error on screen
-        Message.show(event.getErrorMessage(),stage);
+        Message.show(event.getErrorMessage(), stage);
 
         try {
             Thread.sleep(1000);
@@ -315,7 +313,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
-        Message.show(event.getDisconnectedUsername()+ event.getReason(), stage);
+        Message.show(event.getDisconnectedUsername() + event.getReason(), stage);
     }
 
     @Override
@@ -351,9 +349,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-        boardSceneController.setStateInstance(new PlaceWorkerGameState(event));
-        boardSceneController.setWorkerOnAction(event.getWorkerToPlace());
-        boardSceneController.getTurnStatus().setSelectedWorker(event.getWorkerToPlace());
+        boardSceneController.handle(event);
     }
 
     @Override
@@ -365,7 +361,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        if(event.getWaitCode().equals("CHALLENGERS_CARDS")){
+        if (event.getWaitCode().equals("CHALLENGERS_CARDS")) {
             stage.setResizable(true);
             stage.setMaximized(true);
         }
@@ -373,9 +369,8 @@ public class GUI extends Application implements ViewListener {
         preGameSceneController.update(event);
         if (!stage.getScene().equals(boardScene)) {
             changeScene(preGameScene);
-        }
-        else if (stage.getScene().equals(boardScene)) {
-            boardSceneController.setStateInstance(new WaitGameState());
+        } else if (stage.getScene().equals(boardScene)) {
+            boardSceneController.handle(event);
         }
     }
 
@@ -383,18 +378,14 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
         System.out.println("DEBUG: worker placement update event has arrived");
-        changeScene(boardScene);
-        boardSceneController.setStateInstance(new WaitGameState());
+        boardSceneController.handle(event);
         boardSceneController.init(event, username);
+        changeScene(boardScene);
     }
 
     @Override
     public void handleEvent(CV_CommandRequestEvent event) {
-        boardSceneController.setStateInstance(new CommandGameState(event));
-        /*
-        if(!boardSceneController.hasAlreadyMadeAMove()){
-            boardSceneController.setCurrentState(GameState.SELECT_WORKER);
-        } */
+        boardSceneController.handle(event);
     }
 
     @Override
@@ -404,37 +395,28 @@ public class GUI extends Application implements ViewListener {
 
     /**
      * notifies that the game is started
+     *
      * @param event sent by room when the game starts after pregame, contains first username (0) in turn sequence
      */
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
-            boardSceneController.setStateInstance(new WaitGameState());
-            boardSceneController.displayMessage("game is starting!");
+        boardSceneController.handle(event);
     }
 
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
-        boardSceneController.updateTurnSequence(event.getTurnRotation());
-        if(event.getCurrentPlayerUsername().equals(username)){
-            boardSceneController.resetTurnStatus();
-            boardSceneController.displayMessage("IT'S YOUR TURN!");
-            boardSceneController.setCurrentState(GameState.SELECT_WORKER);
-          // boardSceneController.setAlreadyMadeAMoveThisTurn(false);
-
-        }
+        boardSceneController.handle(event);
     }
 
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
-        Gson gson = new Gson();
-        final IslandData island = gson.fromJson(event.getNewIsland(), IslandData.class);
-       boardSceneController.updateIsland(island);
+        boardSceneController.updateIsland(event);
     }
 
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
-        if(!event.getActingPlayer().equals(username)){
-            Message.show(event.getEventDescription().toUpperCase() +" " + event.getActingPlayer().toUpperCase(), stage);
+        if (!event.getActingPlayer().equals(username)) {
+            Message.show(event.getEventDescription().toUpperCase() + " " + event.getActingPlayer().toUpperCase(), stage);
         }
     }
 

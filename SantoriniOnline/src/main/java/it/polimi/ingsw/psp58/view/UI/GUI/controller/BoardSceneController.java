@@ -1,10 +1,12 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
+import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.match.VC_PlayerCommandGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.*;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PlayerPlaceWorkerRequestEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
@@ -13,11 +15,8 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.BoardPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import it.polimi.ingsw.psp58.view.UI.GUI.Message;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.CommandGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateAbs;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.*;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,7 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState.*;
+import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateEnum.*;
 
 class WorkerGlow {
     int x, y;
@@ -65,27 +64,25 @@ public class BoardSceneController {
     private WorkerColors myColor;
     private String myUsername = "";
     private GUI gui;
-    private Worker.IDs workerOnAction;
     private boolean alreadyMadeAMoveThisTurn;
 
     private IslandData lastIslandUpdate;
     private StackPane[][] lastGridPane;
 
     //STATE PATTERN
-    private GameState currentState;
-    private TurnStatus turnStatus;
-    private GameStateAbs currentStateInstance;
+    private GameStateEnum currentState;
+    private WorkerStatus workerStatus;
+    private GameStateAbstract currentStateInstance;
     public GridPane board;
 
     public Node workerSelectedNode;
 
     public void resetTurnStatus() {
-        turnStatus = new TurnStatus();
-
+        workerStatus = new WorkerStatus();
     }
 
-    public TurnStatus getTurnStatus() {
-        return turnStatus;
+    public WorkerStatus getWorkerStatus() {
+        return workerStatus;
     }
 
 
@@ -215,16 +212,62 @@ public class BoardSceneController {
      *
      * @param nextState the next state to commute to
      */
-    public void setStateInstance(GameStateAbs nextState) {
+    public void setStateInstance(GameStateAbstract nextState) {
         nextState.setState(this);
         this.currentStateInstance = nextState;
         if (nextState instanceof CommandGameState) {
-            if (workerOnAction == null) {
+            //todo gestire meglio il worker
+            if (!workerStatus.isAlreadySelectedWorker()) {
                 currentState = SELECT_WORKER;
             }
         }
+        if (nextState instanceof PlaceWorkerGameState) {
+            CV_PlayerPlaceWorkerRequestEvent event = (CV_PlayerPlaceWorkerRequestEvent) nextState.getEvent();
+            workerStatus.setSelectedWorker(event.getWorkerToPlace());
+        }
     }
 
+    public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
+        GameStateAbstract nextState = new PlaceWorkerGameState(event);
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+    }
+
+    public void handle(CV_WorkerPlacementGameEvent event) {
+        GameStateAbstract nextState = new WaitGameState();
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+    }
+
+    public void handle(CV_WaitPreMatchGameEvent event) {
+        GameStateAbstract nextState = new WaitGameState(event);
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+    }
+
+    public void handle(CV_CommandRequestEvent event) {
+        GameStateAbstract nextState = new CommandGameState(event);
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+    }
+
+    public void handle(CV_NewTurnEvent event) {
+        updateTurnSequence(event.getTurnRotation());
+
+        if (event.getCurrentPlayerUsername().equals(gui.getUsername())) {
+            resetTurnStatus();
+            displayMessage("IT'S YOUR TURN!");
+            setCurrentState(GameStateEnum.SELECT_WORKER);
+            // boardSceneController.setAlreadyMadeAMoveThisTurn(false);
+        }
+    }
+
+    public void handle(CV_GameStartedGameEvent event) {
+        GameStateAbstract nextState = new WaitGameState();
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+        displayMessage("Game is starting!");
+    }
 
     public void handleWorkerPlacement(Worker.IDs workerRequested) {
         disableAllActionButtons();
@@ -267,7 +310,7 @@ public class BoardSceneController {
         this.alreadyMadeAMoveThisTurn = alreadyMadeAMoveThisTurn;
     }
 
-    public void setCurrentState(GameState currentState) {
+    public void setCurrentState(GameStateEnum currentState) {
         this.currentState = currentState;
     }
 
@@ -334,9 +377,6 @@ public class BoardSceneController {
 //        return result;
     }
 
-    public void setWorkerOnAction(Worker.IDs workerOnAction) {
-        this.workerOnAction = workerOnAction;
-    }
 
     public void initializeIsland() {
         lastGridPane = new StackPane[5][5];
@@ -358,7 +398,10 @@ public class BoardSceneController {
         }
     }
 
-    public void updateIsland(IslandData island) {
+    public void updateIsland(CV_IslandUpdateEvent event) {
+        Gson gson = new Gson();
+        final IslandData island = gson.fromJson(event.getNewIsland(), IslandData.class);
+
         setLastIslandUpdate(island);
 
         String url = "";
@@ -521,23 +564,23 @@ public class BoardSceneController {
             //gets the id of the clicked worker
             Worker.IDs workerID = getWorkerID(colIndex, rowIndex);
 
-            ControllerGameEvent event = currentStateInstance.handleClick(gui.getUsername(), colIndex, rowIndex, turnStatus.getSelectedWorker(), currentState);
+            ControllerGameEvent event = currentStateInstance.handleClick(gui.getUsername(), colIndex, rowIndex, workerStatus.getSelectedWorker(), currentState);
 
             if (currentStateInstance instanceof CommandGameState) { //when it's my turn and I have to answer with a command request
                 if (workerID == null) {
-                    if (!getTurnStatus().isAlreadySelectedWorker()) {  //your turn, no worker selected
-                        getTurnStatus().setAlreadySelectedWorker(false);
+                    if (!getWorkerStatus().isAlreadySelectedWorker()) {  //your turn, no worker selected
+                        getWorkerStatus().deleteSelectedWorker();
                         displayMessage("please select a valid worker");
                     }
                 } else {
 
-                    if (!getTurnStatus().isAlreadySelectedWorker()) {
+                    if (!getWorkerStatus().isAlreadySelectedWorker()) {
                         if (lastIslandUpdate.getCellCluster(colIndex, rowIndex).getWorkerColor().equals(myColor)) {
                             setWorkerGlow(true, colIndex, rowIndex);
                             System.out.println("DEBUG: worker set, glow set");
                             currentGlow = new WorkerGlow(colIndex, rowIndex, workerID);
-                            getTurnStatus().setAlreadySelectedWorker(true);
-                            getTurnStatus().setSelectedWorker(workerID);
+                            getWorkerStatus().deleteSelectedWorker();
+                            getWorkerStatus().setSelectedWorker(workerID);
                         }
                     }
 
@@ -549,7 +592,7 @@ public class BoardSceneController {
                 if (event instanceof VC_PlayerCommandGameEvent) {
                     if (isCommandEventValid((VC_PlayerCommandGameEvent) event)) {
                         gui.sendEvent(event);
-                    }else{
+                    } else {
                         //restore turn status
                         System.out.println("Something in the Event was wrong");
                     }
@@ -650,7 +693,6 @@ public class BoardSceneController {
         gui.sendEvent(new VC_PlayerCommandGameEvent("", TurnAction.PASS, gui.getUsername(), null, null, null));
         disableAllActionButtons();
         currentState = NOT_YOUR_TURN;
-        workerOnAction = null;
         currentGlow = null;
         resetTurnStatus();
     }

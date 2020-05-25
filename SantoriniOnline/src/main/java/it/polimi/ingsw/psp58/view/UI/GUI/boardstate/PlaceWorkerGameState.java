@@ -9,24 +9,24 @@ import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEven
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
-public class PlaceWorkerGameState extends GameStateAbs {
-    private  CV_PlayerPlaceWorkerRequestEvent eventArrived;
+public class PlaceWorkerGameState extends GameStateAbstract {
+    private CV_PlayerPlaceWorkerRequestEvent eventArrived;
 
-    private final GameState state = GameState.PLACE_WORKER;
+    private final GameStateEnum state = GameStateEnum.PLACE_WORKER;
+
     public PlaceWorkerGameState(CV_PlayerPlaceWorkerRequestEvent eventArrived) {
         this.eventArrived = eventArrived;
     }
 
     @Override
-    public void setState(BoardSceneController b) {
-        b.setLastIslandUpdate(islandDataFromJson(eventArrived.getIsland()));
-        b.updateIsland(islandDataFromJson(eventArrived.getIsland()));
-        b.handleWorkerPlacement(eventArrived.getWorkerToPlace());
-
+    public void setState(BoardSceneController boardController) {
+        boardController.setLastIslandUpdate(islandDataFromJson(eventArrived.getIsland()));
+        boardController.updateIsland(islandDataFromJson(eventArrived.getIsland()));
+        boardController.handleWorkerPlacement(eventArrived.getWorkerToPlace());
     }
 
     @Override
-    public ControllerGameEvent handleClick(String username, int x, int y, Worker.IDs workerID, GameState state) {
+    public ControllerGameEvent handleClick(String username, int x, int y, Worker.IDs workerID, GameStateEnum state) {
         return new VC_PlayerPlacedWorkerEvent("", username, x, y, workerID);
     }
 
@@ -36,14 +36,14 @@ public class PlaceWorkerGameState extends GameStateAbs {
     }
 
     @Override
-    public GameState getState() {
+    public GameStateEnum getState() {
         return state;
     }
 
-    private IslandData islandDataFromJson(String islaJson) {
+    private IslandData islandDataFromJson(String islandJson) {
         //display island
         Gson gson = new Gson();
-        return gson.fromJson(islaJson, IslandData.class);
+        return gson.fromJson(islandJson, IslandData.class);
     }
 
 }

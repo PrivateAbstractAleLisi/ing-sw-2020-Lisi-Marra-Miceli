@@ -9,11 +9,11 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
 
-public class CommandGameState extends GameStateAbs {
+public class CommandGameState extends GameStateAbstract {
     private CV_CommandRequestEvent eventArrived;
     private BoardSceneController boardSceneController;
 
-    private final GameState state = GameState.COMMAND;
+    private final GameStateEnum state = GameStateEnum.COMMAND;
 
     public CommandGameState(CV_CommandRequestEvent eventArrived) {
         this.eventArrived = eventArrived;
@@ -45,12 +45,12 @@ public class CommandGameState extends GameStateAbs {
     }
 
     @Override
-    public GameState getState() {
+    public GameStateEnum getState() {
         return state;
     }
 
     @Override
-    public ControllerGameEvent handleClick(String username, int x, int y, Worker.IDs workerID, GameState state) {
+    public ControllerGameEvent handleClick(String username, int x, int y, Worker.IDs workerID, GameStateEnum state) {
         switch (state) {
             case SELECT_WORKER:
 //                boardSceneController.showPossibleBlockAction(workerID);
