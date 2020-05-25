@@ -15,6 +15,8 @@ public class Island {
 
     private CellCluster[][] grid;
 
+    private int numberOfCompleteTowers;
+
     /**
      * Constructor, initialize all the island's cells using a for loop
      */
@@ -30,7 +32,10 @@ public class Island {
         }
 
         indexRange = new Range(0, 4);
+        numberOfCompleteTowers = 0;
+
         System.out.println("DEBUG: Island has been initialized");
+
     }
 
     /**
@@ -178,7 +183,6 @@ public class Island {
 
             }
         }
-
         return false;
     }
 
@@ -198,9 +202,11 @@ public class Island {
         return copy;
    }
 
+   public void incrementNumberOfCompleteTowers(){
+        numberOfCompleteTowers++;
+   }
 
-
-
-
-
+    public int getNumberOfCompleteTowers() {
+        return numberOfCompleteTowers;
+    }
 }

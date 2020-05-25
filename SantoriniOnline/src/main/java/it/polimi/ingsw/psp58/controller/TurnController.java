@@ -7,9 +7,10 @@ import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
-import it.polimi.ingsw.psp58.model.*;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerCardsChosenEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerChosenFirstPlayerEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerCardChosenEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEvent;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
@@ -38,6 +39,8 @@ public class TurnController extends EventSource implements ControllerListener {
     private Turn currentTurnInstance;
     private int currentTurnNumber;
 
+    private boolean thereIsChronus;
+
     private int numberOfPlayers;
     private Player currentPlayer;
     private final BoardManager board;
@@ -50,6 +53,7 @@ public class TurnController extends EventSource implements ControllerListener {
         this.numberOfPlayers = numberOfPlayers;
         this.currentTurnNumber = 0;
         this.room = room;
+        checkIfThereIsChronus();
     }
 
     /**
@@ -59,6 +63,16 @@ public class TurnController extends EventSource implements ControllerListener {
      */
     public void setTurnSequence(Map<Integer, Player> turnSequence) {
         this.turnSequence = turnSequence;
+    }
+
+    /**
+     * checks if there is Chronus in the game and set the apposite boolean
+     */
+    public void checkIfThereIsChronus(){
+        this.thereIsChronus = false;
+        for (Player player : turnSequence.values()){
+            if(player.getCard().getName()== CardEnum.CHRONUS) this.thereIsChronus=true;
+        }
     }
 
     public void setNumberOfPlayers(int numberOfPlayers) {
@@ -312,6 +326,9 @@ public class TurnController extends EventSource implements ControllerListener {
             }
             //removes the workers of that player from the island
             Player defeatedPlayer = board.getPlayer(player);
+            if (defeatedPlayer.getCard().getName()==CardEnum.CHRONUS){
+                this.thereIsChronus=false;
+            }
             try {
                 board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.A));
                 board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.B));
@@ -444,8 +461,18 @@ public class TurnController extends EventSource implements ControllerListener {
 
                     if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(w.getWorkerID());
 
+                    //if there is Chronus and this build has made the fifth complete tower Chronus wins
+                    if(thereIsChronus && board.getIsland().getNumberOfCompleteTowers() >= 5){
+                        Player playerHasToWin = null;
+                        for (Player p : turnSequence.values()){
+                            if(p.getCard().getName() == CardEnum.CHRONUS) playerHasToWin= p;
+                        }
+                        win(playerHasToWin);
+                    }
+
                     sendIslandUpdate();
                     sendCommandRequest(player.getUsername());
+
                 } catch (InvalidBuildException | IllegalArgumentException e) {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
 

@@ -3,7 +3,6 @@ package it.polimi.ingsw.psp58.model;
 import it.polimi.ingsw.psp58.auxiliary.Range;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.NoRemainingBlockException;
 import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
@@ -108,16 +107,14 @@ public abstract class Card {
         //decrementa il numero di blocchi da costruire rimasti e ritorno true
         playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);
 
-        //decrease the number of block of this type available
-        try {
-            playedBy.getBoardManager().drawBlock(block);
-        } catch (NoRemainingBlockException e) {
-            throw new InvalidBuildException("The build is valid but BoardManager has no block remaining");
-        }
 
         island.buildBlock(block, desiredX, desiredY);
         if (!checkBlockPosition(island, block, desiredX, desiredY, oldCellCluster)) {
             throw new InvalidBuildException("The build is valid but there was an error applying desired changes");
+        }
+
+        if(oldCellCluster.length == 3 && block== BlockTypeEnum.DOME){
+            island.incrementNumberOfCompleteTowers();
         }
     }
 
@@ -296,11 +293,7 @@ public abstract class Card {
      * @return true if the block order and placement is valid, false otherwise
      */
     protected boolean isValidBlockPlacement(BlockTypeEnum block, int[] desiredConstruction, BehaviourManager behaviour) {
-        BoardManager boardManager = playedBy.getBoardManager();
 
-        if (boardManager.getNumberOfBlocksRemaining(block) <= 0) {
-            return false;
-        }
 
         int[] longArray = new int[desiredConstruction.length + 1];
         longArray[0] = 0;

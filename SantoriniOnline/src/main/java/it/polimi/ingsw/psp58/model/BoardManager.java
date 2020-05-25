@@ -1,25 +1,18 @@
 package it.polimi.ingsw.psp58.model;
 
-import java.util.*;
-
 import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
 import it.polimi.ingsw.psp58.exceptions.InvalidCardException;
 import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
-import it.polimi.ingsw.psp58.exceptions.NoRemainingBlockException;
-import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 import javax.naming.LimitExceededException;
-import java.lang.IllegalArgumentException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class BoardManager {
-
-    // Number and type of block available
-    private int blocksL1;
-    private int blocksL2;
-    private int blocksL3;
-    private int blocksDome;
 
     //List of the players in the game
     private List<Player> players;
@@ -37,10 +30,6 @@ public class BoardManager {
      * Constructor: initialize the game creating the island
      */
     public BoardManager() {
-        blocksL1 = 22;
-        blocksL2 = 18;
-        blocksL3 = 14;
-        blocksDome = 18;
 
         island = new Island();
 
@@ -52,61 +41,6 @@ public class BoardManager {
         takenCards = new ArrayList<CardEnum>();
     }
 
-    /**
-     *
-     * @param blockType type of the block that you what to know the amount
-     * @return the number of the blocks of the blockType remaining
-     * @throws IllegalArgumentException if there are no more blocks of blockType remaining
-     */
-    public int getNumberOfBlocksRemaining(BlockTypeEnum blockType) throws IllegalArgumentException {
-        int result = 0;
-        switch (blockType) {
-            case LEVEL1:
-                result = blocksL1;
-                break;
-            case LEVEL2:
-                result = blocksL2;
-                break;
-            case LEVEL3:
-                result = blocksL3;
-                break;
-            case DOME:
-                result = blocksDome;
-                break;
-        }
-        return result;
-    }
-
-
-    /**
-     *
-     * @param blockType type of the block to decrement from the remaining blocks
-     * @throws NoRemainingBlockException if there are no block of blockType remaining
-     */
-    public void drawBlock(BlockTypeEnum blockType) throws NoRemainingBlockException {
-        switch (blockType) {
-            case LEVEL1:
-                if (blocksL1 > 0) {
-                    blocksL1--;
-                    break;
-                } else throw new NoRemainingBlockException("No blocksL1 remaining");
-            case LEVEL2:
-                if (blocksL2 > 0) {
-                    blocksL2--;
-                    break;
-                } else throw new NoRemainingBlockException("No blocksL2 remaining");
-            case LEVEL3:
-                if (blocksL3 > 0) {
-                    blocksL3--;
-                    break;
-                } else throw new NoRemainingBlockException("No blocksL3 remaining");
-            case DOME:
-                if (blocksDome > 0) {
-                    blocksDome--;
-                    break;
-                } else throw new NoRemainingBlockException("No blocksDome remaining");
-        }
-    }
 
     /**
      * @param player the player to add

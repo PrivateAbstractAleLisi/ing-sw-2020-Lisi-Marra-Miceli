@@ -9,7 +9,10 @@ public enum CardEnum {
     HEPHAESTUS(6,"Hephaestus", "Your Worker may build one additional block (not dome) on top of your first block."),
     MINOTAUR(8, "Minotaur", "Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level."),
     PAN(9, "Pan", "You also win if your Worker moves down two or more levels."),
-    PROMETHEUS(10, "Prometheus", "If your Worker does not move up, it may build both before and after moving.");
+    PROMETHEUS(10, "Prometheus", "If your Worker does not move up, it may build both before and after moving."),
+    CHRONUS(16, "Chronus", "You also win when there are at least five Complete Towers on the board."),
+    TRITON(29, "Triton", "Each time your Worker moves into a perimeter space, it may immediately move again."),
+    ZEUS(30, "Zeus", "Your Worker may build a block under itself.");
 
     private int number;
     private String name;

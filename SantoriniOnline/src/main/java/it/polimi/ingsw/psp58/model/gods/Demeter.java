@@ -1,11 +1,10 @@
 package it.polimi.ingsw.psp58.model.gods;
 
+import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.model.BehaviourManager;
 import it.polimi.ingsw.psp58.model.Card;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.Player;
-import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
-import it.polimi.ingsw.psp58.exceptions.NoRemainingBlockException;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
@@ -62,16 +61,14 @@ public class Demeter extends Card {
         if (!checkBlockPosition(island, block, desiredX, desiredY, oldCellCluster)) {
             throw new InvalidBuildException("The build is valid but there was an error applying desired changes");
         }
+
+        if(oldCellCluster.length == 3 && block== BlockTypeEnum.DOME){
+            island.incrementNumberOfCompleteTowers();
+        }
+
         lastBuiltPosition = new int[]{desiredX, desiredY};
         //decrementa il numero di blocchi da costruire rimasti e ritorno true
         playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);
-
-        //decrease the number of block of this type available
-        try {
-            playedBy.getBoardManager().drawBlock(block);
-        } catch (NoRemainingBlockException e) {
-            throw new InvalidBuildException("The build is valid but BoardManager has no block remaining");
-        }
     }
 
     /**
