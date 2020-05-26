@@ -54,9 +54,11 @@
 
     <profiles>
         <profile>
-            <id>client</id>
+            <id>Client-Windows</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <os>
+                    <family>windows</family>
+                </os>
             </activation>
             <build>
                 <plugins>
@@ -72,14 +74,69 @@
                                     <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
                                 </manifest>
                             </archive>
-                            <finalName>client-${project.version}</finalName>
+                            <finalName>client-v.${project.version}-win</finalName>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
-            <id>server</id>
+            <id>Client-Linux</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>Linux</name>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Make this jar executable -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <!-- Jar file entry point -->
+                                    <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
+                                </manifest>
+                            </archive>
+                            <finalName>client-v.${project.version}-linux</finalName>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>Client-MacOS</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Make this jar executable -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <!-- Jar file entry point -->
+                                    <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
+                                </manifest>
+                            </archive>
+                            <finalName>client-v.${project.version}-macOS</finalName>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>Server</id>
             <build>
                 <plugins>
                     <!-- Make this jar executable -->
@@ -94,7 +151,7 @@
                                     <mainClass>it.polimi.ingsw.psp58.networking.server.SantoriniServer</mainClass>
                                 </manifest>
                             </archive>
-                            <finalName>server-${project.version}</finalName>
+                            <finalName>server-v.${project.version}</finalName>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -135,9 +192,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.3</version>
-                <configuration>
-                    <!-- put your configurations here -->
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
