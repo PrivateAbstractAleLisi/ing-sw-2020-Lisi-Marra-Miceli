@@ -20,8 +20,8 @@ public class PlaceWorkerGameState extends GameStateAbstract {
 
     @Override
     public void setState(BoardSceneController boardController) {
-        boardController.setLastIslandUpdate(islandDataFromJson(eventArrived.getIsland()));
-        boardController.updateIsland(islandDataFromJson(eventArrived.getIsland()));
+        boardController.setLastIslandUpdate(eventArrived.getIsland());
+        boardController.updateIsland(eventArrived.getIsland());
         boardController.handleWorkerPlacement(eventArrived.getWorkerToPlace());
     }
 
@@ -40,10 +40,6 @@ public class PlaceWorkerGameState extends GameStateAbstract {
         return state;
     }
 
-    private IslandData islandDataFromJson(String islandJson) {
-        //display island
-        Gson gson = new Gson();
-        return gson.fromJson(islandJson, IslandData.class);
-    }
+
 
 }

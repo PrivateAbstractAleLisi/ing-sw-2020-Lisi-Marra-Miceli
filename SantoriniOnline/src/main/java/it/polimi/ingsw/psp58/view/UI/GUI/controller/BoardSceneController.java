@@ -64,7 +64,6 @@ public class BoardSceneController {
     private WorkerColors myColor;
     private String myUsername = "";
     private GUI gui;
-    private boolean alreadyMadeAMoveThisTurn;
 
     private IslandData lastIslandUpdate;
     private StackPane[][] lastGridPane;
@@ -76,17 +75,6 @@ public class BoardSceneController {
     public GridPane board;
 
     public Node workerSelectedNode;
-
-    public void resetTurnStatus() {
-        workerStatus = new WorkerStatus();
-    }
-
-    public WorkerStatus getWorkerStatus() {
-        return workerStatus;
-    }
-
-
-    public Label turnSequence;
 
     public VBox cardInfo1;
     public VBox cardInfo2;
@@ -109,82 +97,22 @@ public class BoardSceneController {
 
     private List<Label> playersList;
 
-    //BUTTONS
-
+    //ACTION BUTTONS
     public Button moveButton, buildButton, passButton;
 
-    private void disableAllActionButtons() {
-        moveButton.setDisable(true);
-        buildButton.setDisable(true);
-        passButton.setDisable(true);
-    }
-
-    public void enableActionButtons(List<TurnAction> availableActions) {
-        for (TurnAction action : availableActions) {
-            switch (action) {
-                case MOVE:
-                    moveButton.setDisable(false);
-                    break;
-                case BUILD:
-                    buildButton.setDisable(false);
-                    break;
-                case PASS:
-                    passButton.setDisable(false);
-                    break;
-            }
-        }
-    }
-
     //BLOCKS
-
     public HBox L1Box, L2Box, L3Box, DomeBox;
 
-    private void updateBlocksCounter(int lev1, int lev2, int lev3, int dome) {
-        ((Label) L1Box.getChildren().get(1)).setText(Integer.toString(lev1));
-        ((Label) L2Box.getChildren().get(1)).setText(Integer.toString(lev2));
-        ((Label) L3Box.getChildren().get(1)).setText(Integer.toString(lev3));
-        ((Label) DomeBox.getChildren().get(1)).setText(Integer.toString(dome));
-    }
-
-    public void setWaitingView() {
-        disableAllActionButtons();
-
-    }
-    //Workers
-
+    //WORKERS
     public ImageView workerSlotA;
     public ImageView workerSlotB;
 
+    //TURN SEQUENCE
+    public Label turnSequence;
 
-    public void updateTurnSequence(Map<String, CardEnum> turnSequenceFromEvent) {
-
-        //fill turn sequence
-        Map<String, CardEnum> sequence = turnSequenceFromEvent;
-        List<String> turnSequence = new ArrayList<>();
-        for (String player : sequence.keySet()) {
-            turnSequence.add(player);
-        }
-        updateTurnSequence(turnSequence);
-    }
-
-    public void updateTurnSequence(List<String> sequence) {
-        String turnSequenceText = "";
-        boolean first = true;
-        for (String s : sequence) {
-            if (first) {
-                turnSequenceText += " ";
-                first = false;
-            } else {
-                turnSequenceText += " << ";
-            }
-            turnSequenceText += s.toUpperCase();
-        }
-        turnSequence.setText(turnSequenceText);
-    }
 
     public void init(CV_WorkerPlacementGameEvent event, String myUsername) {
         initializeIsland();
-        alreadyMadeAMoveThisTurn = false;
 
         updateTurnSequence(event.getTurnSequence());
         this.myUsername = myUsername;
@@ -203,120 +131,6 @@ public class BoardSceneController {
         updateBlocksCounter(22, 18, 14, 18);
     }
 
-    public void hideWorkerPlacementBox() {
-        //workerPrePlaceHBox.setVisible(false);
-    }
-
-    /**
-     * updates the current state of the GUI
-     *
-     * @param nextState the next state to commute to
-     */
-    public void setStateInstance(GameStateAbstract nextState) {
-        nextState.setState(this);
-        this.currentStateInstance = nextState;
-        if (nextState instanceof CommandGameState) {
-            //todo gestire meglio il worker
-            if (!workerStatus.isAlreadySelectedWorker()) {
-                currentState = SELECT_WORKER;
-            }
-        }
-        if (nextState instanceof PlaceWorkerGameState) {
-            CV_PlayerPlaceWorkerRequestEvent event = (CV_PlayerPlaceWorkerRequestEvent) nextState.getEvent();
-            workerStatus.setSelectedWorker(event.getWorkerToPlace());
-        }
-    }
-
-    public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
-        GameStateAbstract nextState = new PlaceWorkerGameState(event);
-        nextState.setState(this);
-        this.currentStateInstance = nextState;
-    }
-
-    public void handle(CV_WorkerPlacementGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState();
-        nextState.setState(this);
-        this.currentStateInstance = nextState;
-    }
-
-    public void handle(CV_WaitPreMatchGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState(event);
-        nextState.setState(this);
-        this.currentStateInstance = nextState;
-    }
-
-    public void handle(CV_CommandRequestEvent event) {
-        GameStateAbstract nextState = new CommandGameState(event);
-        nextState.setState(this);
-        this.currentStateInstance = nextState;
-    }
-
-    public void handle(CV_NewTurnEvent event) {
-        updateTurnSequence(event.getTurnRotation());
-
-        if (event.getCurrentPlayerUsername().equals(gui.getUsername())) {
-            resetTurnStatus();
-            displayMessage("IT'S YOUR TURN!");
-            setCurrentState(GameStateEnum.SELECT_WORKER);
-            // boardSceneController.setAlreadyMadeAMoveThisTurn(false);
-        }
-    }
-
-    public void handle(CV_GameStartedGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState();
-        nextState.setState(this);
-        this.currentStateInstance = nextState;
-        displayMessage("Game is starting!");
-    }
-
-    public void handleWorkerPlacement(Worker.IDs workerRequested) {
-        disableAllActionButtons();
-        switch (workerRequested) {
-
-            case A:
-                workerSlotA.setEffect(new Glow(0.8));
-                BoardPopUp.show("Please place worker " + workerRequested.toString(), gui.getStage());
-                break;
-            case B:
-                workerSlotB.setEffect(new Glow(0.8));
-                BoardPopUp.show("Please place worker " + workerRequested.toString(), gui.getStage());
-                break;
-        }
-    }
-
-    /**
-     * displays a message to the user
-     *
-     * @param message the message you would like to display
-     */
-    public void displayMessage(String message) {
-        //TODO messaggio sotto e non popup
-        BoardPopUp.show(message.toUpperCase(), gui.getStage());
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
-    }
-
-    public IslandData getLastIslandUpdate() {
-        return lastIslandUpdate;
-    }
-
-    public boolean hasAlreadyMadeAMove() {
-        return alreadyMadeAMoveThisTurn;
-    }
-
-    public void setAlreadyMadeAMoveThisTurn(boolean alreadyMadeAMoveThisTurn) {
-        this.alreadyMadeAMoveThisTurn = alreadyMadeAMoveThisTurn;
-    }
-
-    public void setCurrentState(GameStateEnum currentState) {
-        this.currentState = currentState;
-    }
-
-    public void setLastIslandUpdate(IslandData lastIslandUpdate) {
-        this.lastIslandUpdate = lastIslandUpdate;
-    }
 
     //    private void initializePlayersList(){
 //        playersList = new ArrayList<>();
@@ -360,192 +174,6 @@ public class BoardSceneController {
 //
 //    }
 
-    //utility to get a cell from the board
-    public Node getNodeByRowColumnIndex(final int row, final int column) {
-
-        return lastGridPane[row][column];
-//        Node result = null;
-//        ObservableList<Node> children = board.getChildren();
-//
-//        for (Node node : children) {
-//            if (node instanceof StackPane && GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
-//                result = node;
-//                break;
-//            }
-//        }
-//
-//        return result;
-    }
-
-
-    public void initializeIsland() {
-        lastGridPane = new StackPane[5][5];
-        for (int x = 0; x < 5; x++) {
-            for (int y = 0; y < 5; y++) {
-                StackPane stackPane = new StackPane();
-                Pane pane = new Pane();
-                Pane upperPane = new Pane();
-                upperPane.setVisible(false);
-
-                stackPane.getChildren().addAll(pane, upperPane);
-                stackPane.setOnMouseClicked(this::onClickEventCellCluster);
-                GridPane.setConstraints(stackPane, y, x); //node, column, row
-
-                board.getChildren().add(stackPane);
-
-                lastGridPane[x][y] = stackPane;
-            }
-        }
-    }
-
-    public void updateIsland(CV_IslandUpdateEvent event) {
-        Gson gson = new Gson();
-        final IslandData island = gson.fromJson(event.getNewIsland(), IslandData.class);
-
-        setLastIslandUpdate(island);
-
-        String url = "";
-        Platform.runLater(() -> {
-            for (int x = 0; x < 5; x++) {
-                for (int y = 0; y < 5; y++) {
-                    CellClusterData cellClusterData = island.getCellCluster(x, y);
-                    StackPane stackPane = new StackPane();
-                    Pane pane = new Pane();
-                    Pane upperPane = new Pane();
-                    upperPane.setVisible(false);
-
-                    //if there are construction blocks adds the image
-                    if (cellClusterData.getBlocks() != null && (cellClusterData.getBlocks().length > 0 || cellClusterData.isDomeOnTop())) {
-                        pane.getChildren().add(getBlockImage(cellClusterData));
-                    }
-
-                    //if there is a worker adds the image
-                    if (cellClusterData.getWorkerOnTop() != null) {
-                        pane.getChildren().add(getWorkerImage(cellClusterData));
-
-
-                    }
-                    stackPane.getChildren().addAll(pane, upperPane);
-                    stackPane.setOnMouseClicked(this::onClickEventCellCluster);
-
-                    GridPane.setConstraints(stackPane, x, y);
-
-                    board.getChildren().remove(lastGridPane[x][y]);
-                    board.getChildren().add(stackPane);
-
-                    lastGridPane[x][y] = stackPane;
-
-                    if (cellClusterData.getWorkerOnTop() != null) {
-                        if (currentGlow != null && cellClusterData.getWorkerColor().equals(myColor) && currentGlow.getId().equals(cellClusterData.getWorkerOnTop())) {
-                            setWorkerGlow(true, x, y);
-
-                            System.out.println("DEBUG: RESTORING GLOW");
-                        }
-                    }
-                }
-            }
-        });
-
-    }
-
-
-    public ImageView getBlockImage(CellClusterData cellClusterData) {
-        String url = getUrlFromCellCluster(cellClusterData);
-
-        ImageView image = new ImageView();
-        image.setFitWidth(100);
-        image.setFitHeight(100);
-        image.setPreserveRatio(true);
-        image.setImage(new Image(url));
-        return image;
-    }
-
-    public ImageView getWorkerImage(CellClusterData cellClusterData) {
-        String url = getWorkerUrl(cellClusterData.getWorkerColor());
-        ImageView workerImage = new ImageView();
-        workerImage.setFitWidth(100);
-        workerImage.setFitHeight(100);
-        workerImage.setPreserveRatio(true);
-        workerImage.setImage(new Image(url));
-        return workerImage;
-    }
-
-    public String getUrlFromCellCluster(CellClusterData cellClusterData) {
-        String url = "/images/cellcluster/";
-
-        int[] blocks = cellClusterData.getBlocks();
-        boolean domeOnTop = cellClusterData.isDomeOnTop();
-        Worker.IDs workerID = cellClusterData.getWorkerOnTop();
-        WorkerColors color = cellClusterData.getWorkerColor();
-
-        //construct the url of the image
-        if ((blocks.length == 1 && blocks[0] == 4)) {
-            if (domeOnTop) url = url + "L0_DOME.png";
-            return url;
-        } else {
-            if (blocks[blocks.length - 1] == 4) {
-                blocks = Arrays.copyOfRange(blocks, 0, blocks.length - 1);
-            }
-            switch (blocks[blocks.length - 1]) {
-                case 1: {
-                    url = url + "L1";
-                    break;
-                }
-                case 2: {
-                    url = url + "L2";
-                    break;
-                }
-                case 3: {
-                    url = url + "L3";
-                    break;
-                }
-            }
-            if (domeOnTop) {
-                url = url + "_DOME";
-            }
-            url = url + ".png";
-        }
-        return url;
-    }
-
-    private String getWorkerUrl(WorkerColors color) {
-        String url = "/images/cellcluster/";
-        switch (color) {
-            case WHITE:
-                url = url + "W_PINK.png";
-                break;
-            case BLUE:
-                url = url + "W_BLUE.png";
-                break;
-            case BEIGE:
-                url = url + "W_ORANGE.png";
-                break;
-        }
-        return url;
-    }
-
-    private void setWorkerGlow(boolean active, int x, int y) {
-        Node point = getNodeByRowColumnIndex(x, y);
-        if (active) {
-
-            //point.setEffect(new Glow(0.7));
-            System.out.println("DEBUG: setWorkerGlow on " + x + " " + y);
-            workerSelectedNode = point;
-
-            DropShadow dropShadow = new DropShadow();
-            dropShadow.setRadius(14.5);
-            dropShadow.setWidth(30);
-            dropShadow.setHeight(30);
-            dropShadow.setOffsetX(0);
-            dropShadow.setOffsetY(0);
-            dropShadow.setSpread(0.6);
-            dropShadow.setColor(Color.rgb(255, 234, 5));
-            point.setEffect(dropShadow);
-        } else {
-            point.setEffect(null);
-            point = null;
-        }
-    }
 
     public void initCommandRequest() {
         currentState = WAIT_COMMAND_BUTTON_;
@@ -564,7 +192,7 @@ public class BoardSceneController {
             //gets the id of the clicked worker
             Worker.IDs workerID = getWorkerID(colIndex, rowIndex);
 
-            ControllerGameEvent event = currentStateInstance.handleClick(gui.getUsername(), colIndex, rowIndex, workerStatus.getSelectedWorker(), currentState);
+            ControllerGameEvent event = currentStateInstance.handleClick(myUsername, colIndex, rowIndex, workerStatus.getSelectedWorker(), currentState);
 
             if (currentStateInstance instanceof CommandGameState) { //when it's my turn and I have to answer with a command request
                 if (workerID == null) {
@@ -625,12 +253,324 @@ public class BoardSceneController {
         }
     }
 
-    private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
-        return commandEvent.isCommandEventValid() && myUsername.equals(commandEvent.getFromPlayer());
+    public void setMove() {
+        moveButton.setDisable(true);
+        currentState = MOVE;
     }
 
-    public Worker.IDs getWorkerID(int x, int y) {
-        return lastIslandUpdate.getCellCluster(x, y).getWorkerOnTop();
+    public void setBuild() {
+        buildButton.setDisable(true);
+        currentState = BUILD;
+    }
+
+    public void pass() {
+        gui.sendEvent(new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null));
+        disableAllActionButtons();
+        currentState = NOT_YOUR_TURN;
+        currentGlow = null;
+        resetTurnStatus();
+    }
+
+    /* ----------------------------------------------------------------------------------------------
+                                         STATUS METHODS
+       ----------------------------------------------------------------------------------------------*/
+
+    //STATUS
+    public void resetTurnStatus() {
+        workerStatus = new WorkerStatus();
+    }
+
+    public WorkerStatus getWorkerStatus() {
+        return workerStatus;
+    }
+
+    public void setWaitingView() {
+        disableAllActionButtons();
+    }
+
+    public void hideWorkerPlacementBox() {
+        //workerPrePlaceHBox.setVisible(false);
+    }
+
+    public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
+        GameStateAbstract nextState = new PlaceWorkerGameState(event);
+        workerStatus.setSelectedWorker(event.getWorkerToPlace());
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+    }
+
+    public void handle(CV_WorkerPlacementGameEvent event) {
+        GameStateAbstract nextState = new WaitGameState();
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+    }
+
+    public void handle(CV_WaitPreMatchGameEvent event) {
+        GameStateAbstract nextState = new WaitGameState(event);
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+    }
+
+    public void handle(CV_CommandRequestEvent event) {
+        GameStateAbstract nextState = new CommandGameState(event);
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+    }
+
+    public void handle(CV_NewTurnEvent event) {
+        updateTurnSequence(event.getTurnRotation());
+
+        if (event.getCurrentPlayerUsername().equals(myUsername)) {
+            resetTurnStatus();
+            displayMessage("IT'S YOUR TURN!");
+            setCurrentState(GameStateEnum.SELECT_WORKER);
+            // boardSceneController.setAlreadyMadeAMoveThisTurn(false);
+        }
+    }
+
+    public void handle(CV_GameStartedGameEvent event) {
+        GameStateAbstract nextState = new WaitGameState();
+        nextState.setState(this);
+        this.currentStateInstance = nextState;
+        displayMessage("Game is starting!");
+    }
+
+    public void handleWorkerPlacement(Worker.IDs workerRequested) {
+        disableAllActionButtons();
+        switch (workerRequested) {
+
+            case A:
+                workerSlotA.setEffect(new Glow(0.8));
+                BoardPopUp.show("Please place worker " + workerRequested.toString(), gui.getStage());
+                break;
+            case B:
+                workerSlotB.setEffect(new Glow(0.8));
+                BoardPopUp.show("Please place worker " + workerRequested.toString(), gui.getStage());
+                break;
+        }
+    }
+
+    /* ----------------------------------------------------------------------------------------------
+                                         ACTION BUTTONS METHODS
+       ----------------------------------------------------------------------------------------------*/
+
+    private void disableAllActionButtons() {
+        moveButton.setDisable(true);
+        buildButton.setDisable(true);
+        passButton.setDisable(true);
+    }
+
+    public void enableActionButtons(List<TurnAction> availableActions) {
+        for (TurnAction action : availableActions) {
+            switch (action) {
+                case MOVE:
+                    moveButton.setDisable(false);
+                    break;
+                case BUILD:
+                    buildButton.setDisable(false);
+                    break;
+                case PASS:
+                    passButton.setDisable(false);
+                    break;
+            }
+        }
+    }
+
+    /* ----------------------------------------------------------------------------------------------
+                                         BUILDING BLOCKS METHODS
+       ----------------------------------------------------------------------------------------------*/
+
+    private void updateBlocksCounter(int lev1, int lev2, int lev3, int dome) {
+        ((Label) L1Box.getChildren().get(1)).setText(Integer.toString(lev1));
+        ((Label) L2Box.getChildren().get(1)).setText(Integer.toString(lev2));
+        ((Label) L3Box.getChildren().get(1)).setText(Integer.toString(lev3));
+        ((Label) DomeBox.getChildren().get(1)).setText(Integer.toString(dome));
+    }
+
+    /* ----------------------------------------------------------------------------------------------
+                                         TURN SEQUENCE METHODS
+       ----------------------------------------------------------------------------------------------*/
+
+    public void updateTurnSequence(Map<String, CardEnum> turnSequenceFromEvent) {
+
+        //fill turn sequence
+        Map<String, CardEnum> sequence = turnSequenceFromEvent;
+        List<String> turnSequence = new ArrayList<>();
+        for (String player : sequence.keySet()) {
+            turnSequence.add(player);
+        }
+        updateTurnSequence(turnSequence);
+    }
+
+    public void updateTurnSequence(List<String> sequence) {
+        String turnSequenceText = "";
+        boolean first = true;
+        for (String s : sequence) {
+            if (first) {
+                turnSequenceText += " ";
+                first = false;
+            } else {
+                turnSequenceText += " << ";
+            }
+            turnSequenceText += s.toUpperCase();
+        }
+        turnSequence.setText(turnSequenceText);
+    }
+
+     /* ----------------------------------------------------------------------------------------------
+                                         ISLAND METHODS
+       ----------------------------------------------------------------------------------------------*/
+
+    public void handle(CV_IslandUpdateEvent event) {
+        updateIsland(event.getNewIsland());
+    }
+
+    public IslandData getLastIslandUpdate() {
+        return lastIslandUpdate;
+    }
+
+    public void updateIsland(String islandDataJSON) {
+        IslandData island = islandDataFromJson(islandDataJSON);
+
+        setLastIslandUpdate(island);
+
+        String url = "";
+        Platform.runLater(() -> {
+            for (int x = 0; x < 5; x++) {
+                for (int y = 0; y < 5; y++) {
+                    CellClusterData cellClusterData = island.getCellCluster(x, y);
+                    StackPane stackPane = new StackPane();
+                    Pane pane = new Pane();
+                    Pane upperPane = new Pane();
+                    upperPane.setVisible(false);
+
+                    //if there are construction blocks adds the image
+                    if (cellClusterData.getBlocks() != null && (cellClusterData.getBlocks().length > 0 || cellClusterData.isDomeOnTop())) {
+                        pane.getChildren().add(getBlockImage(cellClusterData));
+                    }
+
+                    //if there is a worker adds the image
+                    if (cellClusterData.getWorkerOnTop() != null) {
+                        pane.getChildren().add(getWorkerImage(cellClusterData));
+
+
+                    }
+                    stackPane.getChildren().addAll(pane, upperPane);
+                    stackPane.setOnMouseClicked(this::onClickEventCellCluster);
+
+                    GridPane.setConstraints(stackPane, x, y);
+
+                    board.getChildren().remove(lastGridPane[x][y]);
+                    board.getChildren().add(stackPane);
+
+                    lastGridPane[x][y] = stackPane;
+
+                    if (cellClusterData.getWorkerOnTop() != null) {
+                        if (currentGlow != null && cellClusterData.getWorkerColor().equals(myColor) && currentGlow.getId().equals(cellClusterData.getWorkerOnTop())) {
+                            setWorkerGlow(true, x, y);
+
+                            System.out.println("DEBUG: RESTORING GLOW");
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+
+    public void setLastIslandUpdate(IslandData lastIslandUpdate) {
+        this.lastIslandUpdate = lastIslandUpdate;
+    }
+
+    public void setLastIslandUpdate(String lastIslandUpdate) {
+        this.lastIslandUpdate = islandDataFromJson(lastIslandUpdate);
+    }
+
+    public void initializeIsland() {
+        lastGridPane = new StackPane[5][5];
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
+                StackPane stackPane = new StackPane();
+                Pane pane = new Pane();
+                Pane upperPane = new Pane();
+                upperPane.setVisible(false);
+
+                stackPane.getChildren().addAll(pane, upperPane);
+                stackPane.setOnMouseClicked(this::onClickEventCellCluster);
+                GridPane.setConstraints(stackPane, y, x); //node, column, row
+
+                board.getChildren().add(stackPane);
+
+                lastGridPane[x][y] = stackPane;
+            }
+        }
+    }
+
+    public ImageView getBlockImage(CellClusterData cellClusterData) {
+        String url = getUrlFromCellCluster(cellClusterData);
+
+        ImageView image = new ImageView();
+        image.setFitWidth(100);
+        image.setFitHeight(100);
+        image.setPreserveRatio(true);
+        image.setImage(new Image(url));
+        return image;
+    }
+
+    public void activateGlowOnPanels(List<int[]> panelPositions) {
+
+        for (int[] position : panelPositions) {
+            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
+            if (currentState == MOVE) {
+                Pane pane = (Pane) stackPane.getChildren().get(1);
+                pane.setVisible(true);
+                pane.setStyle("-fx-background-color: #00FFFF");
+            }
+            if (currentState == BUILD) {
+                stackPane.getChildren().get(1).setVisible(true);
+                stackPane.getChildren().get(1).setStyle("-fx-background-color: #A52A2A");
+            }
+            board.getChildren().remove(position[0], position[1]);
+            board.add(stackPane, position[0], position[1]);
+        }
+    }
+
+    public String getUrlFromCellCluster(CellClusterData cellClusterData) {
+        String url = "/images/cellcluster/";
+
+        int[] blocks = cellClusterData.getBlocks();
+        boolean domeOnTop = cellClusterData.isDomeOnTop();
+        Worker.IDs workerID = cellClusterData.getWorkerOnTop();
+        WorkerColors color = cellClusterData.getWorkerColor();
+
+        //construct the url of the image
+        if ((blocks.length == 1 && blocks[0] == 4)) {
+            if (domeOnTop) url = url + "L0_DOME.png";
+            return url;
+        } else {
+            if (blocks[blocks.length - 1] == 4) {
+                blocks = Arrays.copyOfRange(blocks, 0, blocks.length - 1);
+            }
+            switch (blocks[blocks.length - 1]) {
+                case 1: {
+                    url = url + "L1";
+                    break;
+                }
+                case 2: {
+                    url = url + "L2";
+                    break;
+                }
+                case 3: {
+                    url = url + "L3";
+                    break;
+                }
+            }
+            if (domeOnTop) {
+                url = url + "_DOME";
+            }
+            url = url + ".png";
+        }
+        return url;
     }
 
     public void showPossibleBlockAction(Worker.IDs workerID) {
@@ -661,39 +601,109 @@ public class BoardSceneController {
 
     }
 
-    public void activateGlowOnPanels(List<int[]> panelPositions) {
+    //utility to get a cell from the board
+    public Node getNodeByRowColumnIndex(final int row, final int column) {
 
-        for (int[] position : panelPositions) {
-            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
-            if (currentState == MOVE) {
-                Pane pane = (Pane) stackPane.getChildren().get(1);
-                pane.setVisible(true);
-                pane.setStyle("-fx-background-color: #00FFFF");
-            }
-            if (currentState == BUILD) {
-                stackPane.getChildren().get(1).setVisible(true);
-                stackPane.getChildren().get(1).setStyle("-fx-background-color: #A52A2A");
-            }
-            board.getChildren().remove(position[0], position[1]);
-            board.add(stackPane, position[0], position[1]);
+        return lastGridPane[row][column];
+//        Node result = null;
+//        ObservableList<Node> children = board.getChildren();
+//
+//        for (Node node : children) {
+//            if (node instanceof StackPane && GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
+//                result = node;
+//                break;
+//            }
+//        }
+//
+//        return result;
+    }
+
+    private IslandData islandDataFromJson(String islandJson) {
+        //display island
+        Gson gson = new Gson();
+        return gson.fromJson(islandJson, IslandData.class);
+    }
+
+    /* ----------------------------------------------------------------------------------------------
+                                         UTILITY METHODS
+       ----------------------------------------------------------------------------------------------*/
+
+    public void setGui(GUI gui) {
+        this.gui = gui;
+    }
+
+    /**
+     * Displays a message to the user with a popup panel
+     *
+     * @param message the message you would like to display
+     */
+    public void displayMessage(String message) {
+        //TODO messaggio sotto e non popup
+        BoardPopUp.show(message.toUpperCase(), gui.getStage());
+    }
+
+    public void setCurrentState(GameStateEnum currentState) {
+        this.currentState = currentState;
+    }
+
+    private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
+        return commandEvent.isCommandEventValid() && myUsername.equals(commandEvent.getFromPlayer());
+    }
+
+    /* ----------------------------------------------------------------------------------------------
+                                         WORKER UTILITY AND METHODS
+       ----------------------------------------------------------------------------------------------*/
+
+    private String getWorkerUrl(WorkerColors color) {
+        String url = "/images/cellcluster/";
+        switch (color) {
+            case WHITE:
+                url = url + "W_PINK.png";
+                break;
+            case BLUE:
+                url = url + "W_BLUE.png";
+                break;
+            case BEIGE:
+                url = url + "W_ORANGE.png";
+                break;
+        }
+        return url;
+    }
+
+    private void setWorkerGlow(boolean active, int x, int y) {
+        Node point = getNodeByRowColumnIndex(x, y);
+        if (active) {
+
+            //point.setEffect(new Glow(0.7));
+            System.out.println("DEBUG: setWorkerGlow on " + x + " " + y);
+            workerSelectedNode = point;
+
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setRadius(14.5);
+            dropShadow.setWidth(30);
+            dropShadow.setHeight(30);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(0);
+            dropShadow.setSpread(0.6);
+            dropShadow.setColor(Color.rgb(255, 234, 5));
+            point.setEffect(dropShadow);
+        } else {
+            point.setEffect(null);
+            point = null;
         }
     }
 
-    public void setMove() {
-        moveButton.setDisable(true);
-        currentState = MOVE;
+    public Worker.IDs getWorkerID(int x, int y) {
+        return lastIslandUpdate.getCellCluster(x, y).getWorkerOnTop();
     }
 
-    public void setBuild() {
-        buildButton.setDisable(true);
-        currentState = BUILD;
-    }
-
-    public void pass() {
-        gui.sendEvent(new VC_PlayerCommandGameEvent("", TurnAction.PASS, gui.getUsername(), null, null, null));
-        disableAllActionButtons();
-        currentState = NOT_YOUR_TURN;
-        currentGlow = null;
-        resetTurnStatus();
+    public ImageView getWorkerImage(CellClusterData cellClusterData) {
+        String url = getWorkerUrl(cellClusterData.getWorkerColor());
+        ImageView workerImage = new ImageView();
+        workerImage.setFitWidth(100);
+        workerImage.setFitHeight(100);
+        workerImage.setPreserveRatio(true);
+        workerImage.setImage(new Image(url));
+        return workerImage;
     }
 }

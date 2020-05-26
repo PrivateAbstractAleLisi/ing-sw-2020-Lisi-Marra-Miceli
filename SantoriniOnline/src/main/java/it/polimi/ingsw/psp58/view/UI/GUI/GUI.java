@@ -410,7 +410,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
-        boardSceneController.updateIsland(event);
+        boardSceneController.handle(event);
     }
 
     @Override
