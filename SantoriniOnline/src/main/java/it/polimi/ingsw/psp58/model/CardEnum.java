@@ -11,6 +11,7 @@ public enum CardEnum {
     PAN(9, "Pan", "You also win if your Worker moves down two or more levels."),
     PROMETHEUS(10, "Prometheus", "If your Worker does not move up, it may build both before and after moving."),
     CHRONUS(16, "Chronus", "You also win when there are at least five Complete Towers on the board."),
+    HESTIA(21, "Hestia", "Your Worker may build one additional time, but this cannot be on a perimeter space."),
     TRITON(29, "Triton", "Each time your Worker moves into a perimeter space, it may immediately move again."),
     ZEUS(30, "Zeus", "Your Worker may build a block under itself.");
 

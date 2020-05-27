@@ -7,13 +7,11 @@ import it.polimi.ingsw.psp58.model.*;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
-import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class ZeusTest {
 
@@ -82,6 +80,12 @@ public class ZeusTest {
         island.placeWorker(worker1, 2, 2);
 
         card.placeWorker(worker2, 1, 1, island);
+
+        assertEquals(2, worker1.getPosition()[0]);
+        assertEquals(2, worker1.getPosition()[1]);
+
+        assertEquals(1, worker2.getPosition()[0]);
+        assertEquals(1, worker2.getPosition()[1]);
     }
 
     @Test(expected = InvalidMovementException.class)
@@ -119,9 +123,12 @@ public class ZeusTest {
 
         card.resetBehaviour();
         card.move(worker1, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(1, worker1.getPosition()[1]);
     }
 
-    @Test //NON RUNNA PERCHÈ MANCA IL BOARDMANAGER E IL SECONDO PLAYER
+    @Test
     public void move_RightMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
@@ -129,6 +136,12 @@ public class ZeusTest {
 
         card.resetBehaviour();
         card.move(worker1, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(1, worker1.getPosition()[1]);
+
+        assertEquals(0, worker2.getPosition()[0]);
+        assertEquals(1, worker2.getPosition()[1]);
     }
 
     @Test(expected = InvalidMovementException.class)
@@ -226,6 +239,12 @@ public class ZeusTest {
 
         card.resetBehaviour();
         card.build(worker1, BlockTypeEnum.LEVEL1, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(0, worker1.getPosition()[1]);
+
+        assertEquals(1, island.getCellCluster(1,1).getCostructionHeight());
+
     }
 
     @Test
@@ -246,6 +265,18 @@ public class ZeusTest {
         card.build(worker1, BlockTypeEnum.LEVEL3, 1, 1, island);
         card.resetBehaviour();
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(0, worker1.getPosition()[1]);
+
+        assertEquals(4, island.getCellCluster(1,1).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(0,0).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(0,1).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(2,1).getCostructionHeight());
+
     }
 
     @Test(expected = InvalidBuildException.class)
@@ -325,6 +356,7 @@ public class ZeusTest {
 
         card.resetBehaviour();
         card.build(worker1, BlockTypeEnum.LEVEL1, 1, 0, island);
+
         assertEquals(1, island.getCellCluster(1, 0).getCostructionHeight());
         assertEquals(worker1.getWorkerID(), island.getCellCluster(1,0).getWorkerID());
         assertEquals(worker1.getPlayerUsername(), island.getCellCluster(1,0).getWorkerOwnerUsername());

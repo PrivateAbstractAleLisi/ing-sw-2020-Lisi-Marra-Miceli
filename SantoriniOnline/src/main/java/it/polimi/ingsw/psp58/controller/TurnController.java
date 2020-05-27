@@ -13,7 +13,6 @@ import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerCardChosenEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEvent;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
 import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.*;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
@@ -68,10 +67,10 @@ public class TurnController extends EventSource implements ControllerListener {
     /**
      * checks if there is Chronus in the game and set the apposite boolean
      */
-    public void checkIfThereIsChronus(){
+    public void checkIfThereIsChronus() {
         this.thereIsChronus = false;
-        for (Player player : turnSequence.values()){
-            if(player.getCard().getName()== CardEnum.CHRONUS) this.thereIsChronus=true;
+        for (Player player : turnSequence.values()) {
+            if (player.getCard().getName() == CardEnum.CHRONUS) this.thereIsChronus = true;
         }
     }
 
@@ -290,7 +289,7 @@ public class TurnController extends EventSource implements ControllerListener {
         for (Player recipient : players) {
             if (!recipient.getUsername().equals(currentPlayerUsername)) {
                 CV_WaitMatchGameEvent requestEvent = new CV_WaitMatchGameEvent("Is the turn of", currentPlayerUsername, recipient.getUsername());
-                notifyAllObserverByType(VIEW,requestEvent);
+                notifyAllObserverByType(VIEW, requestEvent);
             }
         }
         sendIslandUpdate();
@@ -326,21 +325,16 @@ public class TurnController extends EventSource implements ControllerListener {
             }
             //removes the workers of that player from the island
             Player defeatedPlayer = board.getPlayer(player);
-            if (defeatedPlayer.getCard().getName()==CardEnum.CHRONUS){
-                this.thereIsChronus=false;
+            if (defeatedPlayer.getCard().getName() == CardEnum.CHRONUS) {
+                this.thereIsChronus = false;
             }
-            try {
-                board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.A));
-                board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.B));
-            } catch (InvalidWorkerRemovalException e) {
-                e.printStackTrace();
-                //todo eliminare eccezione
-            }
+            board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.A));
+            board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.B));
 
             List<String> losers = new ArrayList<String>();
             losers.add(player);
             CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose", null, losers);
-            notifyAllObserverByType(VIEW,gameOverEvent);
+            notifyAllObserverByType(VIEW, gameOverEvent);
 
             removePlayerFromGame(player);
             room.setSpectator(player);
@@ -403,7 +397,7 @@ public class TurnController extends EventSource implements ControllerListener {
     public boolean checkIsHisTurn(Player player) {
         if (!player.getUsername().equals(getCurrentPlayerUser())) {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("is not your turn!", player.getUsername());
-            notifyAllObserverByType(VIEW,errorEvent);
+            notifyAllObserverByType(VIEW, errorEvent);
             return false;
         } else return true;
     }
@@ -414,7 +408,7 @@ public class TurnController extends EventSource implements ControllerListener {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
             if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can move only with the same used during the turn!", player.getUsername());
-                notifyAllObserverByType(VIEW,errorEvent);
+                notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
             } else {
                 //is your turn and your worker is ok, you may try to move:
@@ -432,7 +426,7 @@ public class TurnController extends EventSource implements ControllerListener {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
 
                     CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("This is a invalid move!", player.getUsername());
-                    notifyAllObserverByType(VIEW,errorEvent);
+                    notifyAllObserverByType(VIEW, errorEvent);
                     sendCommandRequest(player.getUsername());
                 } catch (WinningException e) {
                     win(player);
@@ -448,24 +442,24 @@ public class TurnController extends EventSource implements ControllerListener {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
             if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can build only with the same used during the turn!", player.getUsername());
-                notifyAllObserverByType(VIEW,errorEvent);
+                notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
             } else {
                 //is your turn and your worker is ok, you may try build:
                 try {
                     player.getCard().build(w, block, x, y, board.getIsland());
                     currentTurnInstance.setNumberOfBuild(currentTurnInstance.getNumberOfBuild() + 1);
-                    if(currentTurnInstance.getNumberOfMove()==0){
+                    if (currentTurnInstance.getNumberOfMove() == 0) {
                         currentTurnInstance.setHasBuiltBeforeMove(true);
                     }
 
                     if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(w.getWorkerID());
 
                     //if there is Chronus and this build has made the fifth complete tower Chronus wins
-                    if(thereIsChronus && board.getIsland().getNumberOfCompleteTowers() >= 5){
+                    if (thereIsChronus && board.getIsland().getNumberOfCompleteTowers() >= 5) {
                         Player playerHasToWin = null;
-                        for (Player p : turnSequence.values()){
-                            if(p.getCard().getName() == CardEnum.CHRONUS) playerHasToWin= p;
+                        for (Player p : turnSequence.values()) {
+                            if (p.getCard().getName() == CardEnum.CHRONUS) playerHasToWin = p;
                         }
                         win(playerHasToWin);
                     }
@@ -477,7 +471,7 @@ public class TurnController extends EventSource implements ControllerListener {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
 
                     CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
-                    notifyAllObserverByType(VIEW,errorEvent);
+                    notifyAllObserverByType(VIEW, errorEvent);
                     sendCommandRequest(player.getUsername());
                 } catch (CloneNotSupportedException e) {
                     throw new RuntimeException("Clone not supported!");
@@ -608,7 +602,6 @@ public class TurnController extends EventSource implements ControllerListener {
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
         /* TurnController doesn't have to implement this handleEvent*/
     }
-
 
 
     @Override

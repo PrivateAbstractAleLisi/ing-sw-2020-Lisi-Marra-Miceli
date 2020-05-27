@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertEquals;
 
 public class TritonTest {
     BoardManager boardManager=null;
@@ -80,6 +81,12 @@ public class TritonTest {
         island.placeWorker(worker1, 2, 2);
 
         card.placeWorker(worker2, 1, 1, island);
+
+        assertEquals(2, worker1.getPosition()[0]);
+        assertEquals(2, worker1.getPosition()[1]);
+
+        assertEquals(1, worker2.getPosition()[0]);
+        assertEquals(1, worker2.getPosition()[1]);
     }
 
     @Test(expected = InvalidMovementException.class)
@@ -117,9 +124,12 @@ public class TritonTest {
 
         card.resetBehaviour();
         card.move(worker1, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(1, worker1.getPosition()[1]);
     }
 
-    @Test //NON RUNNA PERCHÈ MANCA IL BOARDMANAGER E IL SECONDO PLAYER
+    @Test
     public void move_RightMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
@@ -127,6 +137,12 @@ public class TritonTest {
 
         card.resetBehaviour();
         card.move(worker1, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(1, worker1.getPosition()[1]);
+
+        assertEquals(0, worker2.getPosition()[0]);
+        assertEquals(1, worker2.getPosition()[1]);
     }
 
     @Test(expected = InvalidMovementException.class)
@@ -224,6 +240,12 @@ public class TritonTest {
 
         card.resetBehaviour();
         card.build(worker1, BlockTypeEnum.LEVEL1, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(0, worker1.getPosition()[1]);
+
+        assertEquals(1, island.getCellCluster(1,1).getCostructionHeight());
+
     }
 
     @Test
@@ -244,6 +266,18 @@ public class TritonTest {
         card.build(worker1, BlockTypeEnum.LEVEL3, 1, 1, island);
         card.resetBehaviour();
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(0, worker1.getPosition()[1]);
+
+        assertEquals(4, island.getCellCluster(1,1).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(0,0).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(0,1).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(2,1).getCostructionHeight());
+
     }
 
     @Test(expected = InvalidBuildException.class)
@@ -328,12 +362,14 @@ public class TritonTest {
     public void move_consecutiveMoveOnPerimeter_shouldReturnNormally() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
 
-        card.resetBehaviour();
         card.move(worker1, 0, 1, island);
         card.move(worker1,0,2,island);
         card.move(worker1,0,3,island);
         card.move(worker1,0,4,island);
         card.move(worker1,1,4,island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(4, worker1.getPosition()[1]);
     }
 
     @Test (expected = InvalidMovementException.class)

@@ -88,6 +88,9 @@ public class Player {
             case CHRONUS:
                 this.card = new Chronus(this);
                 break;
+            case HESTIA:
+                this.card = new Hestia(this);
+                break;
             case TRITON:
                 this.card = new Triton(this);
                 break;

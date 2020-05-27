@@ -1,7 +1,6 @@
 package it.polimi.ingsw.psp58.model;
 
 import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerException;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +37,7 @@ public class PlayerTest {
     }
 
     @Test
-    public void setAndRemoveWorker_normalWorker_shouldReturnNormally() throws InvalidWorkerException {
+    public void setAndRemoveWorker_normalWorker_shouldReturnNormally() {
         Player player = new Player("matteo", new BoardManager());
         player.removeWorker(player.getWorker(Worker.IDs.A).getWorkerID());
         assertNull(player.getWorker(Worker.IDs.A));
@@ -66,5 +65,4 @@ public class PlayerTest {
         players.add(player);
         assertEquals(players, player.getPlayers());
     }
-
 }
