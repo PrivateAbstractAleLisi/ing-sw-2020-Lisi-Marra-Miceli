@@ -85,6 +85,15 @@ public class Player {
             case PROMETHEUS:
                 this.card = new Prometheus(this);
                 break;
+            case CHRONUS:
+                this.card = new Chronus(this);
+                break;
+            case TRITON:
+                this.card = new Triton(this);
+                break;
+            case ZEUS:
+                this.card = new Zeus(this);
+                break;
             default:
                 throw new IllegalArgumentException("String doesn't match with any God");
         }

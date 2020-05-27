@@ -9,6 +9,8 @@ import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
+import static it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum.DOME;
+
 public class Zeus extends Card {
 
     public Zeus(Player p) {
@@ -30,16 +32,21 @@ public class Zeus extends Card {
     @Override
     protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
+        boolean samePosition = actualX == desiredX && actualY == desiredY;
         BehaviourManager behaviour = playedBy.getBehaviour();
 
         //verifica il behaviour permette di costruire
         if (behaviour.getBlockPlacementLeft() <= 0) {
             return false;
         }
-        if (desiredCellCluster.hasWorkerOnTop()) {
+
+        if (desiredCellCluster.hasWorkerOnTop() && !samePosition) {
             return false;
         }
         if (desiredCellCluster.isComplete()) {
+            return false;
+        }
+        if(samePosition && block==DOME){
             return false;
         }
         //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)

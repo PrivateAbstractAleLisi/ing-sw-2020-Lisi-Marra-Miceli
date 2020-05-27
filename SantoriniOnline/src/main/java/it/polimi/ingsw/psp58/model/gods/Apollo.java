@@ -38,7 +38,7 @@ public class Apollo extends Card {
             int actualX = worker.getPosition()[0];
             int actualY = worker.getPosition()[1];
 
-            if (!isValidDestinationApolloPower(actualX, actualY, desiredX, desiredY, island)) {
+            if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
             //decrementa il numero di movimenti rimasti
@@ -90,7 +90,8 @@ public class Apollo extends Card {
      * @return true when the destination is reachable from the actual position, false otherwise
      */
 //Override not possible
-    protected boolean isValidDestinationApolloPower(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+    @Override
+    protected boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
@@ -132,7 +133,7 @@ public class Apollo extends Card {
         Range range = new Range(0, 4);
         if (range.isIndexOfCellInRange(desiredX, desiredY)) {
             if (island.getCellCluster(actualX, actualY).hasWorkerOnTop()) {
-                return isValidDestinationApolloPower(actualX, actualY, desiredX, desiredY, island);
+                return isValidDestination(actualX, actualY, desiredX, desiredY, island);
             }
             return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
         }

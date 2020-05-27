@@ -44,7 +44,7 @@ public class Minotaur extends Card {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
 
-            if (!isValidDestinationMinotaurPower(actualX, actualY, desiredX, desiredY, island)) {
+            if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
 
@@ -89,7 +89,8 @@ public class Minotaur extends Card {
      * @return true when the destination is reachable from the actual position, false otherwise
      */
     //not possible to override
-    protected boolean isValidDestinationMinotaurPower(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+    @Override
+    protected boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
@@ -198,7 +199,7 @@ public class Minotaur extends Card {
         Range range = new Range(0, 4);
         if (range.isIndexOfCellInRange(desiredX, desiredY)) {
             if (island.getCellCluster(actualX, actualY).hasWorkerOnTop()) {
-                return isValidDestinationMinotaurPower(actualX, actualY, desiredX, desiredY, island);
+                return isValidDestination(actualX, actualY, desiredX, desiredY, island);
             }
             return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
         }

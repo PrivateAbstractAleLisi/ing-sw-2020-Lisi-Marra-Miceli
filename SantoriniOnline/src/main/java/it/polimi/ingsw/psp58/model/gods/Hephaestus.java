@@ -53,7 +53,7 @@ public class Hephaestus extends Card {
             } else if (block == BlockTypeEnum.DOME) {
                 throw new InvalidBuildException("Cannot build a DOME");
             } else if (worker.getWorkerID() != workerChoosen) {
-                throw new IllegalArgumentException("DEMETER: on the second building you must use the same worker");
+                throw new IllegalArgumentException("On the second building you must use the same worker");
             } else {
                 throw new InvalidBuildException("You must build on the same place of the first build");
             }
