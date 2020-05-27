@@ -383,9 +383,15 @@
                         </VBox>
                     </top>
                     <bottom>
-                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                        <VBox alignment="CENTER" prefHeight="125.0" BorderPane.alignment="CENTER">
                             <children>
-                                <Text fx:id="rightMessage" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="265.0" />
+                                <Text fx:id="rightMessage" strokeType="OUTSIDE" strokeWidth="0.0" text="Benvenuto!" textAlignment="CENTER" wrappingWidth="265.0">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin></Text>
                             </children>
                         </VBox>
                     </bottom>
@@ -393,8 +399,11 @@
                   <Insets bottom="10.0" right="10.0" top="10.0" />
                </BorderPane.margin>
                <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
+               <center>
+                  <Line endX="260.0" strokeLineCap="ROUND" BorderPane.alignment="CENTER" />
+               </center>
                 </BorderPane>
             </right>
         </BorderPane>

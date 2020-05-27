@@ -241,11 +241,11 @@ public class BoardSceneController {
 
             case A:
                 workerSlotA.setEffect(new Glow(0.8));
-                BoardPopUp.show("Please place worker " + workerRequested.toString(), gui.getStage());
+                addMessageToQueueList("Please place worker " + workerRequested.toString());
                 break;
             case B:
                 workerSlotB.setEffect(new Glow(0.8));
-                BoardPopUp.show("Please place worker " + workerRequested.toString(), gui.getStage());
+                addMessageToQueueList("Please place worker " + workerRequested.toString());
                 break;
         }
     }
@@ -337,7 +337,6 @@ public class BoardSceneController {
         ((Label) L3Box.getChildren().get(1)).setText(Integer.toString(lev3));
         ((Label) DomeBox.getChildren().get(1)).setText(Integer.toString(dome));
     }
-
 
     public void setGreenBuildingBlocks(boolean enable, BlockTypeEnum blockToSet) {
         if (enable) {
