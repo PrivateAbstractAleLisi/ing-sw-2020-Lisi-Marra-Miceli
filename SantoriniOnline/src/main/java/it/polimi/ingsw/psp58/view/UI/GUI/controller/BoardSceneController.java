@@ -275,7 +275,7 @@ public class BoardSceneController {
     }
 
     /* ----------------------------------------------------------------------------------------------
-                                         STATUS METHODS
+                                         STATUS and HANDLE METHODS
        ----------------------------------------------------------------------------------------------*/
 
     //STATUS
@@ -324,6 +324,7 @@ public class BoardSceneController {
 
     public void handle(CV_CommandRequestEvent event) {
         enableActionButtons(event.getAvailableActions());
+        currentStateInstance.updateFromServer(event);
     }
 
     public void handle(CV_NewTurnEvent event) {
@@ -356,6 +357,11 @@ public class BoardSceneController {
                 BoardPopUp.show("Please place worker " + workerRequested.toString(), gui.getStage());
                 break;
         }
+    }
+
+    public void handle(CV_CommandExecutedGameEvent event) {
+        System.out.println("DEBUG: CV_CommandExecutedGameEvent event has arrived");
+        currentStateInstance.updateFromServer(event);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -702,7 +708,7 @@ public class BoardSceneController {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 CellClusterData cellClusterData = lastIslandUpdate.getCellCluster(i, j);
-                if (cellClusterData.getUsernamePlayer().equals(myUsername) && cellClusterData.getWorkerOnTop().equals(workerID)) {
+                if (cellClusterData.getWorkerOnTop() != null && cellClusterData.getWorkerOnTop().equals(workerID) && cellClusterData.getUsernamePlayer().equals(myUsername)) {
                     setWorkerGlow(active, i, j);
                 }
             }

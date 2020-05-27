@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PlayerPlaceWorkerRequestEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
@@ -19,9 +21,9 @@ public class PlaceWorkerGameState extends GameStateAbstract {
 
     private final GameStateEnum state = GameStateEnum.PLACE_WORKER;
 
-    public PlaceWorkerGameState(CV_PlayerPlaceWorkerRequestEvent eventArrived, GUI gui, BoardSceneController boardController ) {
+    public PlaceWorkerGameState(CV_PlayerPlaceWorkerRequestEvent eventArrived, GUI gui, BoardSceneController boardController) {
         this.eventArrived = eventArrived;
-        this.gui=gui;
+        this.gui = gui;
         this.boardSceneController = boardController;
     }
 
@@ -32,7 +34,7 @@ public class PlaceWorkerGameState extends GameStateAbstract {
 
     @Override
     public void handleClickOnButton(int x, int y) {
-        System.out.println("Place Worker State Handle Click On Board - Not yet implemented");
+        System.out.println("Place Worker State click on " + x + " " + y);
         //place the worker
         gui.sendEvent(new VC_PlayerPlacedWorkerEvent("", gui.getUsername(), x, y, boardSceneController.getWorkerStatus().getSelectedWorker()));
     }
@@ -45,7 +47,19 @@ public class PlaceWorkerGameState extends GameStateAbstract {
 
     @Override
     public void handleClickOnButton(BlockTypeEnum blockClicked) {
-        System.out.println("Place Worker State Handle Click On Button - ERROR");
+        System.out.println("Place Worker State Handle Click On Block - ERROR");
+        //PRINT ERROR
+    }
+
+    @Override
+    public void updateFromServer(CV_CommandExecutedGameEvent event) {
+        System.out.println("Place Worker State Handle CV_CommandExecutedGameEvent - ERROR");
+        //PRINT ERROR
+    }
+
+    @Override
+    public void updateFromServer(CV_CommandRequestEvent event) {
+        System.out.println("Place Worker State Handle CV_CommandRequestEvent - ERROR");
         //PRINT ERROR
     }
 
@@ -58,7 +72,6 @@ public class PlaceWorkerGameState extends GameStateAbstract {
     public GameStateEnum getState() {
         return state;
     }
-
 
 
 }

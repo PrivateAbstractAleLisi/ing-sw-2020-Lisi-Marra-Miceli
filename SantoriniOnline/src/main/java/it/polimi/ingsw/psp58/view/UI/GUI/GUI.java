@@ -384,6 +384,11 @@ public class GUI extends Application implements ViewListener {
     }
 
     @Override
+    public void handleEvent(CV_CommandExecutedGameEvent event) {
+        boardSceneController.handle(event);
+    }
+
+    @Override
     public void handleEvent(CV_CommandRequestEvent event) {
         boardSceneController.handle(event);
     }

@@ -2,6 +2,8 @@ package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_WaitMatchGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
@@ -15,11 +17,11 @@ public class WaitGameState extends GameStateAbstract {
     private final GameStateEnum state = GameStateEnum.NOT_YOUR_TURN;
 
     public WaitGameState(CV_WaitPreMatchGameEvent event, GUI gui) {
-        this.gui=gui;
+        this.gui = gui;
     }
 
     public WaitGameState(GUI gui) {
-        this.gui=gui;
+        this.gui = gui;
     }
 
     @Override
@@ -41,7 +43,19 @@ public class WaitGameState extends GameStateAbstract {
 
     @Override
     public void handleClickOnButton(BlockTypeEnum blockClicked) {
-        System.out.println("Wait State Handle Click On Button - ERROR");
+        System.out.println("Wait State Handle Click On Block - ERROR");
+        //PRINT ERROR
+    }
+
+    @Override
+    public void updateFromServer(CV_CommandExecutedGameEvent event) {
+        System.out.println("Wait State Handle CV_CommandExecutedGameEvent - ERROR");
+        //PRINT ERROR
+    }
+
+    @Override
+    public void updateFromServer(CV_CommandRequestEvent event) {
+        System.out.println("Wait State Handle CV_CommandRequestEvent - ERROR");
         //PRINT ERROR
     }
 
@@ -54,17 +68,4 @@ public class WaitGameState extends GameStateAbstract {
     public GameStateEnum getState() {
         return state;
     }
-
-    //@Overload
-    public void setState(BoardSceneController boardController, CV_WaitMatchGameEvent event) {
-        boardController.setWaitingView();
-        updateTurnSequence();
-    }
-
-    private void updateTurnSequence() {
-        //aggiorna la sequenza su con updateTurnSequence(evento)
-        //todo
-    }
-
-
 }

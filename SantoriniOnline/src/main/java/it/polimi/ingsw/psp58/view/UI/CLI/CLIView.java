@@ -513,6 +513,11 @@ public class CLIView extends EventSource implements ViewListener {
     }
 
     @Override
+    public void handleEvent(CV_CommandExecutedGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
         System.out.println("\n⌛   WAITING   ⌛");
         System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");

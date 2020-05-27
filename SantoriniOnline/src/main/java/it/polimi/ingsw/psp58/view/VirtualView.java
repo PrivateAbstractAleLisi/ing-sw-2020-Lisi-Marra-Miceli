@@ -240,6 +240,11 @@ public class VirtualView extends EventSource implements ViewListener, Controller
     }
 
     @Override
+    public void handleEvent(CV_CommandExecutedGameEvent event) {
+        sendEventToClient(event);
+    }
+
+    @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
         if (event.getChallenger().equals(this.username)) {
             sendEventToClient(event);

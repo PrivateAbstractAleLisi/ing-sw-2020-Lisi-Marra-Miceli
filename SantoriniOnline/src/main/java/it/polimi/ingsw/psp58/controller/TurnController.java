@@ -204,6 +204,11 @@ public class TurnController extends EventSource implements ControllerListener {
         return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0);
     }
 
+    private void sendCommandExecuted(String actingPlayer){
+        CV_CommandExecutedGameEvent event = new CV_CommandExecutedGameEvent("",actingPlayer);
+        notifyAllObserverByType(VIEW,event);
+    }
+
     private void sendCommandRequest(String actingPlayer) {
         List<TurnAction> availableActions = new ArrayList<>();
         int numberOfMove = currentTurnInstance.getNumberOfMove();
@@ -410,6 +415,7 @@ public class TurnController extends EventSource implements ControllerListener {
                     if (isCompletelyLocked(currentTurnInstance.getWorkerID())) {
                         lose(currentPlayer.getUsername());
                     }
+                    sendCommandExecuted(player.getUsername());
                     sendCommandRequest(player.getUsername());
                 } catch (InvalidMovementException | IllegalArgumentException e) {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
@@ -445,6 +451,7 @@ public class TurnController extends EventSource implements ControllerListener {
                     if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(w.getWorkerID());
 
                     sendIslandUpdate();
+                    sendCommandExecuted(player.getUsername());
                     sendCommandRequest(player.getUsername());
                 } catch (InvalidBuildException | IllegalArgumentException e) {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");

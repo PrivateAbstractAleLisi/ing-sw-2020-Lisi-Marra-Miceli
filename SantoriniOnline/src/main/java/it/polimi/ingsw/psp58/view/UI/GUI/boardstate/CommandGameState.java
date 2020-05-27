@@ -1,8 +1,10 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
+import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_NewTurnEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.VC_PlayerCommandGameEvent;
@@ -19,6 +21,7 @@ import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateEnum.*;
 
 public class CommandGameState extends GameStateAbstract {
     private CV_NewTurnEvent eventArrived;
+    private CV_CommandRequestEvent lastCommandRequest;
     private final BoardSceneController boardSceneController;
     private final GUI gui;
     private final String myUsername;
@@ -57,7 +60,6 @@ public class CommandGameState extends GameStateAbstract {
         return null;
     }
 
-
     @Override
     public void handleClickOnButton(int x, int y) {
         //gets the id of the clicked worker, if not ok contain a null
@@ -68,14 +70,21 @@ public class CommandGameState extends GameStateAbstract {
         switch (state) {
             case CLEAN_TURN:
                 if (workerIdInCellCluster != null && !actualWorkerStatus.isAlreadySelectedWorker()) {
-                    try {
-                        actualWorkerStatus.setSelectedWorker(workerIdInCellCluster);
-                        boardSceneController.setWorkerGlow(true, x, y);
-                        state = WORKER_SELECTED;
-                    } catch (WorkerLockedException e) {
-                        System.out.println("Worker already locked");
-                        state = WORKER_LOCKED;
-                    }
+                    String playerOfWorker= boardSceneController.getLastIslandUpdate().getCellCluster(x, y).getUsernamePlayer();
+                    boolean isMyWorker = playerOfWorker.equals(myUsername);
+                   if(isMyWorker){
+                        try {
+                            actualWorkerStatus.setSelectedWorker(workerIdInCellCluster);
+                            boardSceneController.setWorkerGlow(true, x, y);
+                            state = WORKER_SELECTED;
+                        } catch (WorkerLockedException e) {
+                            System.out.println("Worker already locked");
+                            state = WORKER_LOCKED;
+                        }
+                    }else{
+                       //todo print a popup showing error "Please select one of your workers"
+                       System.out.println("ERROR - " + state + " - Please select one of your workers");
+                   }
                 } else {
                     //todo print a popup showing error "Please select one of your workers"
                     System.out.println("ERROR - " + state + " - Please select one of your workers");
@@ -104,6 +113,10 @@ public class CommandGameState extends GameStateAbstract {
                 }
                 break;
             case WORKER_LOCKED:
+
+                //todo print a popup showing error "Please select an available action or your workers"
+                System.out.println("ERROR - " + state + " - Please select an available action or your workers");
+
                 break;
             case MOVE_SELECTED:
                 position = new int[2];
@@ -113,6 +126,7 @@ public class CommandGameState extends GameStateAbstract {
                 commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.MOVE, myUsername, position, actualWorkerStatus.getSelectedWorker(), blockToBuild);
                 gui.sendEvent(commandEvent);
                 state = selectMsgSentState(actualWorkerStatus);
+                boardSceneController.disableAllActionButtons();
                 break;
             case BUILD_SELECTED:
                 //it's the same case of BUILDING_BLOCK_SELECTED
@@ -124,6 +138,7 @@ public class CommandGameState extends GameStateAbstract {
                 commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.BUILD, myUsername, position, actualWorkerStatus.getSelectedWorker(), blockToBuild);
                 gui.sendEvent(commandEvent);
                 state = selectMsgSentState(actualWorkerStatus);
+                boardSceneController.disableAllActionButtons();
                 break;
             case MSG_SENT_UNLOCKED:
                 //Same case of MSG_SENT_LOCKED
@@ -245,6 +260,7 @@ public class CommandGameState extends GameStateAbstract {
         }
     }
 
+    @Override
     public void handleClickOnButton(BlockTypeEnum blockClicked) {
         switch (state) {
             case BUILD_SELECTED:
@@ -265,6 +281,24 @@ public class CommandGameState extends GameStateAbstract {
             default:
                 //todo print a popup showing error "Please press BUILD button before selecting a Building Block"
                 System.out.println("ERROR - " + state + " - Please press BUILD button before selecting a Building Block");
+        }
+    }
+
+    @Override
+    public void updateFromServer(CV_CommandExecutedGameEvent event) {
+        if (state == MSG_SENT_UNLOCKED) {
+            state = MSG_SENT_LOCKED;
+            boardSceneController.getWorkerStatus().setWorkerLocked(true);
+        }
+    }
+
+    @Override
+    public void updateFromServer(CV_CommandRequestEvent event) {
+        lastCommandRequest = event;
+        if (state == MSG_SENT_UNLOCKED) {
+            state = CLEAN_TURN;
+        } else if (state == MSG_SENT_LOCKED) {
+            state = WORKER_LOCKED;
         }
     }
 

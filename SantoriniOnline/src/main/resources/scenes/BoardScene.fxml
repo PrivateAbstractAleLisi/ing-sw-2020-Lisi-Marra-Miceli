@@ -312,11 +312,11 @@
                                         <Font name="Avenir Next Condensed Bold" size="13.0"/>
                                     </font>
                                 </Label>
-                                <HBox fx:id="L1Box" prefHeight="68.0" prefWidth="114.0"
+                                <HBox fx:id="L1Box" onMouseClicked="#level1Click" prefHeight="68.0" prefWidth="114.0"
                                       style="-fx-border-color: darkblue;">
                                     <children>
-                                        <ImageView fx:id="blockLevel1" fitHeight="68.0" fitWidth="68.0"
-                                                   pickOnBounds="true" preserveRatio="true">
+                                        <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true"
+                                                   preserveRatio="true">
                                             <image>
                                                 <Image url="@../images/cellcluster/L1.png"/>
                                             </image>
@@ -335,7 +335,7 @@
                                         </Label>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="L2Box" prefHeight="68.0" prefWidth="114.0"
+                                <HBox fx:id="L2Box" onMouseClicked="#level2Click" prefHeight="68.0" prefWidth="114.0"
                                       style="-fx-border-color: darkblue;">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true"
@@ -358,7 +358,7 @@
                                         </Label>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="L3Box" prefHeight="68.0" prefWidth="114.0"
+                                <HBox fx:id="L3Box" onMouseClicked="#level3Click" prefHeight="68.0" prefWidth="114.0"
                                       style="-fx-border-color: darkblue;">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true"
@@ -381,7 +381,7 @@
                                         </Label>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="DomeBox" prefHeight="68.0" prefWidth="114.0"
+                                <HBox fx:id="DomeBox" onMouseClicked="#domeClick" prefHeight="68.0" prefWidth="114.0"
                                       style="-fx-border-color: darkblue;">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true"
