@@ -30,11 +30,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class BoardSceneController {
@@ -85,6 +83,9 @@ public class BoardSceneController {
     //TURN SEQUENCE
     public Label turnSequence;
 
+    //RightMessagge
+    public Text rightMessage;
+    LinkedList<String> messagesQueue;
 
     public void init(CV_WorkerPlacementGameEvent event, String myUsername) {
         initializeIsland();
@@ -100,91 +101,16 @@ public class BoardSceneController {
 
         resetTurnStatus();
 
-
         //update blocks counter to starting state
         updateBlocksCounter(22, 18, 14, 18);
+
+        messagesQueue = new LinkedList<>();
     }
 
 
     /* ----------------------------------------------------------------------------------------------
                                          BOARD CLICK
        ----------------------------------------------------------------------------------------------*/
-
-//    public void onClickEventCellClusterEX(MouseEvent mouseEvent) {
-//        if (!currentStateInstance.getState().equals(NOT_YOUR_TURN)) {
-//
-//            StackPane source = (StackPane) mouseEvent.getSource();
-//            Integer colIndex = GridPane.getColumnIndex(source);
-//            Integer rowIndex = GridPane.getRowIndex(source);
-//            System.out.printf("Mouse clicked cell [%d, %d]%n", colIndex, rowIndex);
-//
-//            //gets the id of the clicked worker
-//            Worker.IDs workerID = getWorkerID(colIndex, rowIndex);
-//
-//            ControllerGameEvent event = currentStateInstance.handleClick(myUsername, colIndex, rowIndex, workerStatus.getSelectedWorker(), currentState);
-//
-//            if (currentStateInstance instanceof CommandGameState) { //when it's my turn and I have to answer with a command request
-//                if (workerID == null) {
-//                    if (!getWorkerStatus().isAlreadySelectedWorker()) {  //your turn, no worker selected
-//                        getWorkerStatus().deleteSelectedWorker();
-//                        displayMessage("please select a valid worker");
-//                    }
-//                } else {
-//
-//                    if (!getWorkerStatus().isAlreadySelectedWorker()) {
-//                        if (lastIslandUpdate.getCellCluster(colIndex, rowIndex).getWorkerColor().equals(myColor)) {
-//                            setWorkerGlow(true, colIndex, rowIndex);
-//                            System.out.println("DEBUG: worker set, glow set");
-//                            currentGlow = new WorkerGlow(colIndex, rowIndex, workerID);
-//                            getWorkerStatus().deleteSelectedWorker();
-//                            try {
-//                                getWorkerStatus().setSelectedWorker(workerID);
-//                            } catch (WorkerLockedException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//
-//
-//                }
-//            }
-//
-//            if (event != null) {
-//                if (event instanceof VC_PlayerCommandGameEvent) {
-//                    if (isCommandEventValid((VC_PlayerCommandGameEvent) event)) {
-//                        gui.sendEvent(event);
-//                    } else {
-//                        //restore turn status
-//                        System.out.println("Something in the Event was wrong");
-//                    }
-//                } else {
-//                    gui.sendEvent(event);
-//                }
-//               /* if (currentState == MOVE || currentState == BUILD) {
-//                    alreadyMadeAMoveThisTurn = true;
-//                } */
-//            }
-//
-//
-//
-//
-//            /*
-//            if ((workerID != null || workerOnAction != null)) {
-//                if (workerOnAction == null) {
-//                    setWorkerOnAction(workerID);
-//                    showPossibleBlockAction(workerID);
-//                } else {
-//                    ControllerGameEvent event = currentStateInstance.handleClick(gui.getUsername(), colIndex, rowIndex, workerOnAction, currentState);
-//                    if (event != null) {
-//                        gui.sendEvent(event);
-//                        if (currentState == MOVE || currentState == BUILD) {
-//                            alreadyMadeAMoveThisTurn = true;
-//                        }
-//                    }
-//                }
-//            } */
-//        }
-//    }
 
     public void onClickEventCellCluster(MouseEvent mouseEvent) {
         StackPane source = (StackPane) mouseEvent.getSource();
@@ -198,31 +124,12 @@ public class BoardSceneController {
                                          BUTTONS CLICK
        ----------------------------------------------------------------------------------------------*/
 
-//    public void moveButtonClick() {
-//        moveButton.setDisable(true);
-//        currentState = MOVE;
-//    }
-//
-//    public void buildButtonClick() {
-//        buildButton.setDisable(true);
-//        currentState = BUILD;
-//    }
-//
-//    public void passButtonClick() {
-//        gui.sendEvent(new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null));
-//        disableAllActionButtons();
-//        currentState = NOT_YOUR_TURN;
-//        currentGlow = null;
-//        resetTurnStatus();
-//    }
-
     public void moveButtonClick() {
         currentStateInstance.handleClickOnButton(TurnAction.MOVE);
     }
 
     public void buildButtonClick() {
         currentStateInstance.handleClickOnButton(TurnAction.BUILD);
-
     }
 
     public void passButtonClick() {
@@ -302,7 +209,12 @@ public class BoardSceneController {
     public void handle(CV_CommandRequestEvent event) {
         enableActionButtons(event.getAvailableActions());
         disableAllGreenActionButton();
-        disableAllGreeBuildingBlock();
+        disableAllGreenBuildingBlock();
+        deactivateAllGlowOnPanels();
+
+        //if worker is not locked, it will be deleted
+        workerStatus.resetSelectedWorker();
+
         currentStateInstance.updateFromServer(event);
     }
 
@@ -312,7 +224,7 @@ public class BoardSceneController {
         if (event.getCurrentPlayerUsername().equals(myUsername)) {
             currentStateInstance = new CommandGameState(event, gui, this);
             resetTurnStatus();
-            displayMessage("IT'S YOUR TURN!");
+            addMessageToQueueList("IT'S YOUR TURN!");
         }
     }
 
@@ -320,7 +232,7 @@ public class BoardSceneController {
         GameStateAbstract nextState = new WaitGameState(gui);
         setWaitingView();
         this.currentStateInstance = nextState;
-        displayMessage("Game is starting!");
+        addMessageToQueueList("Game is starting!");
     }
 
     public void handleWorkerPlacement(Worker.IDs workerRequested) {
@@ -409,7 +321,7 @@ public class BoardSceneController {
 
     }
 
-    private void disableAllGreenActionButton(){
+    private void disableAllGreenActionButton() {
         moveButton.setEffect(null);
         buildButton.setEffect(null);
         passButton.setEffect(null);
@@ -472,7 +384,7 @@ public class BoardSceneController {
 
     }
 
-    public void disableAllGreeBuildingBlock(){
+    public void disableAllGreenBuildingBlock() {
         L1Box.setEffect(null);
         L2Box.setEffect(null);
         L3Box.setEffect(null);
@@ -612,22 +524,28 @@ public class BoardSceneController {
         return image;
     }
 
-    public void activateGlowOnPanels(List<int[]> panelPositions) {
-
-//        for (int[] position : panelPositions) {
-//            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
-//            if (currentState == MOVE) {
-//                Pane pane = (Pane) stackPane.getChildren().get(1);
-//                pane.setVisible(true);
-//                pane.setStyle("-fx-background-color: #00FFFF");
-//            }
-//            if (currentState == BUILD) {
-//                stackPane.getChildren().get(1).setVisible(true);
-//                stackPane.getChildren().get(1).setStyle("-fx-background-color: #A52A2A");
-//            }
+    public void activateGlowOnPanels(List<int[]> panelPositions, TurnAction actionClicked) {
+        for (int[] position : panelPositions) {
+            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
+            if (actionClicked == TurnAction.MOVE) {
+                Pane pane = (Pane) stackPane.getChildren().get(1);
+                pane.setVisible(true);
+                pane.setStyle("-fx-background-color: rgba(0,255,255,0.73)");
+            } else if (actionClicked == TurnAction.BUILD) {
+                stackPane.getChildren().get(1).setVisible(true);
+                stackPane.getChildren().get(1).setStyle("-fx-background-color: rgba(165,42,42,0.52)");
+            }
 //            board.getChildren().remove(position[0], position[1]);
 //            board.add(stackPane, position[0], position[1]);
-//        }
+        }
+    }
+    public void deactivateAllGlowOnPanels(){
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                StackPane stackPane = (StackPane) getNodeByRowColumnIndex(i,j);
+                stackPane.getChildren().get(1).setVisible(false);
+            }
+        }
     }
 
     public String getUrlFromCellCluster(CellClusterData cellClusterData) {
@@ -668,34 +586,6 @@ public class BoardSceneController {
         return url;
     }
 
-    /*public void showPossibleBlockAction(Worker.IDs workerID) {
-        if (currentState != MOVE && currentState != BUILD) {
-            Message.show("BEFORE SELECT AN ACTION FROM THE BUTTONS BELOW", gui.getStage());
-        } else {
-            CV_CommandRequestEvent event = (CV_CommandRequestEvent) currentStateInstance.getEvent();
-            if (currentState == MOVE) {
-                switch (workerID) {
-                    case A:
-                        activateGlowOnPanels(event.getAvailableMovementBlocksA());
-                        break;
-                    case B:
-                        activateGlowOnPanels(event.getAvailableMovementBlocksB());
-                        break;
-                }
-            } else if (currentState == BUILD) {
-                switch (workerID) {
-                    case A:
-                        activateGlowOnPanels(event.getAvailableBuildBlocksA());
-                        break;
-                    case B:
-                        activateGlowOnPanels(event.getAvailableBuildBlocksB());
-                        break;
-                }
-            }
-        }
-
-    }*/
-
     //utility to get a cell from the board
     public Node getNodeByRowColumnIndex(final int row, final int column) {
 
@@ -732,14 +622,18 @@ public class BoardSceneController {
      *
      * @param message the message you would like to display
      */
-    public void displayMessage(String message) {
+    public void displayPopupMessage(String message) {
         //TODO messaggio sotto e non popup
         BoardPopUp.show(message.toUpperCase(), gui.getStage());
     }
 
+    public void addMessageToQueueList(String messageToShow) {
+        messagesQueue.add(messageToShow);
+        showMessageOntRightPane();
+    }
 
-    private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
-        return commandEvent.isCommandEventValid() && myUsername.equals(commandEvent.getFromPlayer());
+    private void showMessageOntRightPane() {
+        rightMessage.setText(messagesQueue.remove());
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -815,6 +709,7 @@ public class BoardSceneController {
         workerImage.setImage(new Image(url));
         return workerImage;
     }
+
 
     //    private void initializePlayersList(){
 //        playersList = new ArrayList<>();

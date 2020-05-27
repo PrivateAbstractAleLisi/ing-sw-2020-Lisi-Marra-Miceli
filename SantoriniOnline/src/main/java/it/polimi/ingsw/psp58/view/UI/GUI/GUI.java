@@ -1,6 +1,5 @@
 package it.polimi.ingsw.psp58.view.UI.GUI;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
@@ -18,9 +17,6 @@ import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.CommandGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateEnum;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.WaitGameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.PreGameSceneController;

@@ -24,7 +24,15 @@ public class WorkerStatus {
         }
     }
 
-    public void deleteSelectedWorker() {
+    public boolean resetSelectedWorker() {
+        if (!isWorkerLocked()) {
+            deleteSelectedWorker();
+            return true;
+        }
+        return false;
+    }
+
+    private void deleteSelectedWorker() {
         this.selectedWorker = null;
     }
 
