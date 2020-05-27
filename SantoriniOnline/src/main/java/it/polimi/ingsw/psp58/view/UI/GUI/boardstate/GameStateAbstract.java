@@ -9,9 +9,6 @@ import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
 public abstract class GameStateAbstract {
-
-    public abstract void setState(BoardSceneController boardController);
-
     public abstract ControllerGameEvent handleClick (String username, int x, int y, Worker.IDs workerID, GameStateEnum state);
 
     public abstract void handleClickOnButton(int x, int y);

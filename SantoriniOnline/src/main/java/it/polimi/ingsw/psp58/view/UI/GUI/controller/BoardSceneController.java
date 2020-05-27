@@ -71,7 +71,6 @@ public class BoardSceneController {
     private StackPane[][] lastGridPane;
 
     //STATE PATTERN
-    private GameStateEnum currentState;
     private WorkerStatus workerStatus;
     private GameStateAbstract currentStateInstance;
     public GridPane board;
@@ -96,7 +95,6 @@ public class BoardSceneController {
 
     public HBox workerPrePlaceHBox;
 
-
     private List<Label> playersList;
 
     //ACTION BUTTONS
@@ -120,8 +118,7 @@ public class BoardSceneController {
         this.myUsername = myUsername;
         myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());
 
-        String url;
-        url = getWorkerUrl(myColor);
+        String url = getWorkerUrl(myColor);
 
         workerSlotA.setImage(new Image(url));
         workerSlotB.setImage(new Image(url));
@@ -134,132 +131,87 @@ public class BoardSceneController {
     }
 
 
-    //    private void initializePlayersList(){
-//        playersList = new ArrayList<>();
-//        playersList.add(player1);
-//        playersList.add(player2);
-//        playersList.add(player3);
-//    }
+    /* ----------------------------------------------------------------------------------------------
+                                         BOARD CLICK
+       ----------------------------------------------------------------------------------------------*/
+
+//    public void onClickEventCellClusterEX(MouseEvent mouseEvent) {
+//        if (!currentStateInstance.getState().equals(NOT_YOUR_TURN)) {
 //
-//    private void initializeCardImages(){
-//        cardImagesList = new ArrayList<>();
-//        cardImagesList.add(cardImage1);
-//        cardImagesList.add(cardImage2);
-//        cardImagesList.add(cardImage3);
+//            StackPane source = (StackPane) mouseEvent.getSource();
+//            Integer colIndex = GridPane.getColumnIndex(source);
+//            Integer rowIndex = GridPane.getRowIndex(source);
+//            System.out.printf("Mouse clicked cell [%d, %d]%n", colIndex, rowIndex);
 //
-//    }
+//            //gets the id of the clicked worker
+//            Worker.IDs workerID = getWorkerID(colIndex, rowIndex);
 //
-//    private void initializeCardInfo(){
-//        cardInfoList = new ArrayList<>();
-//        cardInfoList.add(cardInfo1);
-//        cardInfoList.add(cardInfo2);
-//        cardInfoList.add(cardInfo3);
-//    }
+//            ControllerGameEvent event = currentStateInstance.handleClick(myUsername, colIndex, rowIndex, workerStatus.getSelectedWorker(), currentState);
 //
-//    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence){
-//        int index = 0;
-//        for (Map.Entry<String, CardEnum> entry : playersCardsCorrespondence.entrySet()) {
-//            playersList.get(index).setText(entry.getKey());
-//            cardImagesList.get(index).setImage(new Image(entry.getValue().getImgUrl()));
+//            if (currentStateInstance instanceof CommandGameState) { //when it's my turn and I have to answer with a command request
+//                if (workerID == null) {
+//                    if (!getWorkerStatus().isAlreadySelectedWorker()) {  //your turn, no worker selected
+//                        getWorkerStatus().deleteSelectedWorker();
+//                        displayMessage("please select a valid worker");
+//                    }
+//                } else {
 //
-//            //set up the card info
-//            ObservableList<Node> children = cardInfoList.get(index).getChildren();
-//            //set up the card name
-//            Label cardName = (Label) children.get(0);
-//            cardName.setText(entry.getValue().getName());
-//            //set up the card description
-//            Label cardDescription = (Label) children.get(1);
-//            cardDescription.setText(entry.getValue().getDescription());
+//                    if (!getWorkerStatus().isAlreadySelectedWorker()) {
+//                        if (lastIslandUpdate.getCellCluster(colIndex, rowIndex).getWorkerColor().equals(myColor)) {
+//                            setWorkerGlow(true, colIndex, rowIndex);
+//                            System.out.println("DEBUG: worker set, glow set");
+//                            currentGlow = new WorkerGlow(colIndex, rowIndex, workerID);
+//                            getWorkerStatus().deleteSelectedWorker();
+//                            try {
+//                                getWorkerStatus().setSelectedWorker(workerID);
+//                            } catch (WorkerLockedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
 //
-//            index ++ ;
+//
+//                }
+//            }
+//
+//            if (event != null) {
+//                if (event instanceof VC_PlayerCommandGameEvent) {
+//                    if (isCommandEventValid((VC_PlayerCommandGameEvent) event)) {
+//                        gui.sendEvent(event);
+//                    } else {
+//                        //restore turn status
+//                        System.out.println("Something in the Event was wrong");
+//                    }
+//                } else {
+//                    gui.sendEvent(event);
+//                }
+//               /* if (currentState == MOVE || currentState == BUILD) {
+//                    alreadyMadeAMoveThisTurn = true;
+//                } */
+//            }
+//
+//
+//
+//
+//            /*
+//            if ((workerID != null || workerOnAction != null)) {
+//                if (workerOnAction == null) {
+//                    setWorkerOnAction(workerID);
+//                    showPossibleBlockAction(workerID);
+//                } else {
+//                    ControllerGameEvent event = currentStateInstance.handleClick(gui.getUsername(), colIndex, rowIndex, workerOnAction, currentState);
+//                    if (event != null) {
+//                        gui.sendEvent(event);
+//                        if (currentState == MOVE || currentState == BUILD) {
+//                            alreadyMadeAMoveThisTurn = true;
+//                        }
+//                    }
+//                }
+//            } */
 //        }
-//
 //    }
-
-
-    public void initCommandRequest() {
-        currentState = WAIT_COMMAND_BUTTON_;
-
-    }
-    //GRID CLICK HANDLER
 
     public void onClickEventCellCluster(MouseEvent mouseEvent) {
-        if (!currentStateInstance.getState().equals(NOT_YOUR_TURN)) {
-
-            StackPane source = (StackPane) mouseEvent.getSource();
-            Integer colIndex = GridPane.getColumnIndex(source);
-            Integer rowIndex = GridPane.getRowIndex(source);
-            System.out.printf("Mouse clicked cell [%d, %d]%n", colIndex, rowIndex);
-
-            //gets the id of the clicked worker
-            Worker.IDs workerID = getWorkerID(colIndex, rowIndex);
-
-            ControllerGameEvent event = currentStateInstance.handleClick(myUsername, colIndex, rowIndex, workerStatus.getSelectedWorker(), currentState);
-
-            if (currentStateInstance instanceof CommandGameState) { //when it's my turn and I have to answer with a command request
-                if (workerID == null) {
-                    if (!getWorkerStatus().isAlreadySelectedWorker()) {  //your turn, no worker selected
-                        getWorkerStatus().deleteSelectedWorker();
-                        displayMessage("please select a valid worker");
-                    }
-                } else {
-
-                    if (!getWorkerStatus().isAlreadySelectedWorker()) {
-                        if (lastIslandUpdate.getCellCluster(colIndex, rowIndex).getWorkerColor().equals(myColor)) {
-                            setWorkerGlow(true, colIndex, rowIndex);
-                            System.out.println("DEBUG: worker set, glow set");
-                            currentGlow = new WorkerGlow(colIndex, rowIndex, workerID);
-                            getWorkerStatus().deleteSelectedWorker();
-                            try {
-                                getWorkerStatus().setSelectedWorker(workerID);
-                            } catch (WorkerLockedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-
-                }
-            }
-
-            if (event != null) {
-                if (event instanceof VC_PlayerCommandGameEvent) {
-                    if (isCommandEventValid((VC_PlayerCommandGameEvent) event)) {
-                        gui.sendEvent(event);
-                    } else {
-                        //restore turn status
-                        System.out.println("Something in the Event was wrong");
-                    }
-                } else {
-                    gui.sendEvent(event);
-                }
-               /* if (currentState == MOVE || currentState == BUILD) {
-                    alreadyMadeAMoveThisTurn = true;
-                } */
-            }
-
-
-
-
-            /*
-            if ((workerID != null || workerOnAction != null)) {
-                if (workerOnAction == null) {
-                    setWorkerOnAction(workerID);
-//                    showPossibleBlockAction(workerID);
-                } else {
-                    ControllerGameEvent event = currentStateInstance.handleClick(gui.getUsername(), colIndex, rowIndex, workerOnAction, currentState);
-                    if (event != null) {
-                        gui.sendEvent(event);
-                        if (currentState == MOVE || currentState == BUILD) {
-                            alreadyMadeAMoveThisTurn = true;
-                        }
-                    }
-                }
-            } */
-        }
-    }
-
-    public void onClickEventCellClusterBis(MouseEvent mouseEvent) {
         StackPane source = (StackPane) mouseEvent.getSource();
         Integer colIndex = GridPane.getColumnIndex(source);
         Integer rowIndex = GridPane.getRowIndex(source);
@@ -271,22 +223,35 @@ public class BoardSceneController {
                                          BUTTONS CLICK
        ----------------------------------------------------------------------------------------------*/
 
+//    public void moveButtonClick() {
+//        moveButton.setDisable(true);
+//        currentState = MOVE;
+//    }
+//
+//    public void buildButtonClick() {
+//        buildButton.setDisable(true);
+//        currentState = BUILD;
+//    }
+//
+//    public void passButtonClick() {
+//        gui.sendEvent(new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null));
+//        disableAllActionButtons();
+//        currentState = NOT_YOUR_TURN;
+//        currentGlow = null;
+//        resetTurnStatus();
+//    }
+
     public void moveButtonClick() {
-        moveButton.setDisable(true);
-        currentState = MOVE;
+        currentStateInstance.handleClickOnButton(TurnAction.MOVE);
     }
 
     public void buildButtonClick() {
-        buildButton.setDisable(true);
-        currentState = BUILD;
+        currentStateInstance.handleClickOnButton(TurnAction.BUILD);
+
     }
 
     public void passButtonClick() {
-        gui.sendEvent(new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null));
-        disableAllActionButtons();
-        currentState = NOT_YOUR_TURN;
-        currentGlow = null;
-        resetTurnStatus();
+        currentStateInstance.handleClickOnButton(TurnAction.PASS);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -331,50 +296,49 @@ public class BoardSceneController {
     }
 
     public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
-        GameStateAbstract nextState = new PlaceWorkerGameState(event, gui);
+        GameStateAbstract nextState = new PlaceWorkerGameState(event, gui, this);
         try {
             workerStatus.setSelectedWorker(event.getWorkerToPlace());
         } catch (WorkerLockedException e) {
             e.printStackTrace();
         }
-        nextState.setState(this);
+
+        setLastIslandUpdate(event.getIsland());
+        updateIsland(event.getIsland());
+        handleWorkerPlacement(event.getWorkerToPlace());
+
         this.currentStateInstance = nextState;
     }
 
     public void handle(CV_WorkerPlacementGameEvent event) {
         GameStateAbstract nextState = new WaitGameState(gui);
-        nextState.setState(this);
+        setWaitingView();
         this.currentStateInstance = nextState;
     }
 
     public void handle(CV_WaitPreMatchGameEvent event) {
         GameStateAbstract nextState = new WaitGameState(event, gui);
-        nextState.setState(this);
+        setWaitingView();
         this.currentStateInstance = nextState;
     }
 
     public void handle(CV_CommandRequestEvent event) {
-        //todo
-        GameStateAbstract nextState = new CommandGameState(event, gui);
-        nextState.setState(this);
-        this.currentStateInstance = nextState;
+        enableActionButtons(event.getAvailableActions());
     }
 
     public void handle(CV_NewTurnEvent event) {
         updateTurnSequence(event.getTurnRotation());
 
-        //todo
         if (event.getCurrentPlayerUsername().equals(myUsername)) {
+            currentStateInstance = new CommandGameState(event, gui, this);
             resetTurnStatus();
             displayMessage("IT'S YOUR TURN!");
-            setCurrentState(GameStateEnum.SELECT_WORKER);
-            // boardSceneController.setAlreadyMadeAMoveThisTurn(false);
         }
     }
 
     public void handle(CV_GameStartedGameEvent event) {
         GameStateAbstract nextState = new WaitGameState(gui);
-        nextState.setState(this);
+        setWaitingView();
         this.currentStateInstance = nextState;
         displayMessage("Game is starting!");
     }
@@ -398,7 +362,7 @@ public class BoardSceneController {
                                          ACTION BUTTONS METHODS
        ----------------------------------------------------------------------------------------------*/
 
-    private void disableAllActionButtons() {
+    public void disableAllActionButtons() {
         moveButton.setDisable(true);
         buildButton.setDisable(true);
         passButton.setDisable(true);
@@ -563,20 +527,20 @@ public class BoardSceneController {
 
     public void activateGlowOnPanels(List<int[]> panelPositions) {
 
-        for (int[] position : panelPositions) {
-            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
-            if (currentState == MOVE) {
-                Pane pane = (Pane) stackPane.getChildren().get(1);
-                pane.setVisible(true);
-                pane.setStyle("-fx-background-color: #00FFFF");
-            }
-            if (currentState == BUILD) {
-                stackPane.getChildren().get(1).setVisible(true);
-                stackPane.getChildren().get(1).setStyle("-fx-background-color: #A52A2A");
-            }
-            board.getChildren().remove(position[0], position[1]);
-            board.add(stackPane, position[0], position[1]);
-        }
+//        for (int[] position : panelPositions) {
+//            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
+//            if (currentState == MOVE) {
+//                Pane pane = (Pane) stackPane.getChildren().get(1);
+//                pane.setVisible(true);
+//                pane.setStyle("-fx-background-color: #00FFFF");
+//            }
+//            if (currentState == BUILD) {
+//                stackPane.getChildren().get(1).setVisible(true);
+//                stackPane.getChildren().get(1).setStyle("-fx-background-color: #A52A2A");
+//            }
+//            board.getChildren().remove(position[0], position[1]);
+//            board.add(stackPane, position[0], position[1]);
+//        }
     }
 
     public String getUrlFromCellCluster(CellClusterData cellClusterData) {
@@ -617,7 +581,7 @@ public class BoardSceneController {
         return url;
     }
 
-    public void showPossibleBlockAction(Worker.IDs workerID) {
+    /*public void showPossibleBlockAction(Worker.IDs workerID) {
         if (currentState != MOVE && currentState != BUILD) {
             Message.show("BEFORE SELECT AN ACTION FROM THE BUTTONS BELOW", gui.getStage());
         } else {
@@ -643,7 +607,7 @@ public class BoardSceneController {
             }
         }
 
-    }
+    }*/
 
     //utility to get a cell from the board
     public Node getNodeByRowColumnIndex(final int row, final int column) {
@@ -686,9 +650,6 @@ public class BoardSceneController {
         BoardPopUp.show(message.toUpperCase(), gui.getStage());
     }
 
-    public void setCurrentState(GameStateEnum currentState) {
-        this.currentState = currentState;
-    }
 
     private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
         return commandEvent.isCommandEventValid() && myUsername.equals(commandEvent.getFromPlayer());
@@ -761,5 +722,47 @@ public class BoardSceneController {
         workerImage.setImage(new Image(url));
         return workerImage;
     }
+
+    //    private void initializePlayersList(){
+//        playersList = new ArrayList<>();
+//        playersList.add(player1);
+//        playersList.add(player2);
+//        playersList.add(player3);
+//    }
+//
+//    private void initializeCardImages(){
+//        cardImagesList = new ArrayList<>();
+//        cardImagesList.add(cardImage1);
+//        cardImagesList.add(cardImage2);
+//        cardImagesList.add(cardImage3);
+//
+//    }
+//
+//    private void initializeCardInfo(){
+//        cardInfoList = new ArrayList<>();
+//        cardInfoList.add(cardInfo1);
+//        cardInfoList.add(cardInfo2);
+//        cardInfoList.add(cardInfo3);
+//    }
+//
+//    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence){
+//        int index = 0;
+//        for (Map.Entry<String, CardEnum> entry : playersCardsCorrespondence.entrySet()) {
+//            playersList.get(index).setText(entry.getKey());
+//            cardImagesList.get(index).setImage(new Image(entry.getValue().getImgUrl()));
+//
+//            //set up the card info
+//            ObservableList<Node> children = cardInfoList.get(index).getChildren();
+//            //set up the card name
+//            Label cardName = (Label) children.get(0);
+//            cardName.setText(entry.getValue().getName());
+//            //set up the card description
+//            Label cardDescription = (Label) children.get(1);
+//            cardDescription.setText(entry.getValue().getDescription());
+//
+//            index ++ ;
+//        }
+//
+//    }
 
 }

@@ -15,19 +15,14 @@ import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 public class PlaceWorkerGameState extends GameStateAbstract {
     private CV_PlayerPlaceWorkerRequestEvent eventArrived;
     private final GUI gui;
+    private final BoardSceneController boardSceneController;
 
     private final GameStateEnum state = GameStateEnum.PLACE_WORKER;
 
-    public PlaceWorkerGameState(CV_PlayerPlaceWorkerRequestEvent eventArrived, GUI gui) {
+    public PlaceWorkerGameState(CV_PlayerPlaceWorkerRequestEvent eventArrived, GUI gui, BoardSceneController boardController ) {
         this.eventArrived = eventArrived;
         this.gui=gui;
-    }
-
-    @Override
-    public void setState(BoardSceneController boardController) {
-        boardController.setLastIslandUpdate(eventArrived.getIsland());
-        boardController.updateIsland(eventArrived.getIsland());
-        boardController.handleWorkerPlacement(eventArrived.getWorkerToPlace());
+        this.boardSceneController = boardController;
     }
 
     @Override
@@ -39,6 +34,7 @@ public class PlaceWorkerGameState extends GameStateAbstract {
     public void handleClickOnButton(int x, int y) {
         System.out.println("Place Worker State Handle Click On Board - Not yet implemented");
         //place the worker
+        gui.sendEvent(new VC_PlayerPlacedWorkerEvent("", gui.getUsername(), x, y, boardSceneController.getWorkerStatus().getSelectedWorker()));
     }
 
     @Override

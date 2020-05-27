@@ -23,11 +23,6 @@ public class WaitGameState extends GameStateAbstract {
     }
 
     @Override
-    public void setState(BoardSceneController boardController) {
-        boardController.setWaitingView();
-    }
-
-    @Override
     public ControllerGameEvent handleClick(String username, int x, int y, Worker.IDs workerID, GameStateEnum state) {
         return null;
     }

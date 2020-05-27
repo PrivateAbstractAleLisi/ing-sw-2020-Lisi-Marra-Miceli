@@ -4,6 +4,7 @@ import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_NewTurnEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.VC_PlayerCommandGameEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
@@ -17,8 +18,8 @@ import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateEnum.*;
 
 
 public class CommandGameState extends GameStateAbstract {
-    private CV_CommandRequestEvent eventArrived;
-    private BoardSceneController boardSceneController;
+    private CV_NewTurnEvent eventArrived;
+    private final BoardSceneController boardSceneController;
     private final GUI gui;
     private final String myUsername;
 
@@ -26,29 +27,13 @@ public class CommandGameState extends GameStateAbstract {
 
     private BlockTypeEnum blockToBuild = null;
 
-    public CommandGameState(CV_CommandRequestEvent eventArrived, GUI gui) {
+    public CommandGameState(CV_NewTurnEvent eventArrived, GUI gui, BoardSceneController boardController) {
         this.gui = gui;
+        boardSceneController = boardController;
         this.eventArrived = eventArrived;
         myUsername = gui.getUsername();
-    }
-
-    @Override
-    public void setState(BoardSceneController boardController) {
-        boardSceneController = boardController;
-        boardSceneController.hideWorkerPlacementBox();
-        boardController.enableActionButtons(eventArrived.getAvailableActions());
-        boardController.initCommandRequest();
-
-        /*
-        if(!boardController.hasAlreadyMadeAMove()){
-            boardController.setWorkerOnAction(null);
-        }
-
-        if(!boardSceneController.hasAlreadyMadeAMove()){
-            boardController.displayMessage("please select a worker");
-            boardSceneController.setCurrentState(GameState.SELECT_WORKER);
-        }
-        */
+        state = CLEAN_TURN;
+        boardController.hideWorkerPlacementBox();
     }
 
     @Override
@@ -159,6 +144,7 @@ public class CommandGameState extends GameStateAbstract {
                     commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
                     gui.sendEvent(commandEvent);
                     state = selectMsgSentState(actualWorkerStatus);
+                    boardSceneController.disableAllActionButtons();
                 } else {
                     //todo print a popup showing error "Please select one of your workers"
                     System.out.println("ERROR - " + state + " - Please select one of your workers");
@@ -194,6 +180,7 @@ public class CommandGameState extends GameStateAbstract {
                         commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
                         gui.sendEvent(commandEvent);
                         state = selectMsgSentState(actualWorkerStatus);
+                        boardSceneController.disableAllActionButtons();
                         break;
                 }
                 break;
@@ -213,6 +200,7 @@ public class CommandGameState extends GameStateAbstract {
                             commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
                             gui.sendEvent(commandEvent);
                             state = selectMsgSentState(actualWorkerStatus);
+                            boardSceneController.disableAllActionButtons();
                         } else {
                             //todo print a popup showing error "Please select one of your workers"
                             System.out.println("ERROR - " + state + " - Please deselect the worker and press again");
@@ -236,6 +224,7 @@ public class CommandGameState extends GameStateAbstract {
                             commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
                             gui.sendEvent(commandEvent);
                             state = selectMsgSentState(actualWorkerStatus);
+                            boardSceneController.disableAllActionButtons();
                         } else {
                             //todo print a popup showing error "Please select one of your workers"
                             System.out.println("ERROR - " + state + " - Please deselect the worker and press again");
