@@ -11,11 +11,13 @@ import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.WorkerColors;
+import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.BoardPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import it.polimi.ingsw.psp58.view.UI.GUI.Message;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.*;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.exceptions.WorkerLockedException;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -208,7 +210,11 @@ public class BoardSceneController {
                             System.out.println("DEBUG: worker set, glow set");
                             currentGlow = new WorkerGlow(colIndex, rowIndex, workerID);
                             getWorkerStatus().deleteSelectedWorker();
-                            getWorkerStatus().setSelectedWorker(workerID);
+                            try {
+                                getWorkerStatus().setSelectedWorker(workerID);
+                            } catch (WorkerLockedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
 
@@ -253,22 +259,54 @@ public class BoardSceneController {
         }
     }
 
-    public void setMove() {
+    public void onClickEventCellClusterBis(MouseEvent mouseEvent) {
+        StackPane source = (StackPane) mouseEvent.getSource();
+        Integer colIndex = GridPane.getColumnIndex(source);
+        Integer rowIndex = GridPane.getRowIndex(source);
+        System.out.printf("Mouse clicked cell [%d, %d]%n", colIndex, rowIndex);
+        currentStateInstance.handleClickOnButton(colIndex, rowIndex);
+    }
+
+    /* ----------------------------------------------------------------------------------------------
+                                         BUTTONS CLICK
+       ----------------------------------------------------------------------------------------------*/
+
+    public void moveButtonClick() {
         moveButton.setDisable(true);
         currentState = MOVE;
     }
 
-    public void setBuild() {
+    public void buildButtonClick() {
         buildButton.setDisable(true);
         currentState = BUILD;
     }
 
-    public void pass() {
+    public void passButtonClick() {
         gui.sendEvent(new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null));
         disableAllActionButtons();
         currentState = NOT_YOUR_TURN;
         currentGlow = null;
         resetTurnStatus();
+    }
+
+    /* ----------------------------------------------------------------------------------------------
+                                         BLOCKS CLICK
+       ----------------------------------------------------------------------------------------------*/
+
+    public void level1Click() {
+        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL1);
+    }
+
+    public void level2Click() {
+        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL2);
+    }
+
+    public void level3Click() {
+        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL3);
+    }
+
+    public void domeClick() {
+        currentStateInstance.handleClickOnButton(BlockTypeEnum.DOME);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -293,26 +331,31 @@ public class BoardSceneController {
     }
 
     public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
-        GameStateAbstract nextState = new PlaceWorkerGameState(event);
-        workerStatus.setSelectedWorker(event.getWorkerToPlace());
+        GameStateAbstract nextState = new PlaceWorkerGameState(event, gui);
+        try {
+            workerStatus.setSelectedWorker(event.getWorkerToPlace());
+        } catch (WorkerLockedException e) {
+            e.printStackTrace();
+        }
         nextState.setState(this);
         this.currentStateInstance = nextState;
     }
 
     public void handle(CV_WorkerPlacementGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState();
+        GameStateAbstract nextState = new WaitGameState(gui);
         nextState.setState(this);
         this.currentStateInstance = nextState;
     }
 
     public void handle(CV_WaitPreMatchGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState(event);
+        GameStateAbstract nextState = new WaitGameState(event, gui);
         nextState.setState(this);
         this.currentStateInstance = nextState;
     }
 
     public void handle(CV_CommandRequestEvent event) {
-        GameStateAbstract nextState = new CommandGameState(event);
+        //todo
+        GameStateAbstract nextState = new CommandGameState(event, gui);
         nextState.setState(this);
         this.currentStateInstance = nextState;
     }
@@ -320,6 +363,7 @@ public class BoardSceneController {
     public void handle(CV_NewTurnEvent event) {
         updateTurnSequence(event.getTurnRotation());
 
+        //todo
         if (event.getCurrentPlayerUsername().equals(myUsername)) {
             resetTurnStatus();
             displayMessage("IT'S YOUR TURN!");
@@ -329,7 +373,7 @@ public class BoardSceneController {
     }
 
     public void handle(CV_GameStartedGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState();
+        GameStateAbstract nextState = new WaitGameState(gui);
         nextState.setState(this);
         this.currentStateInstance = nextState;
         displayMessage("Game is starting!");
@@ -670,7 +714,7 @@ public class BoardSceneController {
         return url;
     }
 
-    private void setWorkerGlow(boolean active, int x, int y) {
+    public void setWorkerGlow(boolean active, int x, int y) {
         Node point = getNodeByRowColumnIndex(x, y);
         if (active) {
 
@@ -693,6 +737,17 @@ public class BoardSceneController {
         }
     }
 
+    public void setWorkerGlow(boolean active, Worker.IDs workerID) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                CellClusterData cellClusterData = lastIslandUpdate.getCellCluster(i, j);
+                if (cellClusterData.getUsernamePlayer().equals(myUsername) && cellClusterData.getWorkerOnTop().equals(workerID)) {
+                    setWorkerGlow(active, i, j);
+                }
+            }
+        }
+    }
+
     public Worker.IDs getWorkerID(int x, int y) {
         return lastIslandUpdate.getCellCluster(x, y).getWorkerOnTop();
     }
@@ -706,4 +761,5 @@ public class BoardSceneController {
         workerImage.setImage(new Image(url));
         return workerImage;
     }
+
 }

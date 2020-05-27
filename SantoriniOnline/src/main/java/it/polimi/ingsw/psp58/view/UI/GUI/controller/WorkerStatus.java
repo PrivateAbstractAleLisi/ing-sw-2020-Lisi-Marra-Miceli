@@ -1,6 +1,7 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.exceptions.WorkerLockedException;
 
 public class WorkerStatus {
     private Worker.IDs selectedWorker;
@@ -15,8 +16,12 @@ public class WorkerStatus {
         return selectedWorker;
     }
 
-    public void setSelectedWorker(Worker.IDs selectedWorker) {
-        this.selectedWorker = selectedWorker;
+    public void setSelectedWorker(Worker.IDs selectedWorker) throws WorkerLockedException {
+        if (isWorkerLocked()) {
+            throw new WorkerLockedException();
+        } else {
+            this.selectedWorker = selectedWorker;
+        }
     }
 
     public void deleteSelectedWorker() {
