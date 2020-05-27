@@ -3,7 +3,6 @@ package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
-import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PlayerPlaceWorkerRequestEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
@@ -15,8 +14,10 @@ import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.BoardPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
-import it.polimi.ingsw.psp58.view.UI.GUI.Message;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.*;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.CommandGameState;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateAbstract;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.PlaceWorkerGameState;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.WaitGameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.exceptions.WorkerLockedException;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -35,34 +36,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateEnum.*;
-
-class WorkerGlow {
-    int x, y;
-    Worker.IDs id;
-
-    public WorkerGlow(int x, int y, Worker.IDs id) {
-        this.x = x;
-        this.y = y;
-        this.id = id;
-    }
-
-    public Worker.IDs getId() {
-        return id;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-}
 
 public class BoardSceneController {
-
-    private WorkerGlow currentGlow = null;
     private WorkerColors myColor;
     private String myUsername = "";
     private GUI gui;
@@ -289,6 +264,8 @@ public class BoardSceneController {
 
     public void setWaitingView() {
         disableAllActionButtons();
+        resetTurnStatus();
+        disableWorkerGlow();
     }
 
     public void hideWorkerPlacementBox() {
@@ -324,6 +301,8 @@ public class BoardSceneController {
 
     public void handle(CV_CommandRequestEvent event) {
         enableActionButtons(event.getAvailableActions());
+        disableAllGreenActionButton();
+        disableAllGreeBuildingBlock();
         currentStateInstance.updateFromServer(event);
     }
 
@@ -390,6 +369,52 @@ public class BoardSceneController {
         }
     }
 
+    public void setGreenActionButton(boolean enable, TurnAction buttonToSet) {
+        if (enable) {
+            moveButton.setEffect(null);
+            buildButton.setEffect(null);
+            passButton.setEffect(null);
+        }
+        Button button;
+        switch (buttonToSet) {
+            case MOVE:
+                button = moveButton;
+                break;
+            case BUILD:
+                button = buildButton;
+                break;
+            case PASS:
+                button = passButton;
+                break;
+            default:
+                button = passButton;
+        }
+
+        if (enable) {
+            //point.setEffect(new Glow(0.7));
+            System.out.println("DEBUG: setButtonGlow on " + buttonToSet);
+
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setRadius(14.5);
+//            dropShadow.setWidth(30);
+//            dropShadow.setHeight(30);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(0);
+            dropShadow.setSpread(0.6);
+            dropShadow.setColor(Color.rgb(50, 180, 50));
+            button.setEffect(dropShadow);
+        } else {
+            button.setEffect(null);
+        }
+
+    }
+
+    private void disableAllGreenActionButton(){
+        moveButton.setEffect(null);
+        buildButton.setEffect(null);
+        passButton.setEffect(null);
+    }
+
     /* ----------------------------------------------------------------------------------------------
                                          BUILDING BLOCKS METHODS
        ----------------------------------------------------------------------------------------------*/
@@ -399,6 +424,59 @@ public class BoardSceneController {
         ((Label) L2Box.getChildren().get(1)).setText(Integer.toString(lev2));
         ((Label) L3Box.getChildren().get(1)).setText(Integer.toString(lev3));
         ((Label) DomeBox.getChildren().get(1)).setText(Integer.toString(dome));
+    }
+
+
+    public void setGreenBuildingBlocks(boolean enable, BlockTypeEnum blockToSet) {
+        if (enable) {
+            L1Box.setEffect(null);
+            L2Box.setEffect(null);
+            L3Box.setEffect(null);
+            DomeBox.setEffect(null);
+        }
+        HBox hBox;
+        switch (blockToSet) {
+            case LEVEL1:
+                hBox = L1Box;
+                break;
+            case LEVEL2:
+                hBox = L2Box;
+                break;
+            case LEVEL3:
+                hBox = L3Box;
+                break;
+            case DOME:
+                hBox = DomeBox;
+                break;
+            default:
+                hBox = DomeBox;
+        }
+
+        if (enable) {
+            //point.setEffect(new Glow(0.7));
+            System.out.println("DEBUG: setButtonGlow on " + blockToSet);
+
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setRadius(14.5);
+//            dropShadow.setWidth(30);
+//            dropShadow.setHeight(30);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(0);
+            dropShadow.setSpread(0.6);
+            dropShadow.setColor(Color.rgb(50, 180, 50));
+            hBox.setEffect(dropShadow);
+        } else {
+            hBox.setEffect(null);
+        }
+
+
+    }
+
+    public void disableAllGreeBuildingBlock(){
+        L1Box.setEffect(null);
+        L2Box.setEffect(null);
+        L3Box.setEffect(null);
+        DomeBox.setEffect(null);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -445,7 +523,10 @@ public class BoardSceneController {
 
     public void updateIsland(String islandDataJSON) {
         IslandData island = islandDataFromJson(islandDataJSON);
+        updateIsland(island);
+    }
 
+    public void updateIsland(IslandData island) {
         setLastIslandUpdate(island);
 
         String url = "";
@@ -480,7 +561,7 @@ public class BoardSceneController {
                     lastGridPane[x][y] = stackPane;
 
                     if (cellClusterData.getWorkerOnTop() != null) {
-                        if (currentGlow != null && cellClusterData.getWorkerColor().equals(myColor) && currentGlow.getId().equals(cellClusterData.getWorkerOnTop())) {
+                        if (workerStatus.getSelectedWorker() != null && cellClusterData.getWorkerColor().equals(myColor) && workerStatus.getSelectedWorker().equals(cellClusterData.getWorkerOnTop())) {
                             setWorkerGlow(true, x, y);
 
                             System.out.println("DEBUG: RESTORING GLOW");
@@ -712,6 +793,12 @@ public class BoardSceneController {
                     setWorkerGlow(active, i, j);
                 }
             }
+        }
+    }
+
+    public void disableWorkerGlow() {
+        if (workerStatus != null && workerStatus.getSelectedWorker() != null) {
+            setWorkerGlow(false, workerStatus.getSelectedWorker());
         }
     }
 

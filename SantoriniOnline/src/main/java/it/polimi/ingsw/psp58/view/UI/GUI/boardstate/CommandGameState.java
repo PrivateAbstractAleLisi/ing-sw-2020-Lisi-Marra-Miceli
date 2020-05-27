@@ -1,6 +1,5 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
-import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
@@ -70,9 +69,9 @@ public class CommandGameState extends GameStateAbstract {
         switch (state) {
             case CLEAN_TURN:
                 if (workerIdInCellCluster != null && !actualWorkerStatus.isAlreadySelectedWorker()) {
-                    String playerOfWorker= boardSceneController.getLastIslandUpdate().getCellCluster(x, y).getUsernamePlayer();
+                    String playerOfWorker = boardSceneController.getLastIslandUpdate().getCellCluster(x, y).getUsernamePlayer();
                     boolean isMyWorker = playerOfWorker.equals(myUsername);
-                   if(isMyWorker){
+                    if (isMyWorker) {
                         try {
                             actualWorkerStatus.setSelectedWorker(workerIdInCellCluster);
                             boardSceneController.setWorkerGlow(true, x, y);
@@ -81,10 +80,10 @@ public class CommandGameState extends GameStateAbstract {
                             System.out.println("Worker already locked");
                             state = WORKER_LOCKED;
                         }
-                    }else{
-                       //todo print a popup showing error "Please select one of your workers"
-                       System.out.println("ERROR - " + state + " - Please select one of your workers");
-                   }
+                    } else {
+                        //todo print a popup showing error "Please select one of your workers"
+                        System.out.println("ERROR - " + state + " - Please select one of your workers");
+                    }
                 } else {
                     //todo print a popup showing error "Please select one of your workers"
                     System.out.println("ERROR - " + state + " - Please select one of your workers");
@@ -156,6 +155,7 @@ public class CommandGameState extends GameStateAbstract {
         switch (state) {
             case CLEAN_TURN:
                 if (buttonPressed == TurnAction.PASS) {
+                    setGreenActionButton(true,TurnAction.PASS);
                     commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
                     gui.sendEvent(commandEvent);
                     state = selectMsgSentState(actualWorkerStatus);
@@ -168,11 +168,11 @@ public class CommandGameState extends GameStateAbstract {
             case WORKER_SELECTED:
                 switch (buttonPressed) {
                     case MOVE:
-                        setGreenActionButton(TurnAction.MOVE, true);
+                        setGreenActionButton(true, TurnAction.MOVE);
                         state = MOVE_SELECTED;
                         break;
                     case BUILD:
-                        setGreenActionButton(TurnAction.BUILD, true);
+                        setGreenActionButton(true, TurnAction.BUILD);
                         state = BUILD_SELECTED;
                         break;
                     case PASS:
@@ -184,11 +184,11 @@ public class CommandGameState extends GameStateAbstract {
             case WORKER_LOCKED:
                 switch (buttonPressed) {
                     case MOVE:
-                        setGreenActionButton(TurnAction.MOVE, true);
+                        setGreenActionButton(true, TurnAction.MOVE);
                         state = MOVE_SELECTED;
                         break;
                     case BUILD:
-                        setGreenActionButton(TurnAction.BUILD, true);
+                        setGreenActionButton(true, TurnAction.BUILD);
                         state = BUILD_SELECTED;
                         break;
                     case PASS:
@@ -202,12 +202,12 @@ public class CommandGameState extends GameStateAbstract {
             case MOVE_SELECTED:
                 switch (buttonPressed) {
                     case MOVE:
-                        setGreenActionButton(TurnAction.MOVE, false);
+                        setGreenActionButton(false, TurnAction.MOVE);
                         state = selectWorkerState(actualWorkerStatus);
                         break;
                     case BUILD:
-                        setGreenActionButton(TurnAction.MOVE, false);
-                        setGreenActionButton(TurnAction.BUILD, true);
+                        setGreenActionButton(false, TurnAction.MOVE);
+                        setGreenActionButton(true, TurnAction.BUILD);
                         state = BUILD_SELECTED;
                         break;
                     case PASS:
@@ -226,12 +226,12 @@ public class CommandGameState extends GameStateAbstract {
             case BUILD_SELECTED:
                 switch (buttonPressed) {
                     case MOVE:
-                        setGreenActionButton(TurnAction.BUILD, false);
-                        setGreenActionButton(TurnAction.MOVE, true);
+                        setGreenActionButton(false, TurnAction.BUILD);
+                        setGreenActionButton(true, TurnAction.MOVE);
                         state = MOVE_SELECTED;
                         break;
                     case BUILD:
-                        setGreenActionButton(TurnAction.BUILD, false);
+                        setGreenActionButton(false, TurnAction.BUILD);
                         state = selectWorkerState(actualWorkerStatus);
                         break;
                     case PASS:
@@ -265,17 +265,18 @@ public class CommandGameState extends GameStateAbstract {
         switch (state) {
             case BUILD_SELECTED:
                 blockToBuild = blockClicked;
-                setGreenBlockButton(blockToBuild, true);
+                setGreenBlockButton(true, blockToBuild);
                 state = BUILDING_BLOCK_SELECTED;
                 break;
             case BUILDING_BLOCK_SELECTED:
                 if (blockClicked.equals(blockToBuild)) {
+                    setGreenBlockButton(true, blockToBuild);
                     blockToBuild = null;
                     state = BUILD_SELECTED;
                 } else {
-                    setGreenBlockButton(blockToBuild, false);
+                    setGreenBlockButton(false, blockToBuild);
                     blockToBuild = blockClicked;
-                    setGreenBlockButton(blockToBuild, true);
+                    setGreenBlockButton(true, blockToBuild);
                 }
                 break;
             default:
@@ -345,14 +346,14 @@ public class CommandGameState extends GameStateAbstract {
     }
 
     //enable green button
-    private void setGreenActionButton(TurnAction buttonToSet, boolean enableGreen) {
-        //todo
+    private void setGreenActionButton(boolean enableGreen, TurnAction buttonToSet) {
+        boardSceneController.setGreenActionButton(enableGreen, buttonToSet);
         System.out.println(buttonToSet + " is now green");
     }
 
     //enable green button
-    private void setGreenBlockButton(BlockTypeEnum blockToSet, boolean enableGreen) {
-        //todo
+    private void setGreenBlockButton(boolean enableGreen, BlockTypeEnum blockToSet) {
+        boardSceneController.setGreenBuildingBlocks(enableGreen,blockToSet);
         System.out.println(blockToSet + " is now green");
     }
 }
