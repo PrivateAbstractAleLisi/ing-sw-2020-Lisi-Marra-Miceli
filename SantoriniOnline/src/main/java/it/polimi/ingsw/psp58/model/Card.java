@@ -127,6 +127,7 @@ public abstract class Card {
         behaviour.setMovementsRemaining(1);
         behaviour.setCanClimb(true);
         behaviour.setCanBuildDomeEverywhere(false);
+        behaviour.setCanWinOnPerimeterCell(true);
     }
 
     /**
@@ -189,7 +190,6 @@ public abstract class Card {
      */
     protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         Range range=new Range(0,4);
-
         if (range.isIndexOfCellInRange(desiredX,desiredY)) {
             return this.isValidDestination(actualX, actualY, desiredX, desiredY, island);
         }
@@ -405,9 +405,12 @@ public abstract class Card {
      */
     protected void checkWin(Island island, int x, int y, int oldAltitudeOfPlayer) throws WinningException {
         CellCluster cellCluster = island.getCellCluster(x, y);
+        boolean isAPerimeterCell = (x == 0 || x== 4 || y == 0 || y== 4);
         //The Worker must increase its Altitude to win
-        if (cellCluster.hasWorkerOnTop() && cellCluster.getCostructionHeight() == 3 && cellCluster.getCostructionHeight() > oldAltitudeOfPlayer) {
-            throw new WinningException("Worker on 3th level!!");
+        if((playedBy.getBehaviour().canWinOnPerimeterCell() || !isAPerimeterCell)){
+            if (cellCluster.hasWorkerOnTop() && cellCluster.getCostructionHeight() == 3 && cellCluster.getCostructionHeight() > oldAltitudeOfPlayer) {
+                throw new WinningException("Worker on 3th level!!");
+            }
         }
     }
 

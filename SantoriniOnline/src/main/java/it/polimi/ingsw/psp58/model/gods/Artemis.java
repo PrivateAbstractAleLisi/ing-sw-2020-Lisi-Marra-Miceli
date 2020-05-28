@@ -1,11 +1,10 @@
 package it.polimi.ingsw.psp58.model.gods;
 
-import it.polimi.ingsw.psp58.model.BehaviourManager;
+import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
+import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.Card;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.Player;
-import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
@@ -85,11 +84,9 @@ public class Artemis extends Card {
     //ARTEMIS can move two times in normal conditions
     @Override
     public void resetBehaviour() {
-        BehaviourManager behaviour = playedBy.getBehaviour();
-        behaviour.setBlockPlacementLeft(1);
-        behaviour.setMovementsRemaining(2);
-        behaviour.setCanClimb(true);
-        behaviour.setCanBuildDomeEverywhere(false);
+        super.resetBehaviour();
+        playedBy.getBehaviour().setMovementsRemaining(2);
+
         //convenzione
         startingPosition[0] = -1;
         startingPosition[1] = -1;
