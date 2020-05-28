@@ -375,7 +375,7 @@ public class GUI extends Application implements ViewListener {
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
         System.out.println("DEBUG: worker placement update event has arrived");
         boardSceneController.handle(event);
-        boardSceneController.init(event, username);
+        boardSceneController.init(event);
         changeScene(boardScene);
     }
 

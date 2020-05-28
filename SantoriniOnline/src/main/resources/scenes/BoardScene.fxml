@@ -385,7 +385,7 @@
                     <bottom>
                         <VBox alignment="CENTER" prefHeight="125.0" BorderPane.alignment="CENTER">
                             <children>
-                                <Text fx:id="rightMessage" strokeType="OUTSIDE" strokeWidth="0.0" text="Benvenuto!" textAlignment="CENTER" wrappingWidth="265.0">
+                                <Text fx:id="rightMessage" strokeType="OUTSIDE" strokeWidth="0.0" text="WELCOME!!" textAlignment="CENTER" wrappingWidth="265.0">
                            <font>
                               <Font size="20.0" />
                            </font>

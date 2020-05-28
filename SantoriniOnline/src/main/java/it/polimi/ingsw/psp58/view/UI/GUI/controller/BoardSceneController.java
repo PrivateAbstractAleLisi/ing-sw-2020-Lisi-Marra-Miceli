@@ -24,7 +24,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -34,33 +33,84 @@ import javafx.scene.text.Text;
 
 import java.util.*;
 
+/**
+ * This class handle the entire match using the Pattern State.
+ * It receives lots of events and updates the board on the screen.
+ */
 
 public class BoardSceneController {
+    /**
+     * Color of my workers.
+     */
     private WorkerColors myColor;
+    /**
+     * {@link String} with my username.
+     */
     private String myUsername = "";
+    /**
+     * Main {@link GUI} object.
+     */
     private GUI gui;
 
+    /**
+     * Last island update, overwritten many times during the match.
+     */
     private IslandData lastIslandUpdate;
+    /**
+     * The last {@link GridPane} content saved as {@link StackPane} matrix.
+     */
     private StackPane[][] lastGridPane;
 
     //STATE PATTERN
+    /**
+     * Current selected worker.
+     */
     private WorkerStatus workerStatus;
+    /**
+     * Current State of the game for this player.
+     */
     private GameStateAbstract currentStateInstance;
+    /**
+     * The game board with all the elements.
+     */
     public GridPane board;
 
-    public Node workerSelectedNode;
-
+    /**
+     * {@link VBox} that contains the info about the first player's card.
+     */
     public VBox cardInfo1;
+    /**
+     * {@link VBox} that contains the info about the second player's card.
+     */
     public VBox cardInfo2;
+    /**
+     * {@link VBox} that contains the info about the third player's card.
+     */
     public VBox cardInfo3;
 
+    /**
+     * List of {@link VBox} that contains all the info about the cards.
+     */
     private List<VBox> cardInfoList;
 
+    /**
+     * {@link ImageView} of first player's card.
+     */
     public ImageView cardImage1;
+    /**
+     * {@link ImageView} of second player's card.
+     */
     public ImageView cardImage2;
+    /**
+     * {@link ImageView} of third player's card.
+     */
     public ImageView cardImage3;
 
+    /**
+     * List of {@link ImageView} that contains all the cards images used by the players.
+     */
     private List<ImageView> cardImagesList;
+
 
     public Label player1;
     public Label player2;
@@ -84,14 +134,25 @@ public class BoardSceneController {
     public Label turnSequence;
 
     //RightMessagge
+    /**
+     * {@link Text} that contains the current message showed at the screen in the right side of the scene.
+     */
     public Text rightMessage;
+    /**
+     * {@link Queue} of the messages that have to been showed in the right side of the scene.
+     */
     LinkedList<String> messagesQueue;
 
-    public void init(CV_WorkerPlacementGameEvent event, String myUsername) {
+    /**
+     * First method to call when the Game starts. The method begin the worker placement procedure.
+     *
+     * @param event The {@link CV_WorkerPlacementGameEvent} event that trigger the placement of the workers
+     */
+    public void init(CV_WorkerPlacementGameEvent event) {
         initializeIsland();
 
         updateTurnSequence(event.getTurnSequence());
-        this.myUsername = myUsername;
+        this.myUsername = gui.getUsername();
         myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());
 
         String url = getWorkerUrl(myColor);
@@ -99,7 +160,7 @@ public class BoardSceneController {
         workerSlotA.setImage(new Image(url));
         workerSlotB.setImage(new Image(url));
 
-        resetTurnStatus();
+        resetWorkerStatus();
 
         //update blocks counter to starting state
         updateBlocksCounter(22, 18, 14, 18);
@@ -107,11 +168,16 @@ public class BoardSceneController {
         messagesQueue = new LinkedList<>();
     }
 
-
     /* ----------------------------------------------------------------------------------------------
                                          BOARD CLICK
        ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Method called each time the user click on the board.
+     * It gets the coordinates of the click and calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+     *
+     * @param mouseEvent Event with information about the mouse click
+     */
     public void onClickEventCellCluster(MouseEvent mouseEvent) {
         StackPane source = (StackPane) mouseEvent.getSource();
         Integer colIndex = GridPane.getColumnIndex(source);
@@ -124,14 +190,26 @@ public class BoardSceneController {
                                          BUTTONS CLICK
        ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Method called each time the user click on the MOVE button.
+     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+     */
     public void moveButtonClick() {
         currentStateInstance.handleClickOnButton(TurnAction.MOVE);
     }
 
+    /**
+     * Method called each time the user click on the BUILD button.
+     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+     */
     public void buildButtonClick() {
         currentStateInstance.handleClickOnButton(TurnAction.BUILD);
     }
 
+    /**
+     * Method called each time the user click on the PASS button.
+     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+     */
     public void passButtonClick() {
         currentStateInstance.handleClickOnButton(TurnAction.PASS);
     }
@@ -140,18 +218,34 @@ public class BoardSceneController {
                                          BLOCKS CLICK
        ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Method called each time the user click on the LEVEL1 block.
+     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+     */
     public void level1Click() {
         currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL1);
     }
 
+    /**
+     * Method called each time the user click on the LEVEL2 block.
+     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+     */
     public void level2Click() {
         currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL2);
     }
 
+    /**
+     * Method called each time the user click on the LEVEL3 block.
+     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+     */
     public void level3Click() {
         currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL3);
     }
 
+    /**
+     * Method called each time the user click on the DOME block.
+     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+     */
     public void domeClick() {
         currentStateInstance.handleClickOnButton(BlockTypeEnum.DOME);
     }
@@ -161,24 +255,56 @@ public class BoardSceneController {
        ----------------------------------------------------------------------------------------------*/
 
     //STATUS
-    public void resetTurnStatus() {
+
+    /**
+     * Reset the worker status in this class creating a new {@link WorkerStatus}
+     */
+    public void resetWorkerStatus() {
         workerStatus = new WorkerStatus();
     }
 
+    /**
+     * Return the {@link WorkerStatus} of the turn
+     *
+     * @return The {@link WorkerStatus} of the turn
+     */
     public WorkerStatus getWorkerStatus() {
         return workerStatus;
     }
 
+    /**
+     * It prepare the waiting view disabling all the buttons and the glow
+     */
     public void setWaitingView() {
+        //Todo worker glow non si disattiva
         disableAllActionButtons();
-        resetTurnStatus();
+        resetWorkerStatus();
         disableWorkerGlow();
     }
 
+    /**
+     * Hide the left box with the worker icons
+     */
     public void hideWorkerPlacementBox() {
         //workerPrePlaceHBox.setVisible(false);
     }
 
+    /**
+     * Set the {@link WaitGameState} State waiting for a {@link CV_PlayerPlaceWorkerRequestEvent}.
+     *
+     * @param event A {@link CV_WorkerPlacementGameEvent} that notify the beginning of WorkerPlacement Phase.
+     */
+    public void handle(CV_WorkerPlacementGameEvent event) {
+        GameStateAbstract nextState = new WaitGameState(gui);
+        setWaitingView();
+        this.currentStateInstance = nextState;
+    }
+
+    /**
+     * Set the {@link PlaceWorkerGameState} State and ask to the player to place a worker.
+     *
+     * @param event Contains the {@code workerID} of the worker to place.
+     */
     public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
         GameStateAbstract nextState = new PlaceWorkerGameState(event, gui, this);
         try {
@@ -194,18 +320,51 @@ public class BoardSceneController {
         this.currentStateInstance = nextState;
     }
 
-    public void handle(CV_WorkerPlacementGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState(gui);
-        setWaitingView();
-        this.currentStateInstance = nextState;
-    }
-
+    /**
+     * Set the {@link WaitGameState} State waiting for another event.
+     *
+     * @param event A {@link CV_WaitPreMatchGameEvent} that notify a Wait Phase.
+     */
     public void handle(CV_WaitPreMatchGameEvent event) {
         GameStateAbstract nextState = new WaitGameState(event, gui);
         setWaitingView();
         this.currentStateInstance = nextState;
     }
 
+    /**
+     * Set the {@link WaitGameState} State waiting for a {@link CV_NewTurnEvent}.
+     *
+     * @param event A {@link CV_GameStartedGameEvent} that notify the beginning of Game Phase.
+     */
+    public void handle(CV_GameStartedGameEvent event) {
+        setGlowByNode(false, workerSlotA);
+        setGlowByNode(false, workerSlotB);
+        GameStateAbstract nextState = new WaitGameState(gui);
+        setWaitingView();
+        this.currentStateInstance = nextState;
+        addMessageToQueueList("Game is starting!");
+    }
+
+    /**
+     * Set the {@link CommandGameState} State for the acting player and update the {@code TurnSequence} for all the players.
+     *
+     * @param event A {@link CV_NewTurnEvent} that notify the beginning of the new turn.
+     */
+    public void handle(CV_NewTurnEvent event) {
+        updateTurnSequence(event.getTurnRotation());
+
+        if (event.getCurrentPlayerUsername().equals(myUsername)) {
+            currentStateInstance = new CommandGameState(event, gui, this);
+            resetWorkerStatus();
+            addMessageToQueueList("IT'S YOUR TURN!");
+        }
+    }
+
+    /**
+     * Enable the buttons and notify {@code currentStateInstance} to wait an user input.
+     *
+     * @param event Contains the {@code availableActions} for this player.
+     */
     public void handle(CV_CommandRequestEvent event) {
         enableActionButtons(event.getAvailableActions());
         disableAllGreenActionButton();
@@ -218,53 +377,46 @@ public class BoardSceneController {
         currentStateInstance.updateFromServer(event);
     }
 
-    public void handle(CV_NewTurnEvent event) {
-        updateTurnSequence(event.getTurnRotation());
-
-        if (event.getCurrentPlayerUsername().equals(myUsername)) {
-            currentStateInstance = new CommandGameState(event, gui, this);
-            resetTurnStatus();
-            addMessageToQueueList("IT'S YOUR TURN!");
-        }
-    }
-
-    public void handle(CV_GameStartedGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState(gui);
-        setWaitingView();
-        this.currentStateInstance = nextState;
-        addMessageToQueueList("Game is starting!");
-    }
-
-    public void handleWorkerPlacement(Worker.IDs workerRequested) {
-        disableAllActionButtons();
-        switch (workerRequested) {
-
-            case A:
-                workerSlotA.setEffect(new Glow(0.8));
-                addMessageToQueueList("Please place worker " + workerRequested.toString());
-                break;
-            case B:
-                workerSlotB.setEffect(new Glow(0.8));
-                addMessageToQueueList("Please place worker " + workerRequested.toString());
-                break;
-        }
-    }
-
+    /**
+     * Notify the {@code currentStateInstance} that the player command has been executed
+     *
+     * @param event {@link CV_CommandExecutedGameEvent} means that the command has been executed
+     */
     public void handle(CV_CommandExecutedGameEvent event) {
         System.out.println("DEBUG: CV_CommandExecutedGameEvent event has arrived");
         currentStateInstance.updateFromServer(event);
+    }
+
+    /**
+     * Prepare the Game scene and ask to the player to place a worker.
+     *
+     * @param workerRequested Contains the worker to place.
+     */
+    public void handleWorkerPlacement(Worker.IDs workerRequested) {
+        disableAllActionButtons();
+        setGlowByNode(false, workerSlotA);
+        setGlowByNode(false, workerSlotB);
+        switch (workerRequested) {
+            case A:
+                setGlowByNode(true, workerSlotA);
+                addMessageToQueueList("Please place the FIRST worker");
+                break;
+            case B:
+                setGlowByNode(true, workerSlotB);
+                addMessageToQueueList("Please place the SECOND worker");
+                break;
+        }
     }
 
     /* ----------------------------------------------------------------------------------------------
                                          ACTION BUTTONS METHODS
        ----------------------------------------------------------------------------------------------*/
 
-    public void disableAllActionButtons() {
-        moveButton.setDisable(true);
-        buildButton.setDisable(true);
-        passButton.setDisable(true);
-    }
-
+    /**
+     * Enable the available Action Buttons.
+     *
+     * @param availableActions Contains the available actions for this player at the moment.
+     */
     public void enableActionButtons(List<TurnAction> availableActions) {
         for (TurnAction action : availableActions) {
             switch (action) {
@@ -281,6 +433,21 @@ public class BoardSceneController {
         }
     }
 
+    /**
+     * Disable the Action Buttons at once.
+     */
+    public void disableAllActionButtons() {
+        moveButton.setDisable(true);
+        buildButton.setDisable(true);
+        passButton.setDisable(true);
+    }
+
+    /**
+     * Enable the Green Glow around the button that has been selected.
+     *
+     * @param enable      {@link Boolean} value, if true enable the glow, if false disable the glow.
+     * @param buttonToSet {@link TurnAction} that indicates the button to set.
+     */
     public void setGreenActionButton(boolean enable, TurnAction buttonToSet) {
         if (enable) {
             moveButton.setEffect(null);
@@ -321,6 +488,9 @@ public class BoardSceneController {
 
     }
 
+    /**
+     * Disable the Green Glow around all the Action Buttons at once.
+     */
     private void disableAllGreenActionButton() {
         moveButton.setEffect(null);
         buildButton.setEffect(null);
@@ -338,6 +508,12 @@ public class BoardSceneController {
         ((Label) DomeBox.getChildren().get(1)).setText(Integer.toString(dome));
     }
 
+    /**
+     * Enable the Green Glow around the Block that has been selected.
+     *
+     * @param enable     {@link Boolean} value, if true enable the glow, if false disable the glow.
+     * @param blockToSet {@link BlockTypeEnum} that indicates the block to set.
+     */
     public void setGreenBuildingBlocks(boolean enable, BlockTypeEnum blockToSet) {
         if (enable) {
             L1Box.setEffect(null);
@@ -383,6 +559,9 @@ public class BoardSceneController {
 
     }
 
+    /**
+     * Disable the Green Glow around all the Building Blocks at once.
+     */
     public void disableAllGreenBuildingBlock() {
         L1Box.setEffect(null);
         L2Box.setEffect(null);
@@ -394,6 +573,10 @@ public class BoardSceneController {
                                          TURN SEQUENCE METHODS
        ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Update the Turn Sequence list in the high-left corner.
+     * @param turnSequenceFromEvent {@link HashMap} containing the list of current players and their cards.
+     */
     public void updateTurnSequence(Map<String, CardEnum> turnSequenceFromEvent) {
 
         //fill turn sequence
@@ -405,6 +588,10 @@ public class BoardSceneController {
         updateTurnSequence(turnSequence);
     }
 
+    /**
+     * Update the Turn Sequence list in the high-left corner.
+     * @param sequence {@code List<String>} containing the list of current players and their cards.
+     */
     public void updateTurnSequence(List<String> sequence) {
         String turnSequenceText = "";
         boolean first = true;
@@ -538,10 +725,11 @@ public class BoardSceneController {
 //            board.add(stackPane, position[0], position[1]);
         }
     }
-    public void deactivateAllGlowOnPanels(){
+
+    public void deactivateAllGlowOnPanels() {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                StackPane stackPane = (StackPane) getNodeByRowColumnIndex(i,j);
+                StackPane stackPane = (StackPane) getNodeByRowColumnIndex(i, j);
                 stackPane.getChildren().get(1).setVisible(false);
             }
         }
@@ -655,27 +843,10 @@ public class BoardSceneController {
         return url;
     }
 
-    public void setWorkerGlow(boolean active, int x, int y) {
-        Node point = getNodeByRowColumnIndex(x, y);
-        if (active) {
-
-            //point.setEffect(new Glow(0.7));
-            System.out.println("DEBUG: setWorkerGlow on " + x + " " + y);
-            workerSelectedNode = point;
-
-            DropShadow dropShadow = new DropShadow();
-            dropShadow.setRadius(14.5);
-            dropShadow.setWidth(30);
-            dropShadow.setHeight(30);
-            dropShadow.setOffsetX(0);
-            dropShadow.setOffsetY(0);
-            dropShadow.setSpread(0.6);
-            dropShadow.setColor(Color.rgb(255, 234, 5));
-            point.setEffect(dropShadow);
-        } else {
-            point.setEffect(null);
-            point = null;
-        }
+    public void setWorkerGlow(boolean enable, int x, int y) {
+        Node node = getNodeByRowColumnIndex(x, y);
+        System.out.println("DEBUG: setWorkerGlow" + enable + x + " " + y);
+        setGlowByNode(enable, node);
     }
 
     public void setWorkerGlow(boolean active, Worker.IDs workerID) {
@@ -687,6 +858,24 @@ public class BoardSceneController {
                 }
             }
         }
+    }
+
+    private void setGlowByNode(boolean enable, Node node) {
+        if (enable) {
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setRadius(14.5);
+            dropShadow.setWidth(30);
+            dropShadow.setHeight(30);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(0);
+            dropShadow.setSpread(0.6);
+            dropShadow.setColor(Color.rgb(255, 234, 5));
+            node.setEffect(dropShadow);
+        } else {
+            node.setEffect(null);
+            node = null;
+        }
+
     }
 
     public void disableWorkerGlow() {
