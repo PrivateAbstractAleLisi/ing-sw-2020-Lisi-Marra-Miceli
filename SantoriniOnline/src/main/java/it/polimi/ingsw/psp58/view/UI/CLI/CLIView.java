@@ -16,18 +16,13 @@ import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
-import it.polimi.ingsw.psp58.view.UI.GUI.Message;
 
-
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
-
-import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
 public class CLIView extends EventSource implements ViewListener {
 
@@ -513,9 +508,19 @@ public class CLIView extends EventSource implements ViewListener {
     }
 
     @Override
+    public void handleEvent(CV_CommandExecutedGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
         System.out.println("\n⌛   WAITING   ⌛");
         System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
+    }
+
+    @Override
+    public void handleEvent(CV_TurnInfoEvent CVTurnInfoEvent) {
+
     }
 
 

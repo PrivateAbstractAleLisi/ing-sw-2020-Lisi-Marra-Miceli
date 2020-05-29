@@ -3,7 +3,14 @@
 
     <groupId>it.polimi.ingsw.psp58</groupId>
     <artifactId>SantoriniOnline</artifactId>
-    <version>1.2</version>
+    <version>1.4</version>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -27,6 +34,7 @@
             <artifactId>maven-jar-plugin</artifactId>
             <version>3.2.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -37,6 +45,27 @@
             <artifactId>javafx-fxml</artifactId>
             <version>11.0.2</version>
         </dependency>
+
+        <!--JAVAFX FOR ALL OS-->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>win</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>mac</classifier>
+        </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
@@ -45,19 +74,9 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
-
     <profiles>
         <profile>
-            <id>client</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+            <id>Client</id>
             <build>
                 <plugins>
                     <!-- Make this jar executable -->
@@ -72,14 +91,15 @@
                                     <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
                                 </manifest>
                             </archive>
-                            <finalName>client-${project.version}</finalName>
+                            <finalName>client-v.${project.version}</finalName>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+
         <profile>
-            <id>server</id>
+            <id>Server</id>
             <build>
                 <plugins>
                     <!-- Make this jar executable -->
@@ -94,7 +114,7 @@
                                     <mainClass>it.polimi.ingsw.psp58.networking.server.SantoriniServer</mainClass>
                                 </manifest>
                             </archive>
-                            <finalName>server-${project.version}</finalName>
+                            <finalName>server-v.${project.version}</finalName>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -135,9 +155,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.3</version>
-                <configuration>
-                    <!-- put your configurations here -->
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
