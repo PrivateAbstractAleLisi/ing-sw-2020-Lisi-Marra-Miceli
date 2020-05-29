@@ -7,9 +7,10 @@ import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
-import it.polimi.ingsw.psp58.model.*;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerCardsChosenEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerChosenFirstPlayerEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerCardChosenEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEvent;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
@@ -253,7 +254,10 @@ public class TurnController extends EventSource implements ControllerListener {
 
         //checks if the player loses or not
         if (!checkLose(availableActions, actingPlayer)) {
-            //send the it.polimi.ingsw.sp58.event for the command selection
+            //send info of the turn
+            CV_TurnInfoEvent infoEvent = new CV_TurnInfoEvent("", behaviour.getMovementsRemaining(), behaviour.getBlockPlacementLeft(), behaviour.isCanClimb(), actingPlayer);
+            notifyAllObserverByType(VIEW, infoEvent);
+            //send the event for the command selection
             CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildA, availableMovementsA,
                     availableBuildB, availableMovementsB, actingPlayer);
             notifyAllObserverByType(VIEW, requestEvent);

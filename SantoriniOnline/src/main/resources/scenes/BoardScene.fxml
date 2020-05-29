@@ -33,36 +33,39 @@
                                 </Text>
                             </children>
                         </HBox>
+                  <VBox fx:id="myCardInfo" prefHeight="200.0" prefWidth="100.0">
+                     <children>
                         <StackPane>
-                            <children>
-                                <ImageView fitHeight="90.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/background/panel_heroPower.png" />
-                                    </image>
-                                </ImageView>
-                                <Label alignment="CENTER" blendMode="COLOR_BURN" text="CIAO123" textFill="#ff0011">
-                                    <font>
-                                        <Font size="25.0" />
-                                    </font>
-                                </Label>
-                            </children>
+                           <children>
+                              <ImageView fitHeight="90.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/background/panel_heroPower.png" />
+                                 </image>
+                              </ImageView>
+                              <Label alignment="CENTER" blendMode="COLOR_BURN" text="CIAO123" textFill="#ff0011">
+                                 <font>
+                                    <Font size="25.0" />
+                                 </font>
+                              </Label>
+                           </children>
                         </StackPane>
                         <HBox prefHeight="100.0" prefWidth="200.0" spacing="12.0">
-                            <children>
-                                <ImageView fitHeight="473.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/gods/05_Demer.png" />
-                                    </image>
-                                </ImageView>
-                                <Label alignment="TOP_LEFT" prefHeight="194.0" prefWidth="155.0" text="CIAO: la carta ciao è una carta di prova usata per testare la gui" wrapText="true">
-                                    <font>
-                                        <Font size="26.0" />
-                                    </font>
-                                </Label>
-                            </children>
+                           <children>
+                              <ImageView fitHeight="473.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/gods/05_Demer.png" />
+                                 </image>
+                              </ImageView>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="150.0">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font></Text>
+                           </children>
                         </HBox>
+                     </children>
+                  </VBox>
                         <Line endX="280.0" strokeLineCap="ROUND" />
-                        <VBox>
+                        <VBox fx:id="turnInfo">
                             <children>
                                 <Label prefHeight="33.0" prefWidth="297.0" text="THIS TURN">
                                     <font>
@@ -194,91 +197,59 @@
                         </VBox>
                     </left>
                     <right>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0" BorderPane.alignment="CENTER">
+                        <HBox alignment="CENTER_LEFT" spacing="15.0" BorderPane.alignment="CENTER">
                             <children>
                                 <Label contentDisplay="RIGHT" text="AVAILABLE BLOCKS">
                                     <font>
                                         <Font name="Avenir Next Condensed Bold" size="13.0" />
                                     </font>
                                 </Label>
-                                <HBox fx:id="L1Box" onMouseClicked="#level1Click" prefHeight="68.0" prefWidth="114.0">
+                                <HBox fx:id="L1Box" onMouseClicked="#level1Click">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
                                                 <Image url="@../images/cellcluster/L1.png" />
                                             </image>
                                             <HBox.margin>
-                                                <Insets right="5.0" />
+                                                <Insets />
                                             </HBox.margin>
                                         </ImageView>
-                                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="64.0" prefWidth="22.0" text="99" textFill="#135875">
-                                            <font>
-                                                <Font name="Avenir Next Bold" size="17.0" />
-                                            </font>
-                                            <HBox.margin>
-                                                <Insets left="5.0" right="10.0" />
-                                            </HBox.margin>
-                                        </Label>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="L2Box" onMouseClicked="#level2Click" prefHeight="68.0" prefWidth="114.0">
+                                <HBox fx:id="L2Box" onMouseClicked="#level2Click">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
                                                 <Image url="@../images/cellcluster/L2.png" />
                                             </image>
                                             <HBox.margin>
-                                                <Insets right="5.0" />
+                                                <Insets />
                                             </HBox.margin>
                                         </ImageView>
-                                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="64.0" prefWidth="22.0" text="99" textFill="#135875">
-                                            <font>
-                                                <Font name="Avenir Next Bold" size="17.0" />
-                                            </font>
-                                            <HBox.margin>
-                                                <Insets left="5.0" right="10.0" />
-                                            </HBox.margin>
-                                        </Label>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="L3Box" onMouseClicked="#level3Click" prefHeight="68.0" prefWidth="114.0">
+                                <HBox fx:id="L3Box" onMouseClicked="#level3Click">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
                                                 <Image url="@../images/cellcluster/L3.png" />
                                             </image>
                                             <HBox.margin>
-                                                <Insets right="5.0" />
+                                                <Insets />
                                             </HBox.margin>
                                         </ImageView>
-                                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="64.0" prefWidth="22.0" text="99" textFill="#135875">
-                                            <font>
-                                                <Font name="Avenir Next Bold" size="17.0" />
-                                            </font>
-                                            <HBox.margin>
-                                                <Insets left="5.0" right="10.0" />
-                                            </HBox.margin>
-                                        </Label>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="DomeBox" onMouseClicked="#domeClick" prefHeight="68.0" prefWidth="114.0">
+                                <HBox fx:id="DomeBox" onMouseClicked="#domeClick">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
                                                 <Image url="@../images/cellcluster/L0_DOME.png" />
                                             </image>
                                             <HBox.margin>
-                                                <Insets right="5.0" />
+                                                <Insets />
                                             </HBox.margin>
                                         </ImageView>
-                                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="64.0" prefWidth="22.0" text="99" textFill="#135875">
-                                            <font>
-                                                <Font name="Avenir Next Bold" size="17.0" />
-                                            </font>
-                                            <HBox.margin>
-                                                <Insets left="5.0" right="10.0" />
-                                            </HBox.margin>
-                                        </Label>
                                     </children>
                                 </HBox>
                             </children>
@@ -295,7 +266,7 @@
             <right>
                 <BorderPane styleClass="game-beige-pane" BorderPane.alignment="CENTER">
                     <top>
-                        <VBox spacing="20.0" BorderPane.alignment="CENTER">
+                        <VBox prefHeight="463.0" prefWidth="110.0" spacing="20.0" BorderPane.alignment="CENTER">
                             <children>
                                 <Label text="OPPONENT'S/S' CARDS">
                                     <font>
@@ -307,21 +278,21 @@
                                 </Label>
                                 <VBox>
                                     <children>
-                                        <VBox>
+                                        <VBox fx:id="cardInfo1">
                                             <children>
-                                                <Label fx:id="player2" text="example">
+                                                <Label text="example">
                                                     <font>
                                                         <Font size="32.0" />
                                                     </font>
                                                 </Label>
-                                                <HBox fx:id="cardInformation1" alignment="CENTER_LEFT">
+                                                <HBox alignment="CENTER_LEFT">
                                                     <children>
-                                                        <ImageView fx:id="cardImage2" fitHeight="150.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
+                                                        <ImageView fitHeight="150.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
                                                             <image>
                                                                 <Image url="@../images/gods/00_Random.png" />
                                                             </image>
                                                         </ImageView>
-                                                        <VBox fx:id="cardInfo2">
+                                                        <VBox>
                                                             <padding>
                                                                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                                             </padding>
@@ -331,27 +302,26 @@
                                                                         <Font size="23.0" />
                                                                     </font>
                                                                 </Label>
-                                                                <Label text="Label">
-                                                                    <font>
-                                                                        <Font size="20.0" />
-                                                                    </font>
-                                                                </Label>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="150.0">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font></Text>
                                                             </children>
                                                         </VBox>
                                                     </children>
                                                 </HBox>
                                             </children>
                                         </VBox>
-                                        <VBox layoutX="10.0" layoutY="10.0">
+                                        <VBox fx:id="cardInfo2" layoutX="10.0" layoutY="10.0">
                                             <children>
-                                                <Label fx:id="player21" text="example">
+                                                <Label text="example">
                                                     <font>
                                                         <Font size="32.0" />
                                                     </font>
                                                 </Label>
-                                                <HBox fx:id="cardInformation11" alignment="CENTER_LEFT">
+                                                <HBox alignment="CENTER_LEFT">
                                                     <children>
-                                                        <ImageView fx:id="cardImage21" fitHeight="150.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
+                                                        <ImageView fitHeight="150.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
                                                             <image>
                                                                 <Image url="@../images/gods/00_Random.png" />
                                                             </image>
@@ -366,11 +336,10 @@
                                                                         <Font size="23.0" />
                                                                     </font>
                                                                 </Label>
-                                                                <Label text="Label">
-                                                                    <font>
-                                                                        <Font size="20.0" />
-                                                                    </font>
-                                                                </Label>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="150.0">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font></Text>
                                                             </children>
                                                         </VBox>
                                                     </children>

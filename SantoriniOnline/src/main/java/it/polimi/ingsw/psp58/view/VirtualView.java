@@ -328,6 +328,13 @@ public class VirtualView extends EventSource implements ViewListener, Controller
     }
 
     @Override
+    public void handleEvent(CV_TurnInfoEvent event) {
+        if (event.getActingPlayer().equals(this.username)) {
+            sendEventToClient(event);
+        }
+    }
+
+    @Override
     public void handleEvent(CV_NewGameRequestEvent event) {
         sendEventToClient(event);
     }

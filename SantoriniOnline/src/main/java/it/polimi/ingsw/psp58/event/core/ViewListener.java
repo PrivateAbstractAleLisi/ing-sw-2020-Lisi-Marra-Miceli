@@ -55,4 +55,5 @@ public interface ViewListener extends EventListener {
 
     void handleEvent(CV_WaitMatchGameEvent event);
 
+    void handleEvent(CV_TurnInfoEvent CVTurnInfoEvent);
 }

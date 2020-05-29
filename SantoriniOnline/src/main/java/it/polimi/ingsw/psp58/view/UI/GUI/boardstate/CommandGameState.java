@@ -46,6 +46,7 @@ public class CommandGameState extends GameStateAbstract {
     @Override
     public ControllerGameEvent handleClick(String username, int x, int y, Worker.IDs workerID, GameStateEnum state) {
         switch (state) {
+            //todo remove
             case SELECT_WORKER:
 //                boardSceneController.showPossibleBlockAction(workerID);
                 break;

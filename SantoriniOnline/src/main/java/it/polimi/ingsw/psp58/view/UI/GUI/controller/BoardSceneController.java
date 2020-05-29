@@ -20,6 +20,7 @@ import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.PlaceWorkerGameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.WaitGameState;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.exceptions.WorkerLockedException;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -73,75 +74,59 @@ public class BoardSceneController {
     /**
      * The game board with all the elements.
      */
-    public GridPane board;
+    @FXML
+    private GridPane board;
 
     /**
-     * {@link VBox} that contains the info about the first player's card.
+     * {@link VBox} that contains the info about the card of the local player.
      */
-    public VBox cardInfo1;
-    /**
-     * {@link VBox} that contains the info about the second player's card.
-     */
-    public VBox cardInfo2;
-    /**
-     * {@link VBox} that contains the info about the third player's card.
-     */
-    public VBox cardInfo3;
+    @FXML
+    private VBox myCardInfo;
 
     /**
-     * List of {@link VBox} that contains all the info about the cards.
+     * {@link VBox} that contains the info about the first opponent's card.
      */
-    private List<VBox> cardInfoList;
-
+    @FXML
+    private VBox cardInfo1;
     /**
-     * {@link ImageView} of first player's card.
+     * {@link VBox} that contains the info about the second opponent's card.
      */
-    public ImageView cardImage1;
-    /**
-     * {@link ImageView} of second player's card.
-     */
-    public ImageView cardImage2;
-    /**
-     * {@link ImageView} of third player's card.
-     */
-    public ImageView cardImage3;
+    @FXML
+    private VBox cardInfo2;
 
-    /**
-     * List of {@link ImageView} that contains all the cards images used by the players.
-     */
-    private List<ImageView> cardImagesList;
+    @FXML
+    private VBox turnInfo;
 
-
-    public Label player1;
-    public Label player2;
-    public Label player3;
-
-    public HBox workerPrePlaceHBox;
-
-    private List<Label> playersList;
+    private HBox workerPrePlaceHBox;
 
     //ACTION BUTTONS
-    public Button moveButton, buildButton, passButton;
+    @FXML
+    private Button moveButton, buildButton, passButton;
 
     //BLOCKS
-    public HBox L1Box, L2Box, L3Box, DomeBox;
+    @FXML
+    private HBox L1Box, L2Box, L3Box, DomeBox;
 
     //WORKERS
-    public ImageView workerSlotA;
-    public ImageView workerSlotB;
+    @FXML
+    private ImageView workerSlotA;
+    @FXML
+    private ImageView workerSlotB;
 
     //TURN SEQUENCE
-    public Label turnSequence;
+    @FXML
+    private Label turnSequence;
 
     //RightMessagge
     /**
      * {@link Text} that contains the current message showed at the screen in the right side of the scene.
      */
-    public Text rightMessage;
+    @FXML
+    private Text rightMessage;
     /**
      * {@link Queue} of the messages that have to been showed in the right side of the scene.
      */
-    LinkedList<String> messagesQueue;
+    private LinkedList<String> messagesQueue;
 
     /**
      * First method to call when the Game starts. The method begin the worker placement procedure.
@@ -152,6 +137,7 @@ public class BoardSceneController {
         initializeIsland();
 
         updateTurnSequence(event.getTurnSequence());
+        disableTurnInfo();
         this.myUsername = gui.getUsername();
         myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());
 
@@ -162,8 +148,7 @@ public class BoardSceneController {
 
         resetWorkerStatus();
 
-        //update blocks counter to starting state
-        updateBlocksCounter(22, 18, 14, 18);
+        setUpPlayersCardsCorrespondence(event.getTurnSequence());
 
         messagesQueue = new LinkedList<>();
     }
@@ -358,6 +343,18 @@ public class BoardSceneController {
             resetWorkerStatus();
             addMessageToQueueList("IT'S YOUR TURN!");
         }
+        else{
+            disableTurnInfo();
+        }
+    }
+
+    /**
+     * Set up the {@Code turnInfo}
+     *
+     * @param event A {@link CV_TurnInfoEvent} that notify the what you able to do in your turn.
+     */
+    public void handle(CV_TurnInfoEvent event){
+        updateTurnInfo(event.getCanClimb(), event.getMovementsRemaining(), event.getBuildRemaining());
     }
 
     /**
@@ -899,46 +896,94 @@ public class BoardSceneController {
     }
 
 
-    //    private void initializePlayersList(){
-//        playersList = new ArrayList<>();
-//        playersList.add(player1);
-//        playersList.add(player2);
-//        playersList.add(player3);
-//    }
-//
-//    private void initializeCardImages(){
-//        cardImagesList = new ArrayList<>();
-//        cardImagesList.add(cardImage1);
-//        cardImagesList.add(cardImage2);
-//        cardImagesList.add(cardImage3);
-//
-//    }
-//
-//    private void initializeCardInfo(){
-//        cardInfoList = new ArrayList<>();
-//        cardInfoList.add(cardInfo1);
-//        cardInfoList.add(cardInfo2);
-//        cardInfoList.add(cardInfo3);
-//    }
-//
-//    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence){
-//        int index = 0;
-//        for (Map.Entry<String, CardEnum> entry : playersCardsCorrespondence.entrySet()) {
-//            playersList.get(index).setText(entry.getKey());
-//            cardImagesList.get(index).setImage(new Image(entry.getValue().getImgUrl()));
-//
-//            //set up the card info
-//            ObservableList<Node> children = cardInfoList.get(index).getChildren();
-//            //set up the card name
-//            Label cardName = (Label) children.get(0);
-//            cardName.setText(entry.getValue().getName());
-//            //set up the card description
-//            Label cardDescription = (Label) children.get(1);
-//            cardDescription.setText(entry.getValue().getDescription());
-//
-//            index ++ ;
-//        }
-//
-//    }
+    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence){
+        int index = 0;
+        for (Map.Entry<String, CardEnum> entry : playersCardsCorrespondence.entrySet()) {
+            if (entry.getKey().equals(myUsername)){ //set up local user info
+                setUpMyCardInfo(entry.getValue());
+            }
+            else{ //set up the opponents' info
+                setUpOpponentsCardInfo(index, entry.getKey(), entry.getValue());
+                index++;
+            }
+        }
+        if (playersCardsCorrespondence.values().size() == 2){
+            cardInfo2.setVisible(false);
+        }
+    }
+
+    public void setUpMyCardInfo(CardEnum card){
+        //set up info of local user
+        //username
+        StackPane pane = (StackPane) myCardInfo.getChildren().get(0);
+        Label cardName = (Label) pane.getChildren().get(1);
+        cardName.setText(card.getName());
+
+        //card image and description
+        //image
+        HBox hBox = (HBox) myCardInfo.getChildren().get(1);
+        Image myCard = new Image(card.getImgUrl());
+        ImageView imageView = (ImageView) hBox.getChildren().get(0);
+        imageView.setImage(myCard);
+
+        //description
+        Text cardDescription = (Text) hBox.getChildren().get(1);
+        cardDescription.setText(card.getDescription());
+    }
+
+    public void setUpOpponentsCardInfo(int index, String player, CardEnum card){
+        VBox actualVBox;
+        if (index == 0){
+            actualVBox = cardInfo1;
+        }
+        else {
+            actualVBox = cardInfo2;
+        }
+        //set up the name
+        Label name = (Label) actualVBox.getChildren().get(0);
+        name.setText(player);
+
+        //set up the image of the card
+        HBox hBox = (HBox) actualVBox.getChildren().get(1);
+        ImageView cardImage = (ImageView) hBox.getChildren().get(0);
+        Image image = new Image(card.getImgUrl());
+        cardImage.setImage(image);
+
+        //set up the name and the description of the card
+        VBox vBox = (VBox) hBox.getChildren().get(1);
+        Label cardName = (Label) vBox.getChildren().get(0);
+        cardName.setText(card.getName());
+        Text cardDescription = (Text) vBox.getChildren().get(1);
+        cardDescription.setText(card.getDescription());
+
+    }
+
+    public void updateTurnInfo(String climb, int numberOfMovements, int numberOfBuilding){
+        //set if can climb
+        Label canClimb = (Label) turnInfo.getChildren().get(1);
+        canClimb.setText("can climb: " + climb.toUpperCase());
+        canClimb.setVisible(true);
+
+        //set number of moves
+        Label numberOfMoves = (Label) turnInfo.getChildren().get(2);
+        numberOfMoves.setText("available MOVE: "+ Integer.toString(numberOfMovements));
+        numberOfMoves.setVisible(true);
+
+        //set number of builds
+        Label numberOfBuilds = (Label) turnInfo.getChildren().get(3);
+        numberOfBuilds.setText("available BUILD: " + Integer.toString(numberOfBuilding));
+        numberOfBuilds.setVisible(true);
+    }
+
+    public void disableTurnInfo(){
+        Label canClimb = (Label) turnInfo.getChildren().get(1);
+        canClimb.setVisible(false);
+
+        Label numberOfMoves = (Label) turnInfo.getChildren().get(2);
+        numberOfMoves.setVisible(false);
+
+        Label numberOfBuilds = (Label) turnInfo.getChildren().get(3);
+        numberOfBuilds.setVisible(false);
+    }
 
 }
