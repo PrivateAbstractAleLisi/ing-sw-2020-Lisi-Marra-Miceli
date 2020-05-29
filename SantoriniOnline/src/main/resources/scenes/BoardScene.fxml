@@ -266,7 +266,7 @@
             <right>
                 <BorderPane styleClass="game-beige-pane" BorderPane.alignment="CENTER">
                     <top>
-                        <VBox prefHeight="463.0" prefWidth="110.0" spacing="20.0" BorderPane.alignment="CENTER">
+                        <VBox prefHeight="463.0" prefWidth="110.0" BorderPane.alignment="CENTER">
                             <children>
                                 <Label text="OPPONENT'S/S' CARDS">
                                     <font>
@@ -294,7 +294,7 @@
                                                         </ImageView>
                                                         <VBox>
                                                             <padding>
-                                                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                                                <Insets left="20.0" right="20.0" />
                                                             </padding>
                                                             <children>
                                                                 <Label text="Label">
@@ -328,7 +328,7 @@
                                                         </ImageView>
                                                         <VBox fx:id="cardInfo21">
                                                             <padding>
-                                                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                                                <Insets left="20.0" right="20.0" />
                                                             </padding>
                                                             <children>
                                                                 <Label text="Label">

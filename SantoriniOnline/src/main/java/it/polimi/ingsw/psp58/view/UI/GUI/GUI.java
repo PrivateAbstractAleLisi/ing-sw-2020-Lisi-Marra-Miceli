@@ -417,7 +417,7 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
         if (!event.getActingPlayer().equals(username)) {
-            Message.show(event.getEventDescription().toUpperCase() + " " + event.getActingPlayer().toUpperCase(), stage);
+            boardSceneController.addMessageToQueueList(event.getEventDescription().toUpperCase() + " " + event.getActingPlayer().toUpperCase());
         }
     }
 

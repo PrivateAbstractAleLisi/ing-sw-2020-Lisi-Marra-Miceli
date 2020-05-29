@@ -30,6 +30,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.util.*;
@@ -342,18 +343,17 @@ public class BoardSceneController {
             currentStateInstance = new CommandGameState(event, gui, this);
             resetWorkerStatus();
             addMessageToQueueList("IT'S YOUR TURN!");
-        }
-        else{
+        } else {
             disableTurnInfo();
         }
     }
 
     /**
-     * Set up the {@Code turnInfo}
+     * Set up the {@code turnInfo}
      *
      * @param event A {@link CV_TurnInfoEvent} that notify the what you able to do in your turn.
      */
-    public void handle(CV_TurnInfoEvent event){
+    public void handle(CV_TurnInfoEvent event) {
         updateTurnInfo(event.getCanClimb(), event.getMovementsRemaining(), event.getBuildRemaining());
     }
 
@@ -572,6 +572,7 @@ public class BoardSceneController {
 
     /**
      * Update the Turn Sequence list in the high-left corner.
+     *
      * @param turnSequenceFromEvent {@link HashMap} containing the list of current players and their cards.
      */
     public void updateTurnSequence(Map<String, CardEnum> turnSequenceFromEvent) {
@@ -587,6 +588,7 @@ public class BoardSceneController {
 
     /**
      * Update the Turn Sequence list in the high-left corner.
+     *
      * @param sequence {@code List<String>} containing the list of current players and their cards.
      */
     public void updateTurnSequence(List<String> sequence) {
@@ -896,23 +898,22 @@ public class BoardSceneController {
     }
 
 
-    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence){
+    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence) {
         int index = 0;
         for (Map.Entry<String, CardEnum> entry : playersCardsCorrespondence.entrySet()) {
-            if (entry.getKey().equals(myUsername)){ //set up local user info
+            if (entry.getKey().equals(myUsername)) { //set up local user info
                 setUpMyCardInfo(entry.getValue());
-            }
-            else{ //set up the opponents' info
+            } else { //set up the opponents' info
                 setUpOpponentsCardInfo(index, entry.getKey(), entry.getValue());
                 index++;
             }
         }
-        if (playersCardsCorrespondence.values().size() == 2){
+        if (playersCardsCorrespondence.values().size() == 2) {
             cardInfo2.setVisible(false);
         }
     }
 
-    public void setUpMyCardInfo(CardEnum card){
+    public void setUpMyCardInfo(CardEnum card) {
         //set up info of local user
         //username
         StackPane pane = (StackPane) myCardInfo.getChildren().get(0);
@@ -928,15 +929,15 @@ public class BoardSceneController {
 
         //description
         Text cardDescription = (Text) hBox.getChildren().get(1);
-        cardDescription.setText(card.getDescription());
+
+        setupCardDescription(cardDescription, card);
     }
 
-    public void setUpOpponentsCardInfo(int index, String player, CardEnum card){
+    public void setUpOpponentsCardInfo(int index, String player, CardEnum card) {
         VBox actualVBox;
-        if (index == 0){
+        if (index == 0) {
             actualVBox = cardInfo1;
-        }
-        else {
+        } else {
             actualVBox = cardInfo2;
         }
         //set up the name
@@ -954,11 +955,38 @@ public class BoardSceneController {
         Label cardName = (Label) vBox.getChildren().get(0);
         cardName.setText(card.getName());
         Text cardDescription = (Text) vBox.getChildren().get(1);
-        cardDescription.setText(card.getDescription());
-
+        setupCardDescription(cardDescription, card);
     }
 
-    public void updateTurnInfo(String climb, int numberOfMovements, int numberOfBuilding){
+    /**
+     * Set the proper Card description with the right size.
+     * @param cardDescription {@link Text} field that contains the card description.
+     * @param card Card to show.
+     */
+    private void setupCardDescription(Text cardDescription, CardEnum card) {
+        String fontName = cardDescription.getFont().getName();
+        int descriptionLength = card.getDescription().length();
+        if (descriptionLength > 70) {
+            if (descriptionLength > 100) {
+                if (descriptionLength > 120) {
+                    // descriptionLength > 120
+                    cardDescription.setFont(Font.font(fontName, 12));
+                } else {
+                    // 100 < descriptionLength <= 120
+                    cardDescription.setFont(Font.font(fontName, 14));
+                }
+            } else {
+                // 70 < descriptionLength <= 100
+                cardDescription.setFont(Font.font(fontName, 16));
+            }
+        }else {
+            // descriptionLength <=70
+            cardDescription.setFont(Font.font(fontName, 18));
+        }
+        cardDescription.setText(card.getDescription());
+    }
+
+    public void updateTurnInfo(String climb, int numberOfMovements, int numberOfBuilding) {
         //set if can climb
         Label canClimb = (Label) turnInfo.getChildren().get(1);
         canClimb.setText("can climb: " + climb.toUpperCase());
@@ -966,7 +994,7 @@ public class BoardSceneController {
 
         //set number of moves
         Label numberOfMoves = (Label) turnInfo.getChildren().get(2);
-        numberOfMoves.setText("available MOVE: "+ Integer.toString(numberOfMovements));
+        numberOfMoves.setText("available MOVE: " + Integer.toString(numberOfMovements));
         numberOfMoves.setVisible(true);
 
         //set number of builds
@@ -975,7 +1003,7 @@ public class BoardSceneController {
         numberOfBuilds.setVisible(true);
     }
 
-    public void disableTurnInfo(){
+    public void disableTurnInfo() {
         Label canClimb = (Label) turnInfo.getChildren().get(1);
         canClimb.setVisible(false);
 
