@@ -3,7 +3,15 @@
 
     <groupId>it.polimi.ingsw.psp58</groupId>
     <artifactId>SantoriniOnline</artifactId>
-    <version>1.2</version>
+    <version>1.4</version>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
 
     <dependencies>
         <dependency>
@@ -27,6 +35,7 @@
             <artifactId>maven-jar-plugin</artifactId>
             <version>3.2.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -37,6 +46,27 @@
             <artifactId>javafx-fxml</artifactId>
             <version>11.0.2</version>
         </dependency>
+
+        <!--JAVAFX FOR ALL OS-->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>win</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>mac</classifier>
+        </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
@@ -45,21 +75,9 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
-
     <profiles>
         <profile>
-            <id>Client-Windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
+            <id>Client</id>
             <build>
                 <plugins>
                     <!-- Make this jar executable -->
@@ -74,67 +92,13 @@
                                     <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
                                 </manifest>
                             </archive>
-                            <finalName>client-v.${project.version}-win</finalName>
+                            <finalName>client-v.${project.version}</finalName>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>Client-Linux</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                    <name>Linux</name>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <!-- Make this jar executable -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <!-- Jar file entry point -->
-                                    <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
-                                </manifest>
-                            </archive>
-                            <finalName>client-v.${project.version}-linux</finalName>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>Client-MacOS</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <!-- Make this jar executable -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <!-- Jar file entry point -->
-                                    <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
-                                </manifest>
-                            </archive>
-                            <finalName>client-v.${project.version}-macOS</finalName>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+
         <profile>
             <id>Server</id>
             <build>
