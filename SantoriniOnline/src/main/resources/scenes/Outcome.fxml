@@ -61,11 +61,10 @@
                         <Image url="@../images/btn_blue-bigger.png" />
                      </image>
                      <cursor>
-                        <Cursor fx:constant="HAND" />
+                        <Cursor fx:constant="DEFAULT" />
                      </cursor>
                   </ImageView>
-                  <Button mnemonicParsing="false" prefHeight="71.0" prefWidth="294.0" text="Button" visible="false" />
-                  <Text fx:id="buttonPlayAgain" fill="WHITE" onMouseClicked="#buttonPlayAgainOnMouseClickedEvent" strokeType="OUTSIDE" strokeWidth="0.0" text="PLAY AGAIN" textAlignment="CENTER" wrappingWidth="269.62701416015625">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="PLAY AGAIN" textAlignment="CENTER" wrappingWidth="269.62701416015625">
                      <font>
                         <Font name="Avenir Next Condensed Bold" size="46.0" />
                      </font>
@@ -73,6 +72,7 @@
                         <Insets bottom="11.0" />
                      </StackPane.margin>
                   </Text>
+                  <Button fx:id="buttonPlayAgain" mnemonicParsing="false" onAction="#playOMCE" opacity="0.0" prefHeight="71.0" prefWidth="294.0" text="Button" />
                </children>
                <VBox.margin>
                   <Insets top="110.0" />
@@ -88,8 +88,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Button mnemonicParsing="false" prefHeight="71.0" prefWidth="294.0" text="Button" visible="false" />
-                  <Text fx:id="buttonQuitDesktop" fill="WHITE" onMouseClicked="#buttonDesktopOnMouseClickedEvent" strokeType="OUTSIDE" strokeWidth="0.0" text="QUIT TO DESKTOP" textAlignment="CENTER" wrappingWidth="269.62701416015625">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="QUIT TO DESKTOP" textAlignment="CENTER" wrappingWidth="269.62701416015625">
                      <font>
                         <Font name="Avenir Next Condensed Bold" size="34.0" />
                      </font>
@@ -97,6 +96,7 @@
                         <Insets bottom="5.0" />
                      </StackPane.margin>
                   </Text>
+                  <Button fx:id="buttonQuitDesktop" mnemonicParsing="false" onAction="#quitOMCE" opacity="0.0" prefHeight="71.0" prefWidth="294.0" text="Button" />
                </children>
             </StackPane>
             <StackPane prefHeight="79.0" prefWidth="1271.0">
@@ -109,8 +109,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Button mnemonicParsing="false" prefHeight="71.0" prefWidth="294.0" text="Button" visible="false" />
-                  <Text fx:id="buttonDisconnect" fill="WHITE" onMouseClicked="#buttonDisconnectOnMouseClickedEvent" strokeType="OUTSIDE" strokeWidth="0.0" text="DISCONNECT" textAlignment="CENTER" wrappingWidth="269.62701416015625">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="DISCONNECT" textAlignment="CENTER" wrappingWidth="269.62701416015625">
                      <font>
                         <Font name="Avenir Next Condensed Bold" size="34.0" />
                      </font>
@@ -118,6 +117,7 @@
                         <Insets bottom="5.0" />
                      </StackPane.margin>
                   </Text>
+                  <Button fx:id="buttonDisconnect" mnemonicParsing="false" onAction="#discoOMCE" opacity="0.0" prefHeight="71.0" prefWidth="294.0" text="Button" />
                </children>
             </StackPane>
          </children>

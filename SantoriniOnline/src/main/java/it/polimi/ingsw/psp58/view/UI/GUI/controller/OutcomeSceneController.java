@@ -4,8 +4,11 @@ import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_NewGameResponseEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameOverEvent;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
+
 
 public class OutcomeSceneController {
 
@@ -14,10 +17,9 @@ public class OutcomeSceneController {
 
     //UI ELEMENTS
 
-    public Label labelTitle;
+    public Text labelTitle;
     public Label labelSubTitle;
     public Button buttonPlayAgain, buttonQuitDesktop, buttonDisconnect;
-
 
     /**
      * when the game is over
@@ -55,16 +57,22 @@ public class OutcomeSceneController {
         VC_NewGameResponseEvent turnDown = new VC_NewGameResponseEvent(gui.getUsername()+ " won't play again", false);
         gui.sendEvent(turnDown);
     }
-    public void buttonDesktopOnMouseClickedEvent() {
+    @FXML //quits to desktop
+    public void quitOMCE() {
+        System.out.println("DEBUG desktop clicked");
         sendClientTurnDownRequest();
         Platform.exit();
         System.exit(0);
     }
-    public void buttonPlayAgainOnMouseClickedEvent() {
+    @FXML //send an event to play another game
+    public void playOMCE() {
+        System.out.println("DEBUG play again clicked");
         VC_NewGameResponseEvent playWithMe = new VC_NewGameResponseEvent(gui.getUsername()+ " I wanna play a game with you", true);
         gui.sendEvent(playWithMe);
     }
-    public void buttonDisconnectOnMouseClickedEvent() {
+    @FXML //disconnects and back to starting scene
+    public void discoOMCE() {
+        System.out.println("DEBUG disconnect clicked");
         sendClientTurnDownRequest();
         gui.changeScene(gui.getStartingScene());
     }
