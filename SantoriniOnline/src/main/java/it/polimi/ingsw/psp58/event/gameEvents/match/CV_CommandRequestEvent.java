@@ -21,8 +21,8 @@ public class CV_CommandRequestEvent extends ViewGameEvent {
         this.availableActions = availableActions;
         this.availableBuildBlocksA = availableBuildA;
         this.availableMovementBlocksA = availableMovesA;
-        this.availableBuildBlocksB = availableBuildA;
-        this.availableMovementBlocksB = availableMovesA;
+        this.availableBuildBlocksB = availableBuildB;
+        this.availableMovementBlocksB = availableMovesB;
         this.actingPlayer = actingPlayer;
     }
 

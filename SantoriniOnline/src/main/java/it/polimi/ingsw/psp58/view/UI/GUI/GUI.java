@@ -1,6 +1,5 @@
 package it.polimi.ingsw.psp58.view.UI.GUI;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
@@ -18,18 +17,13 @@ import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.CommandGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.PlaceWorkerGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.WaitGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.PreGameSceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.StartingSceneController;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,6 +34,9 @@ public class GUI extends Application implements ViewListener {
 
     private Stage stage;
 
+    private Scene roomSizeScene;
+    private Stage roomSizeStage;
+    private RoomSizeSceneController roomSizeController;
     private final int socketPort = 7557;
 
     private String chosenIp;
@@ -57,7 +54,6 @@ public class GUI extends Application implements ViewListener {
     private Scene startingScene;
     private StartingSceneController startingSceneController;
 
-
     private Scene lobbyScene;
     private LobbySceneController lobbySceneController;
 
@@ -67,13 +63,12 @@ public class GUI extends Application implements ViewListener {
     private Scene preGameScene;
     private PreGameSceneController preGameSceneController;
 
-
-
+    private Scene outcomeScene;
+    private OutcomeSceneController outcomeSceneController;
 
     public static void main(String[] args) {
         Application.launch(args);
     }
-
 
 
     @Override
@@ -89,7 +84,6 @@ public class GUI extends Application implements ViewListener {
                 }
             }
         }
-
 
         stage = primaryStage;
         stage.setResizable(false);
@@ -122,15 +116,63 @@ public class GUI extends Application implements ViewListener {
                 getClass().getResource("/scenes/BoardScene.fxml"));
         boardScene = new Scene(boardLoader.load());
         boardSceneController = boardLoader.getController();
-        stage.setResizable(false);
         boardSceneController.setGui(this);
+
+        //set up the starting scene and controller
+        FXMLLoader outcomeSceneLoader = new FXMLLoader(
+                getClass().getResource("/scenes/Outcome.fxml"));
+        outcomeScene = new Scene(outcomeSceneLoader.load());
+
+        outcomeSceneController = outcomeSceneLoader.getController();
+
+        //RoomSizeRequest
 
         //starts with the startingScene
         stage.setTitle("Santorini Online");
         stage.setScene(startingScene);
+
         stage.show();
     }
 
+    @Override
+    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
+        //int number = Message.askRoomSize("You're the first player, choose the size of the room:", stage);
+        try {
+            prepareRoomSizeRequest();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        startingSceneController.complete();
+
+    }
+
+    public void prepareRoomSizeRequest() throws IOException {
+
+
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/scenes/RoomSizeScene.fxml"));
+        roomSizeScene = new Scene(loader.load());
+        roomSizeStage = new Stage();
+        roomSizeStage.setScene(roomSizeScene);
+        roomSizeStage.initModality(Modality.APPLICATION_MODAL);
+        roomSizeStage.initStyle(StageStyle.UNDECORATED);
+        roomSizeStage.resizableProperty().setValue(Boolean.FALSE);
+        roomSizeController = loader.getController();
+        roomSizeStage.initOwner(stage);
+        roomSizeStage.show();
+
+        roomSizeController.setGui(this);
+
+
+    }
+
+    public void roomSizeResponse(int result) {
+        roomSizeStage.close();
+        System.out.println(result);
+        VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", result);
+        sendEvent(responseEvent);
+
+    }
     public IslandData generateRandomIsland() throws InvalidBuildException, InvalidMovementException {
         Random random = new Random();
         CellClusterData[][] islandData = new CellClusterData[5][5];
@@ -159,7 +201,7 @@ public class GUI extends Application implements ViewListener {
                         cellCluster.build(BlockTypeEnum.DOME);
                         break;
                 }
-                if(random.nextInt(8)==1 && !cellCluster.isComplete()) cellCluster.build(BlockTypeEnum.DOME);
+                if (random.nextInt(8) == 1 && !cellCluster.isComplete()) cellCluster.build(BlockTypeEnum.DOME);
 
                 Worker worker = new Worker(Worker.IDs.A, "matteo");
 
@@ -179,8 +221,8 @@ public class GUI extends Application implements ViewListener {
                         worker.setColor(WorkerColors.BLUE);
                         break;
                 }
-                int [] array = cellCluster.toIntArray();
-                if (worker != null && array.length>0 && array[array.length - 1]!=4) cellCluster.addWorker(worker);
+                int[] array = cellCluster.toIntArray();
+                if (worker != null && array.length > 0 && array[array.length - 1] != 4) cellCluster.addWorker(worker);
                 islandData[x][y] = new CellClusterData(cellCluster);
             }
         }
@@ -194,6 +236,11 @@ public class GUI extends Application implements ViewListener {
 //        stage.close();
         stage.setTitle("Santorini Online");
         stage.setScene(scene);
+        if (scene.equals(preGameScene)) {
+            stage.setResizable(true);
+        } else {
+            stage.setResizable(false);
+        }
         stage.show();
     }
 
@@ -287,7 +334,7 @@ public class GUI extends Application implements ViewListener {
 
         getStartingSceneController().enableAllLoginFields();
         //notify the error on screen
-        Message.show(event.getErrorMessage(),stage);
+        Message.show(event.getErrorMessage(), stage);
 
         try {
             Thread.sleep(1000);
@@ -314,31 +361,24 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
-        Message.show(event.getDisconnectedUsername()+ event.getReason(), stage);
+        Message.show(event.getDisconnectedUsername() + event.getReason(), stage);
     }
 
-    @Override
-    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-        int number = Message.askRoomSize("You're the first player, choose the size of the room:", stage);
-        startingSceneController.complete();
-        System.out.println(number);
-        VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", number);
-        sendEvent(responseEvent);
-    }
+
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
         System.out.println("room received");
         lobbySceneController.update(event);
-        if (stage.getScene().equals(startingScene)) {
+        if (!stage.getScene().equals(lobbyScene)) {
             changeScene(lobbyScene);
         }
+
         preGameSceneController.update(event);
     }
 
     @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-        stage.setResizable(true);
         System.out.println("I have to choose my card!");
         preGameSceneController.update(event);
     }
@@ -351,14 +391,11 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
-        boardSceneController.setStateInstance(new PlaceWorkerGameState(event));
-        boardSceneController.setWorkerOnAction(event.getWorkerToPlace());
+        boardSceneController.handle(event);
     }
 
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
-        stage.setResizable(true);
-        stage.setMaximized(true);
         System.out.println("I'm the challenger");
         preGameSceneController.update(event);
         changeScene(preGameScene);
@@ -366,65 +403,79 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        stage.setResizable(true);
-        if(event.getWaitCode().equals("CHALLENGERS_CARDS")){
+        if (event.getWaitCode().equals("CHALLENGERS_CARDS")) {
+            stage.setResizable(true);
             stage.setMaximized(true);
         }
         System.out.println("Wait received");
         preGameSceneController.update(event);
         if (!stage.getScene().equals(boardScene)) {
             changeScene(preGameScene);
+        } else if (stage.getScene().equals(boardScene)) {
+            boardSceneController.handle(event);
         }
     }
 
+    /* called when it's time to switch to board scene, locks view for everyone */
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
         stage.setResizable(false);
         System.out.println("DEBUG: worker placement update event has arrived");
+        boardSceneController.handle(event);
+        boardSceneController.init(event);
         changeScene(boardScene);
-        boardSceneController.setStateInstance(new WaitGameState());
-        boardSceneController.init(event, username);
+    }
+
+    @Override
+    public void handleEvent(CV_CommandExecutedGameEvent event) {
+        boardSceneController.handle(event);
     }
 
     @Override
     public void handleEvent(CV_CommandRequestEvent event) {
-        boardSceneController.setStateInstance(new CommandGameState(event));
-        if(!boardSceneController.hasAlreadyMadeAMove()){
-            boardSceneController.setCurrentState(GameState.SELECT_WORKER);
-        }
+        boardSceneController.handle(event);
     }
 
     @Override
     public void handleEvent(CV_GameOverEvent event) {
+        System.out.println("DEBUG: game is over, loading outcome scene.");
+        boardSceneController.setWaitingView();
+        outcomeSceneController.initAndFill(event, this); //TODO is gui necessary?
+        changeScene(outcomeScene);
+
 
     }
 
+    /**
+     * notifies that the game is started
+     *
+     * @param event sent by room when the game starts after pregame, contains first username (0) in turn sequence
+     */
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
-
+        boardSceneController.handle(event);
     }
 
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
-        boardSceneController.updateTurnSequence(event.getTurnRotation());
-        if(event.getCurrentPlayerUsername().equals(username)){
-            Message.show("IT'S YOUR TURN!", stage);
-            boardSceneController.setAlreadyMadeAMoveThisTurn(false);
-        }
+        boardSceneController.handle(event);
     }
 
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
-        Gson gson = new Gson();
-        final IslandData island = gson.fromJson(event.getNewIsland(), IslandData.class);
-       boardSceneController.updateIsland(island);
+        boardSceneController.handle(event);
     }
 
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
-        if(!event.getActingPlayer().equals(username)){
-            Message.show(event.getEventDescription().toUpperCase() +" " + event.getActingPlayer().toUpperCase(), stage);
+        if (!event.getActingPlayer().equals(username)) {
+            boardSceneController.addMessageToQueueList(event.getEventDescription().toUpperCase() + " " + event.getActingPlayer().toUpperCase());
         }
+    }
+
+    @Override
+    public void handleEvent(CV_TurnInfoEvent event) {
+        boardSceneController.handle(event);
     }
 
 }

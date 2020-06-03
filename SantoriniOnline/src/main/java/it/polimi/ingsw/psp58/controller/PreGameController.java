@@ -303,10 +303,14 @@ public class PreGameController extends EventSource implements ControllerListener
         int x = event.getPosX();
         int y = event.getPosY();
 
-        if (worker.getPosition() == null) {
-            actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
+        if (worker != null) {
+            if (worker.getPosition() == null) {
+                actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
+            } else {
+                throw new InvalidMovementException("Worker already placed");
+            }
         } else {
-            throw new InvalidMovementException("Worker already placed");
+            throw new IllegalArgumentException("Worker not found");
         }
     }
 
@@ -371,6 +375,14 @@ public class PreGameController extends EventSource implements ControllerListener
             notifyAllObserverByType(VIEW, requestEvent);
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException();
+        }catch (IllegalArgumentException e){
+            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("Worker not found", event.getActingPlayer());
+            notifyAllObserverByType(VIEW, errorEvent);
+
+            printErrorLogMessage(e.toString() + " - worker not found - A new PlacementRequest has been send.");
+
+            CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
+            notifyAllObserverByType(VIEW, requestEvent);
         }
     }
 
