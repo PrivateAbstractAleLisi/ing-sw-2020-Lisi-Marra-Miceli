@@ -17,14 +17,13 @@ import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.LobbySceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.PreGameSceneController;
-import it.polimi.ingsw.psp58.view.UI.GUI.controller.StartingSceneController;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +34,9 @@ public class GUI extends Application implements ViewListener {
 
     private Stage stage;
 
+    private Scene roomSizeScene;
+    private Stage roomSizeStage;
+    private RoomSizeSceneController roomSizeController;
     private final int socketPort = 7557;
 
     private String chosenIp;
@@ -60,6 +62,9 @@ public class GUI extends Application implements ViewListener {
 
     private Scene preGameScene;
     private PreGameSceneController preGameSceneController;
+
+    private Scene outcomeScene;
+    private OutcomeSceneController outcomeSceneController;
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -114,13 +119,61 @@ public class GUI extends Application implements ViewListener {
         boardSceneController = boardLoader.getController();
         boardSceneController.setGui(this);
 
+        //set up the starting scene and controller
+        FXMLLoader outcomeSceneLoader = new FXMLLoader(
+                getClass().getResource("/scenes/Outcome.fxml"));
+        outcomeScene = new Scene(outcomeSceneLoader.load());
+
+        outcomeSceneController = outcomeSceneLoader.getController();
+
+        //RoomSizeRequest
 
         //starts with the startingScene
         stage.setTitle("Santorini Online");
         stage.setScene(startingScene);
+
         stage.show();
     }
 
+    @Override
+    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
+        //int number = Message.askRoomSize("You're the first player, choose the size of the room:", stage);
+        try {
+            prepareRoomSizeRequest();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        startingSceneController.complete();
+
+    }
+
+    public void prepareRoomSizeRequest() throws IOException {
+
+
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/scenes/RoomSizeScene.fxml"));
+        roomSizeScene = new Scene(loader.load());
+        roomSizeStage = new Stage();
+        roomSizeStage.setScene(roomSizeScene);
+        roomSizeStage.initModality(Modality.APPLICATION_MODAL);
+        roomSizeStage.initStyle(StageStyle.UNDECORATED);
+        roomSizeStage.resizableProperty().setValue(Boolean.FALSE);
+        roomSizeController = loader.getController();
+        roomSizeStage.initOwner(stage);
+        roomSizeStage.show();
+
+        roomSizeController.setGui(this);
+
+
+    }
+
+    public void roomSizeResponse(int result) {
+        roomSizeStage.close();
+        System.out.println(result);
+        VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", result);
+        sendEvent(responseEvent);
+
+    }
     public IslandData generateRandomIsland() throws InvalidBuildException, InvalidMovementException {
         Random random = new Random();
         CellClusterData[][] islandData = new CellClusterData[5][5];
@@ -312,22 +365,16 @@ public class GUI extends Application implements ViewListener {
         Message.show(event.getDisconnectedUsername() + event.getReason(), stage);
     }
 
-    @Override
-    public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-        int number = Message.askRoomSize("You're the first player, choose the size of the room:", stage);
-        startingSceneController.complete();
-        System.out.println(number);
-        VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", number);
-        sendEvent(responseEvent);
-    }
+
 
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
         System.out.println("room received");
         lobbySceneController.update(event);
-        if (stage.getScene().equals(startingScene)) {
+        if (!stage.getScene().equals(lobbyScene)) {
             changeScene(lobbyScene);
         }
+
         preGameSceneController.update(event);
     }
 
@@ -391,6 +438,11 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_GameOverEvent event) {
+        System.out.println("DEBUG: game is over, loading outcome scene.");
+        boardSceneController.setWaitingView();
+        outcomeSceneController.initAndFill(event, this); //TODO is gui necessary?
+        changeScene(outcomeScene);
+
 
     }
 
