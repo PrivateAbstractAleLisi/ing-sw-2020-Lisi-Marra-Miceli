@@ -83,4 +83,20 @@ public class VC_PlayerCommandGameEvent extends ControllerGameEvent {
                 ", workerID=" + workerID +
                 ", BlockToBuild=" + block;
     }
+
+    public boolean isCommandEventValid() {
+        boolean isUsernameValid = getFromPlayer() != null ;
+        switch (getCommand()) {
+            case MOVE:
+            case BUILD:
+                boolean isWorkerValid = getWorkerID() != null;
+                boolean isXPositionValid = getPosition()[0] >= 0 && getPosition()[0] < 5;
+                boolean isYPositionValid = getPosition()[1] >= 0 && getPosition()[1] < 5;
+                return isUsernameValid && isWorkerValid && isXPositionValid && isYPositionValid;
+            case PASS:
+                return isUsernameValid;
+            default:
+                return false;
+        }
+    }
 }

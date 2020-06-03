@@ -11,6 +11,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
@@ -23,8 +24,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
-
 public class CLIView extends EventSource implements ViewListener {
 
     //IN-OUT DATA FROM CONSOLE
@@ -32,13 +31,14 @@ public class CLIView extends EventSource implements ViewListener {
     private Scanner input;
     private SantoriniClient client;
     private String myUsername;
+    private String[] args;
+    private boolean enablePing=true;
 
-    public CLIView(SantoriniClient client) {
+    public CLIView(String[] args) {
         this.output = System.out;
         this.input = new Scanner(System.in);
-        this.client = client;
+        this.args = args.clone();
         //listening to each other
-        client.attachListenerByType(VIEW, this);
     }
 
 
@@ -46,6 +46,39 @@ public class CLIView extends EventSource implements ViewListener {
 
 
     public void start() {
+
+        if (args != null) {
+            for (String currentArgument : args) {
+                switch (currentArgument) {
+                    case "-ping off":
+                        enablePing = false;
+                        break;
+                }
+            }
+        }
+
+        MessageUtility.bigTitle();
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+            MessageUtility.online();
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(ANSIColors.YELLOW_UNDERLINED + "Press Enter to Start:" + ANSIColors.ANSI_RESET + " ");
+        input.nextLine();
+
+        //System.out.println("WELCOME, Client Started.");
+        CLIView.clearScreen();
+
+        String IP = askIPAddress();
+
+        //set up the client
+        client = new SantoriniClient(this, IP, enablePing);
+        client.begin();
+
+        System.out.println("CLIENT: connected ");
 
         clearScreen();
         //MessageUtility.displayTitle();
@@ -60,9 +93,24 @@ public class CLIView extends EventSource implements ViewListener {
         new Thread(client).start();
     }
 
+    private String askIPAddress() {
+        System.out.println("Insert server IP Address (press ENTER for localhost): ");
+        input.reset();
+        String IP = input.nextLine();
+        if (IP.equals("")) {
+            IP = "127.0.0.1";
+        }
+        while (!checkValidIP(IP)) {
+            MessageUtility.displayErrorMessage("⚠ Invalid IP: please insert a valid one!");
+            IP = input.nextLine();
+        }
+        return IP;
+    }
+
     private String askUsername() {
 
         input = new Scanner(System.in);
+        input.reset();
 
         String str = null;
         output.println("Insert a valid username ");
@@ -81,8 +129,9 @@ public class CLIView extends EventSource implements ViewListener {
     }
 
     private int askGameRoomSize() {
+
         System.out.print("You're the first player: ");
-        Integer sizeIn = readRoomSize();
+        int sizeIn = readRoomSize();
 
         while (sizeIn < 0) {
             sizeIn = readRoomSize();
@@ -91,22 +140,50 @@ public class CLIView extends EventSource implements ViewListener {
         return sizeIn;
     }
 
-    private int readRoomSize() {
-        input = new Scanner(System.in);
-        Integer sizeIn = null;
-        Range validSize = new Range(2, 3);
-        System.out.println("Please choose a valid room size (2-3):");
-        try {
-            sizeIn = input.nextInt();
-            while (!validSize.contains(sizeIn)) {
-                System.err.println("Invalid size: please enter 2 or 3");
-                sizeIn = input.nextInt();
+    private int askIntToUser() {
+
+        boolean continueInput = true;
+        int re = -1;
+        do {
+            input = new Scanner(System.in);
+            input.reset();
+            try {
+                re = input.nextInt();
+                continueInput = false;
+
+            } catch (InputMismatchException ex) {
+                MessageUtility.displayErrorMessage("please insert a valid integer");
             }
-            MessageUtility.printValidMessage("room size is valid!");
-            return sizeIn;
-        } catch (InputMismatchException e) {
-            System.err.println("Please insert a valid NUMBER");
-        }
+
+
+        } while (continueInput);
+        return re;
+    }
+
+    private int readRoomSize() {
+
+
+        boolean continueInput = true;
+        do {
+            input = new Scanner(System.in);
+            input.reset();
+            input.reset();
+            Integer sizeIn = null;
+            Range validSize = new Range(2, 3);
+            System.out.println("Please choose a valid room size (2-3):");
+            try {
+                sizeIn = input.nextInt();
+                while (!validSize.contains(sizeIn)) {
+                    System.err.println("Invalid size: please enter 2 or 3");
+                    sizeIn = input.nextInt();
+                }
+                MessageUtility.printValidMessage("room size is valid!");
+                continueInput = false;
+                return sizeIn;
+            } catch (InputMismatchException e) {
+                System.err.println("Please insert a valid NUMBER");
+            }
+        } while (continueInput);
 
         return -1;
     }
@@ -114,20 +191,25 @@ public class CLIView extends EventSource implements ViewListener {
 
     //USERNAME VALIDATION:
     private void checkUsernameOnSever() {
-
         //TODO sends an it.polimi.ingsw.sp58.event to the server that the username has been inserted, the server checks if it's valid
     }
 
 
-    private boolean checkLocalUsernameAlphaNumeric(String username) {
+    public static boolean checkLocalUsernameAlphaNumeric(String username) {
         boolean notValid = (username == null || username.length() < 3 || username.length() > 16);
         if (notValid) {
             return false;
         } else {
             return username.matches("^[a-zA-Z0-9]*$");
-
         }
+    }
 
+    public static boolean checkValidIP(String IP) {
+        boolean notValid = (IP == null || IP.length() < 7 || IP.length() > 15);
+        if (notValid) return false;
+        else {
+            return IP.matches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+        }
     }
 
 
@@ -196,8 +278,21 @@ public class CLIView extends EventSource implements ViewListener {
 
         //read 3 numbers
         for (int i = 0; i < roomSize; i++) {
-            Integer readCard = input.nextInt();
-            choosenCardsIndex[i] = readCard;
+            Integer readCard;
+            boolean continueReading = true;
+            do {
+                input = new Scanner(System.in);
+                input.reset();
+                try {
+                    readCard = input.nextInt();
+                    choosenCardsIndex[i] = readCard;
+                    continueReading = false;
+                } catch (InputMismatchException e) {
+                    MessageUtility.displayErrorMessage("please insert a valid integer");
+                }
+            }
+            while (continueReading);
+
         }
 
         while (!areInsertedCardsValid(choosenCardsIndex)) {
@@ -208,8 +303,20 @@ public class CLIView extends EventSource implements ViewListener {
 
             //read 3 numbers
             for (int i = 0; i < roomSize; i++) {
-                Integer readCard = input.nextInt();
-                choosenCardsIndex[i] = readCard;
+                Integer readCard;
+                boolean continueInput = true;
+                do {
+                    input = new Scanner(System.in);
+                    input.reset();
+                    try {
+                        readCard = input.nextInt();
+                        continueInput = false;
+                        choosenCardsIndex[i] = readCard;
+                    } catch (InputMismatchException ex) {
+                        System.out.println("please insert a valid integer");
+                    }
+
+                } while (continueInput);
             }
 
         }
@@ -361,13 +468,21 @@ public class CLIView extends EventSource implements ViewListener {
         Integer id;
 
         //read from the console
-        input = new Scanner(System.in);
-        id = input.nextInt();
+
+        boolean continueInput = true;
+
+
+        //id = input.nextInt();
+        id = askIntToUser();
+        continueInput = false;
 
         while (!isSelectedCardValid(id, event.getAvailableCards())) {
             MessageUtility.displayErrorMessage(id + " is not a valid card number");
+            input = new Scanner(System.in);
+            input.reset();
             id = input.nextInt();
         }
+
 
         CardEnum selected = CardEnum.getValueFromInt(id);
         MessageUtility.printValidMessage("You made your choice");
@@ -388,9 +503,24 @@ public class CLIView extends EventSource implements ViewListener {
     }
 
     @Override
+    public void handleEvent(CV_WorkerPlacementGameEvent event) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_CommandExecutedGameEvent event) {
+
+    }
+
+    @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
         System.out.println("\n⌛   WAITING   ⌛");
         System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
+    }
+
+    @Override
+    public void handleEvent(CV_TurnInfoEvent CVTurnInfoEvent) {
+
     }
 
 
@@ -588,16 +718,16 @@ public class CLIView extends EventSource implements ViewListener {
         int x, y;
         System.out.println("It's your turn to place your " + workerFirstOrSecond + " worker");
         System.out.print("Please enter a row:\t");
-        x = input.nextInt();
+        x = askIntToUser();
         System.out.print("\tand a column:\t");
-        y = input.nextInt();
+        y = askIntToUser();
 
         while (!checkCellInput(x, y)) {
             MessageUtility.displayErrorMessage("Invalid row or column");
             System.out.print("Please enter a row:\t");
-            x = input.nextInt();
+            x = askIntToUser();
             System.out.print("\tand a column:\t");
-            y = input.nextInt();
+            y = askIntToUser();
 
         }
 
@@ -629,7 +759,7 @@ public class CLIView extends EventSource implements ViewListener {
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
 
-        //TODO BIG TITLE
+
         clearScreen();
         System.out.println("GAME IS STARTING");
 
@@ -714,8 +844,6 @@ public class CLIView extends EventSource implements ViewListener {
         output.println(event.getReason());
         System.exit(0);
     }
-
-
 
 
 }

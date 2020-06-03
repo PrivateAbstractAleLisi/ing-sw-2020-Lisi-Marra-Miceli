@@ -2,6 +2,8 @@ package it.polimi.ingsw.psp58.event.core;
 
 
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
+import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,11 @@ public abstract class EventSource {
         switch (type){
             case VIEW:
                  for(ViewListener viewListener : viewListeners) {
-                     event.notifyHandler(viewListener);
+                    if (viewListener instanceof GUI){
+                        Platform.runLater(() -> event.notifyHandler(viewListener));
+                    } else {
+                        event.notifyHandler(viewListener);
+                    }
                  }
                  break;
             case CONTROLLER:
