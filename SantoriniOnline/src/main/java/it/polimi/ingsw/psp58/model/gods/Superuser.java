@@ -1,21 +1,20 @@
 package it.polimi.ingsw.psp58.model.gods;
 
-import it.polimi.ingsw.psp58.auxiliary.Range;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.NoRemainingBlockException;
 import it.polimi.ingsw.psp58.exceptions.WinningException;
-import it.polimi.ingsw.psp58.model.*;
+import it.polimi.ingsw.psp58.model.BehaviourManager;
+import it.polimi.ingsw.psp58.model.Card;
+import it.polimi.ingsw.psp58.model.CardEnum;
+import it.polimi.ingsw.psp58.model.Player;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
-import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
-
-import static java.lang.StrictMath.sqrt;
 
 public class Superuser extends Card {
     public Superuser(Player p) {
         super(p);
+        name=CardEnum.SUPERUSER;
     }
 
     @Override
