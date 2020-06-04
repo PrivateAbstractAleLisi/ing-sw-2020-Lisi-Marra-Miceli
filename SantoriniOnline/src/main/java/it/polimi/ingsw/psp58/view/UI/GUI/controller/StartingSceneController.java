@@ -4,12 +4,11 @@ import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEven
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import org.w3c.dom.events.Event;
 
 import java.io.IOException;
 
@@ -17,11 +16,16 @@ public class StartingSceneController {
     private GUI gui;
 
     //LOGIN ELEMENTS
-    public TextField ipField = null;
-    public TextField userField = null;
-    public Button connectButton = null;
-    public Text loadText = null;
-    public ProgressBar loadProgress = null;
+    @FXML
+    private  TextField ipField = null;
+    @FXML
+    private  TextField userField = null;
+    @FXML
+    private  Button connectButton = null;
+    @FXML
+    private  Text loadText = null;
+    @FXML
+    private  ProgressBar loadProgress = null;
 
 
     public void start() throws IOException {

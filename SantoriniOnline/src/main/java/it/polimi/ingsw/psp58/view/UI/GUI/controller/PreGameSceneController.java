@@ -5,6 +5,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -38,46 +39,66 @@ public class PreGameSceneController {
      */
 
     //CENTER
-    public Text upperText;
-    public HBox extWaitHBox;//InvisibleByDefault
-    public HBox waitHBox;
+    @FXML
+    private HBox extWaitHBox;//InvisibleByDefault
+    @FXML
+    private Text upperText;
+    @FXML
+    private HBox waitHBox;
 
     //Challenger
-    public ScrollPane challengerScrollPane; //InvisibleByDefault
-    public FlowPane challengerCardsFlowPane;
+    @FXML
+    private ScrollPane challengerScrollPane; //InvisibleByDefault
+    @FXML
+    private FlowPane challengerCardsFlowPane;
 
     //CardChoice
-    public TilePane cardChoiceTilePane;//InvisibleByDefault
-    public HBox cardChoiceHBox;
+    @FXML
+    private TilePane cardChoiceTilePane;//InvisibleByDefault
+    @FXML
+    private HBox cardChoiceHBox;
     //CardsButton
-    public VBox cardChoice_VBox1;//InvisibleByDefault
-    public VBox cardChoice_VBox2;//InvisibleByDefault
-    public VBox cardChoice_VBox3;//InvisibleByDefault
+    @FXML
+    private VBox cardChoice_VBox1;//InvisibleByDefault
+    @FXML
+    private VBox cardChoice_VBox2;//InvisibleByDefault
+    @FXML
+    private VBox cardChoice_VBox3;//InvisibleByDefault
 
 
     //FirstPlayerChoice
-    public TilePane challengerFirstPlayerPane;//InvisibleByDefault
-    public HBox challengerFirstPlayerHBox;
-    public VBox challengerFirstPlayerVBox1;//InvisibleByDefault
-    public VBox challengerFirstPlayerVBox2;//InvisibleByDefault
-    public VBox challengerFirstPlayerVBox3;//InvisibleByDefault
+    @FXML
+    private TilePane challengerFirstPlayerPane;//InvisibleByDefault
+    @FXML
+    private HBox challengerFirstPlayerHBox;
+    @FXML
+    private VBox challengerFirstPlayerVBox1;//InvisibleByDefault
+    @FXML
+    private VBox challengerFirstPlayerVBox2;//InvisibleByDefault
+    @FXML
+    private VBox challengerFirstPlayerVBox3;//InvisibleByDefault
 
     //LEFT
-    public HBox playerName_HBox1;
-    public HBox playerName_HBox2;
-    public HBox playerName_HBox3;
+    @FXML
+    private HBox playerName_HBox1;
+    @FXML
+    private HBox playerName_HBox2;
+    @FXML
+    private HBox playerName_HBox3;
 
     //RIGHT
-    public Button confirmButton;
-    public HBox rightChoiceHBox1;
-    public HBox rightChoiceHBox2;
-    public HBox rightChoiceHBox3;
+    @FXML
+    private Button confirmButton;
+    @FXML
+    private HBox rightChoiceHBox1;
+    @FXML
+    private HBox rightChoiceHBox2;
+    @FXML
+    private HBox rightChoiceHBox3;
+
     private ArrayList<HBox> rightHBoxes;
     private int indexFirstFreeHBox;
     private int actualEnableHBox;
-
-    //BOTTOM
-    public Button superUserButton;
 
     //Maps
     private Map<HBox, CardEnum> challengerCardMapByHBox;
