@@ -3,13 +3,16 @@ package it.polimi.ingsw.psp58.view.UI.GUI;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.model.WorkerColors;
@@ -173,6 +176,7 @@ public class GUI extends Application implements ViewListener {
         sendEvent(responseEvent);
 
     }
+
     public IslandData generateRandomIsland() throws InvalidBuildException, InvalidMovementException {
         Random random = new Random();
         CellClusterData[][] islandData = new CellClusterData[5][5];
@@ -365,7 +369,6 @@ public class GUI extends Application implements ViewListener {
     }
 
 
-
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
         System.out.println("room received");
@@ -375,6 +378,16 @@ public class GUI extends Application implements ViewListener {
         }
 
         preGameSceneController.update(event);
+    }
+
+    @Override
+    public void handleEvent(CV_PreGameStartedGameEvent event) {
+        System.out.println("Pregame started, Challenger: " + event.getChallenger());
+    }
+
+    @Override
+    public void handleEvent(CV_PreGameErrorGameEvent event) {
+        Message.show(event.getEventDescription(), stage);
     }
 
     @Override

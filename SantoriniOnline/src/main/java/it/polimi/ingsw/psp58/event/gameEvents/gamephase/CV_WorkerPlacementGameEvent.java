@@ -1,7 +1,6 @@
-package it.polimi.ingsw.psp58.event.gamephase;
+package it.polimi.ingsw.psp58.event.gameEvents.gamephase;
 
 import it.polimi.ingsw.psp58.event.core.ViewListener;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.WorkerColors;

@@ -4,12 +4,13 @@ import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_IslandUpdateEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.VC_PlayerCommandGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.exceptions.InvalidCardException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.model.BoardManager;
@@ -58,6 +59,10 @@ public class PreGameController extends EventSource implements ControllerListener
         int number = random.nextInt(room.getSIZE());
         List<String> players = room.getActiveUsers();
         challenger = players.get(number);
+
+        CV_PreGameStartedGameEvent preGameStartedGameEvent = new CV_PreGameStartedGameEvent("",challenger,players);
+        notifyAllObserverByType(VIEW, preGameStartedGameEvent);
+
         for (String recipient : players) {
             if (!recipient.equals(challenger)) {
                 CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is the challenger, he's now choosing the cards", challenger, recipient, "CHALLENGER_CARDS");
@@ -114,7 +119,7 @@ public class PreGameController extends EventSource implements ControllerListener
             try {
                 boardManager.selectCard(card);
             } catch (InvalidCardException e) {
-                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid cards chosen!", challenger);
+                CV_PreGameErrorGameEvent errorEvent = new CV_PreGameErrorGameEvent("invalid cards chosen!", challenger);
                 notifyAllObserverByType(VIEW, errorEvent);
 
                 CV_ChallengerChosenEvent requestEvent = new CV_ChallengerChosenEvent("", room.getSIZE());
@@ -122,7 +127,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
                 printLogMessage(challenger.toUpperCase() + " has selected invalid cards. New request sent!");
             } catch (LimitExceededException e) {
-                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("too many cards selected!", challenger);
+                CV_PreGameErrorGameEvent errorEvent = new CV_PreGameErrorGameEvent("too many cards selected!", challenger);
                 notifyAllObserverByType(VIEW, errorEvent);
 
                 CV_ChallengerChosenEvent requestEvent = new CV_ChallengerChosenEvent("", room.getSIZE());
@@ -184,7 +189,7 @@ public class PreGameController extends EventSource implements ControllerListener
                 ChallengerChooseFirstPlayer();
             }
         } catch (InvalidCardException e) {
-            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid card chosen!", challenger);
+            CV_PreGameErrorGameEvent errorEvent = new CV_PreGameErrorGameEvent("invalid card chosen!", challenger);
             notifyAllObserverByType(VIEW, errorEvent);
 
             CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, alreadyTakenCards, event.getPlayer());
@@ -366,7 +371,7 @@ public class PreGameController extends EventSource implements ControllerListener
             }
 
         } catch (InvalidMovementException e) {
-            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid placement of the worker!", event.getActingPlayer());
+            CV_PreGameErrorGameEvent errorEvent = new CV_PreGameErrorGameEvent("invalid placement of the worker!", event.getActingPlayer());
             notifyAllObserverByType(VIEW, errorEvent);
 
             printErrorLogMessage(e.toString() + " - A new PlacementRequest has been send.");
@@ -376,7 +381,7 @@ public class PreGameController extends EventSource implements ControllerListener
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException();
         }catch (IllegalArgumentException e){
-            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("Worker not found", event.getActingPlayer());
+            CV_PreGameErrorGameEvent errorEvent = new CV_PreGameErrorGameEvent("Worker not found", event.getActingPlayer());
             notifyAllObserverByType(VIEW, errorEvent);
 
             printErrorLogMessage(e.toString() + " - worker not found - A new PlacementRequest has been send.");

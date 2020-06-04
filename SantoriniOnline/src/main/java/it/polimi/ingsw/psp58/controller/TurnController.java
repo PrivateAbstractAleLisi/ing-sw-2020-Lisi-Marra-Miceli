@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerCardsChosenEvent;

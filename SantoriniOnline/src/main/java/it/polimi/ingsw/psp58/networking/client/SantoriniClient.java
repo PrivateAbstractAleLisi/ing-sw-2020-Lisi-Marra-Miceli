@@ -1,15 +1,11 @@
 package it.polimi.ingsw.psp58.networking.client;
 
-import it.polimi.ingsw.psp58.auxiliary.ANSIColors;
 import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.PingEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.connection.PingEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
-import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.MessageUtility;
-import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
-import javafx.application.Application;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -19,8 +15,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
