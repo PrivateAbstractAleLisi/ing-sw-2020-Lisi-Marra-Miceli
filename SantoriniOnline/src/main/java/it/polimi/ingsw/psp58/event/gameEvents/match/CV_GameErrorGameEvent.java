@@ -3,16 +3,21 @@ package it.polimi.ingsw.psp58.event.gameEvents.match;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
-public class CV_GameStartedGameEvent extends ViewGameEvent {
-    String firstPlayer;
+public class CV_GameErrorGameEvent extends ViewGameEvent {
 
-    public CV_GameStartedGameEvent(String description, String firstPlayer) {
+    private final String toUsername;
+
+    public CV_GameErrorGameEvent(String description, String toUsername) {
         super(description);
-        this.firstPlayer = firstPlayer;
+        this.toUsername = toUsername;
     }
 
     @Override
     public void notifyHandler(ViewListener listener) {
         listener.handleEvent(this);
+    }
+
+    public String getToUsername() {
+        return toUsername;
     }
 }

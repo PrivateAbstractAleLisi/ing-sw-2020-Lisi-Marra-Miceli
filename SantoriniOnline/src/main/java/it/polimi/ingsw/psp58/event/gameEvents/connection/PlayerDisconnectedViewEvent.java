@@ -1,6 +1,7 @@
-package it.polimi.ingsw.psp58.event.gameEvents;
+package it.polimi.ingsw.psp58.event.gameEvents.connection;
 
 import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 public class PlayerDisconnectedViewEvent extends ViewGameEvent {
 

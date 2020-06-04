@@ -1,10 +1,9 @@
 package it.polimi.ingsw.psp58.controller;
 
 import it.polimi.ingsw.psp58.event.core.EventSource;
-import it.polimi.ingsw.psp58.event.core.ListenerType;
-import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_RoomUpdateGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
 import it.polimi.ingsw.psp58.model.BoardManager;
 import it.polimi.ingsw.psp58.model.Player;
