@@ -4,7 +4,7 @@ import it.polimi.ingsw.psp58.controller.Lobby;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.PingEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.connection.PingEvent;
 import it.polimi.ingsw.psp58.view.VirtualView;
 
 import java.io.*;

@@ -1,10 +1,11 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_RoomUpdateGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -38,46 +39,66 @@ public class PreGameSceneController {
      */
 
     //CENTER
-    public Text upperText;
-    public HBox extWaitHBox;//InvisibleByDefault
-    public HBox waitHBox;
+    @FXML
+    private HBox extWaitHBox;//InvisibleByDefault
+    @FXML
+    private Text upperText;
+    @FXML
+    private HBox waitHBox;
 
     //Challenger
-    public ScrollPane challengerScrollPane; //InvisibleByDefault
-    public FlowPane challengerCardsFlowPane;
+    @FXML
+    private ScrollPane challengerScrollPane; //InvisibleByDefault
+    @FXML
+    private FlowPane challengerCardsFlowPane;
 
     //CardChoice
-    public TilePane cardChoiceTilePane;//InvisibleByDefault
-    public HBox cardChoiceHBox;
+    @FXML
+    private TilePane cardChoiceTilePane;//InvisibleByDefault
+    @FXML
+    private HBox cardChoiceHBox;
     //CardsButton
-    public VBox cardChoice_VBox1;//InvisibleByDefault
-    public VBox cardChoice_VBox2;//InvisibleByDefault
-    public VBox cardChoice_VBox3;//InvisibleByDefault
+    @FXML
+    private VBox cardChoice_VBox1;//InvisibleByDefault
+    @FXML
+    private VBox cardChoice_VBox2;//InvisibleByDefault
+    @FXML
+    private VBox cardChoice_VBox3;//InvisibleByDefault
 
 
     //FirstPlayerChoice
-    public TilePane challengerFirstPlayerPane;//InvisibleByDefault
-    public HBox challengerFirstPlayerHBox;
-    public VBox challengerFirstPlayerVBox1;//InvisibleByDefault
-    public VBox challengerFirstPlayerVBox2;//InvisibleByDefault
-    public VBox challengerFirstPlayerVBox3;//InvisibleByDefault
+    @FXML
+    private TilePane challengerFirstPlayerPane;//InvisibleByDefault
+    @FXML
+    private HBox challengerFirstPlayerHBox;
+    @FXML
+    private VBox challengerFirstPlayerVBox1;//InvisibleByDefault
+    @FXML
+    private VBox challengerFirstPlayerVBox2;//InvisibleByDefault
+    @FXML
+    private VBox challengerFirstPlayerVBox3;//InvisibleByDefault
 
     //LEFT
-    public HBox playerName_HBox1;
-    public HBox playerName_HBox2;
-    public HBox playerName_HBox3;
+    @FXML
+    private HBox playerName_HBox1;
+    @FXML
+    private HBox playerName_HBox2;
+    @FXML
+    private HBox playerName_HBox3;
 
     //RIGHT
-    public Button confirmButton;
-    public HBox rightChoiceHBox1;
-    public HBox rightChoiceHBox2;
-    public HBox rightChoiceHBox3;
+    @FXML
+    private Button confirmButton;
+    @FXML
+    private HBox rightChoiceHBox1;
+    @FXML
+    private HBox rightChoiceHBox2;
+    @FXML
+    private HBox rightChoiceHBox3;
+
     private ArrayList<HBox> rightHBoxes;
     private int indexFirstFreeHBox;
     private int actualEnableHBox;
-
-    //BOTTOM
-    public Button superUserButton;
 
     //Maps
     private Map<HBox, CardEnum> challengerCardMapByHBox;
@@ -137,24 +158,23 @@ public class PreGameSceneController {
         upperText.setText(title.toUpperCase());
     }
 
-    /**
-     * Add the player to the left list of Players
-     *
-     * @param event used to fill the list
-     */
-    public void update(CV_RoomUpdateGameEvent event) {
+    public void update(CV_PreGameStartedGameEvent event) {
+        setLeftPlayerNames(event);
+
+        challengerUsername=event.getChallenger().toLowerCase();
+        setLeftChallenger();
+    }
+
+    private void setLeftPlayerNames (CV_PreGameStartedGameEvent event){
         //Create a Queue
         LinkedList<HBox> playerNameHBoxes = new LinkedList<>();
         playerNameHBoxes.add(playerName_HBox1);
         playerNameHBoxes.add(playerName_HBox2);
         playerNameHBoxes.add(playerName_HBox3);
 
-        int actualPlayersInRoom = event.getUsersInRoom().length;
+        int actualPlayersInRoom = event.getPlayersList().size();
 
-        ArrayList<String> playerNames = new ArrayList<>();
-        for (int i = 0; i < actualPlayersInRoom; i++) {
-            playerNames.add(event.getUsersInRoom()[i]);
-        }
+        List<String> playerNames = event.getPlayersList();
         int index = 0;
         for (String player : playerNames) {
             //For each player i add the name to the left
@@ -209,9 +229,7 @@ public class PreGameSceneController {
         switch (event.getWaitCode()) {
             case "CHALLENGER_CARDS":
                 STATE = "WAIT_CHALLENGER_CARDS";
-                challengerUsername = event.getActingPlayer().toLowerCase();
                 waitText.setText(event.getActingPlayer().toUpperCase() + " is the challenger and he's choosing the cards.\nPlease wait");
-                setLeftChallenger();
                 break;
             case "PLAYER_CARD":
                 STATE = "WAIT_PLAYER_CARD";
@@ -320,8 +338,6 @@ public class PreGameSceneController {
      */
     public void update(CV_ChallengerChosenEvent event) {
         STATE = "CHALLENGER_CARDS_CHOICE";
-        challengerUsername = gui.getUsername();
-        setLeftChallenger();
         cardToChoose = event.getRoomSize();
         showXRightHBoxes(cardToChoose);
         challengerSelectedCards = new ArrayList<>();

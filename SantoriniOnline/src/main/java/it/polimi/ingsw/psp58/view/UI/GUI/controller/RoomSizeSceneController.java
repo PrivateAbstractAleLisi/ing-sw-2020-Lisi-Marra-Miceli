@@ -6,30 +6,20 @@ import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class RoomSizeSceneController {
-    public ImageView img2, img3;
-    public ImageView background;
+    @FXML
+    private  ImageView img2, img3;
+    @FXML
+    private  ImageView background;
 
     private GUI gui;
 
@@ -37,7 +27,6 @@ public class RoomSizeSceneController {
         this.gui = gui;
     }
 
-    @FXML
     public void initialize() {
         img2.setVisible(false);
         img3.setVisible(false);

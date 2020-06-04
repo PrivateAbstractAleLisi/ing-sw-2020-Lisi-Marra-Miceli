@@ -17,9 +17,12 @@ public class OutcomeSceneController {
 
     //UI ELEMENTS
 
-    public Text labelTitle;
-    public Label labelSubTitle;
-    public Button buttonPlayAgain, buttonQuitDesktop, buttonDisconnect;
+    @FXML
+    private  Text labelTitle;
+    @FXML
+    private  Label labelSubTitle;
+    @FXML
+    private  Button buttonPlayAgain, buttonQuitDesktop, buttonDisconnect;
 
     /**
      * when the game is over

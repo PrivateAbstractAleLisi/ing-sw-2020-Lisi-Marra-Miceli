@@ -1,12 +1,13 @@
-package it.polimi.ingsw.psp58.event.gameEvents;
+package it.polimi.ingsw.psp58.event.gameEvents.prematch;
 
 import it.polimi.ingsw.psp58.event.core.ViewListener;
+import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
-public class CV_GameErrorGameEvent extends ViewGameEvent {
+public class CV_PreGameErrorGameEvent extends ViewGameEvent {
 
     private final String toUsername;
 
-    public CV_GameErrorGameEvent(String description, String toUsername) {
+    public CV_PreGameErrorGameEvent(String description, String toUsername) {
         super(description);
         this.toUsername = toUsername;
     }

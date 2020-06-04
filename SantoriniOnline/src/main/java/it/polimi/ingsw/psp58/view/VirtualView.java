@@ -4,14 +4,15 @@ import it.polimi.ingsw.psp58.controller.Lobby;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.GameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.PingEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.*;
+import it.polimi.ingsw.psp58.event.gameEvents.connection.PingEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.networking.server.SantoriniServerClientHandler;
 
@@ -206,6 +207,18 @@ public class VirtualView extends EventSource implements ViewListener, Controller
         userConnectionAcceptedLock.unlock();
 
         sendEventToClient(event);
+    }
+
+    @Override
+    public void handleEvent(CV_PreGameStartedGameEvent event) {
+        sendEventToClient(event);
+    }
+
+    @Override
+    public void handleEvent(CV_PreGameErrorGameEvent event) {
+        if (event.getToUsername().equals(this.username)) {
+            sendEventToClient(event);
+        }
     }
 
     @Override

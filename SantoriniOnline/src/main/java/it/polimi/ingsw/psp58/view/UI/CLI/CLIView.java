@@ -6,12 +6,15 @@ import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.auxiliary.Range;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
-import it.polimi.ingsw.psp58.event.gameEvents.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
@@ -363,6 +366,16 @@ public class CLIView extends EventSource implements ViewListener {
         } else {
             System.out.println("⌛   WAITING FOR OTHER USERS   ⌛");
         }
+    }
+
+    @Override
+    public void handleEvent(CV_PreGameStartedGameEvent event) {
+       //nothing
+    }
+
+    @Override
+    public void handleEvent(CV_PreGameErrorGameEvent event) {
+        MessageUtility.displayErrorMessage(event.getEventDescription().toUpperCase());
     }
 
 
