@@ -189,7 +189,7 @@ public class GUI extends Application implements ViewListener {
         preGameSceneController.setGui(this);
     }
 
-    private void setNewBoardGameScene () throws IOException {
+    private void setNewBoardGameScene() throws IOException {
         //set up the board scene and controller
         FXMLLoader boardLoader = new FXMLLoader(
                 getClass().getResource("/scenes/BoardScene.fxml"));
@@ -298,6 +298,9 @@ public class GUI extends Application implements ViewListener {
         }
 
         preGameSceneController.update(event);
+
+        stage.setResizable(true);
+        changeScene(preGameScene);
     }
 
     @Override
@@ -326,15 +329,10 @@ public class GUI extends Application implements ViewListener {
     public void handleEvent(CV_ChallengerChosenEvent event) {
         System.out.println("I'm the challenger");
         preGameSceneController.update(event);
-        changeScene(preGameScene);
     }
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        if (event.getWaitCode().equals("CHALLENGERS_CARDS")) {
-            stage.setResizable(true);
-            stage.setMaximized(true);
-        }
         System.out.println("Wait received");
         preGameSceneController.update(event);
         if (!stage.getScene().equals(boardScene)) {
@@ -357,6 +355,7 @@ public class GUI extends Application implements ViewListener {
         boardSceneController.handle(event);
         boardSceneController.init(event);
         changeScene(boardScene);
+        stage.setResizable(false);
     }
 
     @Override
@@ -375,8 +374,6 @@ public class GUI extends Application implements ViewListener {
         boardSceneController.setWaitingView();
         outcomeSceneController.initAndFill(event, this); //TODO is gui necessary?
         changeScene(outcomeScene);
-
-
     }
 
     /**
