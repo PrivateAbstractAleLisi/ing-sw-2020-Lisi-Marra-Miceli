@@ -1,6 +1,6 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
-import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_RoomUpdateGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
@@ -137,24 +137,23 @@ public class PreGameSceneController {
         upperText.setText(title.toUpperCase());
     }
 
-    /**
-     * Add the player to the left list of Players
-     *
-     * @param event used to fill the list
-     */
-    public void update(CV_RoomUpdateGameEvent event) {
+    public void update(CV_PreGameStartedGameEvent event) {
+        setLeftPlayerNames(event);
+
+        challengerUsername=event.getChallenger().toLowerCase();
+        setLeftChallenger();
+    }
+
+    private void setLeftPlayerNames (CV_PreGameStartedGameEvent event){
         //Create a Queue
         LinkedList<HBox> playerNameHBoxes = new LinkedList<>();
         playerNameHBoxes.add(playerName_HBox1);
         playerNameHBoxes.add(playerName_HBox2);
         playerNameHBoxes.add(playerName_HBox3);
 
-        int actualPlayersInRoom = event.getUsersInRoom().length;
+        int actualPlayersInRoom = event.getPlayersList().size();
 
-        ArrayList<String> playerNames = new ArrayList<>();
-        for (int i = 0; i < actualPlayersInRoom; i++) {
-            playerNames.add(event.getUsersInRoom()[i]);
-        }
+        List<String> playerNames = event.getPlayersList();
         int index = 0;
         for (String player : playerNames) {
             //For each player i add the name to the left
@@ -209,9 +208,7 @@ public class PreGameSceneController {
         switch (event.getWaitCode()) {
             case "CHALLENGER_CARDS":
                 STATE = "WAIT_CHALLENGER_CARDS";
-                challengerUsername = event.getActingPlayer().toLowerCase();
                 waitText.setText(event.getActingPlayer().toUpperCase() + " is the challenger and he's choosing the cards.\nPlease wait");
-                setLeftChallenger();
                 break;
             case "PLAYER_CARD":
                 STATE = "WAIT_PLAYER_CARD";
@@ -320,8 +317,6 @@ public class PreGameSceneController {
      */
     public void update(CV_ChallengerChosenEvent event) {
         STATE = "CHALLENGER_CARDS_CHOICE";
-        challengerUsername = gui.getUsername();
-        setLeftChallenger();
         cardToChoose = event.getRoomSize();
         showXRightHBoxes(cardToChoose);
         challengerSelectedCards = new ArrayList<>();
