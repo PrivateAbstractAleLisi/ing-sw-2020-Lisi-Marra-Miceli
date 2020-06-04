@@ -217,6 +217,11 @@ public class TurnController extends EventSource implements ControllerListener {
         return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0);
     }
 
+    private void sendCommandExecuted(String actingPlayer){
+        CV_CommandExecutedGameEvent event = new CV_CommandExecutedGameEvent("",actingPlayer);
+        notifyAllObserverByType(VIEW,event);
+    }
+
     private void sendCommandRequest(String actingPlayer) {
         List<TurnAction> availableActions = new ArrayList<>();
         int numberOfMove = currentTurnInstance.getNumberOfMove();
@@ -261,7 +266,10 @@ public class TurnController extends EventSource implements ControllerListener {
 
         //checks if the player loses or not
         if (!checkLose(availableActions, actingPlayer)) {
-            //send the it.polimi.ingsw.sp58.event for the command selection
+            //send info of the turn
+            CV_TurnInfoEvent infoEvent = new CV_TurnInfoEvent("", behaviour.getMovementsRemaining(), behaviour.getBlockPlacementLeft(), behaviour.isCanClimb(), actingPlayer);
+            notifyAllObserverByType(VIEW, infoEvent);
+            //send the event for the command selection
             CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent("this are the actions you can do", availableActions, availableBuildA, availableMovementsA,
                     availableBuildB, availableMovementsB, actingPlayer);
             notifyAllObserverByType(VIEW, requestEvent);
@@ -421,6 +429,7 @@ public class TurnController extends EventSource implements ControllerListener {
                     if (isCompletelyLocked(currentTurnInstance.getWorkerID())) {
                         lose(currentPlayer.getUsername());
                     }
+                    sendCommandExecuted(player.getUsername());
                     sendCommandRequest(player.getUsername());
                 } catch (InvalidMovementException | IllegalArgumentException e) {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
@@ -465,6 +474,7 @@ public class TurnController extends EventSource implements ControllerListener {
                     }
 
                     sendIslandUpdate();
+                    sendCommandExecuted(player.getUsername());
                     sendCommandRequest(player.getUsername());
 
                 } catch (InvalidBuildException | IllegalArgumentException e) {
@@ -500,46 +510,69 @@ public class TurnController extends EventSource implements ControllerListener {
     public void handleEvent(VC_PlayerCommandGameEvent event) {
         printLogMessage("New Command from " + event.getFromPlayer().toUpperCase() + " -> " + event.toStringSmall());
 
-        if (event.getFromPlayer().equals(currentPlayer.getUsername())) {
-            Worker worker;
-            int[] position;
-            switch (event.getCommand()) {
-                case MOVE:
-                    worker = currentPlayer.getWorker(event.getWorkerID());
-                    position = event.getPosition();
+        try {
+            if (isCommandEventValid(event)) {
+                if (event.getFromPlayer().equals(currentPlayer.getUsername())) {
+                    Worker worker;
+                    int[] position;
+                    switch (event.getCommand()) {
+                        case MOVE:
+                            worker = currentPlayer.getWorker(event.getWorkerID());
+                            position = event.getPosition();
 
-                    invokeMovement(currentPlayer, worker, position[0], position[1]);
-                    break;
-                case BUILD:
-                    try {
-                        worker = currentPlayer.getWorker(event.getWorkerID());
-                        position = event.getPosition();
-                        BlockTypeEnum blockToBuild;
-                        if (event.isBlockSet()) {
-                            blockToBuild = event.getBlockToBuild();
-                        } else {
-                            blockToBuild = board.getIsland().getCellCluster(position[0], position[1]).nextBlockToBuild();
-                            printLogMessage("Block to build found: " + blockToBuild);
-                        }
-                        invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);
-                    } catch (InvalidBuildException e) {
-                        CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("Automatic block selection failed, please select a valid block", event.fromPlayer);
-                        notifyAllObserverByType(VIEW, errorGameEvent);
-                        sendCommandRequest(currentPlayer.getUsername());
-                        printLogMessage("Block to build not found. New command request sent.");
+                            invokeMovement(currentPlayer, worker, position[0], position[1]);
+                            break;
+                        case BUILD:
+                            try {
+                                worker = currentPlayer.getWorker(event.getWorkerID());
+                                position = event.getPosition();
+                                BlockTypeEnum blockToBuild;
+                                if (event.isBlockSet()) {
+                                    blockToBuild = event.getBlockToBuild();
+                                } else {
+                                    blockToBuild = board.getIsland().getCellCluster(position[0], position[1]).nextBlockToBuild();
+                                    printLogMessage("Block to build found: " + blockToBuild);
+                                }
+                                invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);
+                            } catch (InvalidBuildException e) {
+                                CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("Automatic block selection failed, please select a valid block", event.fromPlayer);
+                                notifyAllObserverByType(VIEW, errorGameEvent);
+                                sendCommandRequest(currentPlayer.getUsername());
+                                printLogMessage("Block to build not found. New command request sent.");
+                            }
+                            break;
+                        case PASS:
+                            invokeNextTurn(currentPlayer);
+                            break;
                     }
-                    break;
-                case PASS:
-                    invokeNextTurn(currentPlayer);
-                    break;
+                } else {
+                    //if the player who sent the command is not the currentPlayer
+                    printErrorLogMessage(event.fromPlayer.toUpperCase() + " is not the current player. Command rejected");
+                    CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("It's not your turn, please wait!", event.fromPlayer);
+                    notifyAllObserverByType(VIEW, errorGameEvent);
+                }
+            } else {
+                //if the command is not well formatted send an error
+                printErrorLogMessage("Some error in the command event: " + event);
+                if (event.fromPlayer != null) {
+                    CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("The command request wasn't valid. Please retry.", event.fromPlayer);
+                    notifyAllObserverByType(VIEW, errorGameEvent);
+                    sendCommandRequest(event.fromPlayer);
+                }else{
+                    printErrorLogMessage("Not able to send events to this player because is Unknown");
+                }
             }
-        } else {
-            printLogMessage(event.fromPlayer.toUpperCase() + " is not the current player. Command rejected");
-            CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("It's not your turn, please wait!", event.fromPlayer);
+        } catch (NullPointerException e) {
+            printErrorLogMessage("Some error in the command event: " + event);
+            CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("The command request wasn't valid. Please retry.", event.fromPlayer);
             notifyAllObserverByType(VIEW, errorGameEvent);
+            sendCommandRequest(event.fromPlayer);
         }
     }
 
+    private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
+        return commandEvent.isCommandEventValid() && getCurrentTurnListUsername().contains(commandEvent.getFromPlayer());
+    }
 
     /**
      * Print in the Server console a Log from the current Class

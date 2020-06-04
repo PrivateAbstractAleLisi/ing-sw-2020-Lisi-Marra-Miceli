@@ -9,10 +9,10 @@ public class CV_PlayerPlaceWorkerRequestEvent extends ViewGameEvent {
     private String islandData;
     private Worker.IDs workerToPlace;
 
-    public CV_PlayerPlaceWorkerRequestEvent(String description, String actingPlayer, String islandData, Worker.IDs worketToPlace) {
+    public CV_PlayerPlaceWorkerRequestEvent(String description, String actingPlayer, String islandData, Worker.IDs workerToPlace) {
         super(description);
         this.actingPlayer = actingPlayer;
-        this.workerToPlace = worketToPlace;
+        this.workerToPlace = workerToPlace;
         this.islandData = islandData;
     }
 

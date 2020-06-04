@@ -11,6 +11,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.networking.server.SantoriniServerClientHandler;
 
@@ -41,7 +42,7 @@ public class VirtualView extends EventSource implements ViewListener, Controller
     public VirtualView(SantoriniServerClientHandler client) {
         this.lobby = Lobby.instance();
         //listening to each other
-        attachListenerByType(CONTROLLER,lobby);
+        attachListenerByType(CONTROLLER, lobby);
         lobby.attachListenerByType(VIEW, this);
         this.client = client;
 
@@ -86,12 +87,12 @@ public class VirtualView extends EventSource implements ViewListener, Controller
 
     @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
-        notifyAllObserverByType(CONTROLLER,event);
+        notifyAllObserverByType(CONTROLLER, event);
     }
 
     @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-        notifyAllObserverByType(CONTROLLER,event);
+        notifyAllObserverByType(CONTROLLER, event);
     }
 
     @Override
@@ -132,7 +133,7 @@ public class VirtualView extends EventSource implements ViewListener, Controller
             userConnectionAccepted.set(true);
             userConnectionAcceptedLock.unlock();
 
-            CC_NewGameResponseEvent newGameResponseEvent=new CC_NewGameResponseEvent("", this.username, this);
+            CC_NewGameResponseEvent newGameResponseEvent = new CC_NewGameResponseEvent("", this.username, this);
             notifyAllObserverByType(CONTROLLER, newGameResponseEvent);
 
             tryStartPreGame();
@@ -169,7 +170,7 @@ public class VirtualView extends EventSource implements ViewListener, Controller
             anotherPlayerInRoomCrashed = true;
             client.disconnect();
             //detach for all user in room
-            lobby.detachListenerByType(VIEW,this);
+            lobby.detachListenerByType(VIEW, this);
             this.detachListenerByType(CONTROLLER, lobby);
         }
     }
@@ -228,6 +229,18 @@ public class VirtualView extends EventSource implements ViewListener, Controller
 
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
+        if (event.getRecipient().equals(this.username)) {
+            sendEventToClient(event);
+        }
+    }
+
+    @Override
+    public void handleEvent(CV_WorkerPlacementGameEvent event) {
+        sendEventToClient(event);
+    }
+
+    @Override
+    public void handleEvent(CV_CommandExecutedGameEvent event) {
         if (event.getRecipient().equals(this.username)) {
             sendEventToClient(event);
         }
@@ -312,6 +325,13 @@ public class VirtualView extends EventSource implements ViewListener, Controller
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
         sendEventToClient(event);
+    }
+
+    @Override
+    public void handleEvent(CV_TurnInfoEvent event) {
+        if (event.getActingPlayer().equals(this.username)) {
+            sendEventToClient(event);
+        }
     }
 
     @Override

@@ -8,10 +8,9 @@ import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
 
 public class CLIViewTest {
 
-    CLIView cli = new CLIView(new SantoriniClient());
+    CLIView cli = new CLIView(null);
     @Before
     public void setUp() throws Exception {
-
     }
 
     @After

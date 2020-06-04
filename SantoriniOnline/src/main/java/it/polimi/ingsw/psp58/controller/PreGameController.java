@@ -9,6 +9,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_IslandUpdateEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.VC_PlayerCommandGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+import it.polimi.ingsw.psp58.event.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.exceptions.InvalidCardException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.model.BoardManager;
@@ -28,6 +29,7 @@ public class PreGameController extends EventSource implements ControllerListener
     private Room room;
     private Map<String, CardEnum> playersCardsCorrespondence;
     private List<CardEnum> availableCards;
+    ArrayList<CardEnum> alreadyTakenCards;
     private Map<Integer, Player> turnSequence;
     private int currentTurnIndex;
 
@@ -36,6 +38,7 @@ public class PreGameController extends EventSource implements ControllerListener
         this.room = room;
         this.playersCardsCorrespondence = new HashMap<String, CardEnum>();
         this.availableCards = new ArrayList<CardEnum>();
+        this.alreadyTakenCards = new ArrayList<>();
         this.turnSequence = new HashMap<Integer, Player>();
     }
 
@@ -57,7 +60,7 @@ public class PreGameController extends EventSource implements ControllerListener
         challenger = players.get(number);
         for (String recipient : players) {
             if (!recipient.equals(challenger)) {
-                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is the challenger, he's now choosing the cards", challenger, recipient);
+                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is the challenger, he's now choosing the cards", challenger, recipient, "CHALLENGER_CARDS");
                 notifyAllObserverByType(VIEW, requestEvent);
             }
         }
@@ -137,12 +140,12 @@ public class PreGameController extends EventSource implements ControllerListener
         }
         for (String recipient : players) {
             if (!recipient.equals(players.get(indexOfNextChoosingPlayer))) {
-                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing his card", players.get(indexOfNextChoosingPlayer), recipient);
-                notifyAllObserverByType(VIEW,requestEvent);
+                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing his card", players.get(indexOfNextChoosingPlayer), recipient, "PLAYER_CARD");
+                notifyAllObserverByType(VIEW, requestEvent);
             }
         }
-        CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(indexOfNextChoosingPlayer));
-        notifyAllObserverByType(VIEW,requestEvent);
+        CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, alreadyTakenCards, players.get(indexOfNextChoosingPlayer));
+        notifyAllObserverByType(VIEW, requestEvent);
     }
 
     @Override
@@ -152,6 +155,7 @@ public class PreGameController extends EventSource implements ControllerListener
             boardManager.getPlayer(event.getPlayer()).setCard(event.getCard());
             playersCardsCorrespondence.put(event.getPlayer(), event.getCard());
             availableCards.remove(event.getCard());
+            alreadyTakenCards.add(event.getCard());
             List<String> players = room.getActiveUsers();
 
             int indexOfChoosingPlayer = players.indexOf(event.getPlayer());
@@ -164,13 +168,13 @@ public class PreGameController extends EventSource implements ControllerListener
                 }
                 for (String recipient : players) {
                     if (!recipient.equals(players.get(indexOfNextChoosingPlayer))) {
-                        CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing his card", players.get(indexOfNextChoosingPlayer), recipient);
-                        notifyAllObserverByType(VIEW,requestEvent);
+                        CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing his card", players.get(indexOfNextChoosingPlayer), recipient, "PLAYER_CARD");
+                        notifyAllObserverByType(VIEW, requestEvent);
                     }
                 }
                 //send the it.polimi.ingsw.sp58.event to the next player that has to choose the card
-                CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, players.get(indexOfNextChoosingPlayer));
-                notifyAllObserverByType(VIEW,requestEvent);
+                CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, alreadyTakenCards, players.get(indexOfNextChoosingPlayer));
+                notifyAllObserverByType(VIEW, requestEvent);
             } else { // there are no more cards remaining
                 ChallengerChooseFirstPlayer();
             }
@@ -178,8 +182,8 @@ public class PreGameController extends EventSource implements ControllerListener
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid card chosen!", challenger);
             notifyAllObserverByType(VIEW, errorEvent);
 
-            CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, event.getPlayer());
-            notifyAllObserverByType(VIEW,requestEvent);
+            CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, alreadyTakenCards, event.getPlayer());
+            notifyAllObserverByType(VIEW, requestEvent);
         }
     }
 
@@ -187,12 +191,12 @@ public class PreGameController extends EventSource implements ControllerListener
         List<String> players = room.getActiveUsers();
         for (String recipient : players) {
             if (!recipient.equals(challenger)) {
-                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing the first player", challenger, recipient);
-                notifyAllObserverByType(VIEW,requestEvent);
+                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is choosing the first player", challenger, recipient, "FIRST_PLAYER");
+                notifyAllObserverByType(VIEW, requestEvent);
             }
         }
         //the challenger has to choose the first player
-        CV_ChallengerChooseFirstPlayerRequestEvent requestEvent = new CV_ChallengerChooseFirstPlayerRequestEvent("Choose the first player", challenger, players);
+        CV_ChallengerChooseFirstPlayerRequestEvent requestEvent = new CV_ChallengerChooseFirstPlayerRequestEvent("Choose the first player", challenger, players, playersCardsCorrespondence);
         notifyAllObserverByType(VIEW, requestEvent);
     }
 
@@ -241,6 +245,19 @@ public class PreGameController extends EventSource implements ControllerListener
         printLogMessage("The challenger chosen " + turnSequence.get(0).getUsername().toUpperCase() + " as first player");
 
         room.setTurnSequence(turnSequence);
+        //send an event to clients: pre game done, game is starting
+        CV_WorkerPlacementGameEvent upEvent;
+        Map<String, CardEnum> turnMap = new HashMap<>();
+        Map<String, WorkerColors> colorMap = new HashMap<>();
+        for (int t = 0; t < turnSequence.size(); t++) {
+            String user = turnSequence.get(t).getUsername();
+            turnMap.put(user, turnSequence.get(t).getCard().getName());
+            colorMap.put(turnSequence.get(t).getUsername(), boardManager.getPlayer(user).getColor());
+
+        }
+
+        upEvent = new CV_WorkerPlacementGameEvent("game is starting with worker placement", turnMap, colorMap);
+        notifyAllObserverByType(VIEW, upEvent);
         currentTurnIndex = 0;
         askPlaceFirstWorkerForCurrentUser();
     }
@@ -256,7 +273,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
         for (Player recipient : players) {
             if (!recipient.getUsername().equals(activePlayer.getUsername())) {
-                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is placing his workers", activePlayer.getUsername(), recipient.getUsername());
+                CV_WaitPreMatchGameEvent requestEvent = new CV_WaitPreMatchGameEvent("is placing his workers", activePlayer.getUsername(), recipient.getUsername(), "PLACE_WORKER");
                 notifyAllObserverByType(VIEW, requestEvent);
             }
         }
@@ -282,10 +299,14 @@ public class PreGameController extends EventSource implements ControllerListener
         int x = event.getPosX();
         int y = event.getPosY();
 
-        if (worker.getPosition() == null) {
-            actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
+        if (worker != null) {
+            if (worker.getPosition() == null) {
+                actingPlayer.getCard().placeWorker(worker, x, y, boardManager.getIsland());
+            } else {
+                throw new InvalidMovementException("Worker already placed");
+            }
         } else {
-            throw new InvalidMovementException("Worker already placed");
+            throw new IllegalArgumentException("Worker not found");
         }
     }
 
@@ -329,7 +350,9 @@ public class PreGameController extends EventSource implements ControllerListener
                 CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
                         event.getActingPlayer(), getCurrentIslandJson(), Worker.IDs.B);
                 notifyAllObserverByType(VIEW, newEvent);
+
             } else {
+                sendIslandUpdate(event.getActingPlayer());
                 if (currentTurnIndex + 1 < turnSequence.size()) {
                     currentTurnIndex++;
                     askPlaceFirstWorkerForCurrentUser();
@@ -342,12 +365,20 @@ public class PreGameController extends EventSource implements ControllerListener
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("invalid placement of the worker!", event.getActingPlayer());
             notifyAllObserverByType(VIEW, errorEvent);
 
-            printErrorLogMessage(e.toString()+" - A new PlacementRequest has been send.");
+            printErrorLogMessage(e.toString() + " - A new PlacementRequest has been send.");
 
             CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
             notifyAllObserverByType(VIEW, requestEvent);
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException();
+        }catch (IllegalArgumentException e){
+            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("Worker not found", event.getActingPlayer());
+            notifyAllObserverByType(VIEW, errorEvent);
+
+            printErrorLogMessage(e.toString() + " - worker not found - A new PlacementRequest has been send.");
+
+            CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
+            notifyAllObserverByType(VIEW, requestEvent);
         }
     }
 
@@ -370,8 +401,6 @@ public class PreGameController extends EventSource implements ControllerListener
     }
 
 
-
-
     @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
     }
@@ -386,7 +415,6 @@ public class PreGameController extends EventSource implements ControllerListener
     public void handleEvent(VC_PlayerCommandGameEvent event) {
 
     }
-
 
 
     @Override
