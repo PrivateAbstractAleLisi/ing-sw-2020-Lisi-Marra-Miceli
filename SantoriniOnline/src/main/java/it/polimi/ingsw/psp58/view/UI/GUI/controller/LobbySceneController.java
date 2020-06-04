@@ -2,17 +2,20 @@ package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_RoomUpdateGameEvent;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.text.Text;
 
 import java.util.*;
 
 public class LobbySceneController {
     private GUI gui;
-    public Label roomPlayersNumberText;
-    public Label roomTitleText;
+    @FXML
+    private Label roomPlayersNumberText;
+    @FXML
+    private Label roomTitleText;
 
-    public Label player1Text, player2Text, player3Text;
+    @FXML
+    private Label player1Text, player2Text, player3Text;
 
     private int numberOfPlayers = 0;
     private int roomSize = 0;
