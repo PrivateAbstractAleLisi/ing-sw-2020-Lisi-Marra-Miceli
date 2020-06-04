@@ -35,7 +35,7 @@ public class Hephaestus extends Card {
     }
 
     private boolean hasAlreadyBuiltInThisTurn() {
-        return lastBuiltPosition[1] != -1 || lastBuiltPosition[0] != -1;
+        return !(lastBuiltPosition[1] == -1 && lastBuiltPosition[0] == -1);
     }
 
     @Override
@@ -47,17 +47,14 @@ public class Hephaestus extends Card {
 
     @Override
     protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
-        if(hasAlreadyBuiltInThisTurn()){
-            if(!hasAlreadyBuiltHereInThisTurn(desiredX, desiredY)){
-                return false;
+        if(hasAlreadyBuiltInThisTurn()) {
+            if(hasAlreadyBuiltHereInThisTurn(desiredX,desiredY)){
+                if(block==BlockTypeEnum.DOME) return false;
+                else return super.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island);
             }
-            else{
-                if(block == BlockTypeEnum.DOME){
-                    return false;
-                }
-            }
+            else return false;
         }
-        return super.isValidConstruction( block,  actualX,  actualY,  desiredX,  desiredY, island);
+        return super.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island);
     }
 
     @Override

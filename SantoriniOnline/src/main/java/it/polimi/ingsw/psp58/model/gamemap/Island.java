@@ -4,7 +4,6 @@ package it.polimi.ingsw.psp58.model.gamemap;
 import it.polimi.ingsw.psp58.auxiliary.Range;
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 
@@ -39,7 +38,6 @@ public class Island {
     }
 
     /**
-     *
      * @param x index of the cell (x)
      * @param y index of the cell (x)
      * @return true if the index are correct, otherwise false.
@@ -54,6 +52,7 @@ public class Island {
 
     /**
      * it places the worker on the board only if it's not already placed.
+     *
      * @param w Worker that has to be placed
      * @param x index of the cell (x) where the worker will be placed
      * @param y index of the cell (y) where the worker will be placed
@@ -131,23 +130,19 @@ public class Island {
 
     /**
      * finds the worker and removes it from the board
+     *
      * @param w worker that will be removed
      */
-    public void removeWorker(Worker w) throws InvalidWorkerRemovalException {
+    public void removeWorker(Worker w) {
         int[] pos = w.getPosition();
-        CellCluster hasWorkerIn = grid[pos[0]] [pos[1]];
+        CellCluster hasWorkerIn = grid[pos[0]][pos[1]];
         if (hasWorkerIn.hasWorkerOnTop()) {
             hasWorkerIn.removeWorker();
             w.setPlacedOnIsland(false);
         }
-        else {
-            throw new InvalidWorkerRemovalException("DEBUG: worker position x,y fetched but there is no worker in x,y");
-        }
-
     }
 
     /**
-     *
      * @param x index of the cell (x)
      * @param y index of the cell (y)
      * @return a copy of the CellCluster at position (x,y)
@@ -169,7 +164,7 @@ public class Island {
         return null;
     }
 
-    private boolean isWorkerAlreadyPlaced (Worker w) {
+    private boolean isWorkerAlreadyPlaced(Worker w) {
 
 
         for (int i = 0; i < 5; i++) {
@@ -186,25 +181,25 @@ public class Island {
         return false;
     }
 
-   private CellClusterData[][] getGridData (){
-       CellClusterData [][] newGrid =new CellClusterData[5][5];
-       for (int i = 0; i <5 ; i++) {
-           for (int j = 0; j <5 ; j++) {
-               newGrid[i][j] = new CellClusterData(getCellCluster(i, j));
-           }
-       }
-       return newGrid;
-   }
+    private CellClusterData[][] getGridData() {
+        CellClusterData[][] newGrid = new CellClusterData[5][5];
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                newGrid[i][j] = new CellClusterData(getCellCluster(i, j));
+            }
+        }
+        return newGrid;
+    }
 
-   public IslandData getIslandDataCopy() {
+    public IslandData getIslandDataCopy() {
         IslandData copy = new IslandData();
         copy.fillIsland(getGridData());
         return copy;
-   }
+    }
 
-   public void incrementNumberOfCompleteTowers(){
+    public void incrementNumberOfCompleteTowers() {
         numberOfCompleteTowers++;
-   }
+    }
 
     public int getNumberOfCompleteTowers() {
         return numberOfCompleteTowers;

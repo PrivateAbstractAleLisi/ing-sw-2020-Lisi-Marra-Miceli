@@ -2,7 +2,6 @@ package it.polimi.ingsw.psp58.model;
 
 import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
 import it.polimi.ingsw.psp58.exceptions.InvalidCardException;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
@@ -74,9 +73,8 @@ public class BoardManager {
     /**
      *
      * @param player that should be removed from the game
-     * @throws InvalidWorkerRemovalException
      */
-    public void removePlayer(Player player) throws InvalidWorkerRemovalException {
+    public void removePlayer(Player player)  {
         if(player.getWorker(Worker.IDs.A)!= null){
             Worker worker1 = player.getWorker(Worker.IDs.A);
             island.removeWorker(worker1);
@@ -95,7 +93,7 @@ public class BoardManager {
      * @param username the username of the player that should be removed from the game
      * @throws InvalidWorkerRemovalException
      */
-    public void removePlayer(String username) throws InvalidWorkerRemovalException {
+    public void removePlayer(String username) {
         Player player = null;
         for (Player p : players) {
             if (p.getUsername().equals(username)) player = p;

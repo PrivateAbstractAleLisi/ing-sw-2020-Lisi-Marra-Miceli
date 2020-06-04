@@ -204,6 +204,25 @@ public class TurnController extends EventSource implements ControllerListener {
         return false;
     }
 
+    public boolean canMove(String actingPlayer ){
+        BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
+        boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
+        int numberOfBuild = currentTurnInstance.getNumberOfBuild();
+
+        return (behaviour.getMovementsRemaining() > 0) &&
+                ((numberOfBuild == 0) || ((isPrometheus) && (numberOfBuild == 1)));
+    }
+
+    public boolean canBuild(String actingPlayer ){
+        BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
+        boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
+        int numberOfMove = currentTurnInstance.getNumberOfMove();
+        int numberOfBuild = currentTurnInstance.getNumberOfBuild();
+
+        return (behaviour.getBlockPlacementLeft() > 0) &&
+                ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0) && (numberOfBuild == 0)));
+    }
+
     public boolean canPassTurn() {
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
         if (isPrometheus) {
@@ -224,10 +243,7 @@ public class TurnController extends EventSource implements ControllerListener {
 
     private void sendCommandRequest(String actingPlayer) {
         List<TurnAction> availableActions = new ArrayList<>();
-        int numberOfMove = currentTurnInstance.getNumberOfMove();
-        int numberOfBuild = currentTurnInstance.getNumberOfBuild();
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
-        boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
 
         List<int[]> availableMovementsA = new ArrayList<>();
         List<int[]> availableMovementsB = new ArrayList<>();
@@ -236,8 +252,7 @@ public class TurnController extends EventSource implements ControllerListener {
         List<int[]> availableBuildB = new ArrayList<>();
 
         //Check if the player can MOVE and set the possible moves
-        if ((behaviour.getMovementsRemaining() > 0) &&
-                ((numberOfBuild == 0) || ((isPrometheus) && (numberOfBuild == 1)))) {//MOVE may be a valid action
+        if (canMove(actingPlayer)) {//MOVE may be a valid action
 
             setUpAvailableMovements(behaviour, availableMovementsA, availableMovementsB);
 
@@ -249,8 +264,7 @@ public class TurnController extends EventSource implements ControllerListener {
 
 
         //Check if the player can BUILD and set the possible builds
-        if ((behaviour.getBlockPlacementLeft() > 0) &&
-                ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0) && (numberOfBuild == 0)))) { //BUILD may be a valid action
+        if (canBuild(actingPlayer)) { //BUILD may be a valid action
 
             setUpAvailableBuild(availableBuildA, availableBuildB);
 
@@ -422,7 +436,7 @@ public class TurnController extends EventSource implements ControllerListener {
                 //is your turn and your worker is ok, you may try to move:
                 try {
                     player.getCard().move(w, x, y, board.getIsland());
-                    currentTurnInstance.setNumberOfMove(currentTurnInstance.getNumberOfMove() + 1);
+                    currentTurnInstance.incrementNumberOfMove();
                     currentTurnInstance.chooseWorker(w.getWorkerID());
 
                     sendIslandUpdate();
@@ -457,12 +471,14 @@ public class TurnController extends EventSource implements ControllerListener {
                 //is your turn and your worker is ok, you may try build:
                 try {
                     player.getCard().build(w, block, x, y, board.getIsland());
-                    currentTurnInstance.setNumberOfBuild(currentTurnInstance.getNumberOfBuild() + 1);
+                    currentTurnInstance.incrementNumberOfBuild();
                     if (currentTurnInstance.getNumberOfMove() == 0) {
                         currentTurnInstance.setHasBuiltBeforeMove(true);
                     }
 
                     if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(w.getWorkerID());
+
+                    sendIslandUpdate();
 
                     //if there is Chronus and this build has made the fifth complete tower Chronus wins
                     if (thereIsChronus && board.getIsland().getNumberOfCompleteTowers() >= 5) {
@@ -472,8 +488,6 @@ public class TurnController extends EventSource implements ControllerListener {
                         }
                         win(playerHasToWin);
                     }
-
-                    sendIslandUpdate();
                     sendCommandExecuted(player.getUsername());
                     sendCommandRequest(player.getUsername());
 

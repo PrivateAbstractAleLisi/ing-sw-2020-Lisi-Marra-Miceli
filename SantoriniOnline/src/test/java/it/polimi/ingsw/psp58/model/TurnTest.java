@@ -286,14 +286,14 @@ public class TurnTest {
     @Test
     public void NumberOfMove() {
         assertEquals(0, turn.getNumberOfMove());
-        turn.setNumberOfMove(1);
+        turn.incrementNumberOfMove();
         assertEquals(1, turn.getNumberOfMove());
     }
 
     @Test
     public void NumberOfBuild() {
         assertEquals(0, turn.getNumberOfBuild());
-        turn.setNumberOfBuild(1);
+        turn.incrementNumberOfBuild();
         assertEquals(1, turn.getNumberOfBuild());
     }
 

@@ -3,7 +3,6 @@ package it.polimi.ingsw.psp58.model;
 import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
 import it.polimi.ingsw.psp58.exceptions.InvalidCardException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import org.junit.After;
 import org.junit.Before;
@@ -67,7 +66,7 @@ public class BoardManagerTest {
 
 
     @Test
-    public void removePlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException, InvalidWorkerRemovalException, InvalidMovementException {
+    public void removePlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException,  InvalidMovementException {
         Player player = new Player("matteo", boardManager);
         boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.A),2,2);
         boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.B),3,4);
@@ -78,7 +77,7 @@ public class BoardManagerTest {
     }
 
     @Test
-    public void removePlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException, InvalidWorkerRemovalException, InvalidMovementException {
+    public void removePlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException,  InvalidMovementException {
         Player player = new Player("matteo", boardManager);
         boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.B),2,2);
         boardManager.getIsland().placeWorker(player.getWorker(Worker.IDs.A), 3, 3);
