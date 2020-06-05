@@ -428,6 +428,12 @@ public class TurnController extends EventSource implements ControllerListener {
                     notifyAllObserverByType(VIEW, errorEvent);
                     sendCommandRequest(player.getUsername());
                 } catch (WinningException e) {
+                    sendIslandUpdate();
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    }
                     win(player);
                 }
             }
