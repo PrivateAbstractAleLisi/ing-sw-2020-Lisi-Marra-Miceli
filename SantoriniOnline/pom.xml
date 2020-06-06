@@ -81,6 +81,21 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>it/polimi/ingsw/psp58/controller/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/model/gods/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/networking/server/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/exceptions/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/view/VirtualView.class</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -108,16 +123,28 @@
                                             </mainClass>
                                         </transformer>
                                     </transformers>
-
-<!--                                    <artifactSet>-->
-<!--                                        <excludes>-->
-<!--                                            <exclude>it.polimi.ingsw.psp58.view.UI.GUI:*</exclude>-->
-<!--                                            <exclude>/**.png</exclude>-->
-<!--                                        </excludes>-->
-<!--                                    </artifactSet>-->
                                 </configuration>
+
                             </execution>
                         </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                                <excludes>
+                                    <exclude>it/polimi/ingsw/psp58/view/UI/**</exclude>
+                                    <exclude>it/polimi/ingsw/psp58/view/exceptions/**</exclude>
+                                    <exclude>it/polimi/ingsw/psp58/networking/client/**</exclude>
+                                    <exclude>images/**</exclude>
+                                    <exclude>scenes/*.*</exclude>
+                                    <exclude>sounds/*.*</exclude>
+                                    <exclude>style.css</exclude>
+                                    <exclude>style 2.css</exclude>
+                                </excludes>
+                        </configuration>
                     </plugin>
 
                 </plugins>
@@ -153,7 +180,10 @@
                     <target>11</target>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
 </project>
+
+
