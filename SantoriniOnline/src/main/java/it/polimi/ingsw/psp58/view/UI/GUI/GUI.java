@@ -25,7 +25,6 @@ import java.util.List;
 
 
 public class GUI extends Application implements ViewListener {
-
     private Stage stage;
 
     private Scene roomSizeScene;
@@ -59,6 +58,8 @@ public class GUI extends Application implements ViewListener {
 
     private Scene outcomeScene;
     private OutcomeSceneController outcomeSceneController;
+
+    private final String version="1.5.3";
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -240,6 +241,10 @@ public class GUI extends Application implements ViewListener {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     @Override
