@@ -1,13 +1,11 @@
 package it.polimi.ingsw.psp58.model.gods;
 
-import it.polimi.ingsw.psp58.auxiliary.Range;
+import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
+import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.BehaviourManager;
 import it.polimi.ingsw.psp58.model.Card;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.Player;
-import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
-import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
@@ -44,7 +42,7 @@ public class Minotaur extends Card {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
 
-            if (!isValidDestinationMinotaurPower(actualX, actualY, desiredX, desiredY, island)) {
+            if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
 
@@ -58,11 +56,7 @@ public class Minotaur extends Card {
             Worker enemyWorker = getEnemyWorker(desiredX, desiredY, island);
             int[] shiftedCoordinates = getShiftedCoordinates(actualX, actualY, desiredX, desiredY);
 
-            try {
-                island.removeWorker(enemyWorker);
-            } catch (InvalidWorkerRemovalException e) {
-                throw new InvalidMovementException("It's impossible to remove worker from his position");
-            }
+            island.removeWorker(enemyWorker);
             island.moveWorker(worker, desiredX, desiredY);
             island.placeWorker(enemyWorker, shiftedCoordinates[0], shiftedCoordinates[1]);
 
@@ -88,8 +82,8 @@ public class Minotaur extends Card {
      * @param island   The current board of game
      * @return true when the destination is reachable from the actual position, false otherwise
      */
-    //not possible to override
-    protected boolean isValidDestinationMinotaurPower(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+    @Override
+    protected boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
@@ -108,6 +102,9 @@ public class Minotaur extends Card {
         }
         //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)
         if (distance(actualX, actualY, desiredX, desiredY) >= 2) {
+            return false;
+        }
+        if (desiredCellCluster.isComplete()) {
             return false;
         }
         //verifica il behaviour permette di salire
@@ -191,17 +188,5 @@ public class Minotaur extends Card {
         if (oppositePlayer == null) throw new InvalidMovementException("Opposite Player not found");
 
         return oppositePlayer.getWorker(enemyWorkerID);
-    }
-
-    @Override
-    protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
-        Range range = new Range(0, 4);
-        if (range.isIndexOfCellInRange(desiredX, desiredY)) {
-            if (island.getCellCluster(actualX, actualY).hasWorkerOnTop()) {
-                return isValidDestinationMinotaurPower(actualX, actualY, desiredX, desiredY, island);
-            }
-            return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
-        }
-        return false;
     }
 }

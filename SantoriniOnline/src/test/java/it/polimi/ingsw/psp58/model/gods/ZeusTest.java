@@ -4,13 +4,17 @@ import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.*;
-import it.polimi.ingsw.psp58.model.gamemap.*;
-import org.junit.*;
-import it.polimi.ingsw.psp58.view.UI.CLI.utility.IslandUtility;
+import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+import it.polimi.ingsw.psp58.model.gamemap.Island;
+import it.polimi.ingsw.psp58.model.gamemap.Worker;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ArtemisTest {
+public class ZeusTest {
+
     BoardManager boardManager = null;
     Card card = null;
     Card card2 = null;
@@ -21,7 +25,6 @@ public class ArtemisTest {
     Worker worker2 = null;
     Worker worker1B = null;
     Worker worker2B = null;
-    IslandUtility ip = null;
 
     @Before
     public void setUp() throws Exception {
@@ -30,16 +33,15 @@ public class ArtemisTest {
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-
         player1 = boardManager.getPlayer("Gabriele");
         player2 = boardManager.getPlayer("Matteo");
-        player1.setCard(CardEnum.ARTEMIS);
+        player1.setCard(CardEnum.ZEUS);
         player2.setCard(CardEnum.ATLAS);
         worker1 = player1.getWorker(Worker.IDs.A);
         worker2 = player2.getWorker(Worker.IDs.A);
         worker1B = player1.getWorker(Worker.IDs.B);
         worker2B = player2.getWorker(Worker.IDs.B);
-        card = player1.getCard();
+        card =  player1.getCard();
         card2 = player2.getCard();
 
     }
@@ -48,6 +50,22 @@ public class ArtemisTest {
     public void tearDown() throws Exception {
         player1.setCard((Card) null);
         card = null;
+    }
+
+    @Test //DONE
+    public void resetBehaviour() {
+        BehaviourManager behaviourManager = player1.getBehaviour();
+        behaviourManager.setCanClimb(false);
+        behaviourManager.setCanBuildDomeEverywhere(true);
+        behaviourManager.setBlockPlacementLeft(25);
+        behaviourManager.setMovementsRemaining(0);
+
+        card.resetBehaviour();
+
+        assertTrue(behaviourManager.isCanClimb());
+        assertFalse(behaviourManager.isCanBuildDomeEverywhere());
+        assertEquals(1, behaviourManager.getBlockPlacementLeft());
+        assertEquals(1, behaviourManager.getMovementsRemaining());
     }
 
     @Test //DONE
@@ -271,15 +289,6 @@ public class ArtemisTest {
     }
 
     @Test(expected = InvalidBuildException.class)
-    public void build_WrongBuild_PlayerOnTop1() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
-        card.placeWorker(worker1, 0, 0, island);
-        card.move(worker1, 1, 0, island);
-
-        card.resetBehaviour();
-        card.build(worker1, BlockTypeEnum.LEVEL1, 1, 0, island);
-    }
-
-    @Test(expected = InvalidBuildException.class)
     public void build_WrongBuild_PlayerOnTop2() throws InvalidMovementException, InvalidBuildException, CloneNotSupportedException, WinningException {
         card.placeWorker(worker1, 0, 0, island);
         card.move(worker1, 1, 0, island);
@@ -338,46 +347,68 @@ public class ArtemisTest {
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
     }
 
-    //god specific test
-    @Test //DONE
-    public void resetBehaviour() {
-        BehaviourManager behaviourManager = player1.getBehaviour();
-        behaviourManager.setCanClimb(false);
-        behaviourManager.setCanBuildDomeEverywhere(true);
-        behaviourManager.setBlockPlacementLeft(25);
-        behaviourManager.setMovementsRemaining(0);
+    //TEST FOR SPECIFIC GOD POWER
+
+    @Test
+    public void build_inHisPositionLevel1_shouldReturnNormally() throws InvalidMovementException, WinningException, CloneNotSupportedException, InvalidBuildException {
+        card.placeWorker(worker1, 0, 0, island);
+        card.move(worker1, 1, 0, island);
 
         card.resetBehaviour();
+        card.build(worker1, BlockTypeEnum.LEVEL1, 1, 0, island);
 
-        assertTrue(behaviourManager.isCanClimb());
-        assertFalse(behaviourManager.isCanBuildDomeEverywhere());
-        assertEquals(1, behaviourManager.getBlockPlacementLeft());
-        assertEquals(2, behaviourManager.getMovementsRemaining());
+        assertEquals(1, island.getCellCluster(1, 0).getCostructionHeight());
+        assertEquals(worker1.getWorkerID(), island.getCellCluster(1,0).getWorkerID());
+        assertEquals(worker1.getPlayerUsername(), island.getCellCluster(1,0).getWorkerOwnerUsername());
     }
 
     @Test
-    public void move_RightMove_SecondMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void build_inHisPositionLevel2_shouldReturnNormally() throws InvalidMovementException, WinningException, CloneNotSupportedException, InvalidBuildException {
         card.placeWorker(worker1, 0, 0, island);
-        island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
-        card.placeWorker(worker2, 0, 1, island);
 
+        card.move(worker1, 1, 0, island);
+        card.build(worker1, BlockTypeEnum.LEVEL1, 1, 0, island);
         card.resetBehaviour();
-        card.move(worker1, 1, 1, island);
-        card.move(worker1, 2, 1, island);
 
-        assertEquals(2, worker1.getPosition()[0]);
-        assertEquals(1, worker1.getPosition()[1]);
-
+        card.build(worker1, BlockTypeEnum.LEVEL2, 1, 0, island);
+        assertEquals(2, island.getCellCluster(1, 0).getCostructionHeight());
+        assertEquals(worker1.getWorkerID(), island.getCellCluster(1,0).getWorkerID());
+        assertEquals(worker1.getPlayerUsername(), island.getCellCluster(1,0).getWorkerOwnerUsername());
     }
 
-    @Test (expected = IllegalArgumentException.class)
-    public void move_WrongMove_SecondMoveBack() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    @Test
+    public void build_inHisPositionLevel3_shouldReturnNormally() throws InvalidMovementException, WinningException, CloneNotSupportedException, InvalidBuildException {
         card.placeWorker(worker1, 0, 0, island);
-        island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
-        card.placeWorker(worker2, 0, 1, island);
 
+        card.move(worker1, 1, 0, island);
+        card.build(worker1, BlockTypeEnum.LEVEL1, 1, 0, island);
         card.resetBehaviour();
-        card.move(worker1, 1, 1, island);
-        card.move(worker1, 0, 0, island);
+
+        card.build(worker1, BlockTypeEnum.LEVEL2, 1, 0, island);
+        card.resetBehaviour();
+        card.build(worker1, BlockTypeEnum.LEVEL3, 1, 0, island);
+        assertEquals(3, island.getCellCluster(1, 0).getCostructionHeight());
+        assertEquals(worker1.getWorkerID(), island.getCellCluster(1,0).getWorkerID());
+        assertEquals(worker1.getPlayerUsername(), island.getCellCluster(1,0).getWorkerOwnerUsername());
     }
+
+    @Test (expected = InvalidBuildException.class)
+    public void build_inHisPositionDome_shouldThrowException() throws InvalidMovementException, WinningException, CloneNotSupportedException, InvalidBuildException {
+        card.placeWorker(worker1, 0, 0, island);
+
+        card.move(worker1, 1, 0, island);
+        card.build(worker1, BlockTypeEnum.LEVEL1, 1, 0, island);
+        card.resetBehaviour();
+
+        card.build(worker1, BlockTypeEnum.LEVEL2, 1, 0, island);
+        card.resetBehaviour();
+        card.build(worker1, BlockTypeEnum.LEVEL3, 1, 0, island);
+        card.resetBehaviour();
+        card.build(worker1, BlockTypeEnum.DOME, 1, 0, island);
+        assertEquals(3, island.getCellCluster(1, 0).getCostructionHeight());
+        assertEquals(worker1.getWorkerID(), island.getCellCluster(1,0).getWorkerID());
+        assertEquals(worker1.getPlayerUsername(), island.getCellCluster(1,0).getWorkerOwnerUsername());
+    }
+
+
 }

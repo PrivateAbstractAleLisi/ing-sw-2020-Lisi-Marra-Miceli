@@ -103,16 +103,16 @@ public class Turn {
         return numberOfMove;
     }
 
-    public void setNumberOfMove(int numberOfMove) {
-        this.numberOfMove = numberOfMove;
+    public void incrementNumberOfMove() {
+        this.numberOfMove++;
     }
 
     public int getNumberOfBuild() {
         return numberOfBuild;
     }
 
-    public void setNumberOfBuild(int numberOfBuild) {
-        this.numberOfBuild = numberOfBuild;
+    public void incrementNumberOfBuild() {
+        this.numberOfBuild++;
     }
 
     public boolean getHasBuiltBeforeMove() {

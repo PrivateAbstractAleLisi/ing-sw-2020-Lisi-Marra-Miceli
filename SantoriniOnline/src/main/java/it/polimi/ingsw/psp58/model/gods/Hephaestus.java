@@ -35,38 +35,34 @@ public class Hephaestus extends Card {
     }
 
     private boolean hasAlreadyBuiltInThisTurn() {
-        return lastBuiltPosition[1] != -1 || lastBuiltPosition[0] != -1;
+        return !(lastBuiltPosition[1] == -1 && lastBuiltPosition[0] == -1);
     }
 
     @Override
     public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
-        if (!hasAlreadyBuiltInThisTurn()) {
-            super.build(worker, block, desiredX, desiredY, island);
-            lastBuiltPosition[0] = desiredX;
-            lastBuiltPosition[1] = desiredY;
-            workerChoosen = worker.getWorkerID();
-        } else {
-            if (hasAlreadyBuiltHereInThisTurn(desiredX, desiredY) && block != BlockTypeEnum.DOME && worker.getWorkerID() == workerChoosen) {
-                super.build(worker, block, desiredX, desiredY, island);
-                lastBuiltPosition[0] = desiredX;
-                lastBuiltPosition[1] = desiredY;
-            } else if (block == BlockTypeEnum.DOME) {
-                throw new InvalidBuildException("Cannot build a DOME");
-            } else if (worker.getWorkerID() != workerChoosen) {
-                throw new IllegalArgumentException("DEMETER: on the second building you must use the same worker");
-            } else {
-                throw new InvalidBuildException("You must build on the same place of the first build");
+        super.build( worker,  block,  desiredX,  desiredY,  island);
+        lastBuiltPosition[0] = desiredX;
+        lastBuiltPosition[1] = desiredY;
+    }
+
+    @Override
+    protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
+        if(hasAlreadyBuiltInThisTurn()) {
+            if(hasAlreadyBuiltHereInThisTurn(desiredX,desiredY)){
+                if(block==BlockTypeEnum.DOME) return false;
+                else return super.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island);
             }
+            else return false;
         }
+        return super.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island);
     }
 
     @Override
     public void resetBehaviour() {
         BehaviourManager behaviour = playedBy.getBehaviour();
+        super.resetBehaviour();
         behaviour.setBlockPlacementLeft(2); //the worker may build one additional time
-        behaviour.setMovementsRemaining(1);
-        behaviour.setCanClimb(true);
-        behaviour.setCanBuildDomeEverywhere(false);
+
         lastBuiltPosition = new int[]{-1, -1};
     }
 }
