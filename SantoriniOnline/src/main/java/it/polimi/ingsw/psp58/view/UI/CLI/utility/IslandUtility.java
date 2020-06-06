@@ -17,7 +17,7 @@ public class IslandUtility {
 
 
     private void printCellCluster (int x, int y)  {
-        String cellClusterContent = "| ";
+        String cellClusterContent = ANSI_YELLOW+ "┃ "+ ANSI_RESET;
         if(data.getCellCluster(x,y).isFree()) {
             //System.out.print("| " + " " + " ");
             cellClusterContent = cellClusterContent + "     "; //EMPTY : + 5 CHARS
@@ -90,10 +90,10 @@ public class IslandUtility {
             System.out.println("");
 
             if (row != 0) {
-                System.out.println("        -----------------------------------");
+                System.out.println(ANSI_YELLOW+ "       ┣━━━━━━╋━━━━━━╋━━━━━━╋━━━━━━╋━━━━━━┫"+ ANSI_RESET);
             }
             else{
-                System.out.println("ROW ↓   -----------------------------------");
+                System.out.println("ROW ↓  "+ANSI_YELLOW+ "┏━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┓"+ ANSI_RESET);
             }
 
             System.out.print("    " + (row+1) +  "  ");
@@ -103,10 +103,10 @@ public class IslandUtility {
             {
                 printCellCluster(row, column);
             }
-            System.out.print("|");
+            System.out.print(ANSI_YELLOW+ "┃" +ANSI_RESET);
 
         }
         System.out.println("");
-        System.out.println("        -----------------------------------");
+        System.out.println(ANSI_YELLOW+ "       ┗━━━━━━┻━━━━━━┻━━━━━━┻━━━━━━┻━━━━━━┛"+ ANSI_RESET);
     }
 }
