@@ -31,6 +31,7 @@ public class GUI extends Application implements ViewListener {
     private Stage roomSizeStage;
     private RoomSizeSceneController roomSizeController;
     private final int socketPort = 7557;
+    private final String gameVersion ="1.5.3";
 
     private String chosenIp;
 
@@ -59,7 +60,6 @@ public class GUI extends Application implements ViewListener {
     private Scene outcomeScene;
     private OutcomeSceneController outcomeSceneController;
 
-    private final String version="1.5.3";
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -243,8 +243,8 @@ public class GUI extends Application implements ViewListener {
         return stage;
     }
 
-    public String getVersion() {
-        return version;
+    public String getGameVersion() {
+        return gameVersion;
     }
 
     @Override

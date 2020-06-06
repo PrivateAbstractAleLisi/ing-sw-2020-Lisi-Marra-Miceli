@@ -57,7 +57,7 @@ public class StartingSceneController {
         localhostButton.selectedProperty().setValue(true);
         awsButton.selectedProperty().setValue(false);
         customIPButton.selectedProperty().setValue(false);
-        versionText.setText("Santorini Online - v." + gui.getVersion());
+        versionText.setText("Santorini Online - v." + gui.getGameVersion());
     }
 
     public void close() {

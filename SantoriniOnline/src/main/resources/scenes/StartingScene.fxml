@@ -31,7 +31,7 @@
                 </Pane>
             </left>
             <right>
-                <SplitPane dividerPositions="0.23738872403560832" orientation="VERTICAL" BorderPane.alignment="CENTER">
+                <SplitPane dividerPositions="0.2645895153313551" orientation="VERTICAL" BorderPane.alignment="CENTER">
                     <items>
                         <VBox alignment="CENTER">
                             <children>
@@ -50,7 +50,7 @@
                         <Insets top="7.0" />
                      </padding>
                         </VBox>
-                        <VBox alignment="BOTTOM_CENTER" prefWidth="261.0" spacing="12.0">
+                        <VBox alignment="TOP_CENTER" spacing="12.0">
                             <children>
                                 <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="10.0" prefHeight="200.0" prefWidth="200.0" prefWrapLength="240.0" rowValignment="BOTTOM" vgap="5.0">
                                     <children>
@@ -97,15 +97,19 @@
                                         <Insets left="15.0" right="15.0" />
                                     </padding>
                                 </VBox>
-                                <VBox alignment="TOP_CENTER" spacing="10.0">
+                                <VBox alignment="TOP_CENTER" spacing="5.0">
                                     <children>
                                       <Button fx:id="connectButton" defaultButton="true" mnemonicParsing="false" onAction="#onClickEventConnectButton" text="CONNECT" />
-                                        <ProgressBar fx:id="loadProgress" minHeight="8.0" minWidth="180.0" prefHeight="8.0" prefWidth="180.0" progress="0.0" />
-                                        <Text fx:id="loadText" fill="#125d8c" strokeType="OUTSIDE" strokeWidth="0.0" text="&lt; establishing connection... &gt;" textAlignment="CENTER" wrappingWidth="161.77392578125">
-                                            <font>
-                                                <Font size="9.0" />
-                                            </font>
-                                        </Text>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="2.0">
+                                 <children>
+                                              <ProgressBar fx:id="loadProgress" minHeight="8.0" minWidth="180.0" prefHeight="8.0" prefWidth="180.0" progress="0.0" />
+                                              <Text fx:id="loadText" fill="#125d8c" strokeType="OUTSIDE" strokeWidth="0.0" text="&lt; establishing connection... &gt;" textAlignment="CENTER" wrappingWidth="161.77392578125">
+                                                  <font>
+                                                      <Font size="9.0" />
+                                                  </font>
+                                              </Text>
+                                 </children>
+                              </VBox>
                                     </children>
                                 </VBox>
                                 <VBox alignment="BOTTOM_CENTER">
