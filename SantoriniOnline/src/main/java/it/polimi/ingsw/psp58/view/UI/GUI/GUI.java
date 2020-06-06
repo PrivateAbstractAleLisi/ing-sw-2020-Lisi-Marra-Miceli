@@ -31,7 +31,8 @@ public class GUI extends Application implements ViewListener {
     private Stage roomSizeStage;
     private RoomSizeSceneController roomSizeController;
     private final int socketPort = 7557;
-    private final String gameVersion ="1.5.3";
+    private final String gameVersion = "1.5.3";
+    private final String onlineServerIP = "23.23.52.127";
 
     private String chosenIp;
 
@@ -413,4 +414,7 @@ public class GUI extends Application implements ViewListener {
         boardSceneController.handle(event);
     }
 
+    public String getOnlineServerIP() {
+        return onlineServerIP;
+    }
 }

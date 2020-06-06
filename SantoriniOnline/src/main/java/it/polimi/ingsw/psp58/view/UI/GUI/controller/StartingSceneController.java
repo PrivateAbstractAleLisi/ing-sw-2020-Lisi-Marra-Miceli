@@ -3,7 +3,6 @@ package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEvent;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
-import it.polimi.ingsw.psp58.view.UI.GUI.BoardPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,9 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
 
 public class StartingSceneController {
     private GUI gui;
@@ -35,7 +32,7 @@ public class StartingSceneController {
     @FXML
     private RadioButton localhostButton;
     @FXML
-    private RadioButton awsButton;
+    private RadioButton onlineServerButton;
     @FXML
     private RadioButton customIPButton;
     @FXML
@@ -55,7 +52,7 @@ public class StartingSceneController {
         customVBox.setDisable(true);
 
         localhostButton.selectedProperty().setValue(true);
-        awsButton.selectedProperty().setValue(false);
+        onlineServerButton.selectedProperty().setValue(false);
         customIPButton.selectedProperty().setValue(false);
         versionText.setText("Santorini Online - v." + gui.getGameVersion());
     }
@@ -128,27 +125,17 @@ public class StartingSceneController {
         customIP = false;
         customVBox.setDisable(true);
 
-        awsButton.selectedProperty().setValue(false);
+        onlineServerButton.selectedProperty().setValue(false);
         customIPButton.selectedProperty().setValue(false);
     }
 
-    public void onClickAWSButton() {
-        try {
-            File remote_server_IP = new File("src\\main\\resources\\remote_server_IP.txt");
-            Scanner fileReader = new Scanner(remote_server_IP);
-            selectedIP = fileReader.nextLine();
+    public void onClickOnlineServerButton() {
+        selectedIP = gui.getOnlineServerIP();
+        customIP = false;
+        customVBox.setDisable(true);
 
-            customIP = false;
-            customVBox.setDisable(true);
-
-            localhostButton.selectedProperty().setValue(false);
-            customIPButton.selectedProperty().setValue(false);
-        } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-            System.out.println("Remote Server IP not found, please select another option");
-            BoardPopUp.show("Remote Server IP not found, please select another option".toUpperCase(), gui.getStage());
-            onClickLocalhostButton();
-        }
+        localhostButton.selectedProperty().setValue(false);
+        customIPButton.selectedProperty().setValue(false);
     }
 
     public void onClickCustomIPButton() {
@@ -157,6 +144,6 @@ public class StartingSceneController {
         customVBox.setDisable(false);
 
         localhostButton.selectedProperty().setValue(false);
-        awsButton.selectedProperty().setValue(false);
+        onlineServerButton.selectedProperty().setValue(false);
     }
 }

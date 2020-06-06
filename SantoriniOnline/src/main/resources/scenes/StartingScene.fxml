@@ -59,7 +59,7 @@
                                     <Font size="13.0" />
                                  </font>
                               </RadioButton>
-                                        <RadioButton fx:id="awsButton" layoutX="92.0" layoutY="14.0" mnemonicParsing="false" onAction="#onClickAWSButton" text="Online Server">
+                                        <RadioButton fx:id="onlineServerButton" layoutX="92.0" layoutY="14.0" mnemonicParsing="false" onAction="#onClickOnlineServerButton" text="Online Server">
                                  <font>
                                     <Font size="13.0" />
                                  </font>
