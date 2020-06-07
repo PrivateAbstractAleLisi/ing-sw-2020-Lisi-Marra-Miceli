@@ -40,11 +40,7 @@ public class Prometheus extends Card {
 
     @Override
     public void resetBehaviour() {
-        BehaviourManager behaviour = playedBy.getBehaviour();
-        behaviour.setBlockPlacementLeft(1);
-        behaviour.setMovementsRemaining(1);
-        behaviour.setCanClimb(true);
-        behaviour.setCanBuildDomeEverywhere(false);
+        super.resetBehaviour();
         hasAlreadyBuilt = false;
     }
 }

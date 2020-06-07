@@ -12,6 +12,7 @@ public class BehaviourManager {
     private int blockPlacementLeft;
     private boolean canClimb;
     private boolean canBuildDomeEverywhere;
+    private boolean canWinOnPerimeterCell;
 
     /**
      * Standard {@code Creator method} that set each attribute to the default value.
@@ -21,6 +22,7 @@ public class BehaviourManager {
         blockPlacementLeft = 1;
         canClimb=true;
         canBuildDomeEverywhere=false;
+        canWinOnPerimeterCell=true;
     }
 
 //    public void resetDefaultBehaviour() {
@@ -70,7 +72,13 @@ public class BehaviourManager {
         this.canClimb = canClimb;
     }
 
+    public boolean canWinOnPerimeterCell() {
+        return canWinOnPerimeterCell;
+    }
 
+    public void setCanWinOnPerimeterCell(boolean canWinOnPerimeterCell) {
+        this.canWinOnPerimeterCell = canWinOnPerimeterCell;
+    }
 }
 
 

@@ -65,6 +65,12 @@ public class AtlasTest {
         island.placeWorker(worker1, 2, 2);
 
         card.placeWorker(worker2, 1, 1, island);
+
+        assertEquals(2, worker1.getPosition()[0]);
+        assertEquals(2, worker1.getPosition()[1]);
+
+        assertEquals(1, worker2.getPosition()[0]);
+        assertEquals(1, worker2.getPosition()[1]);
     }
 
     @Test(expected = InvalidMovementException.class)
@@ -102,9 +108,12 @@ public class AtlasTest {
 
         card.resetBehaviour();
         card.move(worker1, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(1, worker1.getPosition()[1]);
     }
 
-    @Test //NON RUNNA PERCHÈ MANCA IL BOARDMANAGER E IL SECONDO PLAYER
+    @Test
     public void move_RightMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
         island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
@@ -112,15 +121,12 @@ public class AtlasTest {
 
         card.resetBehaviour();
         card.move(worker1, 1, 1, island);
-    }
 
-    @Test(expected = InvalidMovementException.class)
-    public void move_Simple_WrongMove_PlayerAlreadyOnCell() throws InvalidMovementException, WinningException, CloneNotSupportedException {
-        card.placeWorker(worker1, 0, 0, island);
-        card.placeWorker(worker2, 0, 1, island);
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(1, worker1.getPosition()[1]);
 
-        card.resetBehaviour();
-        card.move(worker1, 0, 1, island);
+        assertEquals(0, worker2.getPosition()[0]);
+        assertEquals(1, worker2.getPosition()[1]);
     }
 
     @Test(expected = InvalidMovementException.class)
@@ -218,6 +224,12 @@ public class AtlasTest {
 
         card.resetBehaviour();
         card.build(worker1, BlockTypeEnum.LEVEL1, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(0, worker1.getPosition()[1]);
+
+        assertEquals(1, island.getCellCluster(1,1).getCostructionHeight());
+
     }
 
     @Test
@@ -238,6 +250,18 @@ public class AtlasTest {
         card.build(worker1, BlockTypeEnum.LEVEL3, 1, 1, island);
         card.resetBehaviour();
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(0, worker1.getPosition()[1]);
+
+        assertEquals(4, island.getCellCluster(1,1).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(0,0).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(0,1).getCostructionHeight());
+
+        assertEquals(1, island.getCellCluster(2,1).getCostructionHeight());
+
     }
 
     @Test(expected = InvalidBuildException.class)
@@ -308,7 +332,6 @@ public class AtlasTest {
     }
 
 
-
     //god specific test
 
     @Test //DONE
@@ -337,5 +360,12 @@ public class AtlasTest {
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
         card.resetBehaviour();
         card.build(worker1, BlockTypeEnum.DOME, 0, 1, island);
+
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(0, worker1.getPosition()[1]);
+
+        int[] cellCluster = island.getCellCluster(1,1).toIntArray();
+        assertEquals(4, cellCluster[cellCluster.length-1]);
+        assertEquals(4, cellCluster[cellCluster.length-1]);
     }
 }

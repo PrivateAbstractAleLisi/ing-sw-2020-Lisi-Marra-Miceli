@@ -1,13 +1,11 @@
 package it.polimi.ingsw.psp58.model.gods;
 
-import it.polimi.ingsw.psp58.auxiliary.Range;
+import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
+import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.BehaviourManager;
 import it.polimi.ingsw.psp58.model.Card;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.Player;
-import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
-import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
@@ -38,7 +36,7 @@ public class Apollo extends Card {
             int actualX = worker.getPosition()[0];
             int actualY = worker.getPosition()[1];
 
-            if (!isValidDestinationApolloPower(actualX, actualY, desiredX, desiredY, island)) {
+            if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
             //decrementa il numero di movimenti rimasti
@@ -59,11 +57,8 @@ public class Apollo extends Card {
             if (oppositePlayer == null) throw new InvalidMovementException("Opposite Player not found");
             Worker enemyWorker = oppositePlayer.getWorker(enemyWorkerID);
 
-            try {
-                island.removeWorker(enemyWorker);
-            } catch (InvalidWorkerRemovalException e) {
-                throw new InvalidMovementException("It's impossible to remove worker from his position");
-            }
+            island.removeWorker(enemyWorker);
+
             island.moveWorker(worker, desiredX, desiredY);
             island.placeWorker(enemyWorker, actualX, actualY);
 
@@ -89,8 +84,8 @@ public class Apollo extends Card {
      * @param island   The current board of game
      * @return true when the destination is reachable from the actual position, false otherwise
      */
-//Override not possible
-    protected boolean isValidDestinationApolloPower(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+    @Override
+    protected boolean isValidDestination(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         CellCluster actualCellCluster = island.getCellCluster(actualX, actualY);
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
@@ -112,6 +107,9 @@ public class Apollo extends Card {
         if (distance(actualX, actualY, desiredX, desiredY) >= 2) {
             return false;
         }
+        if (desiredCellCluster.isComplete()) {
+            return false;
+        }
         //verifica il behaviour permette di salire
         if (behaviour.isCanClimb()) {
             //al max salgo di 1
@@ -125,17 +123,5 @@ public class Apollo extends Card {
             }
         }
         return true;
-    }
-
-    @Override
-    protected boolean checkCellMovementAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
-        Range range = new Range(0, 4);
-        if (range.isIndexOfCellInRange(desiredX, desiredY)) {
-            if (island.getCellCluster(actualX, actualY).hasWorkerOnTop()) {
-                return isValidDestinationApolloPower(actualX, actualY, desiredX, desiredY, island);
-            }
-            return super.checkCellMovementAvailability(actualX, actualY, desiredX, desiredY, island);
-        }
-        return false;
     }
 }

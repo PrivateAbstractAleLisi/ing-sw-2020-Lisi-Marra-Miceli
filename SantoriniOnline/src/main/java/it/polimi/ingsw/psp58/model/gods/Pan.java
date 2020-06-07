@@ -22,10 +22,14 @@ public class Pan extends Card {
     protected void checkWin(Island island, int x, int y, int oldAltitudeOfPlayer) throws WinningException {
         super.checkWin(island, x, y, oldAltitudeOfPlayer);
         CellCluster cellCluster = island.getCellCluster(x, y);
+        boolean isAPerimeterCell = (x == 0 || x== 4 || y == 0 || y== 4);
         int deltaH = oldAltitudeOfPlayer - cellCluster.getCostructionHeight();
         System.out.println("DEBUG: PAN: worker is going down from " + oldAltitudeOfPlayer + " to " + cellCluster.getCostructionHeight() + ", delta is " + deltaH);
-        if (deltaH >= 2) {
-            throw new WinningException("Worker went down of two levels of more");
+        if((playedBy.getBehaviour().canWinOnPerimeterCell() || !isAPerimeterCell)){
+            if (deltaH >= 2) {
+                throw new WinningException("Worker went down of two levels of more");
+            }
         }
+
     }
 }

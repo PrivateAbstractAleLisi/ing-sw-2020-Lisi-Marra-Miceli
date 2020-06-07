@@ -4,12 +4,13 @@ import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEven
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.w3c.dom.events.Event;
 
 import java.io.IOException;
 
@@ -17,16 +18,43 @@ public class StartingSceneController {
     private GUI gui;
 
     //LOGIN ELEMENTS
-    public TextField ipField = null;
-    public TextField userField = null;
-    public Button connectButton = null;
-    public Text loadText = null;
-    public ProgressBar loadProgress = null;
+    @FXML
+    private TextField ipField = null;
+    @FXML
+    private TextField userField = null;
+    @FXML
+    private Button connectButton = null;
+    @FXML
+    private Text loadText = null;
+    @FXML
+    private ProgressBar loadProgress = null;
 
+    @FXML
+    private RadioButton localhostButton;
+    @FXML
+    private RadioButton onlineServerButton;
+    @FXML
+    private RadioButton customIPButton;
+    @FXML
+    private VBox customVBox;
+    public Text versionText;
+
+    private String selectedIP;
+    private boolean customIP;
 
     public void start() throws IOException {
-
         loadText.setText("");
+        loadProgress.setVisible(false);
+        loadText.setVisible(false);
+
+        selectedIP = "127.0.0.1";
+        customIP = false;
+        customVBox.setDisable(true);
+
+        localhostButton.selectedProperty().setValue(true);
+        onlineServerButton.selectedProperty().setValue(false);
+        customIPButton.selectedProperty().setValue(false);
+        versionText.setText("Santorini Online - v." + gui.getGameVersion());
     }
 
     public void close() {
@@ -45,9 +73,10 @@ public class StartingSceneController {
         userField.setDisable(false);
     }
 
-    public void complete () {
+    public void complete() {
         loadProgress.setProgress(1);
     }
+
     private String updateLoadText(String text) {
         return "< " + text.toLowerCase() + " >";
     }
@@ -57,7 +86,12 @@ public class StartingSceneController {
     }
 
     public void onClickEventConnectButton() {
-        loadText.setText(updateLoadText("handling connection request"));
+        if (customIP) {
+            selectedIP = ipField.getText();
+        }
+        loadProgress.setVisible(true);
+        loadText.setText(updateLoadText("Handling connection request"));
+        loadText.setVisible(true);
 
         loadProgress.setProgress(0.15f);
         disableAllLoginFields();
@@ -66,7 +100,7 @@ public class StartingSceneController {
         String userProposal = userField.getText().toLowerCase();
         //TODO estrudere questi 2 metodi dalla cli dato che servono ovunque
         boolean localUserIsValid = CLIView.checkLocalUsernameAlphaNumeric(userProposal);
-        boolean localIpIsValid = CLIView.checkValidIP(ipField.getText());
+        boolean localIpIsValid = CLIView.checkValidIP(selectedIP);
 
         if (localIpIsValid && localUserIsValid) {
             tryConnection(userProposal);
@@ -77,12 +111,39 @@ public class StartingSceneController {
     private void tryConnection(String userProposal) {
         //set up the client
         loadText.setText(updateLoadText("establishing connection"));
-        SantoriniClient client = new SantoriniClient(gui, ipField.getText(), gui.isPingEnabled());
+        SantoriniClient client = new SantoriniClient(gui, selectedIP, gui.isPingEnabled());
         client.begin();
         gui.setClient(client);
         VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
         client.sendEvent(req);
         loadProgress.setProgress(0.5f);
         new Thread(client).start();
+    }
+
+    public void onClickLocalhostButton() {
+        selectedIP = "127.0.0.1";
+        customIP = false;
+        customVBox.setDisable(true);
+
+        onlineServerButton.selectedProperty().setValue(false);
+        customIPButton.selectedProperty().setValue(false);
+    }
+
+    public void onClickOnlineServerButton() {
+        selectedIP = gui.getOnlineServerIP();
+        customIP = false;
+        customVBox.setDisable(true);
+
+        localhostButton.selectedProperty().setValue(false);
+        customIPButton.selectedProperty().setValue(false);
+    }
+
+    public void onClickCustomIPButton() {
+        selectedIP = "";
+        customIP = true;
+        customVBox.setDisable(false);
+
+        localhostButton.selectedProperty().setValue(false);
+        onlineServerButton.selectedProperty().setValue(false);
     }
 }

@@ -4,14 +4,18 @@ import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.exceptions.WinningException;
 import it.polimi.ingsw.psp58.model.*;
-import it.polimi.ingsw.psp58.model.gamemap.*;
-import org.junit.*;
-import it.polimi.ingsw.psp58.view.UI.CLI.utility.IslandUtility;
+import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+import it.polimi.ingsw.psp58.model.gamemap.Island;
+import it.polimi.ingsw.psp58.model.gamemap.Worker;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertEquals;
 
-public class ArtemisTest {
-    BoardManager boardManager = null;
+public class TritonTest {
+    BoardManager boardManager=null;
     Card card = null;
     Card card2 = null;
     Player player1 = null;
@@ -19,29 +23,26 @@ public class ArtemisTest {
     Island island = null;
     Worker worker1 = null;
     Worker worker2 = null;
-    Worker worker1B = null;
-    Worker worker2B = null;
-    IslandUtility ip = null;
+    Worker worker1B= null;
+    Worker worker2B= null;
 
     @Before
     public void setUp() throws Exception {
-        boardManager = new BoardManager();
+        boardManager=new BoardManager();
         boardManager.addPlayer("Gabriele");
         boardManager.addPlayer("Matteo");
 
         island = boardManager.getIsland();
-
-        player1 = boardManager.getPlayer("Gabriele");
-        player2 = boardManager.getPlayer("Matteo");
-        player1.setCard(CardEnum.ARTEMIS);
+        player1=boardManager.getPlayer("Gabriele");
+        player2=boardManager.getPlayer("Matteo");
+        player1.setCard(CardEnum.TRITON);
         player2.setCard(CardEnum.ATLAS);
         worker1 = player1.getWorker(Worker.IDs.A);
         worker2 = player2.getWorker(Worker.IDs.A);
         worker1B = player1.getWorker(Worker.IDs.B);
         worker2B = player2.getWorker(Worker.IDs.B);
-        card = player1.getCard();
-        card2 = player2.getCard();
-
+        card=player1.getCard();
+        card2=player2.getCard();
     }
 
     @After
@@ -49,6 +50,24 @@ public class ArtemisTest {
         player1.setCard((Card) null);
         card = null;
     }
+
+
+    @Test //DONE
+    public void resetBehaviour() {
+        BehaviourManager behaviourManager = player1.getBehaviour();
+        behaviourManager.setCanClimb(false);
+        behaviourManager.setCanBuildDomeEverywhere(true);
+        behaviourManager.setBlockPlacementLeft(25);
+        behaviourManager.setMovementsRemaining(0);
+
+        card.resetBehaviour();
+
+        assertTrue(behaviourManager.isCanClimb());
+        assertFalse(behaviourManager.isCanBuildDomeEverywhere());
+        assertEquals(1, behaviourManager.getBlockPlacementLeft());
+        assertEquals(1, behaviourManager.getMovementsRemaining());
+    }
+
 
     @Test //DONE
     public void distance() {
@@ -338,46 +357,30 @@ public class ArtemisTest {
         card.build(worker1, BlockTypeEnum.DOME, 1, 1, island);
     }
 
-    //god specific test
-    @Test //DONE
-    public void resetBehaviour() {
-        BehaviourManager behaviourManager = player1.getBehaviour();
-        behaviourManager.setCanClimb(false);
-        behaviourManager.setCanBuildDomeEverywhere(true);
-        behaviourManager.setBlockPlacementLeft(25);
-        behaviourManager.setMovementsRemaining(0);
-
-        card.resetBehaviour();
-
-        assertTrue(behaviourManager.isCanClimb());
-        assertFalse(behaviourManager.isCanBuildDomeEverywhere());
-        assertEquals(1, behaviourManager.getBlockPlacementLeft());
-        assertEquals(2, behaviourManager.getMovementsRemaining());
-    }
-
+    //TEST FOR SPECIFIC GOD POWER
     @Test
-    public void move_RightMove_SecondMove() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    public void move_consecutiveMoveOnPerimeter_shouldReturnNormally() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
-        island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
-        card.placeWorker(worker2, 0, 1, island);
 
-        card.resetBehaviour();
-        card.move(worker1, 1, 1, island);
-        card.move(worker1, 2, 1, island);
+        card.move(worker1, 0, 1, island);
+        card.move(worker1,0,2,island);
+        card.move(worker1,0,3,island);
+        card.move(worker1,0,4,island);
+        card.move(worker1,1,4,island);
 
-        assertEquals(2, worker1.getPosition()[0]);
-        assertEquals(1, worker1.getPosition()[1]);
-
+        assertEquals(1, worker1.getPosition()[0]);
+        assertEquals(4, worker1.getPosition()[1]);
     }
 
-    @Test (expected = IllegalArgumentException.class)
-    public void move_WrongMove_SecondMoveBack() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
+    @Test (expected = InvalidMovementException.class)
+    public void move_consecutiveMoveNotOnPerimeter_shouldThrowException() throws InvalidMovementException, WinningException, CloneNotSupportedException {
         card.placeWorker(worker1, 0, 0, island);
-        island.buildBlock(BlockTypeEnum.LEVEL1, 1, 1);
-        card.placeWorker(worker2, 0, 1, island);
 
         card.resetBehaviour();
-        card.move(worker1, 1, 1, island);
-        card.move(worker1, 0, 0, island);
+        card.move(worker1,1,1,island);
+        card.move(worker1,1,2,island);
     }
+
+
+
 }

@@ -2,7 +2,6 @@ package it.polimi.ingsw.psp58.model.gamemap;
 
 import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
-import it.polimi.ingsw.psp58.exceptions.InvalidWorkerRemovalException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +76,7 @@ public class IslandTest {
     }*/
 
     @Test
-    public void placeWorker_AndRemove() throws InvalidMovementException, InvalidWorkerRemovalException {
+    public void placeWorker_AndRemove() throws InvalidMovementException {
         isla1.placeWorker(wb, 1, 1);
         System.out.println("DEBUG: 1 done.");
         isla1.removeWorker(wb);
@@ -164,7 +163,7 @@ public class IslandTest {
     }
 
     @Test//(expected = InvalidWorkerRemovalException.class)
-    public void removeWorker() throws InvalidMovementException, InvalidWorkerRemovalException {
+    public void removeWorker() throws InvalidMovementException {
         isla1.placeWorker(wa, 2, 1);
         isla1.removeWorker(wa);
         isla1.placeWorker(wa, 2, 1);
@@ -178,12 +177,6 @@ public class IslandTest {
         isla1.removeWorker(wa);
         assertFalse(isla1.getCellCluster(3, 3).hasWorkerOnTop());
 
-    }
-
-    @Test(expected = InvalidWorkerRemovalException.class)
-    public void removeWorker_no_Worker_in_cell() throws InvalidWorkerRemovalException {
-        wb.setPosition(3, 4); //cosi non è null e non crasha per null pointer su position
-        isla1.removeWorker(wb);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
