@@ -1,10 +1,8 @@
 package it.polimi.ingsw.psp58.controller;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
-import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerCardsChosenEvent;
@@ -391,9 +389,7 @@ public class TurnController extends EventSource implements ControllerListener {
 
     public void sendIslandUpdate() {
         IslandData currentIsland = board.getIsland().getIslandDataCopy();
-        Gson gson = new Gson();
-        String islandDataJson = gson.toJson(currentIsland);
-        CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent("island update", islandDataJson);
+        CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent("island update", currentIsland);
         notifyAllObserverByType(VIEW, islandUpdateEvent);
     }
 

@@ -1,7 +1,5 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
-import com.google.gson.Gson;
-import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
