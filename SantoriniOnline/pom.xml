@@ -3,7 +3,7 @@
 
     <groupId>it.polimi.ingsw.psp58</groupId>
     <artifactId>SantoriniOnline</artifactId>
-    <version>1.5.3</version>
+    <version>1.5.5</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -44,6 +44,29 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>11.0.2</version>
+        </dependency>
+
+        <!--JAVAFX FOR ALL OS-->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>win</classifier>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>linux</classifier>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>11.0.2</version>
+            <classifier>mac</classifier>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -134,16 +157,16 @@
                         <artifactId>maven-jar-plugin</artifactId>
                         <version>3.2.0</version>
                         <configuration>
-                                <excludes>
-                                    <exclude>it/polimi/ingsw/psp58/view/UI/**</exclude>
-                                    <exclude>it/polimi/ingsw/psp58/view/exceptions/**</exclude>
-                                    <exclude>it/polimi/ingsw/psp58/networking/client/**</exclude>
-                                    <exclude>images/**</exclude>
-                                    <exclude>scenes/*.*</exclude>
-                                    <exclude>sounds/*.*</exclude>
-                                    <exclude>style.css</exclude>
-                                    <exclude>style 2.css</exclude>
-                                </excludes>
+                            <excludes>
+                                <exclude>it/polimi/ingsw/psp58/view/UI/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/view/exceptions/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/networking/client/**</exclude>
+                                <exclude>images/**</exclude>
+                                <exclude>scenes/*.*</exclude>
+                                <exclude>sounds/*.*</exclude>
+                                <exclude>style.css</exclude>
+                                <exclude>style 2.css</exclude>
+                            </excludes>
                         </configuration>
                     </plugin>
 
