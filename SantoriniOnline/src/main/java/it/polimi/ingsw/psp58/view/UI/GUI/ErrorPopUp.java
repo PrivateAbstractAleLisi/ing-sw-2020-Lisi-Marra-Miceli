@@ -2,14 +2,9 @@ package it.polimi.ingsw.psp58.view.UI.GUI;
 
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.ErrorSceneController;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
@@ -39,21 +34,16 @@ public class ErrorPopUp {
         stage.setTitle("ERROR");
         stage.setResizable(false);
 
-
-
-       // button.setOnAction(event -> stage.close());
-
-
+        // button.setOnAction(event -> stage.close());
 
         Scene scene = loadScene();
 
         stage.setScene(scene);
         stage.initOwner(parentStage);
-        ((ErrorSceneController) loader.getController()).setMessageLabel(message);
+        ((ErrorSceneController) loader.getController()).setMessageText(message);
 
         stage.show();
         ((ErrorSceneController) loader.getController()).displayAndArm();
-
 
 
     }

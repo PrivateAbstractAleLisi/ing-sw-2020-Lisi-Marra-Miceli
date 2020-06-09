@@ -108,18 +108,18 @@ public class GUI extends Application implements ViewListener {
 //        preGameSceneController.setGui(this);
 
         //set up the board scene and controller
-        FXMLLoader boardLoader = new FXMLLoader(
-                getClass().getResource("/scenes/BoardScene.fxml"));
-        boardScene = new Scene(boardLoader.load());
-        boardSceneController = boardLoader.getController();
-        boardSceneController.setGui(this);
+//        FXMLLoader boardLoader = new FXMLLoader(
+//                getClass().getResource("/scenes/BoardScene.fxml"));
+//        boardScene = new Scene(boardLoader.load());
+//        boardSceneController = boardLoader.getController();
+//        boardSceneController.setGui(this);
 
         //set up the starting scene and controller
-        FXMLLoader outcomeSceneLoader = new FXMLLoader(
-                getClass().getResource("/scenes/Outcome.fxml"));
-        outcomeScene = new Scene(outcomeSceneLoader.load());
-
-        outcomeSceneController = outcomeSceneLoader.getController();
+//        FXMLLoader outcomeSceneLoader = new FXMLLoader(
+//                getClass().getResource("/scenes/Outcome.fxml"));
+//        outcomeScene = new Scene(outcomeSceneLoader.load());
+//
+//        outcomeSceneController = outcomeSceneLoader.getController();
 
         //RoomSizeRequest
 
@@ -128,8 +128,6 @@ public class GUI extends Application implements ViewListener {
         stage.setScene(startingScene);
 
         stage.show();
-
-
     }
 
     @Override
@@ -202,6 +200,15 @@ public class GUI extends Application implements ViewListener {
         boardSceneController.setGui(this);
     }
 
+    private void setOutcomeScene() throws IOException {
+        //set up the starting scene and controller
+        FXMLLoader outcomeSceneLoader = new FXMLLoader(
+                getClass().getResource("/scenes/Outcome.fxml"));
+        outcomeScene = new Scene(outcomeSceneLoader.load());
+
+        outcomeSceneController = outcomeSceneLoader.getController();
+    }
+
     public void sendEvent(ControllerGameEvent event) {
         client.sendEvent(event);
     }
@@ -259,7 +266,7 @@ public class GUI extends Application implements ViewListener {
         new ErrorPopUp().show(event.getErrorMessage(), stage);
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -269,7 +276,7 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
 
-        new ErrorPopUp().show("Ablerobello", stage);
+        new ErrorPopUp().show("Please wait few seconds and retry.", stage);
     }
 
     @Override
@@ -386,8 +393,14 @@ public class GUI extends Application implements ViewListener {
     public void handleEvent(CV_GameOverEvent event) {
         System.out.println("DEBUG: game is over, loading outcome scene.");
         boardSceneController.setWaitingView();
-        outcomeSceneController.initAndFill(event, this); //TODO is gui necessary?
-        changeScene(outcomeScene);
+
+        try {
+            setOutcomeScene();
+            outcomeSceneController.initAndFill(event, this); //TODO is gui necessary?
+            changeScene(outcomeScene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
