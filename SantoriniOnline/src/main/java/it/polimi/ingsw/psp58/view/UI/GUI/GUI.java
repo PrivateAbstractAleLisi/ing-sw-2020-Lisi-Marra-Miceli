@@ -128,6 +128,8 @@ public class GUI extends Application implements ViewListener {
         stage.setScene(startingScene);
 
         stage.show();
+
+
     }
 
     @Override
@@ -253,7 +255,8 @@ public class GUI extends Application implements ViewListener {
 
         getStartingSceneController().enableAllLoginFields();
         //notify the error on screen
-        Message.show(event.getErrorMessage(), stage);
+        //Debug error pop up
+        new ErrorPopUp().show(event.getErrorMessage(), stage);
 
         try {
             Thread.sleep(1000);
@@ -266,6 +269,7 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
 
+        new ErrorPopUp().show("Ablerobello", stage);
     }
 
     @Override
@@ -273,6 +277,10 @@ public class GUI extends Application implements ViewListener {
 
     }
 
+
+    public void showError(String message) {
+        new ErrorPopUp().show(message, stage);
+    }
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
         Message.show(event.getEventDescription(), stage);
@@ -311,7 +319,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_PreGameErrorGameEvent event) {
-        Message.show(event.getEventDescription(), stage);
+        new ErrorPopUp().show("Ablerobello", stage);
     }
 
     @Override
