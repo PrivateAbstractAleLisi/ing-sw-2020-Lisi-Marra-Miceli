@@ -45,7 +45,7 @@ public class OutcomeSceneController {
     }
 
     private boolean weAreTheChampions (String winner) {
-        return gui.getUsername().toLowerCase().equals(winner.toLowerCase());
+        return winner!=null && gui.getUsername().toLowerCase().equals(winner.toLowerCase());
     }
 
     /**
