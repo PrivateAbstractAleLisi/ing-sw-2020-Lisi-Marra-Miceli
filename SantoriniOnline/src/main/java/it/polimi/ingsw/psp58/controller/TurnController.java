@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
@@ -363,6 +364,8 @@ public class TurnController extends EventSource implements ControllerListener {
 
             removePlayerFromGame(player);
             room.setSpectator(player);
+            CV_SpectatorGameEvent spectatorGameEvent = new CV_SpectatorGameEvent("", player);
+            notifyAllObserverByType(VIEW, spectatorGameEvent);
             nextTurn();
         } else if (numberOfPlayers == 2) {
             if (turnSequence.get(0).getUsername().equals(player)) { //the loser

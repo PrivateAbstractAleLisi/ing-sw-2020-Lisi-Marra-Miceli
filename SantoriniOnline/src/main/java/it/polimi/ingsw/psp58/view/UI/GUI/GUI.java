@@ -6,6 +6,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
@@ -116,7 +117,7 @@ public class GUI extends Application implements ViewListener {
 
         //set up the starting scene and controller
 //        FXMLLoader outcomeSceneLoader = new FXMLLoader(
-//                getClass().getResource("/scenes/Outcome.fxml"));
+//                getClass().getResource("/scenes/OutcomeScene.fxml"));
 //        outcomeScene = new Scene(outcomeSceneLoader.load());
 //
 //        outcomeSceneController = outcomeSceneLoader.getController();
@@ -203,7 +204,7 @@ public class GUI extends Application implements ViewListener {
     private void setOutcomeScene() throws IOException {
         //set up the starting scene and controller
         FXMLLoader outcomeSceneLoader = new FXMLLoader(
-                getClass().getResource("/scenes/Outcome.fxml"));
+                getClass().getResource("/scenes/OutcomeScene.fxml"));
         outcomeScene = new Scene(outcomeSceneLoader.load());
 
         outcomeSceneController = outcomeSceneLoader.getController();
@@ -288,6 +289,7 @@ public class GUI extends Application implements ViewListener {
     public void showError(String message) {
         new ErrorPopUp().show(message, stage);
     }
+
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
         Message.show(event.getEventDescription(), stage);
@@ -391,16 +393,36 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_GameOverEvent event) {
-        System.out.println("DEBUG: game is over, loading outcome scene.");
-        boardSceneController.setWaitingView();
+        if (event.getWinner() != null) {
+            //someone won
+            System.out.println("DEBUG: game is over, loading outcome scene.");
+            boardSceneController.setWaitingView();
 
-        try {
-            setOutcomeScene();
-            outcomeSceneController.initAndFill(event, this); //TODO is gui necessary?
-            changeScene(outcomeScene);
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                setOutcomeScene();
+                outcomeSceneController.initAndFillWinner(event.getWinner(), this);
+                changeScene(outcomeScene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            //someone lost the game
+            List<String> losers = event.getLosers();
+            if (losers.size() == 1 && losers.get(0).equals(username)) {
+                //you lost the game
+                System.out.println("I've lost");
+                try {
+                    setOutcomeScene();
+                    outcomeSceneController.initAndFillSpectator(event.getLosers(), this);
+                    changeScene(outcomeScene);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println(username.toUpperCase() + "has lost.");
+            }
         }
+
     }
 
     /**
@@ -435,7 +457,21 @@ public class GUI extends Application implements ViewListener {
         boardSceneController.handle(event);
     }
 
+    @Override
+    public void handleEvent(CV_SpectatorGameEvent cv_spectatorGameEvent) {
+        boardSceneController.handle(cv_spectatorGameEvent);
+    }
+
     public String getOnlineServerIP() {
         return onlineServerIP;
+    }
+
+    public void setShowBoardScene (){
+        changeScene(boardScene);
+    }
+
+    public void closeApp(){
+        client.closeConnection();
+        stage.close();
     }
 }

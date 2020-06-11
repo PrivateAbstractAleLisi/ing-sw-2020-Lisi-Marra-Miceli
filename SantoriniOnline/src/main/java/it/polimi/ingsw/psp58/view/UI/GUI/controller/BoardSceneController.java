@@ -4,10 +4,11 @@ import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PlayerPlaceWorkerRequestEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.WorkerColors;
@@ -15,10 +16,7 @@ import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.BoardPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.CommandGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateAbstract;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.PlaceWorkerGameState;
-import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.WaitGameState;
+import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.*;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.exceptions.WorkerLockedException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -103,7 +101,10 @@ public class BoardSceneController {
 
     //ACTION BUTTONS
     @FXML
-    private Button moveButton, buildButton, passButton;
+    private StackPane commandGameButtonPane;
+    @FXML
+    private Button moveButton, buildButton, passButton, exitSpectatorMode;
+
 
     //BLOCKS
     @FXML
@@ -201,6 +202,10 @@ public class BoardSceneController {
         currentStateInstance.handleClickOnButton(TurnAction.PASS);
     }
 
+    public void exitSpectatorModeClick() {
+        gui.closeApp();
+    }
+
     /* ----------------------------------------------------------------------------------------------
                                          BLOCKS CLICK
        ----------------------------------------------------------------------------------------------*/
@@ -267,6 +272,13 @@ public class BoardSceneController {
         disableAllActionButtons();
         resetWorkerStatus();
         disableWorkerGlow();
+    }
+
+    private void setSpectatorView() {
+        commandGameButtonPane.getChildren().get(0).setVisible(false);
+        commandGameButtonPane.getChildren().get(0).setDisable(true);
+        commandGameButtonPane.getChildren().get(1).setVisible(true);
+        commandGameButtonPane.getChildren().get(1).setDisable(false);
     }
 
     /**
@@ -403,6 +415,16 @@ public class BoardSceneController {
                 setGlowByNode(true, workerSlotB);
                 addMessageToQueueList("Please place the SECOND worker");
                 break;
+        }
+    }
+
+    public void handle(CV_SpectatorGameEvent event) {
+        if (event.getSpectatorPlayer().equals(myUsername)) {
+            GameStateAbstract nextState = new SpectatorGameState(gui);
+            setSpectatorView();
+            this.currentStateInstance = nextState;
+        } else {
+            opponentPlayerSpectator(event.getSpectatorPlayer());
         }
     }
 
@@ -943,7 +965,7 @@ public class BoardSceneController {
         }
         //set up the name
         Label name = (Label) actualVBox.getChildren().get(0);
-        name.setText(player);
+        name.setText(player.toUpperCase());
 
         //set up the image of the card
         HBox hBox = (HBox) actualVBox.getChildren().get(1);
@@ -959,10 +981,26 @@ public class BoardSceneController {
         setupCardDescription(cardDescription, card);
     }
 
+    private void opponentPlayerSpectator(String spectatorPlayer) {
+        VBox actualVBox;
+        Label name1 = (Label) cardInfo1.getChildren().get(0);
+
+        if (name1.getText().equals(spectatorPlayer)) {
+            actualVBox = cardInfo1;
+        } else {
+            actualVBox = cardInfo2;
+        }
+
+        Label name = (Label) actualVBox.getChildren().get(0);
+        name.setText(spectatorPlayer.toUpperCase() + " - Spectator");
+        actualVBox.setDisable(true);
+    }
+
     /**
      * Set the proper Card description with the right size.
+     *
      * @param cardDescription {@link Text} field that contains the card description.
-     * @param card Card to show.
+     * @param card            Card to show.
      */
     private void setupCardDescription(Text cardDescription, CardEnum card) {
         String fontName = cardDescription.getFont().getName();
@@ -980,7 +1018,7 @@ public class BoardSceneController {
                 // 70 < descriptionLength <= 100
                 cardDescription.setFont(Font.font(fontName, 16));
             }
-        }else {
+        } else {
             // descriptionLength <=70
             cardDescription.setFont(Font.font(fontName, 18));
         }
@@ -1014,5 +1052,4 @@ public class BoardSceneController {
         Label numberOfBuilds = (Label) turnInfo.getChildren().get(3);
         numberOfBuilds.setVisible(false);
     }
-
 }
