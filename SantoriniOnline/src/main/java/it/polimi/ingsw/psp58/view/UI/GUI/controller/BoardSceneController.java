@@ -1,6 +1,5 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
@@ -619,11 +618,6 @@ public class BoardSceneController {
         return lastIslandUpdate;
     }
 
-    public void updateIsland(String islandDataJSON) {
-        IslandData island = islandDataFromJson(islandDataJSON);
-        updateIsland(island);
-    }
-
     public void updateIsland(IslandData island) {
         setLastIslandUpdate(island);
 
@@ -673,10 +667,6 @@ public class BoardSceneController {
 
     public void setLastIslandUpdate(IslandData lastIslandUpdate) {
         this.lastIslandUpdate = lastIslandUpdate;
-    }
-
-    public void setLastIslandUpdate(String lastIslandUpdate) {
-        this.lastIslandUpdate = islandDataFromJson(lastIslandUpdate);
     }
 
     public void initializeIsland() {
@@ -788,12 +778,6 @@ public class BoardSceneController {
 //        }
 //
 //        return result;
-    }
-
-    private IslandData islandDataFromJson(String islandJson) {
-        //display island
-        Gson gson = new Gson();
-        return gson.fromJson(islandJson, IslandData.class);
     }
 
     /* ----------------------------------------------------------------------------------------------
