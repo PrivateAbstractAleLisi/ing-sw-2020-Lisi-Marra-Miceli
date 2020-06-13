@@ -1,7 +1,6 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
-import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
@@ -36,28 +35,6 @@ public class CommandGameState extends GameStateAbstract {
         myUsername = gui.getUsername();
         state = CLEAN_TURN;
         boardController.hideWorkerPlacementBox();
-    }
-
-    @Override
-    public GameStateEnum getState() {
-        return state;
-    }
-
-    @Override
-    public ControllerGameEvent handleClick(String username, int x, int y, Worker.IDs workerID, GameStateEnum state) {
-        switch (state) {
-            //todo remove
-            case SELECT_WORKER:
-//                boardSceneController.showPossibleBlockAction(workerID);
-                break;
-            case MOVE:
-                return new VC_PlayerCommandGameEvent("", TurnAction.MOVE, username, new int[]{x, y}, workerID, null);
-            case BUILD:
-                return new VC_PlayerCommandGameEvent("", TurnAction.BUILD, username, new int[]{x, y}, workerID, null);
-            case WAIT_COMMAND_BUTTON_:
-                displayPopupError("please select a command first");
-        }
-        return null;
     }
 
     @Override

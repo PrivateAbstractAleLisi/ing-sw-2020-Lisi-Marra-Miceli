@@ -1,55 +1,62 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_NewGameResponseEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameOverEvent;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+
+import java.util.List;
 
 
 public class OutcomeSceneController {
-
     GUI gui;
-    CV_GameOverEvent received;
 
     //UI ELEMENTS
 
     @FXML
-    private  Text labelTitle;
+    private Text labelTitle;
     @FXML
-    private  Label labelSubTitle;
+    private Label labelSubTitle;
     @FXML
-    private  Button buttonPlayAgain, buttonQuitDesktop, buttonDisconnect;
+    private StackPane playAgainStackPane,spectatorStackPane;
 
-    /**
-     * when the game is over
-     * @param event
-     * @param gui
-     */
-    public void initAndFill(CV_GameOverEvent event, GUI gui) {
+
+    public void initAndFillWinner(String winner, GUI gui) {
         this.gui = gui;
-        this.received = event;
-        String winner = received.getWinner();
+        spectatorStackPane.setDisable(true);
+        spectatorStackPane.setVisible(false);
+        playAgainStackPane.setDisable(false);
+        playAgainStackPane.setVisible(true);
 
         if (weAreTheChampions(winner)) {
             labelTitle.setText("YOU WIN");
-        }
-        else {
+        } else {
             labelTitle.setText("YOU LOSE");
         }
         labelSubTitle.setText(winner.toUpperCase() + " IS THE WINNER");
-
     }
 
-    private boolean weAreTheChampions (String winner) {
-        return gui.getUsername().toLowerCase().equals(winner.toLowerCase());
+    public void initAndFillSpectator(List<String> losers, GUI gui) {
+        this.gui = gui;
+
+        spectatorStackPane.setDisable(false);
+        spectatorStackPane.setVisible(true);
+        playAgainStackPane.setDisable(true);
+        playAgainStackPane.setVisible(false);
+
+        labelTitle.setText("YOU LOSE");
+    }
+
+    private boolean weAreTheChampions(String winner) {
+        return winner != null && gui.getUsername().toLowerCase().equals(winner.toLowerCase());
     }
 
     /**
-     * when you lost 
+     * when you lost
+     *
      * @param boardSceneController
      */
     public void initSpectator(BoardSceneController boardSceneController) {
@@ -57,9 +64,15 @@ public class OutcomeSceneController {
     }
 
     private void sendClientTurnDownRequest() {
-        VC_NewGameResponseEvent turnDown = new VC_NewGameResponseEvent(gui.getUsername()+ " won't play again", false);
+        VC_NewGameResponseEvent turnDown = new VC_NewGameResponseEvent(gui.getUsername() + " won't play again", false);
         gui.sendEvent(turnDown);
     }
+
+    @FXML //enable spectatorMode
+    public void spectatorButton(){
+        gui.setShowBoardScene();
+    }
+
     @FXML //quits to desktop
     public void quitOMCE() {
         System.out.println("DEBUG desktop clicked");
@@ -67,12 +80,14 @@ public class OutcomeSceneController {
         Platform.exit();
         System.exit(0);
     }
+
     @FXML //send an event to play another game
     public void playOMCE() {
         System.out.println("DEBUG play again clicked");
-        VC_NewGameResponseEvent playWithMe = new VC_NewGameResponseEvent(gui.getUsername()+ " I wanna play a game with you", true);
+        VC_NewGameResponseEvent playWithMe = new VC_NewGameResponseEvent(gui.getUsername() + " I wanna play a game with you", true);
         gui.sendEvent(playWithMe);
     }
+
     @FXML //disconnects and back to starting scene
     public void discoOMCE() {
         System.out.println("DEBUG disconnect clicked");

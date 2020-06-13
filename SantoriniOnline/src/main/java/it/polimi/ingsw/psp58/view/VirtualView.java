@@ -9,6 +9,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.connection.PingEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
@@ -345,6 +346,11 @@ public class VirtualView extends EventSource implements ViewListener, Controller
         if (event.getActingPlayer().equals(this.username)) {
             sendEventToClient(event);
         }
+    }
+
+    @Override
+    public void handleEvent(CV_SpectatorGameEvent cv_spectatorGameEvent) {
+        sendEventToClient(cv_spectatorGameEvent);
     }
 
     @Override

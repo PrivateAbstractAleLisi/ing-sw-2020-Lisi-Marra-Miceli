@@ -2,6 +2,7 @@ package it.polimi.ingsw.psp58.event.core;
 
 
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
@@ -63,4 +64,6 @@ public interface ViewListener extends EventListener {
     void handleEvent(CV_WaitMatchGameEvent event);
 
     void handleEvent(CV_TurnInfoEvent CVTurnInfoEvent);
+
+    void handleEvent(CV_SpectatorGameEvent cv_spectatorGameEvent);
 }

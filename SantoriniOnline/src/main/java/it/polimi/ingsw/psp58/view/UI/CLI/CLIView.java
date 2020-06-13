@@ -5,6 +5,11 @@ import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.auxiliary.Range;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
+
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
@@ -530,6 +535,11 @@ public class CLIView extends EventSource implements ViewListener {
 
     @Override
     public void handleEvent(CV_TurnInfoEvent CVTurnInfoEvent) {
+
+    }
+
+    @Override
+    public void handleEvent(CV_SpectatorGameEvent cv_spectatorGameEvent) {
 
     }
 

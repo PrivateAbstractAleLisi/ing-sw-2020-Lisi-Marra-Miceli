@@ -3,6 +3,8 @@ package it.polimi.ingsw.psp58.controller;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerCardsChosenEvent;
@@ -202,7 +204,7 @@ public class TurnController extends EventSource implements ControllerListener {
         return false;
     }
 
-    public boolean canMove(String actingPlayer ){
+    public boolean canMove(String actingPlayer) {
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
         int numberOfBuild = currentTurnInstance.getNumberOfBuild();
@@ -211,7 +213,7 @@ public class TurnController extends EventSource implements ControllerListener {
                 ((numberOfBuild == 0) || ((isPrometheus) && (numberOfBuild == 1)));
     }
 
-    public boolean canBuild(String actingPlayer ){
+    public boolean canBuild(String actingPlayer) {
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
         int numberOfMove = currentTurnInstance.getNumberOfMove();
@@ -234,9 +236,9 @@ public class TurnController extends EventSource implements ControllerListener {
         return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0);
     }
 
-    private void sendCommandExecuted(String actingPlayer){
-        CV_CommandExecutedGameEvent event = new CV_CommandExecutedGameEvent("",actingPlayer);
-        notifyAllObserverByType(VIEW,event);
+    private void sendCommandExecuted(String actingPlayer) {
+        CV_CommandExecutedGameEvent event = new CV_CommandExecutedGameEvent("", actingPlayer);
+        notifyAllObserverByType(VIEW, event);
     }
 
     private void sendCommandRequest(String actingPlayer) {
@@ -337,12 +339,15 @@ public class TurnController extends EventSource implements ControllerListener {
         printLogMessage(player.toUpperCase() + "LOST THE GAME");
         if (numberOfPlayers == 3) {
             //removes the player from the list
+            Integer playerIndex = 0;
             for (Integer integer : turnSequence.keySet()) {
                 if (turnSequence.get(integer).getUsername().equals(player)) {
-                    turnSequence.remove(integer);
-                    numberOfPlayers = 2;
+                    playerIndex = integer;
                 }
             }
+            turnSequence.remove(playerIndex);
+            numberOfPlayers = 2;
+
             //removes the workers of that player from the island
             Player defeatedPlayer = board.getPlayer(player);
             if (defeatedPlayer.getCard().getName() == CardEnum.CHRONUS) {
@@ -358,6 +363,8 @@ public class TurnController extends EventSource implements ControllerListener {
 
             removePlayerFromGame(player);
             room.setSpectator(player);
+            CV_SpectatorGameEvent spectatorGameEvent = new CV_SpectatorGameEvent("", player);
+            notifyAllObserverByType(VIEW, spectatorGameEvent);
             nextTurn();
         } else if (numberOfPlayers == 2) {
             if (turnSequence.get(0).getUsername().equals(player)) { //the loser
@@ -574,7 +581,7 @@ public class TurnController extends EventSource implements ControllerListener {
                     CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("The command request wasn't valid. Please retry.", event.fromPlayer);
                     notifyAllObserverByType(VIEW, errorGameEvent);
                     sendCommandRequest(event.fromPlayer);
-                }else{
+                } else {
                     printErrorLogMessage("Not able to send events to this player because is Unknown");
                 }
             }
