@@ -10,6 +10,7 @@ public class SantoriniServer {
 
     public final static int SOCKET_PORT = 7557;
     public final static int SOCKET_TIMEOUT_S = 20;
+    public final static String SERVER_VERSION = "1.5.7";
 
     public static void main(String[] args) throws IOException {
 
@@ -42,7 +43,7 @@ public class SantoriniServer {
                 }
             }
         }
-        System.out.println("SERVER: The server is running");
+        System.out.println("SERVER: The server is running - version " + SERVER_VERSION);
         while (true) { //waiting for a client to connect
 
 

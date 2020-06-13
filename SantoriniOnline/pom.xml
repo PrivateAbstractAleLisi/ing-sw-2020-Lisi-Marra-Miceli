@@ -3,7 +3,7 @@
 
     <groupId>it.polimi.ingsw.psp58</groupId>
     <artifactId>SantoriniOnline</artifactId>
-    <version>1.5.5</version>
+    <version>1.5.7</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
