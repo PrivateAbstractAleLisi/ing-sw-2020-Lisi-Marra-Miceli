@@ -1,15 +1,16 @@
 package it.polimi.ingsw.psp58.event.gameEvents.prematch;
 
+import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 public class CV_PlayerPlaceWorkerRequestEvent extends ViewGameEvent {
     private String actingPlayer;
-    private String islandData;
+    private IslandData islandData;
     private Worker.IDs workerToPlace;
 
-    public CV_PlayerPlaceWorkerRequestEvent(String description, String actingPlayer, String islandData, Worker.IDs workerToPlace) {
+    public CV_PlayerPlaceWorkerRequestEvent(String description, String actingPlayer, IslandData islandData, Worker.IDs workerToPlace) {
         super(description);
         this.actingPlayer = actingPlayer;
         this.workerToPlace = workerToPlace;
@@ -29,7 +30,7 @@ public class CV_PlayerPlaceWorkerRequestEvent extends ViewGameEvent {
         return workerToPlace;
     }
 
-    public String getIsland() {
+    public IslandData getIsland() {
         return islandData;
     }
 }

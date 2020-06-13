@@ -46,10 +46,6 @@ public class Minotaur extends Card {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
 
-            if (!isValidDirectionShift(actualX, actualY, desiredX, desiredY, island)) {
-                throw new InvalidMovementException("Invalid move for this worker");
-            }
-
             //decrementa il numero di movimenti rimasti
             playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
@@ -88,9 +84,21 @@ public class Minotaur extends Card {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
-        if (desiredCellCluster.getWorkerOwnerUsername() != null && desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
-            return false;
+        if (desiredCellCluster.getWorkerOwnerUsername() != null) {
+            if (desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
+                return false;
+            }
+            else{
+                try {
+                    if (!isValidDirectionShift(actualX, actualY, desiredX, desiredY, island)) {
+                        return false;
+                    }
+                } catch (InvalidMovementException ex) {
+                    return false;
+                }
+            }
         }
+
 
         //Verifico che la coordinate di destinazione siano diverse da quelle attuali
         if (actualX == desiredX && actualY == desiredY) {
@@ -137,7 +145,7 @@ public class Minotaur extends Card {
 
         CellCluster shiftCellCluster = island.getCellCluster(shiftedCoordinates[0], shiftedCoordinates[1]);
 
-        if (shiftCellCluster.hasWorkerOnTop() | shiftCellCluster.isComplete()) {
+        if (shiftCellCluster.hasWorkerOnTop() || shiftCellCluster.isComplete()) {
             return false;
         }
         return true;

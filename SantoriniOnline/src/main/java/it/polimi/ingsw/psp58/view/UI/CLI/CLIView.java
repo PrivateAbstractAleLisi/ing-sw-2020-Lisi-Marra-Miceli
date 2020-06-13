@@ -1,21 +1,22 @@
 package it.polimi.ingsw.psp58.view.UI.CLI;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.ANSIColors;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.auxiliary.Range;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
+
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
@@ -706,12 +707,10 @@ public class CLIView extends EventSource implements ViewListener {
         return oneToFive.contains(x) && oneToFive.contains(y);
     }
 
-    private void displayIslandUpdateFromJson(String islaJson) {
+    private void displayIslandUpdate(IslandData island) {
         //display island
-        Gson gson = new Gson();
-        final IslandData isla = (IslandData) gson.fromJson(islaJson, IslandData.class);
 
-        IslandUtility temp = new IslandUtility(isla);
+        IslandUtility temp = new IslandUtility(island);
 
         temp.displayIsland();
     }
@@ -720,7 +719,7 @@ public class CLIView extends EventSource implements ViewListener {
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
 
 
-        displayIslandUpdateFromJson(event.getIsland());
+        displayIslandUpdate(event.getIsland());
         String workerFirstOrSecond = null;
         switch (event.getWorkerToPlace()) {
 
@@ -827,7 +826,7 @@ public class CLIView extends EventSource implements ViewListener {
 
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
-        displayIslandUpdateFromJson(event.getNewIsland());
+        displayIslandUpdate(event.getNewIsland());
         System.out.println("");
     }
 

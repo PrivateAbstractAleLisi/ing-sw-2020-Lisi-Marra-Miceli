@@ -1,11 +1,9 @@
 package it.polimi.ingsw.psp58.controller;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_IslandUpdateEvent;
@@ -284,10 +282,8 @@ public class PreGameController extends EventSource implements ControllerListener
         }
 
         IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
-        Gson gson = new Gson();
-        String islandDataJson = gson.toJson(currentIsland);
         CV_PlayerPlaceWorkerRequestEvent event = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers", activePlayer.getUsername(),
-                islandDataJson, Worker.IDs.A);
+                currentIsland, Worker.IDs.A);
         notifyAllObserverByType(VIEW, event);
     }
 
@@ -317,17 +313,12 @@ public class PreGameController extends EventSource implements ControllerListener
 
     public void sendIslandUpdate(String recipient) {
         IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
-        Gson gson = new Gson();
-        String islandDataJson = gson.toJson(currentIsland);
-        CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent("island update", islandDataJson, recipient);
+        CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent("island update", currentIsland, recipient);
         notifyAllObserverByType(VIEW, islandUpdateEvent);
     }
 
-    public String getCurrentIslandJson() {
-        IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
-        Gson gson = new Gson();
-        String islandDataJson = gson.toJson(currentIsland);
-        return islandDataJson;
+    public IslandData getCurrentIsland() {
+        return boardManager.getIsland().getIslandDataCopy();
     }
 
     /**
@@ -353,7 +344,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
             if (event.getId() == Worker.IDs.A) {
                 CV_PlayerPlaceWorkerRequestEvent newEvent = new CV_PlayerPlaceWorkerRequestEvent("Choose where to put your workers",
-                        event.getActingPlayer(), getCurrentIslandJson(), Worker.IDs.B);
+                        event.getActingPlayer(), getCurrentIsland(), Worker.IDs.B);
                 notifyAllObserverByType(VIEW, newEvent);
 
             } else {
@@ -372,7 +363,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
             printErrorLogMessage(e.toString() + " - A new PlacementRequest has been send.");
 
-            CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
+            CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIsland(), event.getId());
             notifyAllObserverByType(VIEW, requestEvent);
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException();
@@ -382,7 +373,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
             printErrorLogMessage(e.toString() + " - worker not found - A new PlacementRequest has been send.");
 
-            CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIslandJson(), event.getId());
+            CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIsland(), event.getId());
             notifyAllObserverByType(VIEW, requestEvent);
         }
     }
