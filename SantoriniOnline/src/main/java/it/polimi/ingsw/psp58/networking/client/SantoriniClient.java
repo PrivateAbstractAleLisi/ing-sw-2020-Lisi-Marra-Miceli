@@ -30,7 +30,7 @@ public class SantoriniClient extends EventSource implements Runnable {
     public static final int SERVER_PORT = 7557;
     public final static int SOCKET_TIMEOUT_S = 20;
 
-    private boolean connectionClosed = false;
+    private boolean connectionOpen = false;
     private boolean enablePing;
 
     public SantoriniClient(EventListener userInterface, String ipAddress, boolean enablePing) {
@@ -46,6 +46,7 @@ public class SantoriniClient extends EventSource implements Runnable {
         //Open a connection with the server
         try {
             serverSocket = new Socket(IP, SERVER_PORT);
+            connectionOpen = true;
             if (enablePing) {
                 serverSocket.setSoTimeout(SOCKET_TIMEOUT_S * 1000);
             }
@@ -97,8 +98,7 @@ public class SantoriniClient extends EventSource implements Runnable {
     }
 
     public void sendEvent(ControllerGameEvent event) {
-
-        if (!connectionClosed) {
+        if (connectionOpen) {
             try {
                 out.writeObject(event); //event is serializable
                 out.flush();
@@ -120,14 +120,18 @@ public class SantoriniClient extends EventSource implements Runnable {
                 }
             } catch (SocketTimeoutException e) {
                 MessageUtility.displayErrorMessage("Lost connection with the server");
-                connectionClosed = true;
+                connectionOpen = false;
                 closeConnection();
             } catch (IOException | ClassNotFoundException e) {
                 MessageUtility.displayErrorMessage("Client: Disconnected from the server");
-                connectionClosed = true;
+                connectionOpen = false;
                 closeConnection();
             }
         }
+    }
+
+    public boolean isConnectionOpen() {
+        return connectionOpen;
     }
 
     public void closeConnection() {
