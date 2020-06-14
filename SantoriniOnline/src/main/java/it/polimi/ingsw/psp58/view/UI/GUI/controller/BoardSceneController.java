@@ -150,7 +150,7 @@ public class BoardSceneController {
 
         resetWorkerStatus();
 
-        setUpPlayersCardsCorrespondence(event.getTurnSequence());
+        setUpPlayersCardsCorrespondence(event.getTurnSequence(), event.getPlayerWorkerColors());
 
         messagesQueue = new LinkedList<>();
     }
@@ -905,13 +905,13 @@ public class BoardSceneController {
     }
 
 
-    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence) {
+    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence, Map<String, WorkerColors> playerWorkerColors) {
         int index = 0;
         for (Map.Entry<String, CardEnum> entry : playersCardsCorrespondence.entrySet()) {
             if (entry.getKey().equals(myUsername)) { //set up local user info
                 setUpMyCardInfo(entry.getValue());
             } else { //set up the opponents' info
-                setUpOpponentsCardInfo(index, entry.getKey(), entry.getValue());
+                setUpOpponentsCardInfo(index, entry.getKey(), entry.getValue(), playerWorkerColors.get(entry.getKey()));
                 index++;
             }
         }
@@ -940,7 +940,7 @@ public class BoardSceneController {
         setupCardDescription(cardDescription, card, true);
     }
 
-    public void setUpOpponentsCardInfo(int index, String player, CardEnum card) {
+    public void setUpOpponentsCardInfo(int index, String player, CardEnum card, WorkerColors workerColor) {
         VBox actualVBox;
         if (index == 0) {
             actualVBox = cardInfo1;
@@ -948,17 +948,22 @@ public class BoardSceneController {
             actualVBox = cardInfo2;
         }
         //set up the name
-        Label name = (Label) actualVBox.getChildren().get(0);
+        HBox upperHBox = (HBox) actualVBox.getChildren().get(0);
+        Label name = (Label) upperHBox.getChildren().get(0);
         name.setText(player.toUpperCase());
 
+        ImageView smallWorker = (ImageView) upperHBox.getChildren().get(1);
+        String url = getWorkerUrl(workerColor);
+        smallWorker.setImage(new Image(url));
+
         //set up the image of the card
-        HBox hBox = (HBox) actualVBox.getChildren().get(1);
-        ImageView cardImage = (ImageView) hBox.getChildren().get(0);
+        HBox lowerHBox = (HBox) actualVBox.getChildren().get(1);
+        ImageView cardImage = (ImageView) lowerHBox.getChildren().get(0);
         Image image = new Image(card.getImgUrl());
         cardImage.setImage(image);
 
         //set up the name and the description of the card
-        VBox vBox = (VBox) hBox.getChildren().get(1);
+        VBox vBox = (VBox) lowerHBox.getChildren().get(1);
         Label cardName = (Label) vBox.getChildren().get(0);
         cardName.setText(card.getName());
         Text cardDescription = (Text) vBox.getChildren().get(1);
@@ -967,7 +972,8 @@ public class BoardSceneController {
 
     private void opponentPlayerSpectator(String spectatorPlayer) {
         VBox actualVBox;
-        Label name1 = (Label) cardInfo1.getChildren().get(0);
+        HBox upperHBox = (HBox) cardInfo1.getChildren().get(0);
+        Label name1 = (Label) upperHBox.getChildren().get(0);
 
         if (name1.getText().equals(spectatorPlayer)) {
             actualVBox = cardInfo1;
@@ -975,7 +981,7 @@ public class BoardSceneController {
             actualVBox = cardInfo2;
         }
 
-        Label name = (Label) actualVBox.getChildren().get(0);
+        Label name = (Label) upperHBox.getChildren().get(0);
         name.setText(spectatorPlayer.toUpperCase() + " - Spectator");
         actualVBox.setDisable(true);
     }

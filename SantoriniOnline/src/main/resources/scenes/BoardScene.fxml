@@ -93,7 +93,7 @@
                         <Line endX="280.0" strokeLineCap="ROUND" />
                         <VBox alignment="TOP_CENTER">
                             <children>
-                                <Label alignment="CENTER" text="WORKERS:" textAlignment="CENTER">
+                                <Label alignment="CENTER" text="YOUR WORKERS:" textAlignment="CENTER">
                                     <font>
                                         <Font name="Avenir Next Condensed Bold" size="28.0" />
                                     </font>
@@ -282,15 +282,24 @@
                                         <Insets />
                                     </VBox.margin>
                                 </Label>
-                                <VBox>
+                                <VBox spacing="5.0">
                                     <children>
                                         <VBox fx:id="cardInfo1">
                                             <children>
-                                                <Label text="example">
-                                                    <font>
-                                                        <Font size="32.0" />
-                                                    </font>
-                                                </Label>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                                      <Label text="example">
+                                                          <font>
+                                                              <Font size="32.0" />
+                                                          </font>
+                                                      </Label>
+                                          <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/WorkerBlue.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </HBox>
                                                 <HBox alignment="CENTER_LEFT">
                                                     <children>
                                                         <ImageView fitHeight="150.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
@@ -321,11 +330,20 @@
                                         </VBox>
                                         <VBox fx:id="cardInfo2" layoutX="10.0" layoutY="10.0">
                                             <children>
-                                                <Label text="example">
-                                                    <font>
-                                                        <Font size="32.0" />
-                                                    </font>
-                                                </Label>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                          <Label text="EXAMPLE">
+                                             <font>
+                                                <Font size="32.0" />
+                                             </font>
+                                          </Label>
+                                          <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/WorkerBlue.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </HBox>
                                                 <HBox alignment="CENTER_LEFT">
                                                     <children>
                                                         <ImageView fitHeight="150.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
