@@ -31,12 +31,15 @@ public class LobbySceneController {
         Queue<String> usersQueue = new LinkedList<>(Arrays.asList(event.getUsersInRoom()));
         userLabels = fillUsernameLabelsList();
 
+        //set roomName
+        roomTitleText.setText(event.getRoomName().toUpperCase());
+
         //update player counter and room size
         roomPlayersNumberText.setText(numberOfPlayers + "/" + roomSize);
         for (int i = 0; i < 3; i++) {
             if (!usersQueue.isEmpty()) {
                 userLabels.get(i).setVisible(true);
-                userLabels.get(i).setText(usersQueue.remove());
+                userLabels.get(i).setText(usersQueue.remove().toUpperCase());
             } else {
                 userLabels.get(i).setText("");
                 userLabels.get(i).setVisible(false);

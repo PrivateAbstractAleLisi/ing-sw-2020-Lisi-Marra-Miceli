@@ -1,6 +1,5 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
-import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
@@ -15,8 +14,6 @@ public class PlaceWorkerGameState extends GameStateAbstract {
     private CV_PlayerPlaceWorkerRequestEvent eventArrived;
     private final GUI gui;
     private final BoardSceneController boardSceneController;
-
-    private final GameStateEnum state = GameStateEnum.PLACE_WORKER;
 
     public PlaceWorkerGameState(CV_PlayerPlaceWorkerRequestEvent eventArrived, GUI gui, BoardSceneController boardController) {
         this.eventArrived = eventArrived;

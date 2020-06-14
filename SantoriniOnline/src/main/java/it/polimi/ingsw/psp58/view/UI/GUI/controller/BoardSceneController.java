@@ -937,7 +937,7 @@ public class BoardSceneController {
         //description
         Text cardDescription = (Text) hBox.getChildren().get(1);
 
-        setupCardDescription(cardDescription, card);
+        setupCardDescription(cardDescription, card, true);
     }
 
     public void setUpOpponentsCardInfo(int index, String player, CardEnum card) {
@@ -962,7 +962,7 @@ public class BoardSceneController {
         Label cardName = (Label) vBox.getChildren().get(0);
         cardName.setText(card.getName());
         Text cardDescription = (Text) vBox.getChildren().get(1);
-        setupCardDescription(cardDescription, card);
+        setupCardDescription(cardDescription, card, false);
     }
 
     private void opponentPlayerSpectator(String spectatorPlayer) {
@@ -985,26 +985,31 @@ public class BoardSceneController {
      *
      * @param cardDescription {@link Text} field that contains the card description.
      * @param card            Card to show.
+     * @param myCard
      */
-    private void setupCardDescription(Text cardDescription, CardEnum card) {
+    private void setupCardDescription(Text cardDescription, CardEnum card, boolean myCard) {
+        int minSize = 12;
+        if (myCard) {
+            minSize = 15;
+        }
         String fontName = cardDescription.getFont().getName();
         int descriptionLength = card.getDescription().length();
         if (descriptionLength > 70) {
             if (descriptionLength > 100) {
                 if (descriptionLength > 120) {
                     // descriptionLength > 120
-                    cardDescription.setFont(Font.font(fontName, 12));
+                    cardDescription.setFont(Font.font(fontName, minSize));
                 } else {
                     // 100 < descriptionLength <= 120
-                    cardDescription.setFont(Font.font(fontName, 14));
+                    cardDescription.setFont(Font.font(fontName, minSize + 2));
                 }
             } else {
                 // 70 < descriptionLength <= 100
-                cardDescription.setFont(Font.font(fontName, 16));
+                cardDescription.setFont(Font.font(fontName, minSize + 4));
             }
         } else {
             // descriptionLength <=70
-            cardDescription.setFont(Font.font(fontName, 18));
+            cardDescription.setFont(Font.font(fontName, minSize + 6));
         }
         cardDescription.setText(card.getDescription());
     }
