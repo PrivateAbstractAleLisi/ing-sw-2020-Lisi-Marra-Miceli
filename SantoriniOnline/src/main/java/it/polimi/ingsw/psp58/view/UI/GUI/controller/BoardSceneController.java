@@ -118,8 +118,10 @@ public class BoardSceneController {
     //TURN SEQUENCE
     @FXML
     private Label turnSequence;
+    @FXML
+    private VBox turnSequenceVBox;
 
-    //RightMessagge
+    //RightMessage
     /**
      * {@link Text} that contains the current message showed at the screen in the right side of the scene.
      */
@@ -138,10 +140,11 @@ public class BoardSceneController {
     public void init(CV_WorkerPlacementGameEvent event) {
         initializeIsland();
 
-        updateTurnSequence(event.getTurnSequence());
-        disableTurnInfo();
         this.myUsername = gui.getUsername();
-        myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());
+        this.myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());
+
+        showTurnSequence(false);
+        disableTurnInfo();
 
         String url = getWorkerUrl(myColor);
 
@@ -296,6 +299,7 @@ public class BoardSceneController {
         GameStateAbstract nextState = new WaitGameState(gui);
         setWaitingView();
         this.currentStateInstance = nextState;
+        showTurnSequence(false);
     }
 
     /**
@@ -354,7 +358,7 @@ public class BoardSceneController {
         if (event.getCurrentPlayerUsername().equals(myUsername)) {
             currentStateInstance = new CommandGameState(event, gui, this);
             resetWorkerStatus();
-            addMessageToQueueList("IT'S YOUR TURN!");
+            displayPopupMessage("IT'S YOUR TURN!");
         } else {
             disableTurnInfo();
         }
@@ -592,6 +596,10 @@ public class BoardSceneController {
                                          TURN SEQUENCE METHODS
        ----------------------------------------------------------------------------------------------*/
 
+    private void showTurnSequence(boolean enable){
+        turnSequenceVBox.setVisible(enable);
+    }
+
     /**
      * Update the Turn Sequence list in the high-left corner.
      *
@@ -616,16 +624,20 @@ public class BoardSceneController {
     public void updateTurnSequence(List<String> sequence) {
         String turnSequenceText = "";
         boolean first = true;
-        for (String s : sequence) {
+        for (String username : sequence) {
             if (first) {
                 turnSequenceText += " ";
                 first = false;
             } else {
                 turnSequenceText += " << ";
             }
-            turnSequenceText += s.toUpperCase();
+            turnSequenceText += username.toUpperCase();
+            if (username.equals(myUsername)) {
+                turnSequenceText += " (YOU)".toUpperCase();
+            }
         }
         turnSequence.setText(turnSequenceText);
+        showTurnSequence(true);
     }
 
      /* ----------------------------------------------------------------------------------------------

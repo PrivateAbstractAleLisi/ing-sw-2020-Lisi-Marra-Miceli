@@ -184,7 +184,7 @@
             <top>
                 <BorderPane styleClass="game-beige-pane" BorderPane.alignment="CENTER">
                     <left>
-                        <VBox BorderPane.alignment="CENTER">
+                        <VBox fx:id="turnSequenceVBox" BorderPane.alignment="CENTER">
                             <children>
                                 <Label text="TURN SEQUENCE:">
                                     <font>
