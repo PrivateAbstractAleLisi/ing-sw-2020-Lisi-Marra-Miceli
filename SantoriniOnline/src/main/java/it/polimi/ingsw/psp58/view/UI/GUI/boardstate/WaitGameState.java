@@ -3,20 +3,13 @@ package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
-import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 
-public class WaitGameState extends GameStateAbstract {
-    private final GUI gui;
+public class WaitGameState implements GameStateAbstract {
 
-    public WaitGameState(CV_WaitPreMatchGameEvent event, GUI gui) {
-        this.gui = gui;
-    }
-
-    public WaitGameState(GUI gui) {
-        this.gui = gui;
+    public WaitGameState() {
+        //Just create the object
     }
 
     @Override

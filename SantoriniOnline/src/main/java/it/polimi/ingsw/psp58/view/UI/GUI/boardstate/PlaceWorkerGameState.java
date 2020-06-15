@@ -10,7 +10,7 @@ import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
-public class PlaceWorkerGameState extends GameStateAbstract {
+public class PlaceWorkerGameState implements GameStateAbstract {
     private CV_PlayerPlaceWorkerRequestEvent eventArrived;
     private final GUI gui;
     private final BoardSceneController boardSceneController;

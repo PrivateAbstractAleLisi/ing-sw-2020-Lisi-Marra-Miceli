@@ -287,7 +287,7 @@ public class BoardSceneController {
      * @param event A {@link CV_WorkerPlacementGameEvent} that notify the beginning of WorkerPlacement Phase.
      */
     public void handle(CV_WorkerPlacementGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState(gui);
+        GameStateAbstract nextState = new WaitGameState();
         setWaitingView();
         this.currentStateInstance = nextState;
         showTurnSequence(false);
@@ -319,7 +319,7 @@ public class BoardSceneController {
      * @param event A {@link CV_WaitPreMatchGameEvent} that notify a Wait Phase.
      */
     public void handle(CV_WaitPreMatchGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState(event, gui);
+        GameStateAbstract nextState = new WaitGameState();
         setWaitingView();
         this.currentStateInstance = nextState;
     }
@@ -332,7 +332,7 @@ public class BoardSceneController {
     public void handle(CV_GameStartedGameEvent event) {
         setGlowByNode(false, workerSlotA);
         setGlowByNode(false, workerSlotB);
-        GameStateAbstract nextState = new WaitGameState(gui);
+        GameStateAbstract nextState = new WaitGameState();
         setWaitingView();
         this.currentStateInstance = nextState;
         addMessageToQueueList("Game is starting!");
@@ -411,7 +411,7 @@ public class BoardSceneController {
 
     public void handle(CV_SpectatorGameEvent event) {
         if (event.getSpectatorPlayer().equals(myUsername)) {
-            GameStateAbstract nextState = new SpectatorGameState(gui);
+            GameStateAbstract nextState = new SpectatorGameState();
             setSpectatorView();
             this.currentStateInstance = nextState;
         } else {

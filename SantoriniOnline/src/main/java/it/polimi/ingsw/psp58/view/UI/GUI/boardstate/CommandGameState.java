@@ -17,12 +17,14 @@ import it.polimi.ingsw.psp58.view.UI.GUI.controller.exceptions.WorkerLockedExcep
 import static it.polimi.ingsw.psp58.view.UI.GUI.boardstate.GameStateEnum.*;
 
 
-public class CommandGameState extends GameStateAbstract {
-    private CV_NewTurnEvent eventArrived;
+public class CommandGameState implements GameStateAbstract {
+    private final CV_NewTurnEvent eventArrived;
     private CV_CommandRequestEvent lastCommandRequest;
     private final BoardSceneController boardSceneController;
     private final GUI gui;
     private final String myUsername;
+
+    private final String errorString = "ERROR - ";
 
     private GameStateEnum state;
 
@@ -45,51 +47,13 @@ public class CommandGameState extends GameStateAbstract {
         int[] position;
         switch (state) {
             case CLEAN_TURN:
-                if (workerIdInCellCluster != null && !actualWorkerStatus.isAlreadySelectedWorker()) {
-                    String playerOfWorker = boardSceneController.getLastIslandUpdate().getCellCluster(x, y).getUsernamePlayer();
-                    boolean isMyWorker = playerOfWorker.equals(myUsername);
-                    if (isMyWorker) {
-                        try {
-                            actualWorkerStatus.setSelectedWorker(workerIdInCellCluster);
-                            boardSceneController.setWorkerGlow(true, x, y);
-                            state = WORKER_SELECTED;
-                        } catch (WorkerLockedException e) {
-                            System.out.println("Worker already locked");
-                            state = WORKER_LOCKED;
-                        }
-                    } else {
-                        System.out.println("ERROR - " + state + " - Please select one of your workers");
-                        displayPopupError("Please select one of your workers");
-                    }
-                } else {
-                    System.out.println("ERROR - " + state + " - Please select one of your workers");
-                    displayPopupError("Please select one of your workers");
-                }
+                cleanTurnBoardClick(x, y, workerIdInCellCluster, actualWorkerStatus);
                 break;
             case WORKER_SELECTED:
-                if (workerIdInCellCluster != null && isMyWorker(x, y)) {
-                    if (actualWorkerStatus.getSelectedWorker().equals(workerIdInCellCluster) && !actualWorkerStatus.isWorkerLocked()) {
-                        actualWorkerStatus.resetSelectedWorker();
-                        boardSceneController.setWorkerGlow(false, x, y);
-                        state = CLEAN_TURN;
-                    } else {
-                        boardSceneController.setWorkerGlow(false, actualWorkerStatus.getSelectedWorker());
-                        try {
-                            actualWorkerStatus.setSelectedWorker(workerIdInCellCluster);
-                            boardSceneController.setWorkerGlow(true, x, y);
-                            state = WORKER_SELECTED;
-                        } catch (WorkerLockedException e) {
-                            System.out.println("Worker already locked");
-                            state = WORKER_LOCKED;
-                        }
-                    }
-                } else {
-                    System.out.println("ERROR - " + state + " - Please select an available action or your workers");
-                    displayPopupError("Please select an available action or your workers");
-                }
+                workerSelectedBoardClick(x, y, workerIdInCellCluster, actualWorkerStatus);
                 break;
             case WORKER_LOCKED:
-                System.out.println("ERROR - " + state + " - Please select an available action or your workers");
+                System.out.println(errorString + state + " - Please select an available action or your workers");
                 displayPopupError("Please select an available action or your workers");
                 break;
             case MOVE_SELECTED:
@@ -125,20 +89,172 @@ public class CommandGameState extends GameStateAbstract {
             case MSG_SENT_UNLOCKED:
                 //Same case of MSG_SENT_LOCKED
             case MSG_SENT_LOCKED:
-                System.out.println("ERROR - " + state + " - Please wait. The server is handling your request");
+                System.out.println(errorString + state + " - Please wait. The server is handling your request");
                 displayPopupError("Please wait. The server is handling your request");
                 break;
         }
     }
 
+    private void cleanTurnBoardClick(int x, int y, Worker.IDs workerIdInCellCluster, WorkerStatus actualWorkerStatus) {
+        if (workerIdInCellCluster != null && !actualWorkerStatus.isAlreadySelectedWorker()) {
+            String playerOfWorker = boardSceneController.getLastIslandUpdate().getCellCluster(x, y).getUsernamePlayer();
+            boolean isMyWorker = playerOfWorker.equals(myUsername);
+            if (isMyWorker) {
+                try {
+                    actualWorkerStatus.setSelectedWorker(workerIdInCellCluster);
+                    boardSceneController.setWorkerGlow(true, x, y);
+                    state = WORKER_SELECTED;
+                } catch (WorkerLockedException e) {
+                    System.out.println("Worker already locked");
+                    state = WORKER_LOCKED;
+                }
+            } else {
+                System.out.println(errorString + state + " - Please select one of your workers");
+                displayPopupError("Please select one of your workers");
+            }
+        } else {
+            System.out.println(errorString + state + " - Please select one of your workers");
+            displayPopupError("Please select one of your workers");
+        }
+
+    }
+
+    private void workerSelectedBoardClick(int x, int y, Worker.IDs workerIdInCellCluster, WorkerStatus actualWorkerStatus) {
+        if (workerIdInCellCluster != null && isMyWorker(x, y)) {
+            if (actualWorkerStatus.getSelectedWorker().equals(workerIdInCellCluster) && !actualWorkerStatus.isWorkerLocked()) {
+                actualWorkerStatus.resetSelectedWorker();
+                boardSceneController.setWorkerGlow(false, x, y);
+                state = CLEAN_TURN;
+            } else {
+                boardSceneController.setWorkerGlow(false, actualWorkerStatus.getSelectedWorker());
+                try {
+                    actualWorkerStatus.setSelectedWorker(workerIdInCellCluster);
+                    boardSceneController.setWorkerGlow(true, x, y);
+                    state = WORKER_SELECTED;
+                } catch (WorkerLockedException e) {
+                    System.out.println("Worker already locked");
+                    state = WORKER_LOCKED;
+                }
+            }
+        } else {
+            System.out.println(errorString + state + " - Please select an available action or your workers");
+            displayPopupError("Please select an available action or your workers");
+        }
+
+    }
+
     @Override
     public void handleClickOnButton(TurnAction buttonPressed) {
         WorkerStatus actualWorkerStatus = boardSceneController.getWorkerStatus();
-        VC_PlayerCommandGameEvent commandEvent;
         switch (state) {
             case CLEAN_TURN:
-                if (buttonPressed == TurnAction.PASS) {
-                    setGreenActionButton(true, TurnAction.PASS);
+                cleanTurnButtonClick(buttonPressed, actualWorkerStatus);
+                break;
+            case WORKER_SELECTED:
+                workerSelectedButtonClick(buttonPressed, actualWorkerStatus);
+                break;
+            case WORKER_LOCKED:
+                workerLockedButtonClick(buttonPressed, actualWorkerStatus);
+                break;
+            case MOVE_SELECTED:
+                moveSelectedButtonClick(buttonPressed, actualWorkerStatus);
+                break;
+            case BUILD_SELECTED:
+                buildSelectedButtonClick(buttonPressed, actualWorkerStatus);
+                break;
+            case BUILDING_BLOCK_SELECTED:
+                System.out.println(errorString + state + " - Please select the building destination on the Board");
+                displayPopupError("Please select the building destination on the Board");
+                break;
+            case MSG_SENT_UNLOCKED:
+                //same as
+            case MSG_SENT_LOCKED:
+                System.out.println(errorString + state + " - Please wait. The server is handling your request");
+                displayPopupError("Please wait. The server is handling your request");
+                break;
+        }
+    }
+
+    private void cleanTurnButtonClick(TurnAction buttonPressed, WorkerStatus actualWorkerStatus) {
+        VC_PlayerCommandGameEvent commandEvent;
+        if (buttonPressed == TurnAction.PASS) {
+            setGreenActionButton(true, TurnAction.PASS);
+            commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
+            if (isCommandEventValid(commandEvent)) {
+                gui.sendEvent(commandEvent);
+                state = selectMsgSentState(actualWorkerStatus);
+                boardSceneController.disableAllActionButtons();
+            } else {
+                displayPopupError("Error in the creation of the event");
+            }
+        } else {
+            System.out.println(errorString + state + " - Please select one of your workers");
+            displayPopupError("Please select one of your workers");
+        }
+    }
+
+    private void workerSelectedButtonClick(TurnAction buttonPressed, WorkerStatus actualWorkerStatus) {
+        switch (buttonPressed) {
+            case MOVE:
+                setGreenActionButton(true, TurnAction.MOVE);
+                state = MOVE_SELECTED;
+                showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(), TurnAction.MOVE);
+                break;
+            case BUILD:
+                setGreenActionButton(true, TurnAction.BUILD);
+                showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(), TurnAction.BUILD);
+                state = BUILD_SELECTED;
+                break;
+            case PASS:
+                System.out.println(errorString + state + " - Please deselect the worker and press again");
+                displayPopupError("Please deselect the worker and press again");
+                break;
+        }
+    }
+
+    private void workerLockedButtonClick(TurnAction buttonPressed, WorkerStatus actualWorkerStatus) {
+        VC_PlayerCommandGameEvent commandEvent;
+        switch (buttonPressed) {
+            case MOVE:
+                setGreenActionButton(true, TurnAction.MOVE);
+                showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(), TurnAction.MOVE);
+                state = MOVE_SELECTED;
+                break;
+            case BUILD:
+                setGreenActionButton(true, TurnAction.BUILD);
+                showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(), TurnAction.BUILD);
+                state = BUILD_SELECTED;
+                break;
+            case PASS:
+                commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
+                if (isCommandEventValid(commandEvent)) {
+                    gui.sendEvent(commandEvent);
+                    state = selectMsgSentState(actualWorkerStatus);
+                    boardSceneController.disableAllActionButtons();
+                } else {
+                    displayPopupError("Error in the creation of the event");
+                }
+                break;
+        }
+    }
+
+    private void moveSelectedButtonClick(TurnAction buttonPressed, WorkerStatus actualWorkerStatus) {
+        VC_PlayerCommandGameEvent commandEvent;
+        switch (buttonPressed) {
+            case MOVE:
+                setGreenActionButton(false, TurnAction.MOVE);
+                boardSceneController.deactivateAllGlowOnPanels();
+                state = selectWorkerState(actualWorkerStatus);
+                break;
+            case BUILD:
+                setGreenActionButton(false, TurnAction.MOVE);
+                setGreenActionButton(true, TurnAction.BUILD);
+                boardSceneController.deactivateAllGlowOnPanels();
+                showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(), TurnAction.BUILD);
+                state = BUILD_SELECTED;
+                break;
+            case PASS:
+                if (actualWorkerStatus.isWorkerLocked()) {
                     commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
                     if (isCommandEventValid(commandEvent)) {
                         gui.sendEvent(commandEvent);
@@ -148,123 +264,42 @@ public class CommandGameState extends GameStateAbstract {
                         displayPopupError("Error in the creation of the event");
                     }
                 } else {
-                    System.out.println("ERROR - " + state + " - Please select one of your workers");
-                    displayPopupError("Please select one of your workers");
+                    System.out.println(errorString + state + " - Please deselect the worker and press again");
+                    displayPopupError("Please deselect the worker and press again");
                 }
                 break;
-            case WORKER_SELECTED:
-                switch (buttonPressed) {
-                    case MOVE:
-                        setGreenActionButton(true, TurnAction.MOVE);
-                        state = MOVE_SELECTED;
-                        showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(),TurnAction.MOVE);
-                        break;
-                    case BUILD:
-                        setGreenActionButton(true, TurnAction.BUILD);
-                        showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(),TurnAction.BUILD);
-                        state = BUILD_SELECTED;
-                        break;
-                    case PASS:
-                        System.out.println("ERROR - " + state + " - Please deselect the worker and press again");
-                        displayPopupError("Please deselect the worker and press again");
-                        break;
+        }
+    }
+
+    private void buildSelectedButtonClick(TurnAction buttonPressed, WorkerStatus actualWorkerStatus) {
+        VC_PlayerCommandGameEvent commandEvent;
+        switch (buttonPressed) {
+            case MOVE:
+                setGreenActionButton(false, TurnAction.BUILD);
+                setGreenActionButton(true, TurnAction.MOVE);
+                boardSceneController.deactivateAllGlowOnPanels();
+                showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(), TurnAction.MOVE);
+                state = MOVE_SELECTED;
+                break;
+            case BUILD:
+                setGreenActionButton(false, TurnAction.BUILD);
+                boardSceneController.deactivateAllGlowOnPanels();
+                state = selectWorkerState(actualWorkerStatus);
+                break;
+            case PASS:
+                if (actualWorkerStatus.isWorkerLocked()) {
+                    commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
+                    if (isCommandEventValid(commandEvent)) {
+                        gui.sendEvent(commandEvent);
+                        state = selectMsgSentState(actualWorkerStatus);
+                        boardSceneController.disableAllActionButtons();
+                    } else {
+                        displayPopupError("Error in the creation of the event");
+                    }
+                } else {
+                    System.out.println(errorString + state + " - Please deselect the worker and press again");
+                    displayPopupError("Please deselect the worker and press again");
                 }
-                break;
-            case WORKER_LOCKED:
-                switch (buttonPressed) {
-                    case MOVE:
-                        setGreenActionButton(true, TurnAction.MOVE);
-                        showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(),TurnAction.MOVE);
-                        state = MOVE_SELECTED;
-                        break;
-                    case BUILD:
-                        setGreenActionButton(true, TurnAction.BUILD);
-                        showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(),TurnAction.BUILD);
-                        state = BUILD_SELECTED;
-                        break;
-                    case PASS:
-                        commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
-                        if (isCommandEventValid(commandEvent)) {
-                            gui.sendEvent(commandEvent);
-                            state = selectMsgSentState(actualWorkerStatus);
-                            boardSceneController.disableAllActionButtons();
-                        } else {
-                            displayPopupError("Error in the creation of the event");
-                        }
-                        break;
-                }
-                break;
-            case MOVE_SELECTED:
-                switch (buttonPressed) {
-                    case MOVE:
-                        setGreenActionButton(false, TurnAction.MOVE);
-                        boardSceneController.deactivateAllGlowOnPanels();
-                        state = selectWorkerState(actualWorkerStatus);
-                        break;
-                    case BUILD:
-                        setGreenActionButton(false, TurnAction.MOVE);
-                        setGreenActionButton(true, TurnAction.BUILD);
-                        boardSceneController.deactivateAllGlowOnPanels();
-                        showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(),TurnAction.BUILD);
-                        state = BUILD_SELECTED;
-                        break;
-                    case PASS:
-                        if (actualWorkerStatus.isWorkerLocked()) {
-                            commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
-                            if (isCommandEventValid(commandEvent)) {
-                                gui.sendEvent(commandEvent);
-                                state = selectMsgSentState(actualWorkerStatus);
-                                boardSceneController.disableAllActionButtons();
-                            } else {
-                                displayPopupError("Error in the creation of the event");
-                            }
-                        } else {
-                            System.out.println("ERROR - " + state + " - Please deselect the worker and press again");
-                            displayPopupError("Please deselect the worker and press again");
-                        }
-                        break;
-                }
-                break;
-            case BUILD_SELECTED:
-                switch (buttonPressed) {
-                    case MOVE:
-                        setGreenActionButton(false, TurnAction.BUILD);
-                        setGreenActionButton(true, TurnAction.MOVE);
-                        boardSceneController.deactivateAllGlowOnPanels();
-                        showPossibleBlockAction(actualWorkerStatus.getSelectedWorker(),TurnAction.MOVE);
-                        state = MOVE_SELECTED;
-                        break;
-                    case BUILD:
-                        setGreenActionButton(false, TurnAction.BUILD);
-                        boardSceneController.deactivateAllGlowOnPanels();
-                        state = selectWorkerState(actualWorkerStatus);
-                        break;
-                    case PASS:
-                        if (actualWorkerStatus.isWorkerLocked()) {
-                            commandEvent = new VC_PlayerCommandGameEvent("", TurnAction.PASS, myUsername, null, null, null);
-                            if (isCommandEventValid(commandEvent)) {
-                                gui.sendEvent(commandEvent);
-                                state = selectMsgSentState(actualWorkerStatus);
-                                boardSceneController.disableAllActionButtons();
-                            } else {
-                                displayPopupError("Error in the creation of the event");
-                            }
-                        } else {
-                            System.out.println("ERROR - " + state + " - Please deselect the worker and press again");
-                            displayPopupError("Please deselect the worker and press again");
-                        }
-                        break;
-                }
-                break;
-            case BUILDING_BLOCK_SELECTED:
-                System.out.println("ERROR - " + state + " - Please select the building destination on the Board");
-                displayPopupError("Please select the building destination on the Board");
-                break;
-            case MSG_SENT_UNLOCKED:
-                //same as
-            case MSG_SENT_LOCKED:
-                System.out.println("ERROR - " + state + " - Please wait. The server is handling your request");
-                displayPopupError("Please wait. The server is handling your request");
                 break;
         }
     }
@@ -289,7 +324,7 @@ public class CommandGameState extends GameStateAbstract {
                 }
                 break;
             default:
-                System.out.println("ERROR - " + state + " - Please press BUILD button before selecting a Building Block");
+                System.out.println(errorString + state + " - Please press BUILD button before selecting a Building Block");
                 displayPopupError("Please press BUILD button before selecting a Building Block");
         }
     }
@@ -355,22 +390,16 @@ public class CommandGameState extends GameStateAbstract {
 
     private void showPossibleBlockAction(Worker.IDs workerID, TurnAction actionClicked) {
         if (actionClicked == TurnAction.MOVE) {
-            switch (workerID) {
-                case A:
-                    boardSceneController.activateGlowOnPanels(lastCommandRequest.getAvailableMovementBlocksA(),actionClicked);
-                    break;
-                case B:
-                    boardSceneController.activateGlowOnPanels(lastCommandRequest.getAvailableMovementBlocksB(),actionClicked);
-                    break;
+            if (workerID == Worker.IDs.A) {
+                boardSceneController.activateGlowOnPanels(lastCommandRequest.getAvailableMovementBlocksA(), actionClicked);
+            } else if (workerID == Worker.IDs.B) {
+                boardSceneController.activateGlowOnPanels(lastCommandRequest.getAvailableMovementBlocksB(), actionClicked);
             }
         } else if (actionClicked == TurnAction.BUILD) {
-            switch (workerID) {
-                case A:
-                    boardSceneController.activateGlowOnPanels(lastCommandRequest.getAvailableBuildBlocksA(),actionClicked);
-                    break;
-                case B:
-                    boardSceneController.activateGlowOnPanels(lastCommandRequest.getAvailableBuildBlocksB(),actionClicked);
-                    break;
+            if (workerID == Worker.IDs.A) {
+                boardSceneController.activateGlowOnPanels(lastCommandRequest.getAvailableBuildBlocksA(), actionClicked);
+            } else if (workerID == Worker.IDs.B) {
+                boardSceneController.activateGlowOnPanels(lastCommandRequest.getAvailableBuildBlocksB(), actionClicked);
             }
         }
 

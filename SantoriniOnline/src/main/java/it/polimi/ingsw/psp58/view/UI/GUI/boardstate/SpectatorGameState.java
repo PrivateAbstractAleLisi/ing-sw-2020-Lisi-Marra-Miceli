@@ -7,11 +7,9 @@ import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 
-public class SpectatorGameState extends GameStateAbstract {
-    private final GUI gui;
-
-    public SpectatorGameState(GUI gui) {
-        this.gui = gui;
+public class SpectatorGameState implements GameStateAbstract {
+    public SpectatorGameState() {
+        //just create the state and does nothing
     }
 
     @Override

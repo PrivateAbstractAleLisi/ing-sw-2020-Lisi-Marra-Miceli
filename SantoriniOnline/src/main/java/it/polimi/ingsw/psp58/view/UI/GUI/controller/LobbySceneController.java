@@ -1,14 +1,12 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.CV_RoomUpdateGameEvent;
-import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 import java.util.*;
 
 public class LobbySceneController {
-    private GUI gui;
     @FXML
     private Label roomPlayersNumberText;
     @FXML
@@ -19,10 +17,6 @@ public class LobbySceneController {
 
     private int numberOfPlayers = 0;
     private int roomSize = 0;
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
-    }
 
     public void update(CV_RoomUpdateGameEvent event) {
         numberOfPlayers = event.getUsersInRoom().length;
@@ -45,13 +39,10 @@ public class LobbySceneController {
                 userLabels.get(i).setVisible(false);
             }
         }
-
-
     }
 
     private List<Label> fillUsernameLabelsList() {
-
-        return new ArrayList<Label>() {
+        return new ArrayList<>() {
             {
                 add(player1Text);
                 add(player2Text);
