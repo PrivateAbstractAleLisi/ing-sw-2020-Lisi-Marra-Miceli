@@ -218,7 +218,7 @@ public class BoardSceneController {
         Integer colIndex = GridPane.getColumnIndex(source);
         Integer rowIndex = GridPane.getRowIndex(source);
         System.out.printf("Mouse clicked cell [%d, %d]%n", colIndex, rowIndex);
-        currentStateInstance.handleClickOnButton(colIndex, rowIndex);
+        currentStateInstance.handleClick(colIndex, rowIndex);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void moveButtonClick() {
-        currentStateInstance.handleClickOnButton(TurnAction.MOVE);
+        currentStateInstance.handleClick(TurnAction.MOVE);
     }
 
     /**
@@ -238,7 +238,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void buildButtonClick() {
-        currentStateInstance.handleClickOnButton(TurnAction.BUILD);
+        currentStateInstance.handleClick(TurnAction.BUILD);
     }
 
     /**
@@ -246,7 +246,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void passButtonClick() {
-        currentStateInstance.handleClickOnButton(TurnAction.PASS);
+        currentStateInstance.handleClick(TurnAction.PASS);
     }
 
     /**
@@ -265,7 +265,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void level1Click() {
-        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL1);
+        currentStateInstance.handleClick(BlockTypeEnum.LEVEL1);
     }
 
     /**
@@ -273,7 +273,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void level2Click() {
-        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL2);
+        currentStateInstance.handleClick(BlockTypeEnum.LEVEL2);
     }
 
     /**
@@ -281,7 +281,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void level3Click() {
-        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL3);
+        currentStateInstance.handleClick(BlockTypeEnum.LEVEL3);
     }
 
     /**
@@ -289,7 +289,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void domeClick() {
-        currentStateInstance.handleClickOnButton(BlockTypeEnum.DOME);
+        currentStateInstance.handleClick(BlockTypeEnum.DOME);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -400,7 +400,7 @@ public class BoardSceneController {
         resetWorkerStatus();
 
         if (event.getCurrentPlayerUsername().equals(myUsername)) {
-            currentStateInstance = new CommandGameState(event, gui, this);
+            currentStateInstance = new CommandGameState(gui, this);
             resetWorkerStatus();
             displayPopupMessage("IT'S YOUR TURN!");
         } else {

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
-public enum GameStateEnum {
+public enum TurnStateEnum {
     CLEAN_TURN,
     WORKER_SELECTED,
     WORKER_LOCKED,
