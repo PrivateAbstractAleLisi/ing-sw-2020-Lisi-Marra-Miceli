@@ -350,7 +350,7 @@ public class BoardSceneController {
      * @param event Contains the {@code workerID} of the worker to place.
      */
     public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
-        GameStateAbstract nextState = new PlaceWorkerGameState(event, gui, this);
+        GameStateAbstract nextState = new PlaceWorkerGameState(gui, this);
         try {
             workerStatus.setSelectedWorker(event.getWorkerToPlace());
         } catch (WorkerLockedException e) {

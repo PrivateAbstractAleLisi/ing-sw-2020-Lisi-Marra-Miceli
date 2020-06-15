@@ -53,7 +53,7 @@
     -fx-background-color: transparent;
 }
 
-.my-username-hbox {
+.my-username-hBox {
     -fx-background-color: rgba(255, 0, 0, 0.2);
     -fx-background-radius: 10;
     -fx-border-color: rgba(0, 0, 0, 0.1);
