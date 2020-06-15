@@ -96,8 +96,6 @@ public class BoardSceneController {
     @FXML
     private VBox turnInfo;
 
-    private HBox workerPrePlaceHBox;
-
     //ACTION BUTTONS
     @FXML
     private StackPane commandGameButtonPane;
@@ -107,7 +105,7 @@ public class BoardSceneController {
 
     //BLOCKS
     @FXML
-    private HBox L1Box, L2Box, L3Box, DomeBox;
+    private HBox l1Box, l2Box, l3Box, domeBox;
 
     //WORKERS
     @FXML
@@ -284,13 +282,6 @@ public class BoardSceneController {
     }
 
     /**
-     * Hide the left box with the worker icons
-     */
-    public void hideWorkerPlacementBox() {
-        //workerPrePlaceHBox.setVisible(false);
-    }
-
-    /**
      * Set the {@link WaitGameState} State waiting for a {@link CV_PlayerPlaceWorkerRequestEvent}.
      *
      * @param event A {@link CV_WorkerPlacementGameEvent} that notify the beginning of WorkerPlacement Phase.
@@ -409,15 +400,12 @@ public class BoardSceneController {
         disableAllActionButtons();
         setGlowByNode(false, workerSlotA);
         setGlowByNode(false, workerSlotB);
-        switch (workerRequested) {
-            case A:
-                setGlowByNode(true, workerSlotA);
-                addMessageToQueueList("Please place the FIRST worker");
-                break;
-            case B:
-                setGlowByNode(true, workerSlotB);
-                addMessageToQueueList("Please place the SECOND worker");
-                break;
+        if (workerRequested == Worker.IDs.A) {
+            setGlowByNode(true, workerSlotA);
+            addMessageToQueueList("Please place the FIRST worker");
+        } else if (workerRequested == Worker.IDs.B) {
+            setGlowByNode(true, workerSlotB);
+            addMessageToQueueList("Please place the SECOND worker");
         }
     }
 
@@ -486,20 +474,15 @@ public class BoardSceneController {
                 button = buildButton;
                 break;
             case PASS:
-                button = passButton;
-                break;
             default:
                 button = passButton;
         }
 
         if (enable) {
-            //point.setEffect(new Glow(0.7));
             System.out.println("DEBUG: setButtonGlow on " + buttonToSet);
 
             DropShadow dropShadow = new DropShadow();
             dropShadow.setRadius(14.5);
-//            dropShadow.setWidth(30);
-//            dropShadow.setHeight(30);
             dropShadow.setOffsetX(0);
             dropShadow.setOffsetY(0);
             dropShadow.setSpread(0.6);
@@ -524,13 +507,6 @@ public class BoardSceneController {
                                          BUILDING BLOCKS METHODS
        ----------------------------------------------------------------------------------------------*/
 
-    private void updateBlocksCounter(int lev1, int lev2, int lev3, int dome) {
-        ((Label) L1Box.getChildren().get(1)).setText(Integer.toString(lev1));
-        ((Label) L2Box.getChildren().get(1)).setText(Integer.toString(lev2));
-        ((Label) L3Box.getChildren().get(1)).setText(Integer.toString(lev3));
-        ((Label) DomeBox.getChildren().get(1)).setText(Integer.toString(dome));
-    }
-
     /**
      * Enable the Green Glow around the Block that has been selected.
      *
@@ -539,37 +515,32 @@ public class BoardSceneController {
      */
     public void setGreenBuildingBlocks(boolean enable, BlockTypeEnum blockToSet) {
         if (enable) {
-            L1Box.setEffect(null);
-            L2Box.setEffect(null);
-            L3Box.setEffect(null);
-            DomeBox.setEffect(null);
+            l1Box.setEffect(null);
+            l2Box.setEffect(null);
+            l3Box.setEffect(null);
+            domeBox.setEffect(null);
         }
         HBox hBox;
         switch (blockToSet) {
             case LEVEL1:
-                hBox = L1Box;
+                hBox = l1Box;
                 break;
             case LEVEL2:
-                hBox = L2Box;
+                hBox = l2Box;
                 break;
             case LEVEL3:
-                hBox = L3Box;
+                hBox = l3Box;
                 break;
             case DOME:
-                hBox = DomeBox;
-                break;
             default:
-                hBox = DomeBox;
+                hBox = domeBox;
         }
 
         if (enable) {
-            //point.setEffect(new Glow(0.7));
             System.out.println("DEBUG: setButtonGlow on " + blockToSet);
 
             DropShadow dropShadow = new DropShadow();
             dropShadow.setRadius(14.5);
-//            dropShadow.setWidth(30);
-//            dropShadow.setHeight(30);
             dropShadow.setOffsetX(0);
             dropShadow.setOffsetY(0);
             dropShadow.setSpread(0.6);
@@ -586,17 +557,17 @@ public class BoardSceneController {
      * Disable the Green Glow around all the Building Blocks at once.
      */
     public void disableAllGreenBuildingBlock() {
-        L1Box.setEffect(null);
-        L2Box.setEffect(null);
-        L3Box.setEffect(null);
-        DomeBox.setEffect(null);
+        l1Box.setEffect(null);
+        l2Box.setEffect(null);
+        l3Box.setEffect(null);
+        domeBox.setEffect(null);
     }
 
     /* ----------------------------------------------------------------------------------------------
                                          TURN SEQUENCE METHODS
        ----------------------------------------------------------------------------------------------*/
 
-    private void showTurnSequence(boolean enable){
+    private void showTurnSequence(boolean enable) {
         turnSequenceVBox.setVisible(enable);
     }
 
@@ -608,12 +579,8 @@ public class BoardSceneController {
     public void updateTurnSequence(Map<String, CardEnum> turnSequenceFromEvent) {
 
         //fill turn sequence
-        Map<String, CardEnum> sequence = turnSequenceFromEvent;
-        List<String> turnSequence = new ArrayList<>();
-        for (String player : sequence.keySet()) {
-            turnSequence.add(player);
-        }
-        updateTurnSequence(turnSequence);
+        List<String> turnSequenceList = new ArrayList<>(turnSequenceFromEvent.keySet());
+        updateTurnSequence(turnSequenceList);
     }
 
     /**
@@ -622,21 +589,21 @@ public class BoardSceneController {
      * @param sequence {@code List<String>} containing the list of current players and their cards.
      */
     public void updateTurnSequence(List<String> sequence) {
-        String turnSequenceText = "";
+        StringBuilder turnSequenceText = new StringBuilder();
         boolean first = true;
         for (String username : sequence) {
             if (first) {
-                turnSequenceText += " ";
+                turnSequenceText.append(" ");
                 first = false;
             } else {
-                turnSequenceText += " << ";
+                turnSequenceText.append(" << ");
             }
-            turnSequenceText += username.toUpperCase();
+            turnSequenceText.append(username.toUpperCase());
             if (username.equals(myUsername)) {
-                turnSequenceText += " (YOU)".toUpperCase();
+                turnSequenceText.append(" (YOU)".toUpperCase());
             }
         }
-        turnSequence.setText(turnSequenceText);
+        turnSequence.setText(turnSequenceText.toString());
         showTurnSequence(true);
     }
 
@@ -655,7 +622,6 @@ public class BoardSceneController {
     public void updateIsland(IslandData island) {
         setLastIslandUpdate(island);
 
-        String url = "";
         Platform.runLater(() -> {
             for (int x = 0; x < 5; x++) {
                 for (int y = 0; y < 5; y++) {
@@ -686,12 +652,14 @@ public class BoardSceneController {
 
                     lastGridPane[x][y] = stackPane;
 
-                    if (cellClusterData.getWorkerOnTop() != null) {
-                        if (workerStatus.getSelectedWorker() != null && cellClusterData.getWorkerColor().equals(myColor) && workerStatus.getSelectedWorker().equals(cellClusterData.getWorkerOnTop())) {
-                            setWorkerGlow(true, x, y);
+                    if (cellClusterData.getWorkerOnTop() != null && workerStatus.getSelectedWorker() != null &&
+                            cellClusterData.getWorkerColor().equals(myColor) &&
+                            workerStatus.getSelectedWorker().equals(cellClusterData.getWorkerOnTop())) {
 
-                            System.out.println("DEBUG: RESTORING GLOW");
-                        }
+                        setWorkerGlow(true, x, y);
+
+                        System.out.println("DEBUG: RESTORING GLOW");
+
                     }
                 }
             }
@@ -745,8 +713,6 @@ public class BoardSceneController {
                 stackPane.getChildren().get(1).setVisible(true);
                 stackPane.getChildren().get(1).setStyle("-fx-background-color: rgba(165,42,42,0.52)");
             }
-//            board.getChildren().remove(position[0], position[1]);
-//            board.add(stackPane, position[0], position[1]);
         }
     }
 
@@ -764,8 +730,6 @@ public class BoardSceneController {
 
         int[] blocks = cellClusterData.getBlocks();
         boolean domeOnTop = cellClusterData.isDomeOnTop();
-        Worker.IDs workerID = cellClusterData.getWorkerOnTop();
-        WorkerColors color = cellClusterData.getWorkerColor();
 
         //construct the url of the image
         if ((blocks.length == 1 && blocks[0] == 4)) {
@@ -788,6 +752,8 @@ public class BoardSceneController {
                     url = url + "L3";
                     break;
                 }
+                default:
+                    System.out.println("ERROR");
             }
             if (domeOnTop) {
                 url = url + "_DOME";
@@ -799,19 +765,7 @@ public class BoardSceneController {
 
     //utility to get a cell from the board
     public Node getNodeByRowColumnIndex(final int row, final int column) {
-
         return lastGridPane[row][column];
-//        Node result = null;
-//        ObservableList<Node> children = board.getChildren();
-//
-//        for (Node node : children) {
-//            if (node instanceof StackPane && GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
-//                result = node;
-//                break;
-//            }
-//        }
-//
-//        return result;
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -828,7 +782,6 @@ public class BoardSceneController {
      * @param message the message you would like to display
      */
     public void displayPopupMessage(String message) {
-        //TODO messaggio sotto e non popup
         BoardPopUp.show(message.toUpperCase(), gui.getStage());
     }
 
@@ -891,7 +844,6 @@ public class BoardSceneController {
             node.setEffect(dropShadow);
         } else {
             node.setEffect(null);
-            node = null;
         }
 
     }
@@ -1040,12 +992,12 @@ public class BoardSceneController {
 
         //set number of moves
         Label numberOfMoves = (Label) turnInfo.getChildren().get(2);
-        numberOfMoves.setText("available MOVE: " + Integer.toString(numberOfMovements));
+        numberOfMoves.setText("available MOVE: " + numberOfMovements);
         numberOfMoves.setVisible(true);
 
         //set number of builds
         Label numberOfBuilds = (Label) turnInfo.getChildren().get(3);
-        numberOfBuilds.setText("available BUILD: " + Integer.toString(numberOfBuilding));
+        numberOfBuilds.setText("available BUILD: " + numberOfBuilding);
         numberOfBuilds.setVisible(true);
     }
 

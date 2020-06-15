@@ -34,7 +34,6 @@ public class CommandGameState extends GameStateAbstract {
         this.eventArrived = eventArrived;
         myUsername = gui.getUsername();
         state = CLEAN_TURN;
-        boardController.hideWorkerPlacementBox();
     }
 
     @Override

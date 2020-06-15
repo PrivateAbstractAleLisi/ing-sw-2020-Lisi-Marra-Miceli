@@ -210,7 +210,7 @@
                                         <Font name="Avenir Next Condensed Bold" size="13.0" />
                                     </font>
                                 </Label>
-                                <HBox fx:id="L1Box" onMouseClicked="#level1Click">
+                                <HBox fx:id="l1Box" onMouseClicked="#level1Click">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -222,7 +222,7 @@
                                         </ImageView>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="L2Box" onMouseClicked="#level2Click">
+                                <HBox fx:id="l2Box" onMouseClicked="#level2Click">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -234,7 +234,7 @@
                                         </ImageView>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="L3Box" onMouseClicked="#level3Click">
+                                <HBox fx:id="l3Box" onMouseClicked="#level3Click">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -246,7 +246,7 @@
                                         </ImageView>
                                     </children>
                                 </HBox>
-                                <HBox fx:id="DomeBox" onMouseClicked="#domeClick">
+                                <HBox fx:id="domeBox" onMouseClicked="#domeClick">
                                     <children>
                                         <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
