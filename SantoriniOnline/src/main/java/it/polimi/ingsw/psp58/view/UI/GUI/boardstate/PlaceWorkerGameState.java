@@ -7,6 +7,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PlayerPlaceWorkerReque
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
@@ -23,37 +24,37 @@ public class PlaceWorkerGameState implements GameStateAbstract {
 
     @Override
     public void handleClickOnButton(int x, int y) {
-        System.out.println("Place Worker State click on " + x + " " + y);
         //place the worker
-        gui.sendEvent(new VC_PlayerPlacedWorkerEvent("", gui.getUsername(), x, y, boardSceneController.getWorkerStatus().getSelectedWorker()));
+        Worker.IDs workerID = boardSceneController.getWorkerStatus().getSelectedWorker();
+        gui.sendEvent(new VC_PlayerPlacedWorkerEvent("", gui.getUsername(), x, y, workerID));
     }
 
     @Override
     public void handleClickOnButton(TurnAction buttonPressed) {
-        System.out.println("Place Worker State Handle Click On Button - ERROR");
-        //PRINT ERROR
+        displayPlacementStateError();
     }
 
     @Override
     public void handleClickOnButton(BlockTypeEnum blockClicked) {
-        System.out.println("Place Worker State Handle Click On Block - ERROR");
-        //PRINT ERROR
+        displayPlacementStateError();
     }
 
     @Override
     public void updateFromServer(CV_CommandExecutedGameEvent event) {
-        System.out.println("Place Worker State Handle CV_CommandExecutedGameEvent - ERROR");
-        //PRINT ERROR
+        displayPlacementStateError();
     }
 
     @Override
     public void updateFromServer(CV_CommandRequestEvent event) {
-        System.out.println("Place Worker State Handle CV_CommandRequestEvent - ERROR");
-        //PRINT ERROR
+        displayPlacementStateError();
     }
 
     @Override
     public ViewGameEvent getEvent() {
         return eventArrived;
+    }
+
+    private void displayPlacementStateError() {
+        boardSceneController.displayPopupMessage("INVALID ACTION, PLEASE PLACE YOUR WORKER");
     }
 }

@@ -5,45 +5,46 @@ import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
-import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
 public class SpectatorGameState implements GameStateAbstract {
-    public SpectatorGameState() {
-        //just create the state and does nothing
+    private final BoardSceneController boardSceneController;
+
+    public SpectatorGameState(BoardSceneController boardSceneController) {
+        this.boardSceneController = boardSceneController;
     }
 
     @Override
     public void handleClickOnButton(int x, int y) {
-        System.out.println("Spectator State Handle Click - Not yet implemented");
-        //Show a popup
+        displaySpectatorError();
     }
 
     @Override
     public void handleClickOnButton(TurnAction buttonPressed) {
-        System.out.println("Spectator State Handle Click On Button - ERROR");
-        //PRINT ERROR
+        displaySpectatorError();
     }
 
     @Override
     public void handleClickOnButton(BlockTypeEnum blockClicked) {
-        System.out.println("Spectator State Handle Click On Block - ERROR");
-        //PRINT ERROR
+        displaySpectatorError();
     }
 
     @Override
     public void updateFromServer(CV_CommandExecutedGameEvent event) {
-        System.out.println("Spectator State Handle CV_CommandExecutedGameEvent - ERROR");
-        //PRINT ERROR
+        displaySpectatorError();
     }
 
     @Override
     public void updateFromServer(CV_CommandRequestEvent event) {
-        System.out.println("Spectator State Handle CV_CommandRequestEvent - ERROR");
-        //PRINT ERROR
+        displaySpectatorError();
     }
 
     @Override
     public ViewGameEvent getEvent() {
         return null;
+    }
+
+    private void displaySpectatorError() {
+        boardSceneController.displayPopupMessage("YOU LOST THE GAME - WAIT OR EXIT");
     }
 }

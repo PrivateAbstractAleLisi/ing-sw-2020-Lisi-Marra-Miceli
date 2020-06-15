@@ -268,10 +268,15 @@ public class BoardSceneController {
      * It prepare the waiting view disabling all the buttons and the glow
      */
     public void setWaitingView() {
-        //Todo worker glow non si disattiva
         disableAllActionButtons();
         resetWorkerStatus();
-        disableWorkerGlow();
+    }
+
+    private void disableAllWorkerGlow() {
+        if (lastIslandUpdate != null) {
+            setWorkerGlow(false, Worker.IDs.A);
+            setWorkerGlow(false, Worker.IDs.B);
+        }
     }
 
     private void setSpectatorView() {
@@ -287,7 +292,7 @@ public class BoardSceneController {
      * @param event A {@link CV_WorkerPlacementGameEvent} that notify the beginning of WorkerPlacement Phase.
      */
     public void handle(CV_WorkerPlacementGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState();
+        GameStateAbstract nextState = new WaitGameState(this);
         setWaitingView();
         this.currentStateInstance = nextState;
         showTurnSequence(false);
@@ -319,7 +324,7 @@ public class BoardSceneController {
      * @param event A {@link CV_WaitPreMatchGameEvent} that notify a Wait Phase.
      */
     public void handle(CV_WaitPreMatchGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState();
+        GameStateAbstract nextState = new WaitGameState(this);
         setWaitingView();
         this.currentStateInstance = nextState;
     }
@@ -332,7 +337,7 @@ public class BoardSceneController {
     public void handle(CV_GameStartedGameEvent event) {
         setGlowByNode(false, workerSlotA);
         setGlowByNode(false, workerSlotB);
-        GameStateAbstract nextState = new WaitGameState();
+        GameStateAbstract nextState = new WaitGameState(this);
         setWaitingView();
         this.currentStateInstance = nextState;
         addMessageToQueueList("Game is starting!");
@@ -345,6 +350,8 @@ public class BoardSceneController {
      */
     public void handle(CV_NewTurnEvent event) {
         updateTurnSequence(event.getTurnRotation());
+        disableAllWorkerGlow();
+        resetWorkerStatus();
 
         if (event.getCurrentPlayerUsername().equals(myUsername)) {
             currentStateInstance = new CommandGameState(event, gui, this);
@@ -411,7 +418,7 @@ public class BoardSceneController {
 
     public void handle(CV_SpectatorGameEvent event) {
         if (event.getSpectatorPlayer().equals(myUsername)) {
-            GameStateAbstract nextState = new SpectatorGameState();
+            GameStateAbstract nextState = new SpectatorGameState(this);
             setSpectatorView();
             this.currentStateInstance = nextState;
         } else {
@@ -652,14 +659,11 @@ public class BoardSceneController {
 
                     lastGridPane[x][y] = stackPane;
 
-                    if (cellClusterData.getWorkerOnTop() != null && workerStatus.getSelectedWorker() != null &&
+                    if (cellClusterData.getWorkerOnTop() != null && workerStatus.isAlreadySelectedWorker() &&
                             cellClusterData.getWorkerColor().equals(myColor) &&
                             workerStatus.getSelectedWorker().equals(cellClusterData.getWorkerOnTop())) {
 
                         setWorkerGlow(true, x, y);
-
-                        System.out.println("DEBUG: RESTORING GLOW");
-
                     }
                 }
             }
@@ -816,7 +820,7 @@ public class BoardSceneController {
 
     public void setWorkerGlow(boolean enable, int x, int y) {
         Node node = getNodeByRowColumnIndex(x, y);
-        System.out.println("DEBUG: setWorkerGlow" + enable + x + " " + y);
+        System.out.println("DEBUG: setWorkerGlow " + enable + " " + x + " " + y);
         setGlowByNode(enable, node);
     }
 
@@ -845,7 +849,6 @@ public class BoardSceneController {
         } else {
             node.setEffect(null);
         }
-
     }
 
     public void disableWorkerGlow() {

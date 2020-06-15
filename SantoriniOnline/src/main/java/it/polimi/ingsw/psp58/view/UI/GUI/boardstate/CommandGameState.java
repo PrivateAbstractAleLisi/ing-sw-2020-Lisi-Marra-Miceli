@@ -24,8 +24,6 @@ public class CommandGameState implements GameStateAbstract {
     private final GUI gui;
     private final String myUsername;
 
-    private final String errorString = "ERROR - ";
-
     private GameStateEnum state;
 
     private BlockTypeEnum blockToBuild = null;
@@ -53,7 +51,6 @@ public class CommandGameState implements GameStateAbstract {
                 workerSelectedBoardClick(x, y, workerIdInCellCluster, actualWorkerStatus);
                 break;
             case WORKER_LOCKED:
-                System.out.println(errorString + state + " - Please select an available action or your workers");
                 displayPopupError("Please select an available action or your workers");
                 break;
             case MOVE_SELECTED:
@@ -89,7 +86,6 @@ public class CommandGameState implements GameStateAbstract {
             case MSG_SENT_UNLOCKED:
                 //Same case of MSG_SENT_LOCKED
             case MSG_SENT_LOCKED:
-                System.out.println(errorString + state + " - Please wait. The server is handling your request");
                 displayPopupError("Please wait. The server is handling your request");
                 break;
         }
@@ -109,11 +105,9 @@ public class CommandGameState implements GameStateAbstract {
                     state = WORKER_LOCKED;
                 }
             } else {
-                System.out.println(errorString + state + " - Please select one of your workers");
                 displayPopupError("Please select one of your workers");
             }
         } else {
-            System.out.println(errorString + state + " - Please select one of your workers");
             displayPopupError("Please select one of your workers");
         }
 
@@ -137,7 +131,6 @@ public class CommandGameState implements GameStateAbstract {
                 }
             }
         } else {
-            System.out.println(errorString + state + " - Please select an available action or your workers");
             displayPopupError("Please select an available action or your workers");
         }
 
@@ -163,13 +156,11 @@ public class CommandGameState implements GameStateAbstract {
                 buildSelectedButtonClick(buttonPressed, actualWorkerStatus);
                 break;
             case BUILDING_BLOCK_SELECTED:
-                System.out.println(errorString + state + " - Please select the building destination on the Board");
                 displayPopupError("Please select the building destination on the Board");
                 break;
             case MSG_SENT_UNLOCKED:
                 //same as
             case MSG_SENT_LOCKED:
-                System.out.println(errorString + state + " - Please wait. The server is handling your request");
                 displayPopupError("Please wait. The server is handling your request");
                 break;
         }
@@ -188,7 +179,6 @@ public class CommandGameState implements GameStateAbstract {
                 displayPopupError("Error in the creation of the event");
             }
         } else {
-            System.out.println(errorString + state + " - Please select one of your workers");
             displayPopupError("Please select one of your workers");
         }
     }
@@ -206,7 +196,6 @@ public class CommandGameState implements GameStateAbstract {
                 state = BUILD_SELECTED;
                 break;
             case PASS:
-                System.out.println(errorString + state + " - Please deselect the worker and press again");
                 displayPopupError("Please deselect the worker and press again");
                 break;
         }
@@ -264,7 +253,6 @@ public class CommandGameState implements GameStateAbstract {
                         displayPopupError("Error in the creation of the event");
                     }
                 } else {
-                    System.out.println(errorString + state + " - Please deselect the worker and press again");
                     displayPopupError("Please deselect the worker and press again");
                 }
                 break;
@@ -297,7 +285,6 @@ public class CommandGameState implements GameStateAbstract {
                         displayPopupError("Error in the creation of the event");
                     }
                 } else {
-                    System.out.println(errorString + state + " - Please deselect the worker and press again");
                     displayPopupError("Please deselect the worker and press again");
                 }
                 break;
@@ -324,7 +311,6 @@ public class CommandGameState implements GameStateAbstract {
                 }
                 break;
             default:
-                System.out.println(errorString + state + " - Please press BUILD button before selecting a Building Block");
                 displayPopupError("Please press BUILD button before selecting a Building Block");
         }
     }
@@ -418,13 +404,11 @@ public class CommandGameState implements GameStateAbstract {
     //enable green button
     private void setGreenActionButton(boolean enableGreen, TurnAction buttonToSet) {
         boardSceneController.setGreenActionButton(enableGreen, buttonToSet);
-        System.out.println(buttonToSet + " is now green");
     }
 
     //enable green button
     private void setGreenBlockButton(boolean enableGreen, BlockTypeEnum blockToSet) {
         boardSceneController.setGreenBuildingBlocks(enableGreen, blockToSet);
-        System.out.println(blockToSet + " is now green");
     }
 
     private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
