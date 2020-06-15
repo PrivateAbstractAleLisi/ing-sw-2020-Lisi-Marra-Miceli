@@ -14,7 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.util.*;
@@ -23,7 +22,7 @@ public class PreGameSceneController {
     private GUI gui;
 
     //CONSTANT
-    public final double MAX_CARDS_NUMBERS = 15;
+    public static final double MAX_CARDS_NUMBERS = 15;
 
     private String challengerUsername;
 
@@ -133,10 +132,8 @@ public class PreGameSceneController {
         challengerFirstPlayerPane.setVisible(false);
         extWaitHBox.setVisible(false);
 
-        if (!node.equals(waitHBox)) {
-            if (hourglassRotation != null && hourglassRotation.isAlive()) {
-                hourglassRotation.interrupt();
-            }
+        if (!node.equals(waitHBox) && hourglassRotation != null && hourglassRotation.isAlive()) {
+            hourglassRotation.interrupt();
         }
 
         if (node.equals(cardChoiceTilePane)) {
@@ -150,10 +147,6 @@ public class PreGameSceneController {
         }
     }
 
-    private void setTextToBold(Text text, double fontSize) {
-        text.setFont(new Font("System Bold", fontSize));
-    }
-
     private void setTitleCenter(String title) {
         upperText.setText(title.toUpperCase());
     }
@@ -161,18 +154,16 @@ public class PreGameSceneController {
     public void update(CV_PreGameStartedGameEvent event) {
         setLeftPlayerNames(event);
 
-        challengerUsername=event.getChallenger().toLowerCase();
+        challengerUsername = event.getChallenger().toLowerCase();
         setLeftChallenger();
     }
 
-    private void setLeftPlayerNames (CV_PreGameStartedGameEvent event){
+    private void setLeftPlayerNames(CV_PreGameStartedGameEvent event) {
         //Create a Queue
         LinkedList<HBox> playerNameHBoxes = new LinkedList<>();
         playerNameHBoxes.add(playerName_HBox1);
         playerNameHBoxes.add(playerName_HBox2);
         playerNameHBoxes.add(playerName_HBox3);
-
-        int actualPlayersInRoom = event.getPlayersList().size();
 
         List<String> playerNames = event.getPlayersList();
         int index = 0;
@@ -182,7 +173,7 @@ public class PreGameSceneController {
             int position = index + 1;
             Text text = (Text) playerNameHBoxes.get(index).getChildren().get(0);
             text.setText(position + ") " + player.toUpperCase());
-            if (player.toLowerCase().equals(gui.getUsername().toLowerCase())) {
+            if (player.equalsIgnoreCase(gui.getUsername())) {
                 setLeftTextMyUsername(playerNameHBoxes.get(index));
             }
             playerNameHBoxes.get(index).setVisible(true);
@@ -198,7 +189,7 @@ public class PreGameSceneController {
     }
 
     private void setLeftTextMyUsername(Node node) {
-        node.getStyleClass().add("my-username-hbox");
+        node.getStyleClass().add("my-username-hBox");
     }
 
     private void setLeftChallenger() {
@@ -212,7 +203,7 @@ public class PreGameSceneController {
             String textShowed = text.getText().toLowerCase();
 
             String textToCompare = textShowed.substring(3);
-            if (textToCompare.equals(challengerUsername.toLowerCase())) {
+            if (textToCompare.equalsIgnoreCase(challengerUsername)) {
                 //set image to visible
                 hBox.getChildren().get(1).setVisible(true);
             }
@@ -281,8 +272,7 @@ public class PreGameSceneController {
 
         setTitleCenter("CHOOSE YOUR CARD!!");
 
-        ArrayList<CardEnum> allCards = new ArrayList<>();
-        allCards.addAll(event.getAvailableCards());
+        ArrayList<CardEnum> allCards = new ArrayList<>(event.getAvailableCards());
         if (event.getUsedCards() != null) {
             allCards.addAll(event.getUsedCards());
         }
@@ -341,7 +331,6 @@ public class PreGameSceneController {
         cardToChoose = event.getRoomSize();
         showXRightHBoxes(cardToChoose);
         challengerSelectedCards = new ArrayList<>();
-        System.out.println("You're the chellenger, chose " + event.getRoomSize() + " cards");
         setTitleCenter("YOU ARE THE CHALLENGER!! \tCHOOSE " + event.getRoomSize() + " CARDS");
 
         fillAllChallengerCards();
@@ -465,7 +454,7 @@ public class PreGameSceneController {
     private void fillFirstPlayerChoice(VBox vBox, CardEnum card, String username) {
         firstPlayerUsernameByVBox.put(vBox, username.toLowerCase());
         firstPlayerVBoxByUsername.put(username.toLowerCase(), vBox);
-        firstPlayerCardByName.put(username.toLowerCase(),card);
+        firstPlayerCardByName.put(username.toLowerCase(), card);
 
         ImageView image = (ImageView) vBox.getChildren().get(0);
         image.setImage(new Image(card.getImgUrl()));
@@ -529,8 +518,6 @@ public class PreGameSceneController {
                 enableConfirmButton();
             }
         }
-
-        System.out.println("Card clicked: " + card);
     }
 
     private void enableChallengerCard(CardEnum card) {
@@ -584,7 +571,6 @@ public class PreGameSceneController {
     }
 
     private void sendChallengerCardsChosenEvent() {
-        System.out.println("Send challenger card event");
         if (cardToChoose == challengerSelectedCards.size()) {
             VC_ChallengerCardsChosenEvent event = new VC_ChallengerCardsChosenEvent("", challengerSelectedCards);
             gui.getClient().sendEvent(event);
@@ -613,8 +599,6 @@ public class PreGameSceneController {
             disableNotSelectedPlayerCards();
             enableConfirmButton();
         }
-
-        System.out.println("Card clicked: " + card);
     }
 
     private void enablePlayerCard(CardEnum card) {
@@ -668,7 +652,6 @@ public class PreGameSceneController {
     }
 
     private void sendPlayerCardsChosenEvent() {
-        System.out.println("Send player choice card event");
         if (playerSelectedCard != null) {
             VC_PlayerCardChosenEvent event = new VC_PlayerCardChosenEvent(gui.getUsername(), playerSelectedCard);
             gui.getClient().sendEvent(event);
@@ -698,8 +681,6 @@ public class PreGameSceneController {
             disableNotSelectedFirstPlayer();
             enableConfirmButton();
         }
-
-        System.out.println("Player clicked: " + username);
     }
 
     private void enableFistsPlayer(String username) {
@@ -738,7 +719,7 @@ public class PreGameSceneController {
 
     private void disableNotSelectedFirstPlayer() {
         for (String username : usernamesAvailable) {
-            if (!firstPlayerSelected.equals(username)) {
+            if (!firstPlayerSelected.equalsIgnoreCase(username)) {
                 disableFirstPlayer(username);
             }
         }
@@ -746,14 +727,13 @@ public class PreGameSceneController {
 
     private void enableNotSelectedFirstPlayer() {
         for (String username : usernamesAvailable) {
-            if (!firstPlayerSelected.equals(username)) {
+            if (!firstPlayerSelected.equalsIgnoreCase(username)) {
                 enableFistsPlayer(username);
             }
         }
     }
 
     private void sendFirstPlayerChosenEvent() {
-        System.out.println("Send first player choice event");
         if (firstPlayerSelected != null) {
             VC_ChallengerChosenFirstPlayerEvent event = new VC_ChallengerChosenFirstPlayerEvent(firstPlayerSelected);
             gui.getClient().sendEvent(event);
