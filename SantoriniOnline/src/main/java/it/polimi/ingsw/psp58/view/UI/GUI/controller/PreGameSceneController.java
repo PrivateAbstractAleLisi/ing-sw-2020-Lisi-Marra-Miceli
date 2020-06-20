@@ -1099,7 +1099,7 @@ public class PreGameSceneController {
     /**
      * Hide the HBox and hide the content.
      *
-     * @param hBox
+     * @param hBox HBox to hide and clean
      */
     private void hideRightHBox(HBox hBox) {
         showCleanRightHBox(hBox);
