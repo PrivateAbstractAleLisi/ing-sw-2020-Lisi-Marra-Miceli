@@ -40,7 +40,11 @@ public class SantoriniClient extends EventSource implements Runnable {
         attachListenerByType(VIEW, userInterface);
     }
 
-    public void begin() {
+    /**
+     * tries to open a socket with the server, the socket has a timeout. This function starts the pinging process too
+     * @throws IOException when it's unable to open a socket
+     */
+    public void begin() throws IOException {
 
         serverSocket = null;
         //Open a connection with the server
@@ -52,7 +56,8 @@ public class SantoriniClient extends EventSource implements Runnable {
             }
         } catch (IOException e) {
             System.err.println("Client: Unable to open a socket");
-            e.printStackTrace();
+            throw e;
+            ///e.printStackTrace();
         }
         if (enablePing) {
             try {
