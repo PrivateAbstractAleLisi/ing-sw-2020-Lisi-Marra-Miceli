@@ -1,56 +1,84 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
-import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
-import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
-public class WaitGameState extends GameStateAbstract {
-    private final GUI gui;
+/**
+ * Wait State class implementation.
+ */
+public class WaitGameState implements GameStateAbstract {
+    /**
+     * The {@link BoardSceneController} that created this Object.
+     */
+    private final BoardSceneController boardSceneController;
 
-    public WaitGameState(CV_WaitPreMatchGameEvent event, GUI gui) {
-        this.gui = gui;
+    /**
+     * Unique constructor.
+     *
+     * @param boardSceneController The {@link BoardSceneController} that created this Object.
+     */
+    public WaitGameState(BoardSceneController boardSceneController) {
+        this.boardSceneController = boardSceneController;
     }
 
-    public WaitGameState(GUI gui) {
-        this.gui = gui;
-    }
-
+    /**
+     * Display error because it's Wait State.
+     *
+     * @param x X Coordinate of the click.
+     * @param y Y Coordinate of the click.
+     */
     @Override
-    public void handleClickOnButton(int x, int y) {
-        System.out.println("Wait State Handle Click - Not yet implemented");
-        //Show a popup
+    public void handleClick(int x, int y) {
+        displayWaitError();
     }
 
+    /**
+     * Display error because it's Wait State.
+     *
+     * @param buttonPressed {@link TurnAction} of the Button pressed.
+     */
     @Override
-    public void handleClickOnButton(TurnAction buttonPressed) {
-        System.out.println("Wait State Handle Click On Button - ERROR");
-        //PRINT ERROR
+    public void handleClick(TurnAction buttonPressed) {
+        displayWaitError();
     }
 
+    /**
+     * Display error because it's Wait State.
+     *
+     * @param blockClicked {@link BlockTypeEnum} of the Button pressed.
+     */
     @Override
-    public void handleClickOnButton(BlockTypeEnum blockClicked) {
-        System.out.println("Wait State Handle Click On Block - ERROR");
-        //PRINT ERROR
+    public void handleClick(BlockTypeEnum blockClicked) {
+        displayWaitError();
     }
 
+    /**
+     * Display error because it's Wait State.
+     *
+     * @param event The {@link CV_CommandExecutedGameEvent} received from the server.
+     */
     @Override
     public void updateFromServer(CV_CommandExecutedGameEvent event) {
-        System.out.println("Wait State Handle CV_CommandExecutedGameEvent - ERROR");
-        //PRINT ERROR
+        displayWaitError();
     }
 
+    /**
+     * Display error because it's Wait State.
+     *
+     * @param event The {@link CV_CommandRequestEvent} received from the server.
+     */
     @Override
     public void updateFromServer(CV_CommandRequestEvent event) {
-        System.out.println("Wait State Handle CV_CommandRequestEvent - ERROR");
-        //PRINT ERROR
+        displayWaitError();
     }
 
-    @Override
-    public ViewGameEvent getEvent() {
-        return null;
+    /**
+     * Display a Wait State Error with a Popup
+     */
+    private void displayWaitError() {
+        boardSceneController.displayPopupMessage("IT'S NOT YOUR TURN, PLEASE WAIT");
     }
 }

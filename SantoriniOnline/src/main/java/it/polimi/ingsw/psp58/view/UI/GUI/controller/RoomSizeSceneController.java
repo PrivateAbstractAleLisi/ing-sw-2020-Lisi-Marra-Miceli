@@ -1,7 +1,6 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
-import it.polimi.ingsw.psp58.view.UI.GUI.SantoriniAudioPlayer;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,15 +10,11 @@ import javafx.scene.effect.Glow;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.IOException;
-
 public class RoomSizeSceneController {
     @FXML
-    private  ImageView img2, img3;
+    private ImageView img2, img3;
     @FXML
-    private  ImageView background;
+    private ImageView background;
 
     private GUI gui;
 
@@ -32,7 +27,6 @@ public class RoomSizeSceneController {
         img3.setVisible(false);
 
         displayButtons();
-
     }
 
     public void displayButtons() {
@@ -54,7 +48,6 @@ public class RoomSizeSceneController {
     }
 
 
-
     //2 player
     public void img2OnMouseClicked() {
         choice(2);
@@ -63,6 +56,7 @@ public class RoomSizeSceneController {
     public void img2OnMouseEntered() {
         img2.setEffect(new Glow());
     }
+
     public void img2OnMouseExited() {
         img2.setEffect(null);
     }
@@ -75,10 +69,10 @@ public class RoomSizeSceneController {
     public void img3OnMouseEntered() {
         img3.setEffect(new Glow());
     }
+
     public void img3OnMouseExited() {
         img3.setEffect(null);
     }
-
 
 
     private void turnDown(int choice) {
@@ -96,46 +90,18 @@ public class RoomSizeSceneController {
 
 
         trans.setOnFinished(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent event) {
                 gui.roomSizeResponse(choice);
             }
         });
-        thunder();
         trans2.play();
         trans.play();
-
-
-
     }
 
-    private void thunder() {
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    SantoriniAudioPlayer player = new SantoriniAudioPlayer();
-                    player.loadSound("src/main/resources/sounds/welcome.wav");
-                    player.play();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (UnsupportedAudioFileException e) {
-                    e.printStackTrace();
-                } catch (LineUnavailableException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        t.start();
-        System.out.println("thunder done");
-    }
     private void choice(int number) {
-
         background.setEffect(new Bloom());
         turnDown(number);
-
-
-
     }
 
 

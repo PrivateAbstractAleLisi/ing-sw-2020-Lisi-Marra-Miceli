@@ -41,7 +41,7 @@ public class ErrorSceneController {
     public void displayAndArm() {
         FadeTransition trans1 = transitionOnNode(errorLabel, 400);
         FadeTransition trans2 = transitionOnNode(errorImage, 400);
-        FadeTransition trans3_late = transitionOnNode(messageText, 700);
+        FadeTransition trans3Late = transitionOnNode(messageText, 700);
 
         TranslateTransition swipeTransition = new TranslateTransition();
         swipeTransition.setNode(errorLine);
@@ -56,7 +56,7 @@ public class ErrorSceneController {
         swipeTransition.play();
         trans1.play();
         trans2.play();
-        trans3_late.play();
+        trans3Late.play();
 
     }
 

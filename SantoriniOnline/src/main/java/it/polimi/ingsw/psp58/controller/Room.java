@@ -92,7 +92,7 @@ public class Room extends EventSource {
             //        DEBUG
             printLogMessage("New player " + username.toUpperCase() + " added in the room");
 
-            CV_RoomUpdateGameEvent updateEvent = new CV_RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE);
+            CV_RoomUpdateGameEvent updateEvent = new CV_RoomUpdateGameEvent("Added a new Player", getActiveUsersCopy(), SIZE, roomID);
             notifyAllObserverByType(VIEW, updateEvent);
 
 

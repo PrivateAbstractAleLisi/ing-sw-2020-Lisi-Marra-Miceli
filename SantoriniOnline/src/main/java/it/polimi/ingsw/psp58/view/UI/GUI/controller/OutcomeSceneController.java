@@ -30,6 +30,7 @@ public class OutcomeSceneController {
         spectatorStackPane.setVisible(false);
         playAgainStackPane.setDisable(false);
         playAgainStackPane.setVisible(true);
+        labelSubTitle.setVisible(true);
 
         if (weAreTheChampions(winner)) {
             labelTitle.setText("YOU WIN");
@@ -46,6 +47,7 @@ public class OutcomeSceneController {
         spectatorStackPane.setVisible(true);
         playAgainStackPane.setDisable(true);
         playAgainStackPane.setVisible(false);
+        labelSubTitle.setVisible(false);
 
         labelTitle.setText("YOU LOSE");
     }

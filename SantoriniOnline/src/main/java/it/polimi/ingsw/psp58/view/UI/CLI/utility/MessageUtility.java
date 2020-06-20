@@ -101,7 +101,7 @@ public class MessageUtility {
 
     }
 
-    public static void winner() {
+     public static void winner() {
         System.out.println("██╗    ██╗██╗███╗   ██╗███╗   ██╗███████╗██████╗ ██╗\n" +
                 "██║    ██║██║████╗  ██║████╗  ██║██╔════╝██╔══██╗██║\n" +
                 "██║ █╗ ██║██║██╔██╗ ██║██╔██╗ ██║█████╗  ██████╔╝██║\n" +
@@ -109,6 +109,7 @@ public class MessageUtility {
                 "╚███╔███╔╝██║██║ ╚████║██║ ╚████║███████╗██║  ██║██╗\n" +
                 " ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝\n" +
                 "                                                    ");
+
     }
 
     public static void gameOver() {
@@ -119,6 +120,7 @@ public class MessageUtility {
                 "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║\n" +
                 " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝\n" +
                 "                                                                          ");
+
     }
 
     public static void printDivider() {

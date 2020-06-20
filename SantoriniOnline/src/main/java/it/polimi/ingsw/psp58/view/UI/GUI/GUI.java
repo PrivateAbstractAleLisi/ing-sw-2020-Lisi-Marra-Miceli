@@ -1,6 +1,5 @@
 package it.polimi.ingsw.psp58.view.UI.GUI;
 
-import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
@@ -11,10 +10,10 @@ import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEv
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -35,17 +34,11 @@ public class GUI extends Application implements ViewListener {
     private final String gameVersion = "1.5.7";
     private final String onlineServerIP = "23.23.52.127";
 
-    private String chosenIp;
-
     private boolean enablePing = true;
-
-    private WorkerColors playerColor;
 
     private String username;
 
     private SantoriniClient client;
-
-    private IslandData currentIsland;
 
     private Scene startingScene;
     private StartingSceneController startingSceneController;
@@ -78,6 +71,8 @@ public class GUI extends Application implements ViewListener {
                     case "-ping off":
                         enablePing = false;
                         break;
+                    default:
+                        //NO ARGUMENT
                 }
             }
         }
@@ -99,41 +94,17 @@ public class GUI extends Application implements ViewListener {
                 getClass().getResource("/scenes/LobbyScene.fxml"));
         lobbyScene = new Scene(lobbySceneLoader.load());
         lobbySceneController = lobbySceneLoader.getController();
-        lobbySceneController.setGui(this);
-
-        //set up the pregame scene and controller
-//        FXMLLoader preGameSceneLoader = new FXMLLoader(
-//                getClass().getResource("/scenes/PreGameScene.fxml"));
-//        preGameScene = new Scene(preGameSceneLoader.load());
-//        preGameSceneController = preGameSceneLoader.getController();
-//        preGameSceneController.setGui(this);
-
-        //set up the board scene and controller
-//        FXMLLoader boardLoader = new FXMLLoader(
-//                getClass().getResource("/scenes/BoardScene.fxml"));
-//        boardScene = new Scene(boardLoader.load());
-//        boardSceneController = boardLoader.getController();
-//        boardSceneController.setGui(this);
-
-        //set up the starting scene and controller
-//        FXMLLoader outcomeSceneLoader = new FXMLLoader(
-//                getClass().getResource("/scenes/OutcomeScene.fxml"));
-//        outcomeScene = new Scene(outcomeSceneLoader.load());
-//
-//        outcomeSceneController = outcomeSceneLoader.getController();
-
-        //RoomSizeRequest
 
         //starts with the startingScene
         stage.setTitle("Santorini Online");
         stage.setScene(startingScene);
 
         stage.show();
+        stage.setOnCloseRequest(e -> closeApp());
     }
 
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
-        //int number = Message.askRoomSize("You're the first player, choose the size of the room:", stage);
         try {
             prepareRoomSizeRequest();
         } catch (IOException e) {
@@ -144,8 +115,6 @@ public class GUI extends Application implements ViewListener {
     }
 
     public void prepareRoomSizeRequest() throws IOException {
-
-
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/scenes/RoomSizeScene.fxml"));
         roomSizeScene = new Scene(loader.load());
@@ -159,8 +128,6 @@ public class GUI extends Application implements ViewListener {
         roomSizeStage.show();
 
         roomSizeController.setGui(this);
-
-
     }
 
     public void roomSizeResponse(int result) {
@@ -168,18 +135,12 @@ public class GUI extends Application implements ViewListener {
         System.out.println(result);
         VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", result);
         sendEvent(responseEvent);
-
     }
 
     public void changeScene(Scene scene) {
-//        stage.close();
         stage.setTitle("Santorini Online");
         stage.setScene(scene);
-        if (scene.equals(preGameScene)) {
-            stage.setResizable(true);
-        } else {
-            stage.setResizable(false);
-        }
+        stage.setResizable(scene.equals(preGameScene));
         stage.show();
     }
 
@@ -212,10 +173,6 @@ public class GUI extends Application implements ViewListener {
 
     public void sendEvent(ControllerGameEvent event) {
         client.sendEvent(event);
-    }
-
-    public void setChosenIp(String chosenIp) {
-        this.chosenIp = chosenIp;
     }
 
     public void setUsername(String username) {
@@ -282,9 +239,8 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_NewGameRequestEvent event) {
-
+        //NOT USED IN GUI
     }
-
 
     public void showError(String message) {
         new ErrorPopUp().show(message, stage);
@@ -328,7 +284,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_PreGameErrorGameEvent event) {
-        new ErrorPopUp().show("Ablerobello", stage);
+        new ErrorPopUp().show("ERROR - OPTION NOT VALID", stage);
     }
 
     @Override
@@ -447,9 +403,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
-        if (!event.getActingPlayer().equals(username)) {
-            boardSceneController.addMessageToQueueList(event.getEventDescription().toUpperCase() + " " + event.getActingPlayer().toUpperCase());
-        }
+        boardSceneController.handle(event);
     }
 
     @Override
@@ -466,12 +420,16 @@ public class GUI extends Application implements ViewListener {
         return onlineServerIP;
     }
 
-    public void setShowBoardScene (){
+    public void setShowBoardScene() {
         changeScene(boardScene);
     }
 
-    public void closeApp(){
-        client.closeConnection();
+    public void closeApp() {
         stage.close();
+        Platform.exit();
+        if (client.isConnectionOpen()) {
+            client.closeConnection();
+        }
+        System.exit(0);
     }
 }

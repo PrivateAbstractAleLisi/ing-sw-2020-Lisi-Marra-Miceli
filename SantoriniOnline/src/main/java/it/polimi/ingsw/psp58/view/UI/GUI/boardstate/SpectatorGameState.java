@@ -1,51 +1,84 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.boardstate;
 
-import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandExecutedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_CommandRequestEvent;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
-import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
-public class SpectatorGameState extends GameStateAbstract {
-    private final GUI gui;
+/**
+ * Spectator State class implementation.
+ */
+public class SpectatorGameState implements GameStateAbstract {
+    /**
+     * The {@link BoardSceneController} that created this Object.
+     */
+    private final BoardSceneController boardSceneController;
 
-    public SpectatorGameState(GUI gui) {
-        this.gui = gui;
+    /**
+     * Unique constructor.
+     *
+     * @param boardSceneController The {@link BoardSceneController} that created this Object.
+     */
+    public SpectatorGameState(BoardSceneController boardSceneController) {
+        this.boardSceneController = boardSceneController;
     }
 
+    /**
+     * Display error because it's Spectator State.
+     *
+     * @param x X Coordinate of the click.
+     * @param y Y Coordinate of the click.
+     */
     @Override
-    public void handleClickOnButton(int x, int y) {
-        System.out.println("Spectator State Handle Click - Not yet implemented");
-        //Show a popup
+    public void handleClick(int x, int y) {
+        displaySpectatorError();
     }
 
+    /**
+     * Display error because it's Spectator State.
+     *
+     * @param buttonPressed {@link TurnAction} of the Button pressed.
+     */
     @Override
-    public void handleClickOnButton(TurnAction buttonPressed) {
-        System.out.println("Spectator State Handle Click On Button - ERROR");
-        //PRINT ERROR
+    public void handleClick(TurnAction buttonPressed) {
+        displaySpectatorError();
     }
 
+    /**
+     * Display error because it's Spectator State.
+     *
+     * @param blockClicked {@link BlockTypeEnum} of the Button pressed.
+     */
     @Override
-    public void handleClickOnButton(BlockTypeEnum blockClicked) {
-        System.out.println("Spectator State Handle Click On Block - ERROR");
-        //PRINT ERROR
+    public void handleClick(BlockTypeEnum blockClicked) {
+        displaySpectatorError();
     }
 
+    /**
+     * Display error because it's Spectator State.
+     *
+     * @param event The {@link CV_CommandExecutedGameEvent} received from the server.
+     */
     @Override
     public void updateFromServer(CV_CommandExecutedGameEvent event) {
-        System.out.println("Spectator State Handle CV_CommandExecutedGameEvent - ERROR");
-        //PRINT ERROR
+        displaySpectatorError();
     }
 
+    /**
+     * Display error because it's Spectator State.
+     *
+     * @param event The {@link CV_CommandRequestEvent} received from the server.
+     */
     @Override
     public void updateFromServer(CV_CommandRequestEvent event) {
-        System.out.println("Spectator State Handle CV_CommandRequestEvent - ERROR");
-        //PRINT ERROR
+        displaySpectatorError();
     }
 
-    @Override
-    public ViewGameEvent getEvent() {
-        return null;
+    /**
+     * Display a Spectator State Error with a Popup
+     */
+    private void displaySpectatorError() {
+        boardSceneController.displayPopupMessage("YOU LOST THE GAME - WAIT OR EXIT");
     }
 }

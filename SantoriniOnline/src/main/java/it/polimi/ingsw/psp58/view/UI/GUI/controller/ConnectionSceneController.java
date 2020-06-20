@@ -23,7 +23,7 @@ public class ConnectionSceneController {
             if (username.getText().matches("^[a-zA-Z0-9]+$") && username.getText().length()>3 && username.getText().length()<15){
                 //set up the information in the gui
                 gui.setUsername(username.getText());
-                gui.setChosenIp(ipAddress.getText());
+//                gui.setChosenIp(ipAddress.getText());
 
                 //set up the client and starts it
                 SantoriniClient client = new SantoriniClient(gui, ipAddress.getText(), gui.isPingEnabled());

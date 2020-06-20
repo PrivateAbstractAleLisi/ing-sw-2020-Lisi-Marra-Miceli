@@ -53,6 +53,11 @@ public class BoardSceneController {
     private GUI gui;
 
     /**
+     * {@code boolean} is true if my turn just began and I need to show the popup.
+     */
+    private boolean myTurnFirstActionPopup = false;
+
+    /**
      * Last island update, overwritten many times during the match.
      */
     private IslandData lastIslandUpdate;
@@ -92,34 +97,81 @@ public class BoardSceneController {
      */
     @FXML
     private VBox cardInfo2;
-
+    /**
+     * {@link VBox} that contains the info about the current turn limitation.
+     */
     @FXML
     private VBox turnInfo;
 
-    private HBox workerPrePlaceHBox;
-
     //ACTION BUTTONS
+    /**
+     * {@link StackPane} that contains all the bottom buttons.
+     */
     @FXML
     private StackPane commandGameButtonPane;
+    /**
+     * {@link Button} Move Button
+     */
     @FXML
-    private Button moveButton, buildButton, passButton, exitSpectatorMode;
-
+    private Button moveButton;
+    /**
+     * {@link Button} Build Button
+     */
+    @FXML
+    private Button buildButton;
+    /**
+     * {@link Button} Pass Button
+     */
+    @FXML
+    private Button passButton;
 
     //BLOCKS
+    /**
+     * {@link HBox} Level 1 HBox
+     */
     @FXML
-    private HBox L1Box, L2Box, L3Box, DomeBox;
+    private HBox l1Box;
+    /**
+     * {@link HBox} Level 2 HBox
+     */
+    @FXML
+    private HBox l2Box;
+    /**
+     * {@link HBox} Level 3 HBox
+     */
+    @FXML
+    private HBox l3Box;
+    /**
+     * {@link HBox} Dome HBox
+     */
+    @FXML
+    private HBox domeBox;
 
     //WORKERS
+    /**
+     * {@link ImageView} Miniatures of Worker A
+     */
     @FXML
     private ImageView workerSlotA;
+    /**
+     * {@link ImageView} Miniatures of Worker B
+     */
     @FXML
     private ImageView workerSlotB;
 
     //TURN SEQUENCE
+    /**
+     * {@link Label} with Turn Sequence
+     */
     @FXML
     private Label turnSequence;
+    /**
+     * {@link VBox} that contains the Turn Sequence.
+     */
+    @FXML
+    private VBox turnSequenceVBox;
 
-    //RightMessagge
+    //RightMessage
     /**
      * {@link Text} that contains the current message showed at the screen in the right side of the scene.
      */
@@ -138,10 +190,11 @@ public class BoardSceneController {
     public void init(CV_WorkerPlacementGameEvent event) {
         initializeIsland();
 
-        updateTurnSequence(event.getTurnSequence());
-        disableTurnInfo();
         this.myUsername = gui.getUsername();
-        myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());
+        this.myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());
+
+        showTurnSequence(false);
+        hideAllTurnInfo();
 
         String url = getWorkerUrl(myColor);
 
@@ -150,7 +203,7 @@ public class BoardSceneController {
 
         resetWorkerStatus();
 
-        setUpPlayersCardsCorrespondence(event.getTurnSequence());
+        setUpPlayersCardsCorrespondence(event.getTurnSequence(), event.getPlayerWorkerColors());
 
         messagesQueue = new LinkedList<>();
     }
@@ -170,7 +223,7 @@ public class BoardSceneController {
         Integer colIndex = GridPane.getColumnIndex(source);
         Integer rowIndex = GridPane.getRowIndex(source);
         System.out.printf("Mouse clicked cell [%d, %d]%n", colIndex, rowIndex);
-        currentStateInstance.handleClickOnButton(colIndex, rowIndex);
+        currentStateInstance.handleClick(colIndex, rowIndex);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -182,7 +235,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void moveButtonClick() {
-        currentStateInstance.handleClickOnButton(TurnAction.MOVE);
+        currentStateInstance.handleClick(TurnAction.MOVE);
     }
 
     /**
@@ -190,7 +243,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void buildButtonClick() {
-        currentStateInstance.handleClickOnButton(TurnAction.BUILD);
+        currentStateInstance.handleClick(TurnAction.BUILD);
     }
 
     /**
@@ -198,9 +251,12 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void passButtonClick() {
-        currentStateInstance.handleClickOnButton(TurnAction.PASS);
+        currentStateInstance.handleClick(TurnAction.PASS);
     }
 
+    /**
+     * Method called when an user, in Spectator State (mode) click the exit button.
+     */
     public void exitSpectatorModeClick() {
         gui.closeApp();
     }
@@ -214,7 +270,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void level1Click() {
-        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL1);
+        currentStateInstance.handleClick(BlockTypeEnum.LEVEL1);
     }
 
     /**
@@ -222,7 +278,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void level2Click() {
-        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL2);
+        currentStateInstance.handleClick(BlockTypeEnum.LEVEL2);
     }
 
     /**
@@ -230,7 +286,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void level3Click() {
-        currentStateInstance.handleClickOnButton(BlockTypeEnum.LEVEL3);
+        currentStateInstance.handleClick(BlockTypeEnum.LEVEL3);
     }
 
     /**
@@ -238,7 +294,7 @@ public class BoardSceneController {
      * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
      */
     public void domeClick() {
-        currentStateInstance.handleClickOnButton(BlockTypeEnum.DOME);
+        currentStateInstance.handleClick(BlockTypeEnum.DOME);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -250,7 +306,7 @@ public class BoardSceneController {
     /**
      * Reset the worker status in this class creating a new {@link WorkerStatus}
      */
-    public void resetWorkerStatus() {
+    private void resetWorkerStatus() {
         workerStatus = new WorkerStatus();
     }
 
@@ -267,12 +323,13 @@ public class BoardSceneController {
      * It prepare the waiting view disabling all the buttons and the glow
      */
     public void setWaitingView() {
-        //Todo worker glow non si disattiva
         disableAllActionButtons();
         resetWorkerStatus();
-        disableWorkerGlow();
     }
 
+    /**
+     * This method disable all buttons and prepare the scene for spectator mode.
+     */
     private void setSpectatorView() {
         commandGameButtonPane.getChildren().get(0).setVisible(false);
         commandGameButtonPane.getChildren().get(0).setDisable(true);
@@ -281,21 +338,15 @@ public class BoardSceneController {
     }
 
     /**
-     * Hide the left box with the worker icons
-     */
-    public void hideWorkerPlacementBox() {
-        //workerPrePlaceHBox.setVisible(false);
-    }
-
-    /**
      * Set the {@link WaitGameState} State waiting for a {@link CV_PlayerPlaceWorkerRequestEvent}.
      *
      * @param event A {@link CV_WorkerPlacementGameEvent} that notify the beginning of WorkerPlacement Phase.
      */
     public void handle(CV_WorkerPlacementGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState(gui);
+        GameStateAbstract nextState = new WaitGameState(this);
         setWaitingView();
         this.currentStateInstance = nextState;
+        showTurnSequence(false);
     }
 
     /**
@@ -304,7 +355,7 @@ public class BoardSceneController {
      * @param event Contains the {@code workerID} of the worker to place.
      */
     public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
-        GameStateAbstract nextState = new PlaceWorkerGameState(event, gui, this);
+        GameStateAbstract nextState = new PlaceWorkerGameState(gui, this);
         try {
             workerStatus.setSelectedWorker(event.getWorkerToPlace());
         } catch (WorkerLockedException e) {
@@ -324,10 +375,25 @@ public class BoardSceneController {
      * @param event A {@link CV_WaitPreMatchGameEvent} that notify a Wait Phase.
      */
     public void handle(CV_WaitPreMatchGameEvent event) {
-        GameStateAbstract nextState = new WaitGameState(event, gui);
+        GameStateAbstract nextState = new WaitGameState(this);
         setWaitingView();
         this.currentStateInstance = nextState;
     }
+
+    /**
+     * Set the {@link WaitGameState} State waiting for another event.
+     *
+     * @param event A {@link CV_WaitMatchGameEvent} that notify a Wait Phase.
+     */
+    public void handle(CV_WaitMatchGameEvent event) {
+        if (!event.getActingPlayer().equals(myUsername)) {
+            GameStateAbstract nextState = new WaitGameState(this);
+            setWaitingView();
+            addMessageToQueueList(event.getEventDescription().toUpperCase() + " " + event.getActingPlayer().toUpperCase());
+            this.currentStateInstance = nextState;
+        }
+    }
+
 
     /**
      * Set the {@link WaitGameState} State waiting for a {@link CV_NewTurnEvent}.
@@ -337,7 +403,7 @@ public class BoardSceneController {
     public void handle(CV_GameStartedGameEvent event) {
         setGlowByNode(false, workerSlotA);
         setGlowByNode(false, workerSlotB);
-        GameStateAbstract nextState = new WaitGameState(gui);
+        GameStateAbstract nextState = new WaitGameState(this);
         setWaitingView();
         this.currentStateInstance = nextState;
         addMessageToQueueList("Game is starting!");
@@ -350,13 +416,15 @@ public class BoardSceneController {
      */
     public void handle(CV_NewTurnEvent event) {
         updateTurnSequence(event.getTurnRotation());
+        disableAllWorkerGlow();
+        resetWorkerStatus();
 
         if (event.getCurrentPlayerUsername().equals(myUsername)) {
-            currentStateInstance = new CommandGameState(event, gui, this);
+            currentStateInstance = new CommandGameState(gui, this);
             resetWorkerStatus();
-            addMessageToQueueList("IT'S YOUR TURN!");
+            myTurnFirstActionPopup = true;
         } else {
-            disableTurnInfo();
+            hideAllTurnInfo();
         }
     }
 
@@ -384,6 +452,10 @@ public class BoardSceneController {
         workerStatus.resetSelectedWorker();
 
         currentStateInstance.updateFromServer(event);
+        if (myTurnFirstActionPopup) {
+            displayPopupMessage("IT'S YOUR TURN!");
+            myTurnFirstActionPopup = false;
+        }
     }
 
     /**
@@ -405,21 +477,23 @@ public class BoardSceneController {
         disableAllActionButtons();
         setGlowByNode(false, workerSlotA);
         setGlowByNode(false, workerSlotB);
-        switch (workerRequested) {
-            case A:
-                setGlowByNode(true, workerSlotA);
-                addMessageToQueueList("Please place the FIRST worker");
-                break;
-            case B:
-                setGlowByNode(true, workerSlotB);
-                addMessageToQueueList("Please place the SECOND worker");
-                break;
+        if (workerRequested == Worker.IDs.A) {
+            setGlowByNode(true, workerSlotA);
+            addMessageToQueueList("Please place the FIRST worker");
+        } else if (workerRequested == Worker.IDs.B) {
+            setGlowByNode(true, workerSlotB);
+            addMessageToQueueList("Please place the SECOND worker");
         }
     }
 
+    /**
+     * Prepare the Spectator Mode and set the State to Spectator.
+     *
+     * @param event Event with Spectator Info
+     */
     public void handle(CV_SpectatorGameEvent event) {
         if (event.getSpectatorPlayer().equals(myUsername)) {
-            GameStateAbstract nextState = new SpectatorGameState(gui);
+            GameStateAbstract nextState = new SpectatorGameState(this);
             setSpectatorView();
             this.currentStateInstance = nextState;
         } else {
@@ -482,20 +556,15 @@ public class BoardSceneController {
                 button = buildButton;
                 break;
             case PASS:
-                button = passButton;
-                break;
             default:
                 button = passButton;
         }
 
         if (enable) {
-            //point.setEffect(new Glow(0.7));
             System.out.println("DEBUG: setButtonGlow on " + buttonToSet);
 
             DropShadow dropShadow = new DropShadow();
             dropShadow.setRadius(14.5);
-//            dropShadow.setWidth(30);
-//            dropShadow.setHeight(30);
             dropShadow.setOffsetX(0);
             dropShadow.setOffsetY(0);
             dropShadow.setSpread(0.6);
@@ -520,13 +589,6 @@ public class BoardSceneController {
                                          BUILDING BLOCKS METHODS
        ----------------------------------------------------------------------------------------------*/
 
-    private void updateBlocksCounter(int lev1, int lev2, int lev3, int dome) {
-        ((Label) L1Box.getChildren().get(1)).setText(Integer.toString(lev1));
-        ((Label) L2Box.getChildren().get(1)).setText(Integer.toString(lev2));
-        ((Label) L3Box.getChildren().get(1)).setText(Integer.toString(lev3));
-        ((Label) DomeBox.getChildren().get(1)).setText(Integer.toString(dome));
-    }
-
     /**
      * Enable the Green Glow around the Block that has been selected.
      *
@@ -535,37 +597,32 @@ public class BoardSceneController {
      */
     public void setGreenBuildingBlocks(boolean enable, BlockTypeEnum blockToSet) {
         if (enable) {
-            L1Box.setEffect(null);
-            L2Box.setEffect(null);
-            L3Box.setEffect(null);
-            DomeBox.setEffect(null);
+            l1Box.setEffect(null);
+            l2Box.setEffect(null);
+            l3Box.setEffect(null);
+            domeBox.setEffect(null);
         }
         HBox hBox;
         switch (blockToSet) {
             case LEVEL1:
-                hBox = L1Box;
+                hBox = l1Box;
                 break;
             case LEVEL2:
-                hBox = L2Box;
+                hBox = l2Box;
                 break;
             case LEVEL3:
-                hBox = L3Box;
+                hBox = l3Box;
                 break;
             case DOME:
-                hBox = DomeBox;
-                break;
             default:
-                hBox = DomeBox;
+                hBox = domeBox;
         }
 
         if (enable) {
-            //point.setEffect(new Glow(0.7));
             System.out.println("DEBUG: setButtonGlow on " + blockToSet);
 
             DropShadow dropShadow = new DropShadow();
             dropShadow.setRadius(14.5);
-//            dropShadow.setWidth(30);
-//            dropShadow.setHeight(30);
             dropShadow.setOffsetX(0);
             dropShadow.setOffsetY(0);
             dropShadow.setSpread(0.6);
@@ -582,10 +639,10 @@ public class BoardSceneController {
      * Disable the Green Glow around all the Building Blocks at once.
      */
     public void disableAllGreenBuildingBlock() {
-        L1Box.setEffect(null);
-        L2Box.setEffect(null);
-        L3Box.setEffect(null);
-        DomeBox.setEffect(null);
+        l1Box.setEffect(null);
+        l2Box.setEffect(null);
+        l3Box.setEffect(null);
+        domeBox.setEffect(null);
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -593,19 +650,12 @@ public class BoardSceneController {
        ----------------------------------------------------------------------------------------------*/
 
     /**
-     * Update the Turn Sequence list in the high-left corner.
+     * Show or hide the Turn Sequence Box.
      *
-     * @param turnSequenceFromEvent {@link HashMap} containing the list of current players and their cards.
+     * @param enable True to show the Turn Sequence, false to hide.
      */
-    public void updateTurnSequence(Map<String, CardEnum> turnSequenceFromEvent) {
-
-        //fill turn sequence
-        Map<String, CardEnum> sequence = turnSequenceFromEvent;
-        List<String> turnSequence = new ArrayList<>();
-        for (String player : sequence.keySet()) {
-            turnSequence.add(player);
-        }
-        updateTurnSequence(turnSequence);
+    private void showTurnSequence(boolean enable) {
+        turnSequenceVBox.setVisible(enable);
     }
 
     /**
@@ -614,36 +664,54 @@ public class BoardSceneController {
      * @param sequence {@code List<String>} containing the list of current players and their cards.
      */
     public void updateTurnSequence(List<String> sequence) {
-        String turnSequenceText = "";
+        StringBuilder turnSequenceText = new StringBuilder();
         boolean first = true;
-        for (String s : sequence) {
+        for (String username : sequence) {
             if (first) {
-                turnSequenceText += " ";
+                turnSequenceText.append(" ");
                 first = false;
             } else {
-                turnSequenceText += " << ";
+                turnSequenceText.append(" << ");
             }
-            turnSequenceText += s.toUpperCase();
+            turnSequenceText.append(username.toUpperCase());
+            if (username.equals(myUsername)) {
+                turnSequenceText.append(" (YOU)".toUpperCase());
+            }
         }
-        turnSequence.setText(turnSequenceText);
+        turnSequence.setText(turnSequenceText.toString());
+        showTurnSequence(true);
     }
 
      /* ----------------------------------------------------------------------------------------------
                                          ISLAND METHODS
        ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Handle the Island Update: memorize the event and update the scene.
+     *
+     * @param event An {@link  CV_IslandUpdateEvent} contains the last update of the island.
+     */
     public void handle(CV_IslandUpdateEvent event) {
         updateIsland(event.getNewIsland());
     }
 
+    /**
+     * Get last update of the Island.
+     *
+     * @return {@link IslandData} last update of the island.
+     */
     public IslandData getLastIslandUpdate() {
         return lastIslandUpdate;
     }
 
+    /**
+     * This method refresh and update the Island on the screen.
+     *
+     * @param island An {@link IslandData} with the last update of the island.
+     */
     public void updateIsland(IslandData island) {
         setLastIslandUpdate(island);
 
-        String url = "";
         Platform.runLater(() -> {
             for (int x = 0; x < 5; x++) {
                 for (int y = 0; y < 5; y++) {
@@ -674,12 +742,11 @@ public class BoardSceneController {
 
                     lastGridPane[x][y] = stackPane;
 
-                    if (cellClusterData.getWorkerOnTop() != null) {
-                        if (workerStatus.getSelectedWorker() != null && cellClusterData.getWorkerColor().equals(myColor) && workerStatus.getSelectedWorker().equals(cellClusterData.getWorkerOnTop())) {
-                            setWorkerGlow(true, x, y);
+                    if (cellClusterData.getWorkerOnTop() != null && workerStatus.isAlreadySelectedWorker() &&
+                            cellClusterData.getWorkerColor().equals(myColor) &&
+                            workerStatus.getSelectedWorker().equals(cellClusterData.getWorkerOnTop())) {
 
-                            System.out.println("DEBUG: RESTORING GLOW");
-                        }
+                        setWorkerGlow(true, x, y);
                     }
                 }
             }
@@ -687,10 +754,18 @@ public class BoardSceneController {
 
     }
 
+    /**
+     * Set last update of the Island.
+     *
+     * @param lastIslandUpdate {@link IslandData} last update of the island.
+     */
     public void setLastIslandUpdate(IslandData lastIslandUpdate) {
         this.lastIslandUpdate = lastIslandUpdate;
     }
 
+    /**
+     * This method create the Island on the Screen.
+     */
     public void initializeIsland() {
         lastGridPane = new StackPane[5][5];
         for (int x = 0; x < 5; x++) {
@@ -711,6 +786,12 @@ public class BoardSceneController {
         }
     }
 
+    /**
+     * Create the right {@link ImageView} based on the given {@link CellClusterData}.
+     *
+     * @param cellClusterData CellCluster to obtain the {@link ImageView}.
+     * @return {@link ImageView} of the given {@link CellClusterData}.
+     */
     public ImageView getBlockImage(CellClusterData cellClusterData) {
         String url = getUrlFromCellCluster(cellClusterData);
 
@@ -722,6 +803,12 @@ public class BoardSceneController {
         return image;
     }
 
+    /**
+     * Activate the Glow of possible Actions on the Game Board.
+     *
+     * @param panelPositions Index of panel to Glow.
+     * @param actionClicked  Action clicked to choose the color.
+     */
     public void activateGlowOnPanels(List<int[]> panelPositions, TurnAction actionClicked) {
         for (int[] position : panelPositions) {
             StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);
@@ -733,11 +820,12 @@ public class BoardSceneController {
                 stackPane.getChildren().get(1).setVisible(true);
                 stackPane.getChildren().get(1).setStyle("-fx-background-color: rgba(165,42,42,0.52)");
             }
-//            board.getChildren().remove(position[0], position[1]);
-//            board.add(stackPane, position[0], position[1]);
         }
     }
 
+    /**
+     * Deactivate all the glow for possible Actions on the Game Board.
+     */
     public void deactivateAllGlowOnPanels() {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
@@ -747,13 +835,17 @@ public class BoardSceneController {
         }
     }
 
+    /**
+     * This method create the Url of the Resource based on the {@link CellClusterData}.
+     *
+     * @param cellClusterData {@link CellClusterData} of the block to print.
+     * @return The Url of the requested resource.
+     */
     public String getUrlFromCellCluster(CellClusterData cellClusterData) {
         String url = "/images/cellcluster/";
 
         int[] blocks = cellClusterData.getBlocks();
         boolean domeOnTop = cellClusterData.isDomeOnTop();
-        Worker.IDs workerID = cellClusterData.getWorkerOnTop();
-        WorkerColors color = cellClusterData.getWorkerColor();
 
         //construct the url of the image
         if ((blocks.length == 1 && blocks[0] == 4)) {
@@ -776,6 +868,8 @@ public class BoardSceneController {
                     url = url + "L3";
                     break;
                 }
+                default:
+                    System.out.println("ERROR");
             }
             if (domeOnTop) {
                 url = url + "_DOME";
@@ -785,27 +879,26 @@ public class BoardSceneController {
         return url;
     }
 
-    //utility to get a cell from the board
+    /**
+     * Get the Board {@link Node} at the give indexes
+     *
+     * @param row    Row index
+     * @param column Column index
+     * @return The Node at given indexes
+     */
     public Node getNodeByRowColumnIndex(final int row, final int column) {
-
         return lastGridPane[row][column];
-//        Node result = null;
-//        ObservableList<Node> children = board.getChildren();
-//
-//        for (Node node : children) {
-//            if (node instanceof StackPane && GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
-//                result = node;
-//                break;
-//            }
-//        }
-//
-//        return result;
     }
 
     /* ----------------------------------------------------------------------------------------------
                                          UTILITY METHODS
        ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Set the GUI.
+     *
+     * @param gui Main {@link GUI} class.
+     */
     public void setGui(GUI gui) {
         this.gui = gui;
     }
@@ -816,15 +909,22 @@ public class BoardSceneController {
      * @param message the message you would like to display
      */
     public void displayPopupMessage(String message) {
-        //TODO messaggio sotto e non popup
         BoardPopUp.show(message.toUpperCase(), gui.getStage());
     }
 
+    /**
+     * Add a low priority message to a Queue List to show on the right pane.
+     *
+     * @param messageToShow {@link String} to print.
+     */
     public void addMessageToQueueList(String messageToShow) {
         messagesQueue.add(messageToShow);
         showMessageOntRightPane();
     }
 
+    /**
+     * Show the first message of the queue on the right pane
+     */
     private void showMessageOntRightPane() {
         rightMessage.setText(messagesQueue.remove());
     }
@@ -833,6 +933,12 @@ public class BoardSceneController {
                                          WORKER UTILITY AND METHODS
        ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Get the Url for the image with the right worker
+     *
+     * @param color {@code WorkerColor} of the Worker
+     * @return The Url of the Image of the Worker with the given Color.
+     */
     private String getWorkerUrl(WorkerColors color) {
         String url = "/images/cellcluster/";
         switch (color) {
@@ -849,23 +955,42 @@ public class BoardSceneController {
         return url;
     }
 
+    /**
+     * Set the Glow for the Worker with Coordinates.
+     *
+     * @param enable {@code True} to enable, {@code false} to disable.
+     * @param x      X Coordinate
+     * @param y      Y Coordinate
+     */
     public void setWorkerGlow(boolean enable, int x, int y) {
         Node node = getNodeByRowColumnIndex(x, y);
-        System.out.println("DEBUG: setWorkerGlow" + enable + x + " " + y);
+        System.out.println("DEBUG: setWorkerGlow " + enable + " " + x + " " + y);
         setGlowByNode(enable, node);
     }
 
-    public void setWorkerGlow(boolean active, Worker.IDs workerID) {
+    /**
+     * Set the Glow for the Worker with {@code WorkerID}.
+     *
+     * @param enable   {@code True} to enable, {@code false} to disable.
+     * @param workerID ID of the worker to set.
+     */
+    public void setWorkerGlow(boolean enable, Worker.IDs workerID) {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 CellClusterData cellClusterData = lastIslandUpdate.getCellCluster(i, j);
                 if (cellClusterData.getWorkerOnTop() != null && cellClusterData.getWorkerOnTop().equals(workerID) && cellClusterData.getUsernamePlayer().equals(myUsername)) {
-                    setWorkerGlow(active, i, j);
+                    setWorkerGlow(enable, i, j);
                 }
             }
         }
     }
 
+    /**
+     * Set the Glow for the Worker with {@link Node}.
+     *
+     * @param enable {@code True} to enable, {@code false} to disable.
+     * @param node   {@link Node} where to find the Worker
+     */
     private void setGlowByNode(boolean enable, Node node) {
         if (enable) {
             DropShadow dropShadow = new DropShadow();
@@ -879,21 +1004,36 @@ public class BoardSceneController {
             node.setEffect(dropShadow);
         } else {
             node.setEffect(null);
-            node = null;
-        }
-
-    }
-
-    public void disableWorkerGlow() {
-        if (workerStatus != null && workerStatus.getSelectedWorker() != null) {
-            setWorkerGlow(false, workerStatus.getSelectedWorker());
         }
     }
 
+    /**
+     * Deactivate the glow on all the workers.
+     */
+    private void disableAllWorkerGlow() {
+        if (lastIslandUpdate != null) {
+            setWorkerGlow(false, Worker.IDs.A);
+            setWorkerGlow(false, Worker.IDs.B);
+        }
+    }
+
+    /**
+     * Get WorkerID
+     *
+     * @param x X Coordinate
+     * @param y Y Coordinate
+     * @return WorkerID
+     */
     public Worker.IDs getWorkerID(int x, int y) {
         return lastIslandUpdate.getCellCluster(x, y).getWorkerOnTop();
     }
 
+    /**
+     * Get the {@link ImageView} of the Worker.
+     *
+     * @param cellClusterData CellCluster with the worker.
+     * @return {@link ImageView} of the Worker
+     */
     public ImageView getWorkerImage(CellClusterData cellClusterData) {
         String url = getWorkerUrl(cellClusterData.getWorkerColor());
         ImageView workerImage = new ImageView();
@@ -904,14 +1044,23 @@ public class BoardSceneController {
         return workerImage;
     }
 
+    /* ----------------------------------------------------------------------------------------------
+                                        CARDS & INFO - UTILITY AND METHODS
+       ----------------------------------------------------------------------------------------------*/
 
-    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence) {
+    /**
+     * Set all the Info of Cards and Players
+     *
+     * @param playersCardsCorrespondence {@code Map<String, CardEnum>} with info about Player names and Cards.
+     * @param playerWorkerColors         {@code Map<String, WorkerColors>} with info about Player names and Colors.
+     */
+    public void setUpPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence, Map<String, WorkerColors> playerWorkerColors) {
         int index = 0;
         for (Map.Entry<String, CardEnum> entry : playersCardsCorrespondence.entrySet()) {
             if (entry.getKey().equals(myUsername)) { //set up local user info
                 setUpMyCardInfo(entry.getValue());
             } else { //set up the opponents' info
-                setUpOpponentsCardInfo(index, entry.getKey(), entry.getValue());
+                setUpOpponentsCardInfo(index, entry.getKey(), entry.getValue(), playerWorkerColors.get(entry.getKey()));
                 index++;
             }
         }
@@ -920,6 +1069,11 @@ public class BoardSceneController {
         }
     }
 
+    /**
+     * Set my info on left pane
+     *
+     * @param card My Card name
+     */
     public void setUpMyCardInfo(CardEnum card) {
         //set up info of local user
         //username
@@ -937,10 +1091,18 @@ public class BoardSceneController {
         //description
         Text cardDescription = (Text) hBox.getChildren().get(1);
 
-        setupCardDescription(cardDescription, card);
+        setupCardDescription(cardDescription, card, true);
     }
 
-    public void setUpOpponentsCardInfo(int index, String player, CardEnum card) {
+    /**
+     * Set all the info of opposite players.
+     *
+     * @param index       Index of opposite player.
+     * @param player      Name of the player.
+     * @param card        Card of the player
+     * @param workerColor Color of the player.
+     */
+    public void setUpOpponentsCardInfo(int index, String player, CardEnum card, WorkerColors workerColor) {
         VBox actualVBox;
         if (index == 0) {
             actualVBox = cardInfo1;
@@ -948,26 +1110,37 @@ public class BoardSceneController {
             actualVBox = cardInfo2;
         }
         //set up the name
-        Label name = (Label) actualVBox.getChildren().get(0);
+        HBox upperHBox = (HBox) actualVBox.getChildren().get(0);
+        Label name = (Label) upperHBox.getChildren().get(0);
         name.setText(player.toUpperCase());
 
+        ImageView smallWorker = (ImageView) upperHBox.getChildren().get(1);
+        String url = getWorkerUrl(workerColor);
+        smallWorker.setImage(new Image(url));
+
         //set up the image of the card
-        HBox hBox = (HBox) actualVBox.getChildren().get(1);
-        ImageView cardImage = (ImageView) hBox.getChildren().get(0);
+        HBox lowerHBox = (HBox) actualVBox.getChildren().get(1);
+        ImageView cardImage = (ImageView) lowerHBox.getChildren().get(0);
         Image image = new Image(card.getImgUrl());
         cardImage.setImage(image);
 
         //set up the name and the description of the card
-        VBox vBox = (VBox) hBox.getChildren().get(1);
+        VBox vBox = (VBox) lowerHBox.getChildren().get(1);
         Label cardName = (Label) vBox.getChildren().get(0);
         cardName.setText(card.getName());
         Text cardDescription = (Text) vBox.getChildren().get(1);
-        setupCardDescription(cardDescription, card);
+        setupCardDescription(cardDescription, card, false);
     }
 
+    /**
+     * Set spectator info for opposite player.
+     *
+     * @param spectatorPlayer Name of spectator player
+     */
     private void opponentPlayerSpectator(String spectatorPlayer) {
         VBox actualVBox;
-        Label name1 = (Label) cardInfo1.getChildren().get(0);
+        HBox upperHBox = (HBox) cardInfo1.getChildren().get(0);
+        Label name1 = (Label) upperHBox.getChildren().get(0);
 
         if (name1.getText().equals(spectatorPlayer)) {
             actualVBox = cardInfo1;
@@ -975,7 +1148,7 @@ public class BoardSceneController {
             actualVBox = cardInfo2;
         }
 
-        Label name = (Label) actualVBox.getChildren().get(0);
+        Label name = (Label) upperHBox.getChildren().get(0);
         name.setText(spectatorPlayer.toUpperCase() + " - Spectator");
         actualVBox.setDisable(true);
     }
@@ -985,30 +1158,42 @@ public class BoardSceneController {
      *
      * @param cardDescription {@link Text} field that contains the card description.
      * @param card            Card to show.
+     * @param isMyCard        {@code boolean} value, true if the card is mine, false otherwise.
      */
-    private void setupCardDescription(Text cardDescription, CardEnum card) {
+    private void setupCardDescription(Text cardDescription, CardEnum card, boolean isMyCard) {
+        int minSize = 12;
+        if (isMyCard) {
+            minSize = 15;
+        }
         String fontName = cardDescription.getFont().getName();
         int descriptionLength = card.getDescription().length();
         if (descriptionLength > 70) {
             if (descriptionLength > 100) {
                 if (descriptionLength > 120) {
                     // descriptionLength > 120
-                    cardDescription.setFont(Font.font(fontName, 12));
+                    cardDescription.setFont(Font.font(fontName, minSize));
                 } else {
                     // 100 < descriptionLength <= 120
-                    cardDescription.setFont(Font.font(fontName, 14));
+                    cardDescription.setFont(Font.font(fontName, minSize + 2));
                 }
             } else {
                 // 70 < descriptionLength <= 100
-                cardDescription.setFont(Font.font(fontName, 16));
+                cardDescription.setFont(Font.font(fontName, minSize + 4));
             }
         } else {
             // descriptionLength <=70
-            cardDescription.setFont(Font.font(fontName, 18));
+            cardDescription.setFont(Font.font(fontName, minSize + 6));
         }
         cardDescription.setText(card.getDescription());
     }
 
+    /**
+     * Set info about the turn, such as Number of Possible Movements ecc.
+     *
+     * @param climb             {@link String} can Climb.
+     * @param numberOfMovements {@code int} number of movements.
+     * @param numberOfBuilding  {@code int} number of buildings.
+     */
     public void updateTurnInfo(String climb, int numberOfMovements, int numberOfBuilding) {
         //set if can climb
         Label canClimb = (Label) turnInfo.getChildren().get(1);
@@ -1017,16 +1202,19 @@ public class BoardSceneController {
 
         //set number of moves
         Label numberOfMoves = (Label) turnInfo.getChildren().get(2);
-        numberOfMoves.setText("available MOVE: " + Integer.toString(numberOfMovements));
+        numberOfMoves.setText("available MOVE: " + numberOfMovements);
         numberOfMoves.setVisible(true);
 
         //set number of builds
         Label numberOfBuilds = (Label) turnInfo.getChildren().get(3);
-        numberOfBuilds.setText("available BUILD: " + Integer.toString(numberOfBuilding));
+        numberOfBuilds.setText("available BUILD: " + numberOfBuilding);
         numberOfBuilds.setVisible(true);
     }
 
-    public void disableTurnInfo() {
+    /**
+     * Hide all the turn info
+     */
+    public void hideAllTurnInfo() {
         Label canClimb = (Label) turnInfo.getChildren().get(1);
         canClimb.setVisible(false);
 
