@@ -10,7 +10,7 @@ public class SantoriniServer {
 
     public final static int SOCKET_PORT = 7557;
     public final static int SOCKET_TIMEOUT_S = 20;
-    public final static String SERVER_VERSION = "1.5.7";
+    public final static String SERVER_VERSION = "1.6.0";
 
     public static void main(String[] args) throws IOException {
 
