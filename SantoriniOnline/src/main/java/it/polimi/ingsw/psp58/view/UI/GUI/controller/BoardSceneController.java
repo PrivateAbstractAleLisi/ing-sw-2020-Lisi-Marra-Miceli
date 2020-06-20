@@ -53,6 +53,11 @@ public class BoardSceneController {
     private GUI gui;
 
     /**
+     * {@code boolean} is true if my turn just began and I need to show the popup.
+     */
+    private boolean myTurnFirstActionPopup = false;
+
+    /**
      * Last island update, overwritten many times during the match.
      */
     private IslandData lastIslandUpdate;
@@ -376,6 +381,21 @@ public class BoardSceneController {
     }
 
     /**
+     * Set the {@link WaitGameState} State waiting for another event.
+     *
+     * @param event A {@link CV_WaitMatchGameEvent} that notify a Wait Phase.
+     */
+    public void handle(CV_WaitMatchGameEvent event) {
+        if (!event.getActingPlayer().equals(myUsername)) {
+            GameStateAbstract nextState = new WaitGameState(this);
+            setWaitingView();
+            addMessageToQueueList(event.getEventDescription().toUpperCase() + " " + event.getActingPlayer().toUpperCase());
+            this.currentStateInstance = nextState;
+        }
+    }
+
+
+    /**
      * Set the {@link WaitGameState} State waiting for a {@link CV_NewTurnEvent}.
      *
      * @param event A {@link CV_GameStartedGameEvent} that notify the beginning of Game Phase.
@@ -402,7 +422,7 @@ public class BoardSceneController {
         if (event.getCurrentPlayerUsername().equals(myUsername)) {
             currentStateInstance = new CommandGameState(gui, this);
             resetWorkerStatus();
-            displayPopupMessage("IT'S YOUR TURN!");
+            myTurnFirstActionPopup = true;
         } else {
             hideAllTurnInfo();
         }
@@ -432,6 +452,10 @@ public class BoardSceneController {
         workerStatus.resetSelectedWorker();
 
         currentStateInstance.updateFromServer(event);
+        if (myTurnFirstActionPopup) {
+            displayPopupMessage("IT'S YOUR TURN!");
+            myTurnFirstActionPopup = false;
+        }
     }
 
     /**
