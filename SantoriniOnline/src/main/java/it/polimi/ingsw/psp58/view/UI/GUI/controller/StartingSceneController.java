@@ -3,6 +3,7 @@ package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEvent;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
+import it.polimi.ingsw.psp58.view.UI.GUI.ErrorPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -71,6 +72,7 @@ public class StartingSceneController {
         connectButton.setDisable(false);
         ipField.setDisable(false);
         userField.setDisable(false);
+        loadProgress.setProgress(0);
     }
 
     public void complete() {
@@ -105,6 +107,16 @@ public class StartingSceneController {
         if (localIpIsValid && localUserIsValid) {
             tryConnection(userProposal);
             gui.setUsername(userProposal.toLowerCase());
+        }
+        else {
+
+            if(!localIpIsValid) {
+                gui.showError("Local IP is invalid");
+            }
+            else {
+                gui.showError("Username is invalid, only alphanumeric chars");
+            }
+            enableAllLoginFields();
         }
     }
 
