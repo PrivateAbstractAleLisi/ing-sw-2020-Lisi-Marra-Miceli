@@ -830,13 +830,13 @@ public class BoardSceneController {
     private String getWorkerUrl(WorkerColors color) {
         String url = "/images/cellcluster/";
         switch (color) {
-            case WHITE:
+            case PINK:
                 url = url + "W_PINK.png";
                 break;
             case BLUE:
                 url = url + "W_BLUE.png";
                 break;
-            case BEIGE:
+            case ORANGE:
                 url = url + "W_ORANGE.png";
                 break;
         }

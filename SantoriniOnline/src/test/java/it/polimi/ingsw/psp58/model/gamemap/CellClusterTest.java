@@ -289,11 +289,11 @@ public class CellClusterTest {
     public void getWorkerColor() throws InvalidBuildException, InvalidMovementException {
         Worker w1 = new Worker(Worker.IDs.A, "elettra");
         Worker w2 = new Worker(Worker.IDs.A, "filippo");
-        w1.setColor(WorkerColors.WHITE);
+        w1.setColor(WorkerColors.PINK);
         istance.build(BlockTypeEnum.LEVEL1);
         assertNull(istance.getWorkerColor());
         istance.addWorker(w1);
-        assertEquals(WorkerColors.WHITE,istance.getWorkerColor());
+        assertEquals(WorkerColors.PINK,istance.getWorkerColor());
     }
 
     @Test
