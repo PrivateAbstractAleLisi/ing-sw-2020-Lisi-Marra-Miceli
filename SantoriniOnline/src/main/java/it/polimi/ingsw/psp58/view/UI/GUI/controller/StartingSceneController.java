@@ -128,7 +128,7 @@ public class StartingSceneController {
     private void tryConnection(String userProposal) throws IOException {
         //set up the client
         loadText.setText(updateLoadText("establishing connection"));
-        SantoriniClient client = new SantoriniClient(gui, selectedIP, gui.isPingEnabled());
+        SantoriniClient client = new SantoriniClient(gui, selectedIP, gui.isPingEnabled(), gui);
         client.begin();
         gui.setClient(client);
         VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);

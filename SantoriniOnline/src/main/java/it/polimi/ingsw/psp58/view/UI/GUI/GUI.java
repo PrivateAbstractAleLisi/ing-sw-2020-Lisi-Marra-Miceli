@@ -60,6 +60,25 @@ public class GUI extends Application implements ViewListener {
         Application.launch(args);
     }
 
+    public void socketIsClosed(String message) {
+        showError("You've been disconnected from the server." + (message.isEmpty() ? "" : " " + message));
+        FXMLLoader loaderStartingScene = new FXMLLoader(
+                getClass().getResource("/scenes/StartingScene.fxml"));
+        try {
+            startingScene = new Scene(loaderStartingScene.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        startingSceneController = loaderStartingScene.getController();
+        startingSceneController.setGui(this);
+        try {
+            startingSceneController.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        changeScene(startingScene);
+    }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -254,6 +273,7 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
         Message.show(event.getDisconnectedUsername() + event.getReason(), stage);
+        showError(event.getDisconnectedUsername() + event.getReason());
     }
 
 
