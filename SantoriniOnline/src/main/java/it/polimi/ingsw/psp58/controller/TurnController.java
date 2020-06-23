@@ -28,7 +28,9 @@ import static it.polimi.ingsw.psp58.model.TurnAction.*;
 import static it.polimi.ingsw.psp58.model.gamemap.Worker.IDs;
 
 /**
- * This class filters VirtualView events, it creates a turn(on it.polimi.ingsw.sp58.model) for current player and manages it
+ * This class filters VirtualView events, it creates a turn(on model) for current player and manages it.
+ * It also handles all the information and {@link TurnAction} related to the turn, operating with all the references it has on the model.
+ *
  */
 
 public class TurnController extends EventSource implements ControllerListener {
@@ -241,6 +243,11 @@ public class TurnController extends EventSource implements ControllerListener {
         notifyAllObserverByType(VIEW, event);
     }
 
+    /**
+     * Sends a {@link CV_CommandRequestEvent} to the {@code actingPlayer} containing all the possible {@link TurnAction}, movements and build that he can perform.
+     * If there aren't it calls the {@code lose} method because the {@code actingPlayer} has to lose the game
+     * @param actingPlayer the name of the player that has to perform an action
+     */
     private void sendCommandRequest(String actingPlayer) {
         List<TurnAction> availableActions = new ArrayList<>();
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
@@ -290,9 +297,13 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
+    /**
+     * Method called when a player perform a {@code pass} action and create a new {@link Turn} instance for the next player in the {@code turnSequence}.
+     * Then notify the actingPlayer calling the {@code sendCommandRequest} method.
+     */
     private void nextTurn() {
-        currentTurnInstance = null; //destroys current turn on it.polimi.ingsw.sp58.model
-        if (this.currentTurnIndex == numberOfPlayers - 1) { //Ri inizia il giro
+        currentTurnInstance = null; //destroys current turn on model
+        if (this.currentTurnIndex == numberOfPlayers - 1) {
             this.currentTurnIndex = 0;
         } else {
             this.currentTurnIndex++;
@@ -319,6 +330,10 @@ public class TurnController extends EventSource implements ControllerListener {
         printLogMessage("New turn for " + currentPlayerUsername.toUpperCase());
     }
 
+    /**
+     * Sends the {@link CV_GameOverEvent} and then a {@link CV_NewGameRequestEvent} to all the players
+     * @param winner the name of the player that has won
+     */
     private void win(Player winner) {
         List<String> losingPlayers = new ArrayList<>();
         for (Map.Entry<Integer, Player> player : turnSequence.entrySet()) {
@@ -335,6 +350,11 @@ public class TurnController extends EventSource implements ControllerListener {
         notifyAllObserverByType(VIEW, requestEvent);
     }
 
+    /**
+     * Removes the {@code player} from the {@code turnSequence}, decrements the {@code numberOfPlayers}, removes his worker from the island, sends a {@link CV_GameOverEvent} to the loser.
+     * If is a two player match let the other player win, if is a three player one the losing player becomes a spectator.
+     * @param player the name of the player that lost the game
+     */
     private void lose(String player) {
         printLogMessage(player.toUpperCase() + "LOST THE GAME");
         if (numberOfPlayers == 3) {
@@ -356,7 +376,7 @@ public class TurnController extends EventSource implements ControllerListener {
             board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.A));
             board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.B));
 
-            List<String> losers = new ArrayList<String>();
+            List<String> losers = new ArrayList<>();
             losers.add(player);
             CV_GameOverEvent gameOverEvent = new CV_GameOverEvent("lose", null, losers);
             notifyAllObserverByType(VIEW, gameOverEvent);
@@ -394,6 +414,9 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
+    /**
+     * Sends a {@link CV_IslandUpdateEvent} to all the players
+     */
     public void sendIslandUpdate() {
         IslandData currentIsland = board.getIsland().getIslandDataCopy();
         CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent("island update", currentIsland);
@@ -419,6 +442,11 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
+    /**
+     * Checks if is the turn of the {@code player}
+     * @param player the player on which the method check if is his turn
+     * @return true if is the turn of the {@code player}, false otherwise
+     */
     public boolean checkIsHisTurn(Player player) {
         if (!player.getUsername().equals(getCurrentPlayerUser())) {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("is not your turn!", player.getUsername());
@@ -468,8 +496,6 @@ public class TurnController extends EventSource implements ControllerListener {
     }
 
     private void invokeBuild(Player player, Worker w, BlockTypeEnum block, int x, int y) {
-
-        //are you sure it's your turn?
         if (checkIsHisTurn(player)) {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
             if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
@@ -522,11 +548,10 @@ public class TurnController extends EventSource implements ControllerListener {
     private boolean isCompletelyLocked(IDs workerChosen) {
 
         //get available movement cells for each worker
-        List<int[]> availableCells_Worker = currentTurnInstance.validActions(workerChosen, MOVE);
-        List<int[]> availableCells_Worker_build = currentTurnInstance.validActions(workerChosen, BUILD);
+        List<int[]> availableMovements = currentTurnInstance.validActions(workerChosen, MOVE);
+        List<int[]> availableBuild = currentTurnInstance.validActions(workerChosen, BUILD);
 
-        return (availableCells_Worker.isEmpty() && availableCells_Worker_build.isEmpty());
-
+        return (availableMovements.isEmpty() && availableBuild.isEmpty());
     }
 
     @Override
@@ -593,6 +618,7 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
+
     private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
         return commandEvent.isCommandEventValid() && getCurrentTurnListUsername().contains(commandEvent.getFromPlayer());
     }
@@ -618,51 +644,78 @@ public class TurnController extends EventSource implements ControllerListener {
     //NOT IMPLEMENTED
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         /* TurnController doesn't have to implement this handleEvent*/
     }
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(VC_NewGameResponseEvent event) {
-
+        /* This class has not to implement this handleEvent*/
     }
 
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
+        /* This class has not to implement this handleEvent*/
     }
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(CC_ConnectionRequestGameEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
+        /* This class has not to implement this handleEvent*/
     }
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(CC_NewGameResponseEvent event) {
-
+        /* This class has not to implement this handleEvent*/
     }
 
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
+        /* This class has not to implement this handleEvent*/
     }
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(VC_PlayerCardChosenEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
+        /* This class has not to implement this handleEvent*/
     }
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
+        /* This class has not to implement this handleEvent*/
     }
 
 
     @Override
+    /**
+     * Not implemented handle of the event
+     */
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
-        /* TurnController doesn't have to implement this handleEvent*/
+        /* This class has not to implement this handleEvent*/
     }
 
 }
