@@ -31,7 +31,7 @@ public class GUI extends Application implements ViewListener {
     private Stage roomSizeStage;
     private RoomSizeSceneController roomSizeController;
     private final int socketPort = 7557;
-    private final String gameVersion = "1.6.0";
+    private final String gameVersion = "1.6.1";
     private final String onlineServerIP = "23.23.52.127";
 
     private boolean enablePing = true;
