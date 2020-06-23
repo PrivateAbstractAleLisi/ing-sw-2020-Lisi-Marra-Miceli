@@ -160,7 +160,7 @@ public class SantoriniClient extends EventSource implements Runnable {
         try {
             serverSocket.close();
             if (guiIstance != null) {
-                Platform.runLater(() -> guiIstance.socketIsClosed("Server socket has been closed."));
+                Platform.runLater(() -> guiIstance.disconnectionHandle("Server socket has been closed."));
             }
         } catch (IOException ex) {
             System.out.println("Error closing the socket and streams.");
