@@ -1,7 +1,5 @@
 package it.polimi.ingsw.psp58.controller;
 
-import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
-import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
 import it.polimi.ingsw.psp58.view.VirtualView;
 import org.junit.After;
 import org.junit.Before;
@@ -156,8 +154,8 @@ public class RoomTest {
 
     @Test
     public void isGameCanStart() {
-        room.setGameCanStart(true);
-        assertTrue(room.isGameCanStart());
+        room.setGameCanStartTrue();
+        assertTrue(room.canGameStart());
     }
 
     @Test
