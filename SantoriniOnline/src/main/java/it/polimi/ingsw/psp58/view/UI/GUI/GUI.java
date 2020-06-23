@@ -267,12 +267,12 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
-        Message.show(event.getEventDescription(), stage);
+        showError(event.getEventDescription());
     }
 
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
-        Message.show(event.getDisconnectedUsername() + event.getReason(), stage);
+        //Message.show(event.getDisconnectedUsername() + event.getReason(), stage); old message pop up
         showError(event.getDisconnectedUsername() + event.getReason());
     }
 
