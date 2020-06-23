@@ -35,6 +35,7 @@ public class GUI extends Application implements ViewListener {
     private final String onlineServerIP = "23.23.52.127";
 
     private boolean enablePing = true;
+    private boolean alreadyDisconnectedRecently = true;
 
     private String username;
 
@@ -60,6 +61,27 @@ public class GUI extends Application implements ViewListener {
         Application.launch(args);
     }
 
+    public void disconnectionHandle(String message) {
+        if (!alreadyDisconnectedRecently) {
+            showError("You've been disconnected from the server." + (message.isEmpty() ? "" : " " + message));
+            FXMLLoader loaderStartingScene = new FXMLLoader(
+                    getClass().getResource("/scenes/StartingScene.fxml"));
+            try {
+                startingScene = new Scene(loaderStartingScene.load());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            startingSceneController = loaderStartingScene.getController();
+            startingSceneController.setGui(this);
+            try {
+                startingSceneController.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            changeScene(startingScene);
+        }
+    }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -105,6 +127,7 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
+        resetDisconnectionBoolean();
         try {
             prepareRoomSizeRequest();
         } catch (IOException e) {
@@ -215,6 +238,10 @@ public class GUI extends Application implements ViewListener {
         return gameVersion;
     }
 
+    public void resetDisconnectionBoolean() {
+        alreadyDisconnectedRecently = false;
+    }
+
     @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
 
@@ -248,12 +275,14 @@ public class GUI extends Application implements ViewListener {
 
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
-        Message.show(event.getEventDescription(), stage);
+        showError(event.getEventDescription());
     }
 
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
-        Message.show(event.getDisconnectedUsername() + event.getReason(), stage);
+        //Message.show(event.getDisconnectedUsername() + event.getReason(), stage); old message pop up
+        disconnectionHandle(event.getDisconnectedUsername() + event.getReason());
+        alreadyDisconnectedRecently = true;
     }
 
 
