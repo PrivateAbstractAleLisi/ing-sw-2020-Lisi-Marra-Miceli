@@ -20,9 +20,14 @@ import java.net.UnknownHostException;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
-
+/**
+ * This class is the process that reads and writes using the socket, sending and receiving events from the server. Incoming events are notified to the View
+ */
 public class SantoriniClient extends EventSource implements Runnable {
 
+    /**
+     * This client view, can be either CLI or GUI.
+     */
     private EventListener userInterface;
 
     private ObjectInputStream in;
@@ -30,13 +35,15 @@ public class SantoriniClient extends EventSource implements Runnable {
     private String IP;
     private Socket serverSocket;
     public static final int SERVER_PORT = 7557;
-    public final static int SOCKET_TIMEOUT_S = 20;
+    public final int SOCKET_TIMEOUT_S = 20;
 
     private boolean connectionOpen = false;
+    /**
+     * if it's true the client will ping the server
+     */
     private boolean enablePing;
 
     private GUI guiIstance;
-
 
 
     public SantoriniClient(EventListener userInterface, String ipAddress, boolean enablePing) {
@@ -56,6 +63,7 @@ public class SantoriniClient extends EventSource implements Runnable {
 
     /**
      * tries to open a socket with the server, the socket has a timeout. This function starts the pinging process too
+     *
      * @throws IOException when it's unable to open a socket
      */
     public void begin() throws IOException {
@@ -71,38 +79,31 @@ public class SantoriniClient extends EventSource implements Runnable {
         } catch (IOException e) {
             System.err.println("Client: Unable to open a socket");
             throw e;
-            ///e.printStackTrace();
+
         }
         if (enablePing) {
-            try {
-                InetAddress serverInetAddress = InetAddress.getByName(IP);
-          /*  Thread pinger = new Thread(new ClientPing(serverInetAddress), "pinger");
-            pinger.start(); */
 
-                Thread ping = new Thread() {
-                    public void run() {
 
-                        try {
-                            int counter = 0;
-                            while (true) {
-                                Thread.sleep(5000);
-                                out.writeObject(new PingEvent("Ping #" + counter));
-                                counter++;
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            System.out.println("Unable to send it.polimi.ingsw.sp58.event to server");
-                        } finally {
-                            Thread.currentThread().interrupt();
-                        }
+            Thread ping = new Thread(() -> {
+
+                try {
+                    int counter = 0;
+                    while (true) {
+                        Thread.sleep(5000);
+                        out.writeObject(new PingEvent("Ping #" + counter));
+                        counter++;
                     }
-                };
-                ping.start();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    System.out.println("Unable to send it.polimi.ingsw.sp58.event to server");
+                } finally {
+                    Thread.currentThread().interrupt();
+                }
+            });
+            ping.start();
 
-            } catch (UnknownHostException e) {
-                System.out.println("Unable to convert IP address to InetAddress");
-            }
+
         }
 
         //open the in/out stream from the server
@@ -116,6 +117,11 @@ public class SantoriniClient extends EventSource implements Runnable {
         }
     }
 
+    /**
+     * sends an event to the server
+     *
+     * @param event the event that will be send to the server
+     */
     public void sendEvent(ControllerGameEvent event) {
         if (connectionOpen) {
             try {
@@ -127,7 +133,9 @@ public class SantoriniClient extends EventSource implements Runnable {
         }
     }
 
-    //READS FROM SOCKET
+    /**
+     * this function reads an event from the socket and notifies all the listeners with this event.
+     */
     @Override
     public void run() {
         while (true) {
@@ -155,17 +163,20 @@ public class SantoriniClient extends EventSource implements Runnable {
         return connectionOpen;
     }
 
+    /*
+    Notifies a closed socket error to the client if it's using GUI, exit if using CLI;
+     */
     public void closeConnection() {
 
         try {
             serverSocket.close();
             if (guiIstance != null) {
                 Platform.runLater(() -> guiIstance.disconnectionHandle("Server socket has been closed."));
+            } else {
+                System.exit(0);
             }
         } catch (IOException ex) {
             System.out.println("Error closing the socket and streams.");
-        } finally {
-            //System.exit(0);
         }
     }
 }
