@@ -13,6 +13,7 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import java.util.List;
 
 /**
+ * Minotaur Card implementation.
  * @author Gabriele_Marra
  */
 public class Minotaur extends Card {
@@ -29,6 +30,7 @@ public class Minotaur extends Card {
      * @param desiredY Y Position where the player wants to move the worker
      * @param island   The current board of game
      * @throws InvalidMovementException Exception thrown when the coordinates are not valid
+     * @throws WinningException If the player won, throw a WinningException
      */
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
@@ -145,10 +147,7 @@ public class Minotaur extends Card {
 
         CellCluster shiftCellCluster = island.getCellCluster(shiftedCoordinates[0], shiftedCoordinates[1]);
 
-        if (shiftCellCluster.hasWorkerOnTop() || shiftCellCluster.isComplete()) {
-            return false;
-        }
-        return true;
+        return !shiftCellCluster.hasWorkerOnTop() && !shiftCellCluster.isComplete();
     }
 
     /**
@@ -166,7 +165,7 @@ public class Minotaur extends Card {
         shiftedCoordinates[0] = desiredX + directionOnX;
         shiftedCoordinates[1] = desiredY + directionOnY;
 
-        if (shiftedCoordinates[0] < 0 | shiftedCoordinates[0] > 4 | shiftedCoordinates[1] < 0 | shiftedCoordinates[1] > 4) {
+        if (shiftedCoordinates[0] < 0 || shiftedCoordinates[0] > 4 || shiftedCoordinates[1] < 0 || shiftedCoordinates[1] > 4) {
             throw new InvalidMovementException("The opposite worker can't shift in this coordinates");
         }
 

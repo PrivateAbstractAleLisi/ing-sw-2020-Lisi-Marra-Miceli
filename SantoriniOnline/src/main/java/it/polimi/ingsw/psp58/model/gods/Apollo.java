@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * Apollo Card implementation.
+ *
  * @author Gabriele_Marra
  */
 public class Apollo extends Card {
@@ -21,6 +22,7 @@ public class Apollo extends Card {
         super(player);
         name = CardEnum.APOLLO;
     }
+
 
     /**
      * Move a {@link Worker} from his actual position to the desired coordinates and if necessary, use the God Power.
@@ -32,6 +34,7 @@ public class Apollo extends Card {
      * @param desiredY Y Position where the player wants to move the worker
      * @param island   The current board of game
      * @throws InvalidMovementException Exception thrown when the coordinates are not valid
+     * @throws WinningException If the player won, throw a WinningException
      */
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {

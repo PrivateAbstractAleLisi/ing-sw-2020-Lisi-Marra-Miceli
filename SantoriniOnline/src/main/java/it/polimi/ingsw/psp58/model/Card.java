@@ -55,6 +55,7 @@ public abstract class Card {
         }
     }
 
+
     /**
      * Move a {@link Worker} from his actual position to the desired coordinates.
      *
@@ -63,6 +64,7 @@ public abstract class Card {
      * @param desiredY Y Position where the player wants to move the worker
      * @param island   The current board of game
      * @throws InvalidMovementException Exception thrown when the coordinates are not valid
+     * @throws WinningException If the player won, throw a WinningException
      */
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
         int actualX = worker.getPosition()[0];
@@ -242,6 +244,7 @@ public abstract class Card {
      * @param desiredY Y Position where the player wants to place the worker
      * @param island   The current board of game
      * @return true when the construction can be done from the actual position, false otherwise
+     * @throws IndexOutOfBoundsException if the indexes of the desired position aren't valid.
      */
     protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);

@@ -8,6 +8,9 @@ import it.polimi.ingsw.psp58.model.Player;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
+/**
+ * Triton Card implementation.
+ */
 public class Triton extends Card {
 
     public Triton(Player p) {
@@ -23,8 +26,8 @@ public class Triton extends Card {
      * @param desiredX X Position where the player wants to move the worker
      * @param desiredY Y Position where the player wants to move the worker
      * @param island   The current board of game
-     * @throws InvalidMovementException
-     * @throws WinningException
+     * @throws InvalidMovementException Exception thrown when the coordinates are not valid
+     * @throws WinningException If the player won, throw a WinningException
      */
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
