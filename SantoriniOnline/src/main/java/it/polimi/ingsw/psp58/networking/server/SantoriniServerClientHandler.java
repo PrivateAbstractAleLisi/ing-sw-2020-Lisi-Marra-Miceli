@@ -19,6 +19,9 @@ import java.time.format.DateTimeFormatter;
 import static it.polimi.ingsw.psp58.event.core.ListenerType.CONTROLLER;
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
+/**
+ * server thread that handles the client connection and socket read/write methods
+ */
 public class SantoriniServerClientHandler extends EventSource implements Runnable {
 
     private final Socket clientSocket;
@@ -30,6 +33,9 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     private final boolean pingStamp;
     private final boolean enablePing;
 
+    /**
+     * virtual view which represents client's View in MVC
+     */
     final VirtualView clientVV;
 
     public SantoriniServerClientHandler(Socket clientSocket, String threadID, boolean pingStamp, boolean enablePing) {
@@ -53,6 +59,9 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         }
     }
 
+    /**
+     * attach the virtual view as a listener (Observer pattern) to this
+     */
     private void makeConnections() {
         this.attachListenerByType(CONTROLLER, clientVV);
     }
@@ -62,7 +71,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
     }
 
     /**
-     * called when this client disconnects because socket timeout has expired
+     * called when this client disconnects because socket timeout has expired, it starts the disconnection process and detaches the virtual view from the listeners' list
      */
     private void connectionLost() {
         printLogMessage("Method connectionLost called: " + clientSocket.getInetAddress().toString() + " port: " + clientSocket.getPort());
@@ -96,6 +105,11 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
 
     }
 
+    /**
+     * called when the tread is started
+     * @throws IOException error opening the object input/output stream
+     * @throws ClassNotFoundException throw when there is an error casting the received event
+     */
     private void handleClientConnection() throws IOException, ClassNotFoundException {
 
         //Client is connected via socket, creating a virtual view for it
@@ -140,6 +154,9 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         }
     }
 
+    /**
+     * it starts a pinging service from the server to the client writing a ping event to the socket every 5000 millis
+     */
     public void startPing() {
         ping = new Thread(() -> {
 
@@ -162,6 +179,10 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         ping.start();
     }
 
+    /**
+     * sends an event through the socket and flushed the output stream
+     * @param event the event that would be sent through the socket
+     */
     public void sendEvent(GameEvent event) {
         try {
             output.writeObject(event);
@@ -171,6 +192,9 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         }
     }
 
+    /**
+     * closes the clientSocket
+     */
     public void disconnect() {
         try {
             clientSocket.close();
@@ -180,14 +204,14 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         }
     }
 
-    public String getThreadID() {
-        return threadID;
-    }
-
+    /**
+     * closes the clientSocket but propagates the exception
+     */
     public void closeSocketConnection() throws IOException {
 
         clientSocket.close();
     }
+
 
     public InetAddress getUserIP() {
         return clientSocket.getInetAddress();
@@ -197,6 +221,10 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
         return clientSocket.getPort();
     }
 
+    /**
+     * displays a message using a logger on the server
+     * @param message
+     */
     private void printLogMessage(String message) {
         String timestamp = ZonedDateTime.now(ZoneId.of("Europe/Rome")).format(DateTimeFormatter.ofPattern("yyyy/MM/dd-HH:mm:ss"));
         System.out.println("SERVER (" + timestamp + ") at " + threadID + ": " + message);

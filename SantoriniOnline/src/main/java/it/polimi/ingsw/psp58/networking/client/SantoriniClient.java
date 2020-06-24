@@ -13,10 +13,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
@@ -163,8 +161,8 @@ public class SantoriniClient extends EventSource implements Runnable {
         return connectionOpen;
     }
 
-    /*
-    Notifies a closed socket error to the client if it's using GUI, exit if using CLI;
+    /**
+     * Notifies a closed socket error to the client if it's using GUI, exit if using CLI;
      */
     public void closeConnection() {
 
