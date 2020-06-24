@@ -13,6 +13,7 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import java.util.List;
 
 /**
+ * Apollo Card implementation.
  * @author Gabriele_Marra
  */
 public class Apollo extends Card {
@@ -22,7 +23,9 @@ public class Apollo extends Card {
     }
 
     /**
-     * Move a {@link Worker} from his actual position to the desired coordinates.
+     * Move a {@link Worker} from his actual position to the desired coordinates and if necessary, use the God Power.
+     * If the desired CellCluster has another worker on top this method use the God Power.
+     * If the desired CellCluster is free, this method call the super class method.
      *
      * @param worker   A worker of the actual player
      * @param desiredX X Position where the player wants to move the worker
@@ -113,15 +116,10 @@ public class Apollo extends Card {
         //verifica il behaviour permette di salire
         if (behaviour.isCanClimb()) {
             //al max salgo di 1
-            if (actualCellCluster.getCostructionHeight() + 1 < desiredCellCluster.getCostructionHeight()) {
-                return false;
-            }
+            return actualCellCluster.getCostructionHeight() + 1 >= desiredCellCluster.getCostructionHeight();
         } else {
             //non posso salire
-            if (actualCellCluster.getCostructionHeight() < desiredCellCluster.getCostructionHeight()) {
-                return false;
-            }
+            return actualCellCluster.getCostructionHeight() >= desiredCellCluster.getCostructionHeight();
         }
-        return true;
     }
 }

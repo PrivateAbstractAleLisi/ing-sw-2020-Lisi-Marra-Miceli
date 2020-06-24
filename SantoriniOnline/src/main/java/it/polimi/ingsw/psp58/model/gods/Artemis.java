@@ -9,14 +9,21 @@ import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 /**
+ * Artemis Card implementation.
  * @author alelisi
  */
 public class Artemis extends Card {
+    /**
+     * Position at the beginning of the turn, at the beginning of the turn the values are set to -1.
+     */
     private int[] startingPosition;
-    private Worker.IDs workerChoosen;
+    /**
+     * Worker chosen during the first move.
+     */
+    private Worker.IDs workerChosen;
 
     /**
-     * costructor, same as card but it fills name and descriptions
+     * Constructor, same as card but it fills name and descriptions
      *
      * @param p the player that plays with the card
      */
@@ -34,8 +41,8 @@ public class Artemis extends Card {
      * @param desiredX X Position where the player wants to move the worker
      * @param desiredY Y Position where the player wants to move the worker
      * @param island   The current board of game
-     * @throws InvalidMovementException
-     * @throws WinningException
+     * @throws InvalidMovementException If the movement is not valid throw a new exception.
+     * @throws WinningException If the player won, throw a WinningException
      */
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
@@ -51,7 +58,7 @@ public class Artemis extends Card {
         //se non mi sono mai mosso mi salvo da dove parto
         if (startingPosition[0] == -1 && startingPosition[1] == -1) {
             startingPosition = new int[2];
-            workerChoosen = worker.getWorkerID();
+            workerChosen = worker.getWorkerID();
             startingPosition[0] = actualX;
             startingPosition[1] = actualY;
         }
@@ -60,7 +67,7 @@ public class Artemis extends Card {
             if (desiredX == startingPosition[0] && desiredY == startingPosition[1]) {
                 throw new IllegalArgumentException("ARTEMIS: on the second movement you can't come back to starting position");
             }
-            if (worker.getWorkerID() != workerChoosen) {
+            if (worker.getWorkerID() != workerChosen) {
                 throw new IllegalArgumentException("ARTEMIS: on the second movement you must use the same worker ");
             }
         }
@@ -81,6 +88,9 @@ public class Artemis extends Card {
 
     }
 
+    /**
+     * Reset the {@code behaviour} of the {@link Player} to the default value of the card and reset the starting position.
+     */
     //ARTEMIS can move two times in normal conditions
     @Override
     public void resetBehaviour() {
@@ -90,6 +100,5 @@ public class Artemis extends Card {
         //convenzione
         startingPosition[0] = -1;
         startingPosition[1] = -1;
-
     }
 }
