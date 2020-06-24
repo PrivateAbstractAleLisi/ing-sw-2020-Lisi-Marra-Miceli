@@ -7,6 +7,8 @@ import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
+import java.io.IOException;
+
 public class ConnectionSceneController {
 
     private GUI gui;
@@ -28,7 +30,11 @@ public class ConnectionSceneController {
                 //set up the client and starts it
                 SantoriniClient client = new SantoriniClient(gui, ipAddress.getText(), gui.isPingEnabled());
                 gui.setClient(client);
-                client.begin();
+                try {
+                    client.begin();
+                } catch (IOException e) {
+                    gui.showError("Unable to reach server.");
+                }
 
                 //send the event to the server
                 VC_ConnectionRequestGameEvent event = new VC_ConnectionRequestGameEvent("connection request", ipAddress.getText(), gui.getSocketPort() ,username.getText());
