@@ -30,7 +30,6 @@ import static it.polimi.ingsw.psp58.model.gamemap.Worker.IDs;
 /**
  * This class filters VirtualView events, it creates a turn(on model) for current player and manages it.
  * It also handles all the information and {@link TurnAction} related to the turn, operating with all the references it has on the model.
- *
  */
 
 public class TurnController extends EventSource implements ControllerListener {
@@ -117,14 +116,14 @@ public class TurnController extends EventSource implements ControllerListener {
      * @return List of {@link Player} the turnSequence where the first element is the {@code currentPlayer}
      */
     private List<Player> getCurrentTurnList() {
-        List<Player> turnSequence = getPlayersSequenceAsList();
+        List<Player> actualTurnSequence = getPlayersSequenceAsList();
 
         List<Player> currentTurn = new ArrayList<>();
 
         int index = this.currentTurnIndex;
 
         while (currentTurn.size() < numberOfPlayers) {
-            currentTurn.add(turnSequence.get(index));
+            currentTurn.add(actualTurnSequence.get(index));
             if (index == numberOfPlayers - 1) {
                 index = 0;
             } else {
@@ -165,6 +164,13 @@ public class TurnController extends EventSource implements ControllerListener {
         return players;
     }
 
+    /**
+     * Adds all the available destination for both the worker A and the worker B
+     *
+     * @param behaviour           the {@link BehaviourManager} of the player that has to make the move
+     * @param availableMovementsA all the possible destination for the worker A
+     * @param availableMovementsB all the possible destination for the worker B
+     */
     public void setUpAvailableMovements(BehaviourManager behaviour, List<int[]> availableMovementsA, List<int[]> availableMovementsB) {
         if (currentTurnInstance.getNumberOfMove() == 0 && currentTurnInstance.getNumberOfBuild() == 0) { // he can move with any of the two workers
 
@@ -184,6 +190,12 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
+    /**
+     * Adds all the available cell in which the player can build with both the worker A and the worker B
+     *
+     * @param availableBuildA all the possible destination for the build of the worker A
+     * @param availableBuildB all the possible destination for the build of the worker B
+     */
     public void setUpAvailableBuild(List<int[]> availableBuildA, List<int[]> availableBuildB) {
         if (currentTurnInstance.getNumberOfMove() == 0) { // the player can build with any worker (ONLY PROMETHEUS)
             availableBuildA.addAll(currentTurnInstance.validActions(IDs.A, BUILD));
@@ -198,6 +210,13 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
+    /**
+     * Checks, during the calculation of the possible action of the turn, if the player has no possible action and so he has to lose
+     *
+     * @param availableActions the list of the possible {@link TurnAction} of the player
+     * @param player           the name of the player
+     * @return true if he lost, false otherwise
+     */
     public boolean checkLose(List<TurnAction> availableActions, String player) {
         if (availableActions.isEmpty()) { //the player has no actions possibles so he loses
             lose(player);
@@ -206,6 +225,12 @@ public class TurnController extends EventSource implements ControllerListener {
         return false;
     }
 
+    /**
+     * Checks if {@code MOVE} is a possible action for the phase of the turn for the {@code actingPlayer}
+     *
+     * @param actingPlayer the name of the player that has to make an action
+     * @return true if {@code MOVE} is a possible action, false otherwise
+     */
     public boolean canMove(String actingPlayer) {
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
@@ -215,6 +240,12 @@ public class TurnController extends EventSource implements ControllerListener {
                 ((numberOfBuild == 0) || ((isPrometheus) && (numberOfBuild == 1)));
     }
 
+    /**
+     * Checks if {@code BUILD} is a possible action for the phase of the turn for the {@code actingPlayer}
+     *
+     * @param actingPlayer the name of the player that has to make an action
+     * @return true if {@code BUILD} is a possible action, false otherwise
+     */
     public boolean canBuild(String actingPlayer) {
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
@@ -225,6 +256,11 @@ public class TurnController extends EventSource implements ControllerListener {
                 ((numberOfMove > 0) || ((isPrometheus) && (numberOfMove == 0) && (numberOfBuild == 0)));
     }
 
+    /**
+     * Checks if {@code PASS} is a possible action for the phase of the turn for the {@code actingPlayer}
+     *
+     * @return true if {@code PASS} is a possible action, false otherwise
+     */
     public boolean canPassTurn() {
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
         if (isPrometheus) {
@@ -238,6 +274,11 @@ public class TurnController extends EventSource implements ControllerListener {
         return (currentTurnInstance.getNumberOfMove() > 0 && currentTurnInstance.getNumberOfBuild() > 0);
     }
 
+    /**
+     * Sends to the {@code actingPlayer} a {@link CV_CommandExecutedGameEvent} event to let the client know that the command has been executed correctly
+     *
+     * @param actingPlayer the recipient for the event
+     */
     private void sendCommandExecuted(String actingPlayer) {
         CV_CommandExecutedGameEvent event = new CV_CommandExecutedGameEvent("", actingPlayer);
         notifyAllObserverByType(VIEW, event);
@@ -246,6 +287,7 @@ public class TurnController extends EventSource implements ControllerListener {
     /**
      * Sends a {@link CV_CommandRequestEvent} to the {@code actingPlayer} containing all the possible {@link TurnAction}, movements and build that he can perform.
      * If there aren't it calls the {@code lose} method because the {@code actingPlayer} has to lose the game
+     *
      * @param actingPlayer the name of the player that has to perform an action
      */
     private void sendCommandRequest(String actingPlayer) {
@@ -332,6 +374,7 @@ public class TurnController extends EventSource implements ControllerListener {
 
     /**
      * Sends the {@link CV_GameOverEvent} and then a {@link CV_NewGameRequestEvent} to all the players
+     *
      * @param winner the name of the player that has won
      */
     private void win(Player winner) {
@@ -353,6 +396,7 @@ public class TurnController extends EventSource implements ControllerListener {
     /**
      * Removes the {@code player} from the {@code turnSequence}, decrements the {@code numberOfPlayers}, removes his worker from the island, sends a {@link CV_GameOverEvent} to the loser.
      * If is a two player match let the other player win, if is a three player one the losing player becomes a spectator.
+     *
      * @param player the name of the player that lost the game
      */
     private void lose(String player) {
@@ -395,6 +439,11 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
+    /**
+     * Removes a {@link Player} from the {@code turnSequence} remaking a new one if there are others players in the game
+     *
+     * @param usernameToRemove the name of the player to remove
+     */
     private void removePlayerFromGame(String usernameToRemove) {
         List<Player> players = getPlayersSequenceAsList();
         Player playerToRemove = board.getPlayer(usernameToRemove);
@@ -415,7 +464,7 @@ public class TurnController extends EventSource implements ControllerListener {
     }
 
     /**
-     * Sends a {@link CV_IslandUpdateEvent} to all the players
+     * Sends a {@link CV_IslandUpdateEvent} with updated island, after an action has been performed, to all the players
      */
     public void sendIslandUpdate() {
         IslandData currentIsland = board.getIsland().getIslandDataCopy();
@@ -444,6 +493,7 @@ public class TurnController extends EventSource implements ControllerListener {
 
     /**
      * Checks if is the turn of the {@code player}
+     *
      * @param player the player on which the method check if is his turn
      * @return true if is the turn of the {@code player}, false otherwise
      */
@@ -455,27 +505,35 @@ public class TurnController extends EventSource implements ControllerListener {
         } else return true;
     }
 
-    private void invokeMovement(Player player, Worker w, int x, int y) {
+    private boolean checkIsUsingTheSameWorker(Worker worker) {
+        return (currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (worker.getWorkerID() != currentTurnInstance.getWorkerID());
+    }
+
+    private void performMove(Player player, Worker worker, int x, int y) throws InvalidMovementException, WinningException {
+        player.getCard().move(worker, x, y, board.getIsland());
+        currentTurnInstance.incrementNumberOfMove();
+        currentTurnInstance.chooseWorker(worker.getWorkerID());
+
+        sendIslandUpdate();
+        if (isCompletelyLocked(currentTurnInstance.getWorkerID())) {
+            lose(currentPlayer.getUsername());
+        }
+        sendCommandExecuted(player.getUsername());
+        sendCommandRequest(player.getUsername());
+    }
+
+    private void invokeMovement(Player player, Worker worker, int x, int y) {
 
         if (checkIsHisTurn(player)) {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
-            if ((currentTurnInstance.getNumberOfBuild() > 0 || currentTurnInstance.getNumberOfMove() > 0) && (w.getWorkerID() != currentTurnInstance.getWorkerID())) {
+            if (checkIsUsingTheSameWorker(worker)) {
                 CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("you can move only with the same used during the turn!", player.getUsername());
                 notifyAllObserverByType(VIEW, errorEvent);
                 sendCommandRequest(player.getUsername());
             } else {
                 //is your turn and your worker is ok, you may try to move:
                 try {
-                    player.getCard().move(w, x, y, board.getIsland());
-                    currentTurnInstance.incrementNumberOfMove();
-                    currentTurnInstance.chooseWorker(w.getWorkerID());
-
-                    sendIslandUpdate();
-                    if (isCompletelyLocked(currentTurnInstance.getWorkerID())) {
-                        lose(currentPlayer.getUsername());
-                    }
-                    sendCommandExecuted(player.getUsername());
-                    sendCommandRequest(player.getUsername());
+                    performMove(player, worker, x, y);
                 } catch (InvalidMovementException | IllegalArgumentException e) {
                     printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
 
@@ -495,6 +553,41 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
+    private void performBuild(Player player, Worker worker, BlockTypeEnum block, int x, int y) {
+        try {
+            player.getCard().build(worker, block, x, y, board.getIsland());
+            currentTurnInstance.incrementNumberOfBuild();
+            if (currentTurnInstance.getNumberOfMove() == 0) {
+                currentTurnInstance.setHasBuiltBeforeMove(true);
+            }
+
+            if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(worker.getWorkerID());
+
+            sendIslandUpdate();
+
+            //if there is Chronus and this build has made the fifth complete tower Chronus wins
+            if (thereIsChronus && board.getIsland().getNumberOfCompleteTowers() >= 5) {
+                Player playerHasToWin = null;
+                for (Player p : turnSequence.values()) {
+                    if (p.getCard().getName() == CardEnum.CHRONUS) playerHasToWin = p;
+                }
+                win(playerHasToWin);
+            }
+            sendCommandExecuted(player.getUsername());
+            sendCommandRequest(player.getUsername());
+
+        } catch (InvalidBuildException | IllegalArgumentException e) {
+            printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
+
+            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
+            notifyAllObserverByType(VIEW, errorEvent);
+            sendCommandRequest(player.getUsername());
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported!");
+        }
+
+    }
+
     private void invokeBuild(Player player, Worker w, BlockTypeEnum block, int x, int y) {
         if (checkIsHisTurn(player)) {
             //check if it's not the first time he moves / build, if yes check if he's using the same worker
@@ -504,37 +597,7 @@ public class TurnController extends EventSource implements ControllerListener {
                 sendCommandRequest(player.getUsername());
             } else {
                 //is your turn and your worker is ok, you may try build:
-                try {
-                    player.getCard().build(w, block, x, y, board.getIsland());
-                    currentTurnInstance.incrementNumberOfBuild();
-                    if (currentTurnInstance.getNumberOfMove() == 0) {
-                        currentTurnInstance.setHasBuiltBeforeMove(true);
-                    }
-
-                    if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(w.getWorkerID());
-
-                    sendIslandUpdate();
-
-                    //if there is Chronus and this build has made the fifth complete tower Chronus wins
-                    if (thereIsChronus && board.getIsland().getNumberOfCompleteTowers() >= 5) {
-                        Player playerHasToWin = null;
-                        for (Player p : turnSequence.values()) {
-                            if (p.getCard().getName() == CardEnum.CHRONUS) playerHasToWin = p;
-                        }
-                        win(playerHasToWin);
-                    }
-                    sendCommandExecuted(player.getUsername());
-                    sendCommandRequest(player.getUsername());
-
-                } catch (InvalidBuildException | IllegalArgumentException e) {
-                    printErrorLogMessage(e.toString() + " - A new CommandRequest has been send.");
-
-                    CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
-                    notifyAllObserverByType(VIEW, errorEvent);
-                    sendCommandRequest(player.getUsername());
-                } catch (CloneNotSupportedException e) {
-                    throw new RuntimeException("Clone not supported!");
-                }
+                performBuild(player, w, block, x, y);
             }
         }
     }
@@ -554,7 +617,38 @@ public class TurnController extends EventSource implements ControllerListener {
         return (availableMovements.isEmpty() && availableBuild.isEmpty());
     }
 
+    /**
+     * Checks the block to build and calls the {@code invokeBuild} if it is possible, sends error messages otherwise
+     * @param event the {@link VC_PlayerCommandGameEvent} just arrived from the acting player of the turn
+     */
+    private void checkBuildCorrectness(VC_PlayerCommandGameEvent event) {
+        Worker worker;
+        int[] position;
+        try {
+            worker = currentPlayer.getWorker(event.getWorkerID());
+            position = event.getPosition();
+            BlockTypeEnum blockToBuild;
+
+            if (event.isBlockSet()) {
+                blockToBuild = event.getBlockToBuild();
+            } else {
+                blockToBuild = board.getIsland().getCellCluster(position[0], position[1]).nextBlockToBuild();
+                printLogMessage("Block to build found: " + blockToBuild);
+            }
+            invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);
+        } catch (InvalidBuildException e) {
+            CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("Automatic block selection failed, please select a valid block", event.fromPlayer);
+            notifyAllObserverByType(VIEW, errorGameEvent);
+            sendCommandRequest(currentPlayer.getUsername());
+            printLogMessage("Block to build not found. New command request sent.");
+        }
+    }
+
     @Override
+    /**
+     * Parses the {@link VC_PlayerCommandGameEvent} just received by the client, checks his correctness and eventually performs the action.
+     * Sends error messages otherwise.
+     */
     public void handleEvent(VC_PlayerCommandGameEvent event) {
         printLogMessage("New Command from " + event.getFromPlayer().toUpperCase() + " -> " + event.toStringSmall());
 
@@ -567,27 +661,10 @@ public class TurnController extends EventSource implements ControllerListener {
                         case MOVE:
                             worker = currentPlayer.getWorker(event.getWorkerID());
                             position = event.getPosition();
-
                             invokeMovement(currentPlayer, worker, position[0], position[1]);
                             break;
                         case BUILD:
-                            try {
-                                worker = currentPlayer.getWorker(event.getWorkerID());
-                                position = event.getPosition();
-                                BlockTypeEnum blockToBuild;
-                                if (event.isBlockSet()) {
-                                    blockToBuild = event.getBlockToBuild();
-                                } else {
-                                    blockToBuild = board.getIsland().getCellCluster(position[0], position[1]).nextBlockToBuild();
-                                    printLogMessage("Block to build found: " + blockToBuild);
-                                }
-                                invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);
-                            } catch (InvalidBuildException e) {
-                                CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent("Automatic block selection failed, please select a valid block", event.fromPlayer);
-                                notifyAllObserverByType(VIEW, errorGameEvent);
-                                sendCommandRequest(currentPlayer.getUsername());
-                                printLogMessage("Block to build not found. New command request sent.");
-                            }
+                            checkBuildCorrectness(event);
                             break;
                         case PASS:
                             invokeNextTurn(currentPlayer);
@@ -618,7 +695,12 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
-
+    /**
+     * Checks if the {@link VC_PlayerCommandGameEvent} received by the client is a correct and complete one
+     *
+     * @param commandEvent the {@link VC_PlayerCommandGameEvent} that has just received by the client
+     * @return true if the command is correct and complete, false otherwise
+     */
     private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
         return commandEvent.isCommandEventValid() && getCurrentTurnListUsername().contains(commandEvent.getFromPlayer());
     }

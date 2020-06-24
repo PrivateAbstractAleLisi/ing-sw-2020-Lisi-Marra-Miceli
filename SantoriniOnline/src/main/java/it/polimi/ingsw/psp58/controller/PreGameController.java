@@ -244,8 +244,6 @@ public class PreGameController extends EventSource implements ControllerListener
      * Handles the event of the {@code challenger} that has choose the player that has to start the turn. Then sets the {@code turnSequence} based on the choice and calls the {@code askPlaceFirstWorkerForCurrentUser} method
      */
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
-        boardManager.setPlayersCardsCorrespondence(playersCardsCorrespondence);
-
         String firstPlayer = event.getUsername();
         int turnSequenceIndex = 0;
         turnSequence.put(turnSequenceIndex, boardManager.getPlayer(firstPlayer));
