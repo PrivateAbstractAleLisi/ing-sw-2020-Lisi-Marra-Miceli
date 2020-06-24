@@ -6,6 +6,8 @@ import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PingEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.MessageUtility;
+import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import javafx.application.Platform;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -33,6 +35,10 @@ public class SantoriniClient extends EventSource implements Runnable {
     private boolean connectionOpen = false;
     private boolean enablePing;
 
+    private GUI guiIstance;
+
+
+
     public SantoriniClient(EventListener userInterface, String ipAddress, boolean enablePing) {
         this.userInterface = userInterface;
         this.IP = ipAddress;
@@ -40,7 +46,19 @@ public class SantoriniClient extends EventSource implements Runnable {
         attachListenerByType(VIEW, userInterface);
     }
 
-    public void begin() {
+    public SantoriniClient(EventListener userInterface, String ipAddress, boolean enablePing, GUI guiIstance) {
+        this.userInterface = userInterface;
+        this.IP = ipAddress;
+        this.enablePing = enablePing;
+        this.guiIstance = guiIstance;
+        attachListenerByType(VIEW, userInterface);
+    }
+
+    /**
+     * tries to open a socket with the server, the socket has a timeout. This function starts the pinging process too
+     * @throws IOException when it's unable to open a socket
+     */
+    public void begin() throws IOException {
 
         serverSocket = null;
         //Open a connection with the server
@@ -52,7 +70,8 @@ public class SantoriniClient extends EventSource implements Runnable {
             }
         } catch (IOException e) {
             System.err.println("Client: Unable to open a socket");
-            e.printStackTrace();
+            throw e;
+            ///e.printStackTrace();
         }
         if (enablePing) {
             try {
@@ -122,10 +141,12 @@ public class SantoriniClient extends EventSource implements Runnable {
                 MessageUtility.displayErrorMessage("Lost connection with the server");
                 connectionOpen = false;
                 closeConnection();
+                break;
             } catch (IOException | ClassNotFoundException e) {
                 MessageUtility.displayErrorMessage("Client: Disconnected from the server");
                 connectionOpen = false;
                 closeConnection();
+                break;
             }
         }
     }
@@ -138,10 +159,13 @@ public class SantoriniClient extends EventSource implements Runnable {
 
         try {
             serverSocket.close();
+            if (guiIstance != null) {
+                Platform.runLater(() -> guiIstance.disconnectionHandle("Server socket has been closed."));
+            }
         } catch (IOException ex) {
             System.out.println("Error closing the socket and streams.");
         } finally {
-            System.exit(0);
+            //System.exit(0);
         }
     }
 }

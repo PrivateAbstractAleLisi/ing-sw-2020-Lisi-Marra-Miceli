@@ -21,7 +21,9 @@ import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
+import it.polimi.ingsw.psp58.view.UI.GUI.Message;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -52,6 +54,7 @@ public class CLIView extends EventSource implements ViewListener {
 
     public void start() {
 
+        boolean notConnected = true;
         if (args != null) {
             for (String currentArgument : args) {
                 switch (currentArgument) {
@@ -76,26 +79,35 @@ public class CLIView extends EventSource implements ViewListener {
 
         //System.out.println("WELCOME, Client Started.");
         CLIView.clearScreen();
+        do {
+            String IP = askIPAddress();
 
-        String IP = askIPAddress();
+            //set up the client
+            client = new SantoriniClient(this, IP, enablePing);
+            try {
+                client.begin();
+                System.out.println("CLIENT: connected ");
 
-        //set up the client
-        client = new SantoriniClient(this, IP, enablePing);
-        client.begin();
+                clearScreen();
+                //MessageUtility.displayTitle();
+                String userProposal = askUsername();
 
-        System.out.println("CLIENT: connected ");
+                //use last userProposal as my username
+                myUsername = userProposal;
 
-        clearScreen();
-        //MessageUtility.displayTitle();
-        String userProposal = askUsername();
+                //try to connect
+                VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
+                this.client.sendEvent(req);
+                new Thread(client).start();
+                notConnected = false;
+            } catch (IOException e) {
+                MessageUtility.displayErrorMessage("Unable to reach the server. Error when opening the socket.");
+                notConnected = true;
+            }
+        } while (notConnected);
 
-        //use last userProposal as my username
-        myUsername = userProposal;
 
-        //try to connect
-        VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
-        this.client.sendEvent(req);
-        new Thread(client).start();
+
     }
 
     private String askIPAddress() {

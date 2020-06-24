@@ -394,7 +394,7 @@ public class PreGameController extends EventSource implements ControllerListener
                     currentTurnIndex++;
                     askPlaceFirstWorkerForCurrentUser();
                 } else {
-                    room.setGameCanStart(true);
+                    room.setGameCanStartTrue();
                 }
             }
 

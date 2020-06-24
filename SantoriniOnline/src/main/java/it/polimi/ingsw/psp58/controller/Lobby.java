@@ -207,20 +207,33 @@ public class Lobby extends EventSource implements ControllerListener {
      */
     @Override
     public synchronized void handleEvent(VC_RoomSizeResponseGameEvent event) {
-
         String roomID = "Room_#" + roomCounter;
-        Room newRoom = new Room(event.getSize(), roomID);
-        activeRooms.add(newRoom);
-        updateRoomCounter();
+        int desiredSize = event.getSize();
 
-        newRoom.addUser(pendingUsername, pendingVirtualView);
+        if (desiredSize == 2 || desiredSize == 3) {
+            try {
+                Room newRoom = new Room(event.getSize(), roomID);
+                activeRooms.add(newRoom);
+                updateRoomCounter();
 
-        canCreateNewRoom.set(true);
+                newRoom.addUser(pendingUsername, pendingVirtualView);
 
-        printLogMessage("Successfully created new room (" + roomID + "). Size:" + event.getSize());
+                canCreateNewRoom.set(true);
 
-        pendingUsername = null;
-        pendingVirtualView = null;
+                printLogMessage("Successfully created new room (" + roomID + "). Size:" + event.getSize());
+
+                pendingUsername = null;
+                pendingVirtualView = null;
+            } catch (IllegalArgumentException e) {
+                CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert a valid size for the room: ", pendingUsername);
+                notifyAllObserverByType(VIEW, request);
+                printErrorLogMessage("Size of the room not valid - Sent a new request");
+            }
+        } else {
+            CV_RoomSizeRequestGameEvent request = new CV_RoomSizeRequestGameEvent("Insert a valid size for the room: ", pendingUsername);
+            notifyAllObserverByType(VIEW, request);
+            printErrorLogMessage("Size of the room not valid - Sent a new request");
+        }
     }
 
     /**
@@ -265,7 +278,8 @@ public class Lobby extends EventSource implements ControllerListener {
 
     /**
      * Add the user to the the first free room.
-     * @param username Username chosen by the user
+     *
+     * @param username    Username chosen by the user
      * @param virtualView VirtualView of the user
      * @throws NotFreeRoomAvailableException if there aren't FreeRoomAvailable
      */
@@ -288,8 +302,9 @@ public class Lobby extends EventSource implements ControllerListener {
     }
 
     /**
-     * Create a new Room after the user sent the Room Size. Uses the {@code creatingRoomLock} Lock.
-     * @param username Username chosen by the user
+     * Ask the user a specific size of the room. Uses the {@code creatingRoomLock} Lock.
+     *
+     * @param username    Username chosen by the user
      * @param virtualView VirtualView of the user
      */
     private void createNewRoom(String username, VirtualView virtualView) {
@@ -311,8 +326,9 @@ public class Lobby extends EventSource implements ControllerListener {
 
     /**
      * Send a {@link CV_ConnectionRejectedErrorGameEvent} event with the given error code.
-     * @param event A {@link CC_ConnectionRequestGameEvent} with the info about the client and the user.
-     * @param errCode The error code to add to the event.
+     *
+     * @param event        A {@link CC_ConnectionRequestGameEvent} with the info about the client and the user.
+     * @param errCode      The error code to add to the event.
      * @param errorMessage The message to send with the event.
      */
     private void sendConnectionRejectedEvent(CC_ConnectionRequestGameEvent event, String errCode, String errorMessage) {
@@ -322,8 +338,9 @@ public class Lobby extends EventSource implements ControllerListener {
 
     /**
      * Send a {@link CV_ReconnectionRejectedErrorGameEvent} event with the given error code.
-     * @param event A {@link CC_NewGameResponseEvent} with the info about the client and the user.
-     * @param errCode The error code to add to the event.
+     *
+     * @param event        A {@link CC_NewGameResponseEvent} with the info about the client and the user.
+     * @param errCode      The error code to add to the event.
      * @param errorMessage The message to send with the event.
      */
     private void sendReconnectionRejectedEvent(CC_NewGameResponseEvent event, String errCode, String errorMessage) {
@@ -333,6 +350,7 @@ public class Lobby extends EventSource implements ControllerListener {
 
     /**
      * Disconnect the pending user that was creating the room and clean everything.
+     *
      * @param username Username of disconnecting user
      */
     private void disconnectPendingUser(String username) {
@@ -352,6 +370,7 @@ public class Lobby extends EventSource implements ControllerListener {
 
     /**
      * Disconnect a user in a Room and clean everything.
+     *
      * @param username Username of disconnecting user
      */
     private void disconnectUserInARoom(String username) throws UserNotFoundException, RoomNotFoundException {
@@ -477,6 +496,7 @@ public class Lobby extends EventSource implements ControllerListener {
 
     /**
      * Remove a room from the list in Lobby.
+     *
      * @param room Room to remove.
      */
     public void removeRoom(Room room) {
@@ -534,7 +554,7 @@ public class Lobby extends EventSource implements ControllerListener {
      */
     public boolean canStartGameForThisUser(String username) {
         try {
-            return getRoomWithUser(username).isGameCanStart();
+            return getRoomWithUser(username).canGameStart();
         } catch (RoomNotFoundException | UserNotFoundException e) {
             printErrorLogMessage(EXCEPTION_MESSAGE + e.getMessage());
             e.printStackTrace();
@@ -560,6 +580,7 @@ public class Lobby extends EventSource implements ControllerListener {
 
     /**
      * Check if is possible to clean the room containing this user.
+     *
      * @param username Username of a player
      * @return True if the room can be cleaned, false otherwise
      */
@@ -575,6 +596,7 @@ public class Lobby extends EventSource implements ControllerListener {
 
     /**
      * Clean the room for this user and delete everything.
+     *
      * @param username Username of a player
      */
     public synchronized void cleanRoomForThisUser(String username) {

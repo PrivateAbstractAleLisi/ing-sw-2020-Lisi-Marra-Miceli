@@ -100,12 +100,17 @@ public class StartingSceneController {
         loadProgress.setProgress(0.17f);
 
         String userProposal = userField.getText().toLowerCase();
-        //TODO estrudere questi 2 metodi dalla cli dato che servono ovunque
+
         boolean localUserIsValid = CLIView.checkLocalUsernameAlphaNumeric(userProposal);
         boolean localIpIsValid = CLIView.checkValidIP(selectedIP);
 
         if (localIpIsValid && localUserIsValid) {
-            tryConnection(userProposal);
+            try {
+                tryConnection(userProposal);
+            } catch (IOException e) {
+                gui.showError("Unable to reach the server.");
+                enableAllLoginFields();
+            }
             gui.setUsername(userProposal.toLowerCase());
         }
         else {
@@ -120,10 +125,10 @@ public class StartingSceneController {
         }
     }
 
-    private void tryConnection(String userProposal) {
+    private void tryConnection(String userProposal) throws IOException {
         //set up the client
         loadText.setText(updateLoadText("establishing connection"));
-        SantoriniClient client = new SantoriniClient(gui, selectedIP, gui.isPingEnabled());
+        SantoriniClient client = new SantoriniClient(gui, selectedIP, gui.isPingEnabled(), gui);
         client.begin();
         gui.setClient(client);
         VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);

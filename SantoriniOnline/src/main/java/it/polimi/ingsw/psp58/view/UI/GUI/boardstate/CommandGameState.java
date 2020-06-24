@@ -422,6 +422,7 @@ public class CommandGameState implements GameStateAbstract {
     @Override
     public void updateFromServer(CV_CommandRequestEvent event) {
         lastCommandRequest = event;
+        blockToBuild = null;
         if (state == MSG_SENT_UNLOCKED) {
             state = CLEAN_TURN;
         } else if (state == MSG_SENT_LOCKED) {

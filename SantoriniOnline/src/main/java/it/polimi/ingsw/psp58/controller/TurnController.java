@@ -388,7 +388,7 @@ public class TurnController extends EventSource implements ControllerListener {
         notifyAllObserverByType(VIEW, gameOverEvent);
         printLogMessage(winner.getUsername().toUpperCase() + "IS THE WINNER");
 
-        room.setRoomMustBeCleaned(true);
+        room.setRoomMustBeCleanedTrue();
         CV_NewGameRequestEvent requestEvent = new CV_NewGameRequestEvent("Do you want to play with me again?");
         notifyAllObserverByType(VIEW, requestEvent);
     }
