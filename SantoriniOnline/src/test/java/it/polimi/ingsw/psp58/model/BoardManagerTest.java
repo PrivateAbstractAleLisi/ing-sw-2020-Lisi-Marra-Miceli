@@ -20,7 +20,7 @@ public class BoardManagerTest {
     private BoardManager boardManager = null;
 
     @Before
-    public void setup(){
+    public void setUp(){
         boardManager = new BoardManager();
     }
 
@@ -47,17 +47,17 @@ public class BoardManagerTest {
 
     @Test
     public void addPlayer_withPlayerClass_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException {
-        Player p1 = new Player("matteo");
+        Player p1 = new Player("matteo", boardManager);
         boardManager.addPlayer(p1);
         assertTrue(boardManager.isPlayerConnected(p1));
     }
 
     @Test (expected = LimitExceededException.class)
     public void addPlayer_withPlayerClass_shouldThrowException() throws LimitExceededException, AlreadyExistingPlayerException {
-        Player p1=new Player("matteo");
-        Player p2=new Player("gabriele");
-        Player p3=new Player("alessandro");
-        Player p4=new Player("mattia");
+        Player p1=new Player("matteo",boardManager);
+        Player p2=new Player("gabriele", boardManager);
+        Player p3=new Player("alessandro", boardManager);
+        Player p4=new Player("mattia", boardManager);
         boardManager.addPlayer(p1);
         boardManager.addPlayer(p2);
         boardManager.addPlayer(p3);
@@ -89,7 +89,7 @@ public class BoardManagerTest {
 
     @Test
     public void getPlayer_withString_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException {
-        Player p1= new Player("matteo");
+        Player p1= new Player("matteo", boardManager);
         boardManager.addPlayer(p1);
         assertEquals(boardManager.getPlayer("matteo"),p1);
     }
@@ -97,9 +97,9 @@ public class BoardManagerTest {
 
     @Test
     public void getPlayers_normalPlayers_shouldReturnNormally() throws LimitExceededException, AlreadyExistingPlayerException {
-        Player p1=new Player("matteo");
-        Player p2=new Player("gabriele");
-        Player p3=new Player("alessandro");
+        Player p1=new Player("matteo", boardManager);
+        Player p2=new Player("gabriele", boardManager);
+        Player p3=new Player("alessandro", boardManager);
         boardManager.addPlayer(p1);
         boardManager.addPlayer(p2);
         boardManager.addPlayer(p3);
@@ -151,8 +151,8 @@ public class BoardManagerTest {
 
     @Test
     public void resetAllPlayerBehaviour() throws LimitExceededException, AlreadyExistingPlayerException {
-        Player p1 = new Player("matteo");
-        Player p2 = new Player("alessandro");
+        Player p1 = new Player("matteo", boardManager);
+        Player p2 = new Player("alessandro", boardManager);
         boardManager.addPlayer(p1);
         boardManager.addPlayer(p2);
         p1.setCard(CardEnum.APOLLO);
@@ -160,8 +160,8 @@ public class BoardManagerTest {
         p1.getBehaviour().setBlockPlacementLeft(10);
         p2.getBehaviour().setMovementsRemaining(10000);
         boardManager.resetAllPlayerBehaviour();
-        Player p1Copy = new Player("matteo");
-        Player p2Copy = new Player("alessandro");
+        Player p1Copy = new Player("matteo", boardManager);
+        Player p2Copy = new Player("alessandro", boardManager);
         p1Copy.setCard(CardEnum.APOLLO);
         p2Copy.setCard(CardEnum.ATHENA);
         p1.getCard().resetBehaviour();
