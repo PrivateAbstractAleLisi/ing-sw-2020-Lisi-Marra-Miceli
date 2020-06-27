@@ -33,6 +33,7 @@ public class CLIView extends EventSource implements ViewListener {
     private SantoriniClient client;
     private String myUsername;
     private CardEnum myCard;
+    private WorkerColors myColor;
     private String[] args;
     private boolean enablePing=true;
     private Map<String, CardEnum> opponentsCard;
@@ -521,10 +522,18 @@ public class CLIView extends EventSource implements ViewListener {
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
         this.playersColor=event.getPlayerWorkerColors();
+        for (Map.Entry<String, WorkerColors> entry : event.getPlayerWorkerColors().entrySet()){
+            if (entry.getKey().equals(myUsername)){
+                myColor= entry.getValue();
+            }
+        }
         opponentsCard = new HashMap<>();
         for (Map.Entry<String, CardEnum> entry : event.getTurnSequence().entrySet()){
             if (!entry.getKey().equals(myUsername)){
                 opponentsCard.put(entry.getKey(), entry.getValue());
+            }
+            else{
+                myCard = entry.getValue();
             }
         }
     }
@@ -814,9 +823,26 @@ public class CLIView extends EventSource implements ViewListener {
 
         if (yourTurn) {
             System.out.println("\nIt's your turn. \n");
+            printMyInfo();
             printOpponentsInfo();
         }
 
+    }
+
+    public void printMyInfo(){
+        switch(myColor){
+            case BLUE:
+                System.out.println("Your"+  BLUE_BRIGHT + " color" + ANSI_RESET);
+                break;
+            case PINK:
+                System.out.println("Your"  + MAGENTA_BRIGHT + " color" + ANSI_RESET);
+                break;
+            case ORANGE:
+                System.out.println("Your"  + RED_BRIGHT + " color" + ANSI_RESET);
+                break;
+        }
+        System.out.println("YOUR CARD: " + myCard.getName().toUpperCase());
+        System.out.println("\t" + myCard.getDescription());
     }
 
     private void printOpponentsInfo(){
