@@ -15,7 +15,7 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
  */
 public class Demeter extends Card {
     int[] lastBuiltPosition;
-    private Worker.IDs workerChoosen;
+    private Worker.IDs workerChosen;
 
     public Demeter(Player p) {
         super(p);
@@ -71,11 +71,11 @@ public class Demeter extends Card {
             throw new InvalidBuildException("Invalid build for this worker");
         }
 
-        //check se utilizzo lo stesso worker
+        //check if it's the same worker
         if (lastBuiltPosition[0] == -1 && lastBuiltPosition[1] == -1) {
-            workerChoosen = worker.getWorkerID();
+            workerChosen = worker.getWorkerID();
         }else {
-            if (worker.getWorkerID() != workerChoosen) {
+            if (worker.getWorkerID() != workerChosen) {
                 throw new IllegalArgumentException("DEMETER: on the second building you must use the same worker");
             }
         }

@@ -73,14 +73,14 @@ public abstract class Card {
         if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
             throw new InvalidMovementException("Invalid move for this worker");
         }
-        //decrementa il numero di movimenti rimasti
+        //decrease the number of required movements
         playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
         island.moveWorker(worker, desiredX, desiredY);
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
             throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
         } else {
-            //Memorizzo l'altitudine del worker per poi controllare se è effettivamente salito
+            //memorize the high of worker and the check if the worker has won
             int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();
             checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);
         }
@@ -111,7 +111,7 @@ public abstract class Card {
         if (!isValidConstruction(block, actualX, actualY, desiredX, desiredY, island)) {
             throw new InvalidBuildException("Invalid build for this worker");
         }
-        //decrementa il numero di blocchi da costruire rimasti e ritorno true
+        //decrease the number of BlockPlacementLeft
         playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);
 
 
@@ -152,11 +152,11 @@ public abstract class Card {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
-        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+        //check if the coordinates of the destination are different from actual ones
         if (actualX == desiredX && actualY == desiredY) {
             return false;
         }
-        //verifica il behaviour permette di muoversi
+        //check if the behaviour allow a move
         if (behaviour.getMovementsRemaining() <= 0) {
             return false;
         }
@@ -166,16 +166,16 @@ public abstract class Card {
         if (desiredCellCluster.isComplete()) {
             return false;
         }
-        //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)
+        //calculate the euclidean distance and check that distance < 2 (return false otherwise)
         if (distance(actualX, actualY, desiredX, desiredY) >= 2) {
             return false;
         }
-        //verifica il behaviour permette di salire
+        //check if the behavior allow to go up
         if (behaviour.isCanClimb()) {
-            //al max salgo di 1
+            //max 1 level of go up
             return actualCellCluster.getCostructionHeight() + 1 >= desiredCellCluster.getCostructionHeight();
         } else {
-            //non posso salire
+            //can't go up
             return actualCellCluster.getCostructionHeight() >= desiredCellCluster.getCostructionHeight();
         }
     }
@@ -208,7 +208,7 @@ public abstract class Card {
      * @param island   The current board of game
      * @return rue when the construction can be done from the actual position, false otherwise
      */
-    protected boolean checkCellCostructionAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
+    protected boolean checkCellConstructionAvailability(int actualX, int actualY, int desiredX, int desiredY, Island island) {
         Range range = new Range(0, 4);
         if (range.isIndexOfCellInRange(desiredX, desiredY)) {
             for (BlockTypeEnum block : BlockTypeEnum.values()) {
@@ -250,11 +250,11 @@ public abstract class Card {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
-        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+        //check if the coordinates of the destination are different from actual ones
         if (actualX == desiredX && actualY == desiredY) {
             return false;
         }
-        //verifica il behaviour permette di costruire
+        //check if the behavior allow to build
         if (behaviour.getBlockPlacementLeft() <= 0) {
             return false;
         }
@@ -264,12 +264,12 @@ public abstract class Card {
         if (desiredCellCluster.isComplete()) {
             return false;
         }
-        //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)
+        //calculate the euclidean distance and check that distance < 2 (return false otherwise)
         if (distance(actualX, actualY, desiredX, desiredY) >= 2) {
             return false;
         }
 
-        //genero un array contenente la struttura del cellcluster (e il nuovo blocco) e l'analizzo nella funzione successiva
+        //generate an array with the cellCluster structure (plus the new block) and analyze that with the next function
         int[] desiredConstruction = desiredCellCluster.toIntArrayWithHypo(block);
         return isValidBlockPlacement(block, desiredConstruction, behaviour);
     }

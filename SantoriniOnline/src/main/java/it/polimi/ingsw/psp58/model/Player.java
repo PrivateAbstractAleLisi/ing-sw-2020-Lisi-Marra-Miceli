@@ -8,14 +8,14 @@ import java.util.List;
 
 public class Player {
 
-    private String username;
+    private final String username;
 
-    private ArrayList<Worker> workers = new ArrayList<>();
+    private final ArrayList<Worker> workers = new ArrayList<>();
     private WorkerColors color;
 
     private BoardManager boardManager;
     private Card card;
-    private BehaviourManager behaviour;
+    private final BehaviourManager behaviour;
 
     /**
      * Constructor of the player class
