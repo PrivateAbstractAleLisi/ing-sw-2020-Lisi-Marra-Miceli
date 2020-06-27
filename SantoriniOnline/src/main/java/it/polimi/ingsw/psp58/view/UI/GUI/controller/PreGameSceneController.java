@@ -14,130 +14,286 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.util.*;
 
+/**
+ * This class handle the choose of the Cards and the choose of the first player, loading all the cards and the player dynamically.
+ */
 public class PreGameSceneController {
+    /**
+     * Main {@link GUI} object.
+     */
     private GUI gui;
 
-    //CONSTANT
-    public final double MAX_CARDS_NUMBERS = 15;
+    /**
+     * Define the Max Number of card to show on the screen.
+     * To increase the number of cards, please update this value and create new cards in the FXML file.
+     */
+    public static final double MAX_CARDS_NUMBERS = 15;
 
+    /**
+     * The username of the challenger.
+     */
     private String challengerUsername;
 
-    private String STATE;
-    /*
-    States:
-    - CARD_CHOICE
-    - CHALLENGER_CARDS_CHOICE
-    - FIRST_PLAYER_CHOICE
-    - WAIT_CHALLENGER_CARDS
-    - WAIT_PLAYER_CARD
-    - WAIT_FIRST_PLAYER
+    /**
+     * It represents the actual state of the prematch for this player.
+     * The possibles STATES are:
+     * - CARD_CHOICE
+     * - CHALLENGER_CARDS_CHOICE
+     * - FIRST_PLAYER_CHOICE
+     * - WAIT_CHALLENGER_CARDS
+     * - WAIT_PLAYER_CARD
+     * - WAIT_FIRST_PLAYER
      */
+    private String STATE;
 
-    //CENTER
+    /* ----------------------------------------------------------------------------------------------
+                                         CENTER OF BORDER PANE
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * HBox containing the Nodes for Wait State, Not visible by default.
+     */
     @FXML
     private HBox extWaitHBox;//InvisibleByDefault
-    @FXML
-    private Text upperText;
+    /**
+     * HBox containing the Hourglass Image.
+     */
     @FXML
     private HBox waitHBox;
+    /**
+     * Title and Upper text of the entire Scene with title or command to execute.
+     */
+    @FXML
+    private Text upperText;
 
-    //Challenger
+    /* ----------------------------------------------------------------------------------------------
+                                         Challenger Section
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * {@link ScrollPane} showed to the challenger containing the {@link FlowPane} with the Cards, not visible by default.
+     */
     @FXML
     private ScrollPane challengerScrollPane; //InvisibleByDefault
+    /**
+     * {@link FlowPane} showed to the challenger containing all the Cards.
+     */
     @FXML
     private FlowPane challengerCardsFlowPane;
 
-    //CardChoice
+    /* ----------------------------------------------------------------------------------------------
+                                         PlayerCardChoice section
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * Pane containing the Nodes to show and select the Card for each player, not visible by default.
+     */
     @FXML
     private TilePane cardChoiceTilePane;//InvisibleByDefault
+    /**
+     * HBox containing the Nodes to show and select the Card for each player.
+     */
     @FXML
     private HBox cardChoiceHBox;
     //CardsButton
+    /**
+     * VBox containing the ImageView of the first God, the Name and the description, not visible by default.
+     */
     @FXML
     private VBox cardChoice_VBox1;//InvisibleByDefault
+    /**
+     * VBox containing the ImageView of the second God, the Name and the description, not visible by default.
+     */
     @FXML
     private VBox cardChoice_VBox2;//InvisibleByDefault
+    /**
+     * VBox containing the ImageView of the third God, the Name and the description, not visible by default.
+     */
     @FXML
     private VBox cardChoice_VBox3;//InvisibleByDefault
 
 
-    //FirstPlayerChoice
+   /* ----------------------------------------------------------------------------------------------
+                                          FirstPlayerChoice Section
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * Pane showed to the challenger containing the Nodes to show and select the first Player, not visible by default.
+     */
     @FXML
     private TilePane challengerFirstPlayerPane;//InvisibleByDefault
+    /**
+     * HBox containing the Nodes to show and select the first Player.
+     */
     @FXML
     private HBox challengerFirstPlayerHBox;
+    /**
+     * VBox containing the ImageView of the first God selected by the player and the Name of the player, not visible by default.
+     */
     @FXML
     private VBox challengerFirstPlayerVBox1;//InvisibleByDefault
+    /**
+     * VBox containing the ImageView of the first God selected by the player and the Name of the player, not visible by default.
+     */
     @FXML
     private VBox challengerFirstPlayerVBox2;//InvisibleByDefault
+    /**
+     * VBox containing the ImageView of the first God selected by the player and the Name of the player, not visible by default.
+     */
     @FXML
     private VBox challengerFirstPlayerVBox3;//InvisibleByDefault
 
-    //LEFT
+    /* ----------------------------------------------------------------------------------------------
+                                         LEFT SECTION
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * HBox containing the player name. If the challenger, contains also an Image.
+     */
     @FXML
     private HBox playerName_HBox1;
+    /**
+     * HBox containing the player name. If the challenger, contains also an Image.
+     */
     @FXML
     private HBox playerName_HBox2;
+    /**
+     * HBox containing the player name. If the challenger, contains also an Image.
+     */
     @FXML
     private HBox playerName_HBox3;
 
-    //RIGHT
+    /* ----------------------------------------------------------------------------------------------
+                                         RIGHT SECTION
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * Confirm Button on the bottom-right.
+     */
     @FXML
     private Button confirmButton;
+    /**
+     * HBox containing the Card or Player selected by the current user
+     */
     @FXML
     private HBox rightChoiceHBox1;
+    /**
+     * HBox containing the Card or Player selected by the current user
+     */
     @FXML
     private HBox rightChoiceHBox2;
+    /**
+     * HBox containing the Card or Player selected by the current user
+     */
     @FXML
     private HBox rightChoiceHBox3;
 
+    /**
+     * ArrayList of HBox containing the HBoxes on the upper-right section of the Scene
+     */
     private ArrayList<HBox> rightHBoxes;
+    /**
+     * Index of the first HBox not set, next to be filled.
+     */
     private int indexFirstFreeHBox;
-    private int actualEnableHBox;
+    /**
+     * Number of HBoxes actually enable.
+     */
+    private int numberActualEnableHBoxes;
 
-    //Maps
+    /* ----------------------------------------------------------------------------------------------
+                                         MAPS
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * Map to find Card from HBox, used during Challenger Cards selection
+     */
     private Map<HBox, CardEnum> challengerCardMapByHBox;
+    /**
+     * Map to find HBox from Card, used during Challenger Cards selection
+     */
     private Map<CardEnum, HBox> challengerHBoxMapByCard;
+    /**
+     * Map to find Card from VBox, used during Player Card selection
+     */
     private Map<VBox, CardEnum> playerCardMapByVBox;
+    /**
+     * Map to find VBox from Card, used during Player Card selection
+     */
     private Map<CardEnum, VBox> playerVBoxMapByCard;
+    /**
+     * Map to find Player's username from VBox, used during First Player selection
+     */
     private Map<VBox, String> firstPlayerUsernameByVBox;
+    /**
+     * Map to find VBox from Player's username, used during First Player selection
+     */
     private Map<String, VBox> firstPlayerVBoxByUsername;
+    /**
+     * Map to find Card from Player's username, used during First Player selection
+     */
     private Map<String, CardEnum> firstPlayerCardByName;
+    /**
+     * Map to find HBoxes on the Right from Card.
+     */
     private Map<CardEnum, HBox> rightHBoxesMapByCard;
+    /**
+     * Map to find HBoxes on the Right from Player's username.
+     */
     private Map<String, HBox> rightHBoxesMapByName;
 
-    //CardSelection
+    /* ----------------------------------------------------------------------------------------------
+                                         GENERIC CARD SELECTION
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * Number of card to choose.
+     */
     private int cardToChoose;
+    /**
+     * ArrayList with the Cards selected by the challenger, before Confirm Button click.
+     */
     private ArrayList<CardEnum> challengerSelectedCards = new ArrayList<>();
+    /**
+     * Card selected by the player, before Confirm Button click.
+     */
     private CardEnum playerSelectedCard;
+    /**
+     * Available cards to chose for the player.
+     */
     private ArrayList<CardEnum> playerAvailableCards;
 
-    //firstPlayerSelection
+    /* ----------------------------------------------------------------------------------------------
+                                         FIRST PLAYER SELECTION
+       ----------------------------------------------------------------------------------------------*/
+    /**
+     * Username of the selected First Player, before Confirm Button click.
+     */
     private String firstPlayerSelected;
+    /**
+     * Usernames of all Players, to chose the firs player.
+     */
     private ArrayList<String> usernamesAvailable;
 
-    Thread hourglassRotation;
+    /* ----------------------------------------------------------------------------------------------
+                                          UTILITY AND SETTER METHODS
+       ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Set GUI
+     *
+     * @param gui Gui
+     */
     public void setGui(GUI gui) {
         this.gui = gui;
     }
 
-    public void setVisibleOnlyThisNode(Node node) {
+    /**
+     * Show only one Node, hide the others.
+     *
+     * @param node the Node to be shown
+     */
+    private void setVisibleOnlyThisNode(Node node) {
         cardChoiceTilePane.setVisible(false);
         challengerScrollPane.setVisible(false);
         challengerFirstPlayerPane.setVisible(false);
         extWaitHBox.setVisible(false);
-
-        if (!node.equals(waitHBox)) {
-            if (hourglassRotation != null && hourglassRotation.isAlive()) {
-                hourglassRotation.interrupt();
-            }
-        }
 
         if (node.equals(cardChoiceTilePane)) {
             cardChoiceTilePane.setVisible(true);
@@ -150,29 +306,26 @@ public class PreGameSceneController {
         }
     }
 
-    private void setTextToBold(Text text, double fontSize) {
-        text.setFont(new Font("System Bold", fontSize));
-    }
-
+    /**
+     * Set the title and upper text
+     *
+     * @param title String with title or message
+     */
     private void setTitleCenter(String title) {
         upperText.setText(title.toUpperCase());
     }
 
-    public void update(CV_PreGameStartedGameEvent event) {
-        setLeftPlayerNames(event);
-
-        challengerUsername=event.getChallenger().toLowerCase();
-        setLeftChallenger();
-    }
-
-    private void setLeftPlayerNames (CV_PreGameStartedGameEvent event){
+    /**
+     * Set the Player Names on the Left
+     *
+     * @param event {@link CV_PreGameStartedGameEvent} event that contains required info.
+     */
+    private void setLeftPlayerNames(CV_PreGameStartedGameEvent event) {
         //Create a Queue
         LinkedList<HBox> playerNameHBoxes = new LinkedList<>();
         playerNameHBoxes.add(playerName_HBox1);
         playerNameHBoxes.add(playerName_HBox2);
         playerNameHBoxes.add(playerName_HBox3);
-
-        int actualPlayersInRoom = event.getPlayersList().size();
 
         List<String> playerNames = event.getPlayersList();
         int index = 0;
@@ -182,7 +335,7 @@ public class PreGameSceneController {
             int position = index + 1;
             Text text = (Text) playerNameHBoxes.get(index).getChildren().get(0);
             text.setText(position + ") " + player.toUpperCase());
-            if (player.toLowerCase().equals(gui.getUsername().toLowerCase())) {
+            if (player.equalsIgnoreCase(gui.getUsername())) {
                 setLeftTextMyUsername(playerNameHBoxes.get(index));
             }
             playerNameHBoxes.get(index).setVisible(true);
@@ -197,10 +350,18 @@ public class PreGameSceneController {
         }
     }
 
+    /**
+     * Set a Red background around my Name on the left
+     *
+     * @param node Node with my Username
+     */
     private void setLeftTextMyUsername(Node node) {
-        node.getStyleClass().add("my-username-hbox");
+        node.getStyleClass().add("my-username-hBox");
     }
 
+    /**
+     * Show the Star ImageView near the ChallengerUsername
+     */
     private void setLeftChallenger() {
         LinkedList<HBox> playerNameHBoxes = new LinkedList<>();
         playerNameHBoxes.add(playerName_HBox1);
@@ -212,17 +373,35 @@ public class PreGameSceneController {
             String textShowed = text.getText().toLowerCase();
 
             String textToCompare = textShowed.substring(3);
-            if (textToCompare.equals(challengerUsername.toLowerCase())) {
+            if (textToCompare.equalsIgnoreCase(challengerUsername)) {
                 //set image to visible
                 hBox.getChildren().get(1).setVisible(true);
             }
         }
     }
 
+    /* ----------------------------------------------------------------------------------------------
+                                          UPDATE EVENTS METHODS
+       ----------------------------------------------------------------------------------------------*/
+
+    /**
+     * Update the Scene with the info contained in the event
+     *
+     * @param event {@link CV_PreGameStartedGameEvent} event that contains required info.
+     */
+    public void update(CV_PreGameStartedGameEvent event) {
+        setLeftPlayerNames(event);
+
+        challengerUsername = event.getChallenger().toLowerCase();
+        setLeftChallenger();
+    }
+
+    /**
+     * Show the Wait Scene and wait until next event.
+     *
+     * @param event {@link CV_WaitPreMatchGameEvent} event.
+     */
     public void update(CV_WaitPreMatchGameEvent event) {
-        if (!extWaitHBox.isVisible() && hourglassRotation != null && hourglassRotation.isAlive()) {
-            hourglassRotation.interrupt();
-        }
         Text waitText = (Text) waitHBox.getChildren().get(0);
         setTitleCenter("Wait your turn");
 
@@ -243,28 +422,15 @@ public class PreGameSceneController {
                 waitText.setText("Please wait");
         }
 
-        if (!extWaitHBox.isVisible()) {
-            hourglassRotation = new Thread(() -> {
-                ImageView hourglass = (ImageView) waitHBox.getChildren().get(1);
-                try {
-                    Thread.sleep(500);
-                    while (waitHBox.isVisible()) {
-                        hourglass.setRotate(hourglass.getRotate() + 2);
-                        Thread.sleep(11);
-                    }
-                } catch (InterruptedException e) {
-                    System.out.println("Turning Off the hourGlass");
-                } finally {
-                    Thread.currentThread().interrupt();
-                    hourglass.setRotate(0);
-                }
-            });
-            hourglassRotation.start();
-        }
         showXRightHBoxes(0);
         setVisibleOnlyThisNode(waitHBox);
     }
 
+    /**
+     * Receive the event CV_CardChoiceRequestGameEvent and handle the choice of the card for this single user.
+     *
+     * @param event Contains the available cards.
+     */
     public void update(CV_CardChoiceRequestGameEvent event) {
         STATE = "CARD_CHOICE";
         cardToChoose = 1;
@@ -281,8 +447,7 @@ public class PreGameSceneController {
 
         setTitleCenter("CHOOSE YOUR CARD!!");
 
-        ArrayList<CardEnum> allCards = new ArrayList<>();
-        allCards.addAll(event.getAvailableCards());
+        ArrayList<CardEnum> allCards = new ArrayList<>(event.getAvailableCards());
         if (event.getUsedCards() != null) {
             allCards.addAll(event.getUsedCards());
         }
@@ -306,33 +471,41 @@ public class PreGameSceneController {
         setVisibleOnlyThisNode(cardChoiceTilePane);
     }
 
-    private void fillPlayerChoiceCard(VBox vBox, CardEnum card, boolean available) {
-        if (!available) {
-            vBox.setDisable(true);
-            vBox.getStyleClass().clear();
-            StackPane parent = (StackPane) vBox.getParent();
-            parent.getChildren().get(2).setVisible(true);
+    /**
+     * Receive the event CV_ChallengerChooseFirstPlayerRequestEvent and handle the choice of the first player.
+     *
+     * @param event the name of the players and the cards that each one has chosen.
+     */
+    public void update(CV_ChallengerChooseFirstPlayerRequestEvent event) {
+        STATE = "FIRST_PLAYER_CHOICE";
+        showXRightHBoxes(1);
+        firstPlayerUsernameByVBox = new HashMap<>();
+        firstPlayerVBoxByUsername = new HashMap<>();
+        usernamesAvailable = new ArrayList<>();
+        usernamesAvailable.addAll(event.getPlayers());
+        Collections.sort(usernamesAvailable);
+
+        LinkedList<VBox> vBoxes = new LinkedList<>();
+        vBoxes.add(challengerFirstPlayerVBox1);
+        vBoxes.add(challengerFirstPlayerVBox2);
+        vBoxes.add(challengerFirstPlayerVBox3);
+
+        setTitleCenter("CHOOSE THE FIRST PLAYER!!");
+
+        if (usernamesAvailable.size() == 2) {
+            challengerFirstPlayerHBox.getChildren().remove(2);
+            vBoxes.removeLast();
         }
 
-        playerCardMapByVBox.put(vBox, card);
-        playerVBoxMapByCard.put(card, vBox);
+        for (String username : usernamesAvailable) {
+            fillFirstPlayerChoice(vBoxes.remove(), event.cardChosenByPlayer(username), username);
+        }
 
-        ImageView image = (ImageView) vBox.getChildren().get(0);
-        image.setImage(new Image(card.getImgUrl()));
-
-        VBox internalVBox = (VBox) vBox.getChildren().get(1);
-        Text cardName = (Text) internalVBox.getChildren().get(0);
-        Text cardDescription = (Text) internalVBox.getChildren().get(1);
-
-        cardName.setText(card.getName());
-        cardDescription.setText(card.getDescription());
-
-        vBox.setVisible(true);
+        setVisibleOnlyThisNode(challengerFirstPlayerPane);
     }
 
     /**
-     * CHALLENGER
-     * Receive the event CV_ChallengerChosenEvent and handle the choice of the cards
+     * Receive the event CV_ChallengerChosenEvent and handle the choice of the cards.
      *
      * @param event Contains some data like the size of the room.
      */
@@ -341,23 +514,24 @@ public class PreGameSceneController {
         cardToChoose = event.getRoomSize();
         showXRightHBoxes(cardToChoose);
         challengerSelectedCards = new ArrayList<>();
-        System.out.println("You're the chellenger, chose " + event.getRoomSize() + " cards");
         setTitleCenter("YOU ARE THE CHALLENGER!! \tCHOOSE " + event.getRoomSize() + " CARDS");
 
         fillAllChallengerCards();
         showAllChallengerCards();
     }
 
+    /* ----------------------------------------------------------------------------------------------
+                                          CHALLENGER CARDS CHOICE
+       ----------------------------------------------------------------------------------------------*/
+
     /**
-     * CHALLENGER
-     * Set Visible all the Cards
+     * Set Visible all the Challenger Cards
      */
-    public void showAllChallengerCards() {
+    private void showAllChallengerCards() {
         setVisibleOnlyThisNode(challengerScrollPane);
     }
 
     /**
-     * CHALLENGER
      * Fill all the card to show them to the challenger
      */
     private void fillAllChallengerCards() {
@@ -390,8 +564,7 @@ public class PreGameSceneController {
     }
 
     /**
-     * CHALLENGER
-     * Hide remaining card from the actualHBox param
+     * Hide remaining Challenger cards from the actualHBox param
      *
      * @param actualHBox where the method began to hide cards
      */
@@ -404,20 +577,6 @@ public class PreGameSceneController {
     }
 
     /**
-     * CHALLENGER
-     * Delete remaining card from the actualHBox param
-     *
-     * @param actualHBox where the method began to DELETE cards
-     */
-    private void deleteNextCardsHBoxes(int actualHBox) {
-        ObservableList<Node> children = challengerCardsFlowPane.getChildren();
-        while (actualHBox < children.size()) {
-            children.remove(actualHBox);
-        }
-    }
-
-    /**
-     * CHALLENGER
      * Fill one (1) HBox using data collected from CardEnum
      *
      * @param hBox the HBox to fill
@@ -434,79 +593,23 @@ public class PreGameSceneController {
         cardDescription.setText(card.getDescription());
     }
 
-    public void update(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-        STATE = "FIRST_PLAYER_CHOICE";
-        showXRightHBoxes(1);
-        firstPlayerUsernameByVBox = new HashMap<>();
-        firstPlayerVBoxByUsername = new HashMap<>();
-        usernamesAvailable = new ArrayList<>();
-        usernamesAvailable.addAll(event.getPlayers());
-        Collections.sort(usernamesAvailable);
-
-        LinkedList<VBox> vBoxes = new LinkedList<>();
-        vBoxes.add(challengerFirstPlayerVBox1);
-        vBoxes.add(challengerFirstPlayerVBox2);
-        vBoxes.add(challengerFirstPlayerVBox3);
-
-        setTitleCenter("CHOOSE THE FIRST PLAYER!!");
-
-        if (usernamesAvailable.size() == 2) {
-            challengerFirstPlayerHBox.getChildren().remove(2);
-            vBoxes.removeLast();
-        }
-
-        for (String username : usernamesAvailable) {
-            fillFirstPlayerChoice(vBoxes.remove(), event.cardChosenByPlayer(username), username);
-        }
-
-        setVisibleOnlyThisNode(challengerFirstPlayerPane);
-    }
-
-    private void fillFirstPlayerChoice(VBox vBox, CardEnum card, String username) {
-        firstPlayerUsernameByVBox.put(vBox, username.toLowerCase());
-        firstPlayerVBoxByUsername.put(username.toLowerCase(), vBox);
-        firstPlayerCardByName.put(username.toLowerCase(),card);
-
-        ImageView image = (ImageView) vBox.getChildren().get(0);
-        image.setImage(new Image(card.getImgUrl()));
-
-        VBox internalVBox = (VBox) vBox.getChildren().get(1);
-        Text playerName = (Text) internalVBox.getChildren().get(0);
-        playerName.setText(username.toUpperCase());
-
-        vBox.setVisible(true);
-    }
-
-    public void onClickEventConfirmButton() {
-        switch (STATE) {
-            case "CHALLENGER_CARDS_CHOICE":
-                sendChallengerCardsChosenEvent();
-                break;
-            case "CARD_CHOICE":
-                sendPlayerCardsChosenEvent();
-                break;
-            case "FIRST_PLAYER_CHOICE":
-                sendFirstPlayerChosenEvent();
-                break;
-            default:
-                System.out.println("ERROR - CASE NOT YET DEFINED");
+    /**
+     * Delete remaining Challenger cards from the actualHBox param
+     *
+     * @param actualHBox where the method began to DELETE cards
+     */
+    private void deleteNextCardsHBoxes(int actualHBox) {
+        ObservableList<Node> children = challengerCardsFlowPane.getChildren();
+        while (actualHBox < children.size()) {
+            children.remove(actualHBox);
         }
     }
 
-    private void enableConfirmButton() {
-        confirmButton.setDisable(false);
-        StackPane parentPane = (StackPane) confirmButton.getParent();
-        Pane greyPane = (Pane) parentPane.getChildren().get(3);
-        greyPane.setVisible(false);
-    }
-
-    private void disableConfirmButton() {
-        confirmButton.setDisable(true);
-        StackPane parentPane = (StackPane) confirmButton.getParent();
-        Pane greyPane = (Pane) parentPane.getChildren().get(3);
-        greyPane.setVisible(true);
-    }
-
+    /**
+     * Handle the click on a Challenger Card and select the God.
+     *
+     * @param mouseEvent MouseEvent with the source of the event.
+     */
     public void onClickEventChallengerCard(MouseEvent mouseEvent) {
         HBox hBox = (HBox) mouseEvent.getSource();
         CardEnum card = challengerCardMapByHBox.get(hBox);
@@ -529,10 +632,13 @@ public class PreGameSceneController {
                 enableConfirmButton();
             }
         }
-
-        System.out.println("Card clicked: " + card);
     }
 
+    /**
+     * Enable the click on the card.
+     *
+     * @param card Card to enable
+     */
     private void enableChallengerCard(CardEnum card) {
         HBox hBox = challengerHBoxMapByCard.get(card);
         hBox.setDisable(false);
@@ -542,6 +648,11 @@ public class PreGameSceneController {
         greyPane.setVisible(false);
     }
 
+    /**
+     * Disable the click on the card.
+     *
+     * @param card Card to enable
+     */
     private void disableChallengerCard(CardEnum card) {
         HBox hBox = challengerHBoxMapByCard.get(card);
         hBox.setDisable(true);
@@ -551,6 +662,11 @@ public class PreGameSceneController {
         greyPane.setVisible(true);
     }
 
+    /**
+     * Enable the Green Pane behind the selected card.
+     *
+     * @param card card clicked
+     */
     private void enableChallengerCardGreen(CardEnum card) {
         HBox hBox = challengerHBoxMapByCard.get(card);
 
@@ -559,6 +675,11 @@ public class PreGameSceneController {
         greenPane.setVisible(true);
     }
 
+    /**
+     * Disable the Green Pane behind the selected card.
+     *
+     * @param card card clicked
+     */
     private void disableChallengerCardGreen(CardEnum card) {
         HBox hBox = challengerHBoxMapByCard.get(card);
 
@@ -567,6 +688,9 @@ public class PreGameSceneController {
         greenPane.setVisible(false);
     }
 
+    /**
+     * Disable the click on all the not selected cards.
+     */
     private void disableNotSelectedChallengerCards() {
         for (CardEnum card : CardEnum.values()) {
             if (!challengerSelectedCards.contains(card)) {
@@ -575,6 +699,9 @@ public class PreGameSceneController {
         }
     }
 
+    /**
+     * Enable the click on all the not selected cards.
+     */
     private void enableNotSelectedChallengerCards() {
         for (CardEnum card : CardEnum.values()) {
             if (!challengerSelectedCards.contains(card)) {
@@ -583,8 +710,10 @@ public class PreGameSceneController {
         }
     }
 
+    /**
+     * Send the event with the Cards selected by the Challenger
+     */
     private void sendChallengerCardsChosenEvent() {
-        System.out.println("Send challenger card event");
         if (cardToChoose == challengerSelectedCards.size()) {
             VC_ChallengerCardsChosenEvent event = new VC_ChallengerCardsChosenEvent("", challengerSelectedCards);
             gui.getClient().sendEvent(event);
@@ -595,6 +724,46 @@ public class PreGameSceneController {
         }
     }
 
+    /* ----------------------------------------------------------------------------------------------
+                                          PLAYER CARDS CHOICE
+       ----------------------------------------------------------------------------------------------*/
+
+    /**
+     * Fill a single Player Card with all the data.
+     *
+     * @param vBox      VBox to fill
+     * @param card      Card to add and source of data
+     * @param available Boolean value to enable or disable the card
+     */
+    private void fillPlayerChoiceCard(VBox vBox, CardEnum card, boolean available) {
+        if (!available) {
+            vBox.setDisable(true);
+            vBox.getStyleClass().clear();
+            StackPane parent = (StackPane) vBox.getParent();
+            parent.getChildren().get(2).setVisible(true);
+        }
+
+        playerCardMapByVBox.put(vBox, card);
+        playerVBoxMapByCard.put(card, vBox);
+
+        ImageView image = (ImageView) vBox.getChildren().get(0);
+        image.setImage(new Image(card.getImgUrl()));
+
+        VBox internalVBox = (VBox) vBox.getChildren().get(1);
+        Text cardName = (Text) internalVBox.getChildren().get(0);
+        Text cardDescription = (Text) internalVBox.getChildren().get(1);
+
+        cardName.setText(card.getName());
+        cardDescription.setText(card.getDescription());
+
+        vBox.setVisible(true);
+    }
+
+    /**
+     * Handle the click on a Player Card and select the God.
+     *
+     * @param mouseEvent MouseEvent with the source of the event.
+     */
     public void onClickEventPlayerCard(MouseEvent mouseEvent) {
         VBox vBox = (VBox) mouseEvent.getSource();
         CardEnum card = playerCardMapByVBox.get(vBox);
@@ -613,10 +782,13 @@ public class PreGameSceneController {
             disableNotSelectedPlayerCards();
             enableConfirmButton();
         }
-
-        System.out.println("Card clicked: " + card);
     }
 
+    /**
+     * Enable the click on the card.
+     *
+     * @param card Card to enable
+     */
     private void enablePlayerCard(CardEnum card) {
         VBox vBox = playerVBoxMapByCard.get(card);
         vBox.setDisable(false);
@@ -626,6 +798,11 @@ public class PreGameSceneController {
         greyPane.setVisible(false);
     }
 
+    /**
+     * Disable the click on the card.
+     *
+     * @param card Card to enable
+     */
     private void disablePlayerCard(CardEnum card) {
         VBox vBox = playerVBoxMapByCard.get(card);
         vBox.setDisable(true);
@@ -635,6 +812,11 @@ public class PreGameSceneController {
         greyPane.setVisible(true);
     }
 
+    /**
+     * Enable the Green Pane behind the selected card.
+     *
+     * @param card card clicked
+     */
     private void enablePlayerCardGreen(CardEnum card) {
         VBox vBox = playerVBoxMapByCard.get(card);
 
@@ -643,6 +825,11 @@ public class PreGameSceneController {
         greenPane.setVisible(true);
     }
 
+    /**
+     * Disable the Green Pane behind the selected card.
+     *
+     * @param card card clicked
+     */
     private void disablePlayerCardGreen(CardEnum card) {
         VBox vBox = playerVBoxMapByCard.get(card);
 
@@ -651,6 +838,9 @@ public class PreGameSceneController {
         greenPane.setVisible(false);
     }
 
+    /**
+     * Disable the click on all the not selected cards.
+     */
     private void disableNotSelectedPlayerCards() {
         for (CardEnum card : playerAvailableCards) {
             if (!playerSelectedCard.equals(card)) {
@@ -659,6 +849,9 @@ public class PreGameSceneController {
         }
     }
 
+    /**
+     * Enable the click on all the not selected cards.
+     */
     private void enableNotSelectedPlayerCards() {
         for (CardEnum card : playerAvailableCards) {
             if (!playerSelectedCard.equals(card)) {
@@ -667,8 +860,10 @@ public class PreGameSceneController {
         }
     }
 
+    /**
+     * Send the event with the Card selected by the User
+     */
     private void sendPlayerCardsChosenEvent() {
-        System.out.println("Send player choice card event");
         if (playerSelectedCard != null) {
             VC_PlayerCardChosenEvent event = new VC_PlayerCardChosenEvent(gui.getUsername(), playerSelectedCard);
             gui.getClient().sendEvent(event);
@@ -680,6 +875,37 @@ public class PreGameSceneController {
 
     }
 
+    /* ----------------------------------------------------------------------------------------------
+                                          FIRST PLAYER CHOICE
+       ----------------------------------------------------------------------------------------------*/
+
+    /**
+     * Fill the VBox with name and card Image during the First Player Selection
+     *
+     * @param vBox     VBox to fill
+     * @param card     Card chosen by the user
+     * @param username Name of the user
+     */
+    private void fillFirstPlayerChoice(VBox vBox, CardEnum card, String username) {
+        firstPlayerUsernameByVBox.put(vBox, username.toLowerCase());
+        firstPlayerVBoxByUsername.put(username.toLowerCase(), vBox);
+        firstPlayerCardByName.put(username.toLowerCase(), card);
+
+        ImageView image = (ImageView) vBox.getChildren().get(0);
+        image.setImage(new Image(card.getImgUrl()));
+
+        VBox internalVBox = (VBox) vBox.getChildren().get(1);
+        Text playerName = (Text) internalVBox.getChildren().get(0);
+        playerName.setText(username.toUpperCase());
+
+        vBox.setVisible(true);
+    }
+
+    /**
+     * Handle the click on the Name of the First Player and select this player as First Player.
+     *
+     * @param mouseEvent MouseEvent with the source of the event.
+     */
     public void onClickFirsPlayerChoice(MouseEvent mouseEvent) {
         VBox vBox = (VBox) mouseEvent.getSource();
         String username = firstPlayerUsernameByVBox.get(vBox);
@@ -698,10 +924,13 @@ public class PreGameSceneController {
             disableNotSelectedFirstPlayer();
             enableConfirmButton();
         }
-
-        System.out.println("Player clicked: " + username);
     }
 
+    /**
+     * Enable the click on the Player
+     *
+     * @param username Username of the player
+     */
     private void enableFistsPlayer(String username) {
         VBox vBox = firstPlayerVBoxByUsername.get(username.toLowerCase());
         vBox.setDisable(false);
@@ -711,6 +940,11 @@ public class PreGameSceneController {
         greyPane.setVisible(false);
     }
 
+    /**
+     * Disable the click on the Player
+     *
+     * @param username Username of the player
+     */
     private void disableFirstPlayer(String username) {
         VBox vBox = firstPlayerVBoxByUsername.get(username.toLowerCase());
         vBox.setDisable(true);
@@ -720,6 +954,11 @@ public class PreGameSceneController {
         greyPane.setVisible(true);
     }
 
+    /**
+     * Enable the Green Pane behind the selected player.
+     *
+     * @param username Username of the player.
+     */
     private void enableFirstPlayerGreen(String username) {
         VBox vBox = firstPlayerVBoxByUsername.get(username.toLowerCase());
 
@@ -728,6 +967,11 @@ public class PreGameSceneController {
         greenPane.setVisible(true);
     }
 
+    /**
+     * Disable the Green Pane behind the selected player.
+     *
+     * @param username Username of the player.
+     */
     private void disableFirstPlayerGreen(String username) {
         VBox vBox = firstPlayerVBoxByUsername.get(username.toLowerCase());
 
@@ -736,24 +980,32 @@ public class PreGameSceneController {
         greenPane.setVisible(false);
     }
 
+    /**
+     * Disable the click on all the not selected players.
+     */
     private void disableNotSelectedFirstPlayer() {
         for (String username : usernamesAvailable) {
-            if (!firstPlayerSelected.equals(username)) {
+            if (!firstPlayerSelected.equalsIgnoreCase(username)) {
                 disableFirstPlayer(username);
             }
         }
     }
 
+    /**
+     * Enable the click on all the not selected players.
+     */
     private void enableNotSelectedFirstPlayer() {
         for (String username : usernamesAvailable) {
-            if (!firstPlayerSelected.equals(username)) {
+            if (!firstPlayerSelected.equalsIgnoreCase(username)) {
                 enableFistsPlayer(username);
             }
         }
     }
 
+    /**
+     * Send the event with the First Player selected by the Challenger
+     */
     private void sendFirstPlayerChosenEvent() {
-        System.out.println("Send first player choice event");
         if (firstPlayerSelected != null) {
             VC_ChallengerChosenFirstPlayerEvent event = new VC_ChallengerChosenFirstPlayerEvent(firstPlayerSelected);
             gui.getClient().sendEvent(event);
@@ -765,6 +1017,15 @@ public class PreGameSceneController {
 
     }
 
+    /* ----------------------------------------------------------------------------------------------
+                                          PREVIEW HBOXES ON THE RIGHT
+       ----------------------------------------------------------------------------------------------*/
+
+    /**
+     * Enable and show the HBoxes on the right section.
+     *
+     * @param numberOfHBoxesToEnable Number of HBoxes to show
+     */
     private void showXRightHBoxes(int numberOfHBoxesToEnable) {
         rightHBoxes = new ArrayList<>();
         rightHBoxes.add(rightChoiceHBox1);
@@ -781,7 +1042,7 @@ public class PreGameSceneController {
                 index++;
             }
             indexFirstFreeHBox = 0;
-            actualEnableHBox = numberOfHBoxesToEnable;
+            numberActualEnableHBoxes = numberOfHBoxesToEnable;
 
             rightHBoxesMapByCard = new HashMap<>();
             rightHBoxesMapByName = new HashMap<>();
@@ -791,6 +1052,11 @@ public class PreGameSceneController {
         }
     }
 
+    /**
+     * Show the HBox but hide the content.
+     *
+     * @param hBox HBox to show and clean.
+     */
     private void showCleanRightHBox(HBox hBox) {
         hBox.setVisible(true);
         hBox.getChildren().get(0).setVisible(false);
@@ -800,30 +1066,48 @@ public class PreGameSceneController {
         vBox.getChildren().get(1).setVisible(false);
     }
 
+    /**
+     * Hide the HBox and hide the content.
+     *
+     * @param hBox HBox to hide and clean
+     */
     private void hideRightHBox(HBox hBox) {
+        showCleanRightHBox(hBox);
         hBox.setVisible(false);
-        hBox.getChildren().get(0).setVisible(false);
-        hBox.getChildren().get(1).setVisible(false);
-        VBox vBox = (VBox) hBox.getChildren().get(1);
-        vBox.getChildren().get(0).setVisible(false);
-        vBox.getChildren().get(1).setVisible(false);
     }
 
+    /**
+     * Fill with Card Info the first free HBox. It uses the {@code indexFirstFreeHBox} value to find the first free.
+     *
+     * @param card Card to fill
+     */
     private void fillFirstFreeHBox(CardEnum card) {
-        if (indexFirstFreeHBox < actualEnableHBox) {
+        if (indexFirstFreeHBox < numberActualEnableHBoxes) {
             fillFirstFreeHBox(card, card.getName(), card.getDescription());
         }
     }
 
+    /**
+     * Fill with Name Info the first free HBox. It uses the {@code indexFirstFreeHBox} value to find the first free.
+     *
+     * @param name Username to fill
+     */
     private void fillFirstFreeHBox(String name) {
         CardEnum card = firstPlayerCardByName.get(name.toLowerCase());
-        if (indexFirstFreeHBox < actualEnableHBox) {
+        if (indexFirstFreeHBox < numberActualEnableHBoxes) {
             fillFirstFreeHBox(card, name, "");
         }
     }
 
+    /**
+     * Fill with selected first player info. It uses the {@code indexFirstFreeHBox} value to find the first free.
+     *
+     * @param card      Card to get the Image
+     * @param bigText   Big text, usually is the Player's username or the Card Name
+     * @param smallText If set it's use like card description, if is void ("") it's not used
+     */
     private void fillFirstFreeHBox(CardEnum card, String bigText, String smallText) {
-        if (indexFirstFreeHBox < actualEnableHBox) {
+        if (indexFirstFreeHBox < numberActualEnableHBoxes) {
             rightHBoxes = new ArrayList<>();
             rightHBoxes.add(rightChoiceHBox1);
             rightHBoxes.add(rightChoiceHBox2);
@@ -857,6 +1141,9 @@ public class PreGameSceneController {
         }
     }
 
+    /**
+     * Search the first Free HBox and set the value of the index.
+     */
     private void resetIndexFreeHBox() {
         rightHBoxes = new ArrayList<>();
         rightHBoxes.add(rightChoiceHBox1);
@@ -870,9 +1157,15 @@ public class PreGameSceneController {
                 return;
             }
         }
+        //if not found, there's no free HBox
         indexFirstFreeHBox = 3;
     }
 
+    /**
+     * Clean the right HBox using a CardEnum to find the HBox
+     *
+     * @param card Card to clean
+     */
     private void cleanRightHBox(CardEnum card) {
         HBox hBox = rightHBoxesMapByCard.get(card);
         showCleanRightHBox(hBox);
@@ -880,6 +1173,11 @@ public class PreGameSceneController {
         resetIndexFreeHBox();
     }
 
+    /**
+     * Clean the right HBox using the username to find the HBox
+     *
+     * @param name Username of the player
+     */
     private void cleanRightHBox(String name) {
         HBox hBox = rightHBoxesMapByName.get(name.toLowerCase());
         showCleanRightHBox(hBox);
@@ -887,5 +1185,46 @@ public class PreGameSceneController {
         resetIndexFreeHBox();
     }
 
+    /* ----------------------------------------------------------------------------------------------
+                                          CONFIRM BUTTON
+       ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * Handle the click on the confirm Button. The action depends on the actual state of the Class.
+     */
+    public void onClickEventConfirmButton() {
+        switch (STATE) {
+            case "CHALLENGER_CARDS_CHOICE":
+                sendChallengerCardsChosenEvent();
+                break;
+            case "CARD_CHOICE":
+                sendPlayerCardsChosenEvent();
+                break;
+            case "FIRST_PLAYER_CHOICE":
+                sendFirstPlayerChosenEvent();
+                break;
+            default:
+                System.out.println("ERROR - CASE NOT YET DEFINED");
+        }
+    }
+
+    /**
+     * Enable the click on the confirm Button
+     */
+    private void enableConfirmButton() {
+        confirmButton.setDisable(false);
+        StackPane parentPane = (StackPane) confirmButton.getParent();
+        Pane greyPane = (Pane) parentPane.getChildren().get(3);
+        greyPane.setVisible(false);
+    }
+
+    /**
+     * Disable the click on the confirm Button
+     */
+    private void disableConfirmButton() {
+        confirmButton.setDisable(true);
+        StackPane parentPane = (StackPane) confirmButton.getParent();
+        Pane greyPane = (Pane) parentPane.getChildren().get(3);
+        greyPane.setVisible(true);
+    }
 }

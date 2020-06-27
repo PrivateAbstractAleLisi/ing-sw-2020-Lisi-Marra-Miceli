@@ -18,7 +18,7 @@ public class PlayerTest {
     private BoardManager boardManager;
 
     @Before
-    public void setup(){
+    public void setUp(){
         boardManager = new BoardManager();
         player = new Player("matteo", boardManager);
     }
@@ -26,12 +26,13 @@ public class PlayerTest {
     @After
     public void tearDown(){
         player = null;
+        boardManager = null;
     }
 
 
     @Test
     public void getUsername_normalUsername_shouldReturnNormally() {
-        Player player = new Player("matteo");
+        Player player = new Player("matteo", boardManager);
         player.setBoardManager(new BoardManager());
         assertEquals("matteo", player.getUsername());
     }
@@ -47,15 +48,15 @@ public class PlayerTest {
     @Test
     public void setColor_normalColor_shouldReturnNormally() {
         WorkerColors color = WorkerColors.PINK;
-        Player player = new Player("matteo");
+        Player player = new Player("matteo" , boardManager);
         player.setColor(color);
         assertEquals(color, player.getColor());
     }
 
     @Test
     public void getPlayers_normalPlayers_shouldReturnNormally() throws AlreadyExistingPlayerException, LimitExceededException {
-        Player p1 = new Player("gabriele");
-        Player p2= new Player ("alessandro");
+        Player p1 = new Player("gabriele", boardManager);
+        Player p2= new Player ("alessandro", boardManager);
         boardManager.addPlayer(p1);
         boardManager.addPlayer(p2);
         boardManager.addPlayer(player);

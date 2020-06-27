@@ -7,9 +7,9 @@ import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController;
 
 /**
- * Wait State class implementation.
+ * Spectator State class implementation.
  */
-public class WaitGameState implements GameStateAbstract {
+public class SpectatorGameState implements GameStateAbstract {
     /**
      * The {@link BoardSceneController} that created this Object.
      */
@@ -20,65 +20,65 @@ public class WaitGameState implements GameStateAbstract {
      *
      * @param boardSceneController The {@link BoardSceneController} that created this Object.
      */
-    public WaitGameState(BoardSceneController boardSceneController) {
+    public SpectatorGameState(BoardSceneController boardSceneController) {
         this.boardSceneController = boardSceneController;
     }
 
     /**
-     * Display error because it's Wait State.
+     * Display error because it's Spectator State.
      *
      * @param x X Coordinate of the click.
      * @param y Y Coordinate of the click.
      */
     @Override
     public void handleClick(int x, int y) {
-        displayWaitError();
+        displaySpectatorError();
     }
 
     /**
-     * Display error because it's Wait State.
+     * Display error because it's Spectator State.
      *
      * @param buttonPressed {@link TurnAction} of the Button pressed.
      */
     @Override
     public void handleClick(TurnAction buttonPressed) {
-        displayWaitError();
+        displaySpectatorError();
     }
 
     /**
-     * Display error because it's Wait State.
+     * Display error because it's Spectator State.
      *
      * @param blockClicked {@link BlockTypeEnum} of the Button pressed.
      */
     @Override
     public void handleClick(BlockTypeEnum blockClicked) {
-        displayWaitError();
+        displaySpectatorError();
     }
 
     /**
-     * Display error because it's Wait State.
+     * Display error because it's Spectator State.
      *
      * @param event The {@link CV_CommandExecutedGameEvent} received from the server.
      */
     @Override
     public void updateFromServer(CV_CommandExecutedGameEvent event) {
-        displayWaitError();
+        displaySpectatorError();
     }
 
     /**
-     * Display error because it's Wait State.
+     * Display error because it's Spectator State.
      *
      * @param event The {@link CV_CommandRequestEvent} received from the server.
      */
     @Override
     public void updateFromServer(CV_CommandRequestEvent event) {
-        displayWaitError();
+        displaySpectatorError();
     }
 
     /**
-     * Display a Wait State Error with a Popup
+     * Display a Spectator State Error with a Popup
      */
-    private void displayWaitError() {
-        boardSceneController.displayPopupMessage("IT'S NOT YOUR TURN, PLEASE WAIT");
+    private void displaySpectatorError() {
+        boardSceneController.displayPopupMessage("YOU LOST THE GAME - WAIT OR EXIT");
     }
 }

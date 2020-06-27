@@ -4,7 +4,9 @@ import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
-public class CellClusterData {
+import java.io.Serializable;
+
+public class CellClusterData implements Serializable {
 
     private final int[] blocks;
     private final boolean domeOnTop;

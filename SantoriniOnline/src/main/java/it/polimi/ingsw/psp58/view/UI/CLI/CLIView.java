@@ -1,11 +1,16 @@
 package it.polimi.ingsw.psp58.view.UI.CLI;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.psp58.auxiliary.ANSIColors;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.auxiliary.Range;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
+
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
+
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
@@ -18,7 +23,9 @@ import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
+import it.polimi.ingsw.psp58.view.UI.GUI.Message;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +59,7 @@ public class CLIView extends EventSource implements ViewListener {
 
     public void start() {
 
+        boolean notConnected = true;
         if (args != null) {
             for (String currentArgument : args) {
                 switch (currentArgument) {
@@ -76,26 +84,35 @@ public class CLIView extends EventSource implements ViewListener {
 
         //System.out.println("WELCOME, Client Started.");
         CLIView.clearScreen();
+        do {
+            String IP = askIPAddress();
 
-        String IP = askIPAddress();
+            //set up the client
+            client = new SantoriniClient(this, IP, enablePing);
+            try {
+                client.begin();
+                System.out.println("CLIENT: connected ");
 
-        //set up the client
-        client = new SantoriniClient(this, IP, enablePing);
-        client.begin();
+                clearScreen();
+                //MessageUtility.displayTitle();
+                String userProposal = askUsername();
 
-        System.out.println("CLIENT: connected ");
+                //use last userProposal as my username
+                myUsername = userProposal;
 
-        clearScreen();
-        //MessageUtility.displayTitle();
-        String userProposal = askUsername();
+                //try to connect
+                VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
+                this.client.sendEvent(req);
+                new Thread(client).start();
+                notConnected = false;
+            } catch (IOException e) {
+                MessageUtility.displayErrorMessage("Unable to reach the server. Error when opening the socket.");
+                notConnected = true;
+            }
+        } while (notConnected);
 
-        //use last userProposal as my username
-        myUsername = userProposal;
 
-        //try to connect
-        VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);
-        this.client.sendEvent(req);
-        new Thread(client).start();
+
     }
 
     private String askIPAddress() {
@@ -560,6 +577,11 @@ public class CLIView extends EventSource implements ViewListener {
         System.out.println("\n");
     }
 
+    @Override
+    public void handleEvent(CV_SpectatorGameEvent cv_spectatorGameEvent) {
+
+    }
+
 
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
@@ -723,12 +745,10 @@ public class CLIView extends EventSource implements ViewListener {
         return oneToFive.contains(x) && oneToFive.contains(y);
     }
 
-    private void displayIslandUpdateFromJson(String islaJson) {
+    private void displayIslandUpdate(IslandData island) {
         //display island
-        Gson gson = new Gson();
-        final IslandData isla = (IslandData) gson.fromJson(islaJson, IslandData.class);
 
-        IslandUtility temp = new IslandUtility(isla);
+        IslandUtility temp = new IslandUtility(island);
 
         temp.displayIsland();
     }
@@ -737,7 +757,7 @@ public class CLIView extends EventSource implements ViewListener {
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
 
 
-        displayIslandUpdateFromJson(event.getIsland());
+        displayIslandUpdate(event.getIsland());
         String workerFirstOrSecond = null;
         switch (event.getWorkerToPlace()) {
 
@@ -887,7 +907,7 @@ public class CLIView extends EventSource implements ViewListener {
 
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
-        displayIslandUpdateFromJson(event.getNewIsland());
+        displayIslandUpdate(event.getNewIsland());
         System.out.println("");
     }
 

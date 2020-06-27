@@ -1,7 +1,7 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
+import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_RoomSizeResponseGameEvent;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
-import it.polimi.ingsw.psp58.view.UI.GUI.SantoriniAudioPlayer;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,15 +11,20 @@ import javafx.scene.effect.Glow;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.IOException;
-
+/**
+ * Controls the scene of the choice of the room size
+ */
 public class RoomSizeSceneController {
+    /**
+     * Images of the choice between 2 and 3 players
+     */
     @FXML
-    private  ImageView img2, img3;
+    private ImageView img2, img3;
+    /**
+     * The background image of the scene
+     */
     @FXML
-    private  ImageView background;
+    private ImageView background;
 
     private GUI gui;
 
@@ -27,14 +32,19 @@ public class RoomSizeSceneController {
         this.gui = gui;
     }
 
+    /**
+     * Initialize the scene displaying the buttons
+     */
     public void initialize() {
         img2.setVisible(false);
         img3.setVisible(false);
 
         displayButtons();
-
     }
 
+    /**
+     * Displays all the button with a transition
+     */
     public void displayButtons() {
         FadeTransition trans = new FadeTransition();
         trans.setDuration(Duration.millis(666));
@@ -53,34 +63,55 @@ public class RoomSizeSceneController {
         trans.play();
     }
 
-
-
-    //2 player
+    //2-player image settings
+    /**
+     * Called if the user clicks on the image of 2 player and sets the room size to 2 and sends a {@link VC_RoomSizeResponseGameEvent} to the server
+     */
     public void img2OnMouseClicked() {
         choice(2);
     }
 
+    /**
+     * Sets the effect on the mouse entering the 2 player image
+     */
     public void img2OnMouseEntered() {
         img2.setEffect(new Glow());
     }
+
+    /**
+     * Removes the effect on the 2 player image
+     */
     public void img2OnMouseExited() {
         img2.setEffect(null);
     }
 
-    //3 player
+    //3-player image settings
+    /**
+     * Called if the user clicks on the image of 3 player and sets the room size to 3 and sends a {@link VC_RoomSizeResponseGameEvent} to the server
+     */
     public void img3OnMouseClicked() {
         choice(3);
     }
 
+    /**
+     * Sets the effect on the mouse entering the 3 player image
+     */
     public void img3OnMouseEntered() {
         img3.setEffect(new Glow());
     }
+
+    /**
+     * Removes the effect on the 3 player image
+     */
     public void img3OnMouseExited() {
         img3.setEffect(null);
     }
 
 
-
+    /**
+     * Sets the room size to the choice passed as parameter sending a {@link VC_RoomSizeResponseGameEvent} to the server
+     * @param choice the size of the room created by the player
+     */
     private void turnDown(int choice) {
         FadeTransition trans = new FadeTransition();
         trans.setDuration(Duration.millis(666));
@@ -96,46 +127,22 @@ public class RoomSizeSceneController {
 
 
         trans.setOnFinished(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent event) {
                 gui.roomSizeResponse(choice);
             }
         });
-        thunder();
         trans2.play();
         trans.play();
-
-
-
     }
 
-    private void thunder() {
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    SantoriniAudioPlayer player = new SantoriniAudioPlayer();
-                    player.loadSound("src/main/resources/sounds/welcome.wav");
-                    player.play();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (UnsupportedAudioFileException e) {
-                    e.printStackTrace();
-                } catch (LineUnavailableException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        t.start();
-        System.out.println("thunder done");
-    }
+    /**
+     * Sets the room size calling the {@code turnDown} method
+     * @param number
+     */
     private void choice(int number) {
-
         background.setEffect(new Bloom());
         turnDown(number);
-
-
-
     }
 
 
