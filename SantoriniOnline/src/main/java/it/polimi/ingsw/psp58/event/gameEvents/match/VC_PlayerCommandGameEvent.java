@@ -8,6 +8,11 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 import java.util.Arrays;
 
+/**
+ * Event sent by the client to the server reponding to a {@link CV_CommandRequestEvent}.
+ * Contains all the information about the command that the player wants to perform
+ * such as the worker, the action, the position and the optional block to build.
+ */
 public class VC_PlayerCommandGameEvent extends ControllerGameEvent {
 
     public final TurnAction command;
