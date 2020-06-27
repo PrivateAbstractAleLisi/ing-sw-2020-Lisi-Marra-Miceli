@@ -271,11 +271,6 @@ public class PreGameSceneController {
      */
     private ArrayList<String> usernamesAvailable;
 
-    /**
-     * Thread for HourGlassRotation
-     */
-    Thread hourglassRotation;
-
     /* ----------------------------------------------------------------------------------------------
                                           UTILITY AND SETTER METHODS
        ----------------------------------------------------------------------------------------------*/
@@ -299,10 +294,6 @@ public class PreGameSceneController {
         challengerScrollPane.setVisible(false);
         challengerFirstPlayerPane.setVisible(false);
         extWaitHBox.setVisible(false);
-
-        if (!node.equals(waitHBox) && hourglassRotation != null && hourglassRotation.isAlive()) {
-            hourglassRotation.interrupt();
-        }
 
         if (node.equals(cardChoiceTilePane)) {
             cardChoiceTilePane.setVisible(true);
@@ -411,9 +402,6 @@ public class PreGameSceneController {
      * @param event {@link CV_WaitPreMatchGameEvent} event.
      */
     public void update(CV_WaitPreMatchGameEvent event) {
-        if (!extWaitHBox.isVisible() && hourglassRotation != null && hourglassRotation.isAlive()) {
-            hourglassRotation.interrupt();
-        }
         Text waitText = (Text) waitHBox.getChildren().get(0);
         setTitleCenter("Wait your turn");
 
@@ -434,24 +422,6 @@ public class PreGameSceneController {
                 waitText.setText("Please wait");
         }
 
-        if (!extWaitHBox.isVisible()) {
-            hourglassRotation = new Thread(() -> {
-                ImageView hourglass = (ImageView) waitHBox.getChildren().get(1);
-                try {
-                    Thread.sleep(500);
-                    while (waitHBox.isVisible()) {
-                        hourglass.setRotate(hourglass.getRotate() + 2);
-                        Thread.sleep(11);
-                    }
-                } catch (InterruptedException e) {
-                    System.out.println("Turning Off the hourGlass");
-                } finally {
-                    Thread.currentThread().interrupt();
-                    hourglass.setRotate(0);
-                }
-            });
-            hourglassRotation.start();
-        }
         showXRightHBoxes(0);
         setVisibleOnlyThisNode(waitHBox);
     }
