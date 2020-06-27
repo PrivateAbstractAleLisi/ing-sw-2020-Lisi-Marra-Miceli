@@ -13,8 +13,8 @@ import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
-import it.polimi.ingsw.psp58.view.UI.GUI.BoardPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+import it.polimi.ingsw.psp58.view.UI.GUI.Message;
 import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.*;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.exceptions.WorkerLockedException;
 import javafx.application.Platform;
@@ -705,6 +705,33 @@ public class BoardSceneController {
     }
 
     /**
+     * Generates a StackPane containing the information of the {@link CellClusterData} passed as input
+     * @param cellClusterData the {@link CellClusterData} to visualize
+     * @return the stackPane with the information of the cellClusterData
+     */
+    private StackPane generateStackPane(CellClusterData cellClusterData){
+        StackPane stackPane = new StackPane();
+        Pane pane = new Pane();
+        Pane upperPane = new Pane();
+        upperPane.setVisible(false);
+
+        //if there are construction blocks adds the image
+        if (cellClusterData.getBlocks() != null && (cellClusterData.getBlocks().length > 0 || cellClusterData.isDomeOnTop())) {
+            pane.getChildren().add(getBlockImage(cellClusterData));
+        }
+
+        //if there is a worker adds the image
+        if (cellClusterData.getWorkerOnTop() != null) {
+            pane.getChildren().add(getWorkerImage(cellClusterData));
+
+
+        }
+        stackPane.getChildren().addAll(pane, upperPane);
+        stackPane.setOnMouseClicked(this::onClickEventCellCluster);
+        return stackPane;
+    }
+
+    /**
      * This method refresh and update the Island on the screen.
      *
      * @param island An {@link IslandData} with the last update of the island.
@@ -716,24 +743,7 @@ public class BoardSceneController {
             for (int x = 0; x < 5; x++) {
                 for (int y = 0; y < 5; y++) {
                     CellClusterData cellClusterData = island.getCellCluster(x, y);
-                    StackPane stackPane = new StackPane();
-                    Pane pane = new Pane();
-                    Pane upperPane = new Pane();
-                    upperPane.setVisible(false);
-
-                    //if there are construction blocks adds the image
-                    if (cellClusterData.getBlocks() != null && (cellClusterData.getBlocks().length > 0 || cellClusterData.isDomeOnTop())) {
-                        pane.getChildren().add(getBlockImage(cellClusterData));
-                    }
-
-                    //if there is a worker adds the image
-                    if (cellClusterData.getWorkerOnTop() != null) {
-                        pane.getChildren().add(getWorkerImage(cellClusterData));
-
-
-                    }
-                    stackPane.getChildren().addAll(pane, upperPane);
-                    stackPane.setOnMouseClicked(this::onClickEventCellCluster);
+                    StackPane stackPane = generateStackPane(cellClusterData);
 
                     GridPane.setConstraints(stackPane, x, y);
 
@@ -909,7 +919,7 @@ public class BoardSceneController {
      * @param message the message you would like to display
      */
     public void displayPopupMessage(String message) {
-        BoardPopUp.show(message.toUpperCase(), gui.getStage());
+        Message.show(250, 200, message.toUpperCase(), gui.getStage());
     }
 
     /**

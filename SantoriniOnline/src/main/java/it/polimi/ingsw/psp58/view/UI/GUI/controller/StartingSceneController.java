@@ -3,7 +3,6 @@ package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEvent;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
-import it.polimi.ingsw.psp58.view.UI.GUI.ErrorPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -15,20 +14,23 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 
+/**
+ * The controller of the starting scene, the scene where the client creates the connection with the server
+ */
 public class StartingSceneController {
     private GUI gui;
 
     //LOGIN ELEMENTS
     @FXML
-    private TextField ipField = null;
+    private TextField ipField;
     @FXML
-    private TextField userField = null;
+    private TextField userField;
     @FXML
-    private Button connectButton = null;
+    private Button connectButton;
     @FXML
-    private Text loadText = null;
+    private Text loadText;
     @FXML
-    private ProgressBar loadProgress = null;
+    private ProgressBar loadProgress;
 
     @FXML
     private RadioButton localhostButton;
@@ -43,6 +45,10 @@ public class StartingSceneController {
     private String selectedIP;
     private boolean customIP;
 
+    /**
+     *
+     * @throws IOException
+     */
     public void start() throws IOException {
         loadText.setText("");
         loadProgress.setVisible(false);
@@ -58,16 +64,18 @@ public class StartingSceneController {
         versionText.setText("Santorini Online - v." + gui.getGameVersion());
     }
 
-    public void close() {
-        System.exit(1);
-    }
-
+    /**
+     * Disables all the fields for the user input
+     */
     private void disableAllLoginFields() {
         connectButton.setDisable(true);
         ipField.setDisable(true);
         userField.setDisable(true);
     }
 
+    /**
+     * Enables all the fields for the user input
+     */
     public void enableAllLoginFields() {
         connectButton.setDisable(false);
         ipField.setDisable(false);
@@ -75,10 +83,18 @@ public class StartingSceneController {
         loadProgress.setProgress(0);
     }
 
+    /**
+     * Sets the progress bar to complete
+     */
     public void complete() {
         loadProgress.setProgress(1);
     }
 
+    /**
+     * Creates the text that will be set under the progress bar
+     * @param text the string containing the message
+     * @return the message that will be set under the progress bar
+     */
     private String updateLoadText(String text) {
         return "< " + text.toLowerCase() + " >";
     }
@@ -87,6 +103,9 @@ public class StartingSceneController {
         this.gui = gui;
     }
 
+    /**
+     * Called by the click on the connect button, if the information are it sends the {@link VC_ConnectionRequestGameEvent}, otherwise it shows an error message
+     */
     public void onClickEventConnectButton() {
         if (customIP) {
             selectedIP = ipField.getText();
@@ -125,6 +144,11 @@ public class StartingSceneController {
         }
     }
 
+    /**
+     * Initialize the {@link SantoriniClient} and the connection with the server then sends a {@link VC_ConnectionRequestGameEvent} to the server an
+     * @param userProposal the username chosen by the player
+     * @throws IOException if it fails to create and initialize the {@link SantoriniClient} and the connection with the server
+     */
     private void tryConnection(String userProposal) throws IOException {
         //set up the client
         loadText.setText(updateLoadText("establishing connection"));
@@ -137,6 +161,9 @@ public class StartingSceneController {
         new Thread(client).start();
     }
 
+    /**
+     * Sets the ip address to the localhost and disables the {@code ipField}
+     */
     public void onClickLocalhostButton() {
         selectedIP = "127.0.0.1";
         customIP = false;
@@ -146,6 +173,9 @@ public class StartingSceneController {
         customIPButton.selectedProperty().setValue(false);
     }
 
+    /**
+     * Sets the ip address to the online AWS server get by the {@code getOnlineServerIP} from the {@link GUI} class and disables the {@code ipField}
+     */
     public void onClickOnlineServerButton() {
         selectedIP = gui.getOnlineServerIP();
         customIP = false;
@@ -155,6 +185,9 @@ public class StartingSceneController {
         customIPButton.selectedProperty().setValue(false);
     }
 
+    /**
+     * Enables the {@code ipField} for input from the user
+     */
     public void onClickCustomIPButton() {
         selectedIP = "";
         customIP = true;

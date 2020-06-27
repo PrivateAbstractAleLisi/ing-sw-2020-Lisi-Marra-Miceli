@@ -10,6 +10,9 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/**
+ * Controls the ErrorScene for displaying error messages received from the server
+ */
 public class ErrorSceneController {
     @FXML
     private Label messageLabel;
@@ -22,6 +25,9 @@ public class ErrorSceneController {
     @FXML
     private ImageView errorImage;
 
+    /**
+     * Initializes the error scene setting all elements to not visible
+     */
     public void initialize() {
         messageText.setVisible(false);
         errorLabel.setVisible(false);
@@ -29,6 +35,12 @@ public class ErrorSceneController {
         errorImage.setVisible(false);
     }
 
+    /**
+     * Creates the transition on the node passed as arguments
+     * @param n the node on which the transition will be made
+     * @param duration the time duration of the transition
+     * @return the {@link FadeTransition} for the modal error stage
+     */
     private FadeTransition transitionOnNode(Node n, float duration) {
         FadeTransition trans = new FadeTransition();
         trans.setDuration(Duration.millis(duration));
@@ -38,6 +50,9 @@ public class ErrorSceneController {
         return trans;
     }
 
+    /**
+     * Displays all the info of the error message with the transition
+     */
     public void displayAndArm() {
         FadeTransition trans1 = transitionOnNode(errorLabel, 400);
         FadeTransition trans2 = transitionOnNode(errorImage, 400);
@@ -60,6 +75,10 @@ public class ErrorSceneController {
 
     }
 
+    /**
+     * Sets the message string to display
+     * @param msg the string of the message
+     */
     public void setMessageText(String msg) {
         messageText.setText(msg);
     }

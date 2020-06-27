@@ -4,23 +4,29 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+/**
+ * Used to diplay message
+ */
 public class Message {
 
-    public static void show(String message, Stage parentStage) {
+    /**
+     * Displays a PopUp message with a modal stage
+     * @param x the width of the modal stage
+     * @param y the height of the modal stage
+     * @param message the string containing the message to display
+     * @param parentStage the stage that this modal stage will overlap
+     */
+    public static void show(int x, int y, String message, Stage parentStage) {
 
         Stage stage = new Stage();
 
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setMinWidth(250);
-        stage.setMinHeight(100);
+        stage.setMinWidth(x);
+        stage.setMinHeight(y);
 
         Label label = new Label(message);
 
@@ -39,46 +45,5 @@ public class Message {
         stage.setScene(scene);
         stage.initOwner(parentStage);
         stage.showAndWait();
-    }
-
-
-
-    public static int askRoomSize(String message, Stage parentStage){
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setMinWidth(250);
-        stage.setMinHeight(100);
-        stage.initStyle(StageStyle.UNDECORATED);
-
-        AtomicInteger number = new AtomicInteger();
-
-        Label label = new Label(message);
-
-        HBox vBox = new HBox(15);
-
-        Button button1 = new Button("2");
-        Button button2 = new Button("3");
-
-
-        button1.setOnAction(event -> {
-            number.set(2);
-            stage.close();
-        });
-
-        button2.setOnAction(event -> {
-            number.set(3);
-            stage.close();
-        });
-
-        vBox.getChildren().addAll(label,button1, button2);
-
-        vBox.setAlignment(Pos.CENTER);
-
-        Scene scene = new Scene(vBox);
-        stage.setScene(scene);
-        stage.initOwner(parentStage);
-        stage.showAndWait();
-
-        return number.get();
     }
 }
