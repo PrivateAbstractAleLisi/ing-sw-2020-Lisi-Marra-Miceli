@@ -10,6 +10,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEve
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
+
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
@@ -19,17 +20,17 @@ import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
+import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
 import it.polimi.ingsw.psp58.view.UI.GUI.Message;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static it.polimi.ingsw.psp58.auxiliary.ANSIColors.*;
 
 public class CLIView extends EventSource implements ViewListener {
 
@@ -38,8 +39,12 @@ public class CLIView extends EventSource implements ViewListener {
     private Scanner input;
     private SantoriniClient client;
     private String myUsername;
+    private CardEnum myCard;
+    private WorkerColors myColor;
     private String[] args;
     private boolean enablePing=true;
+    private Map<String, CardEnum> opponentsCard;
+    private Map<String, WorkerColors> playersColor;
 
     public CLIView(String[] args) {
         this.output = System.out;
@@ -524,14 +529,30 @@ public class CLIView extends EventSource implements ViewListener {
     waiting both because of the challenger or because of other players choice is made
      */
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        clearScreen();
-        System.out.println("⌛   WAITING   ⌛");
-        System.out.println(event.getActingPlayer().toUpperCase() + " " + event.getEventDescription());
+        if(!event.getActingPlayer().equals(myUsername)){
+            clearScreen();
+            System.out.println("⌛   WAITING   ⌛");
+            System.out.println(event.getActingPlayer().toUpperCase() + " " + event.getEventDescription());
+        }
     }
 
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
-
+        this.playersColor=event.getPlayerWorkerColors();
+        for (Map.Entry<String, WorkerColors> entry : event.getPlayerWorkerColors().entrySet()){
+            if (entry.getKey().equals(myUsername)){
+                myColor= entry.getValue();
+            }
+        }
+        opponentsCard = new HashMap<>();
+        for (Map.Entry<String, CardEnum> entry : event.getTurnSequence().entrySet()){
+            if (!entry.getKey().equals(myUsername)){
+                opponentsCard.put(entry.getKey(), entry.getValue());
+            }
+            else{
+                myCard = entry.getValue();
+            }
+        }
     }
 
     @Override
@@ -541,13 +562,19 @@ public class CLIView extends EventSource implements ViewListener {
 
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
-        System.out.println("\n⌛   WAITING   ⌛");
-        System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
+        if(!event.getActingPlayer().equals(myUsername)){
+            System.out.println("\n⌛   WAITING   ⌛");
+            System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
+            printOpponentsInfo();
+        }
     }
 
     @Override
-    public void handleEvent(CV_TurnInfoEvent CVTurnInfoEvent) {
-
+    public void handleEvent(CV_TurnInfoEvent event) {
+        System.out.println("Available moves: "+ event.getMovementsRemaining());
+        System.out.println("Available build: "+ event.getBuildRemaining());
+        System.out.println("Can climb: "+ event.getCanClimb());
+        System.out.println("\n");
     }
 
     @Override
@@ -657,7 +684,7 @@ public class CLIView extends EventSource implements ViewListener {
                     block = null;
                 }
 
-                com = new Command(command, row, column, id, block);
+                com = new Command(command, column, row, id, block);
                 boolean isCommandValid = com.extract();
 
 
@@ -666,11 +693,10 @@ public class CLIView extends EventSource implements ViewListener {
                     if (checkCellInput(com.getFRow(), com.getFColumn())) {
                         keepAsking = false;
                         request = new VC_PlayerCommandGameEvent("action request",
-                                com.getFAction(), event.getActingPlayer(), new int[]{com.getFRow() - 1, com.getFColumn() - 1},
+                                com.getFAction(), event.getActingPlayer(), new int[]{com.getFColumn() - 1, com.getFRow() - 1},
                                 com.getFWorker(), com.getFBlock());
                         client.sendEvent(request);
                     } else {
-
                         MessageUtility.displayErrorMessage("invalid row or column");
                     }
                 } else {
@@ -748,16 +774,19 @@ public class CLIView extends EventSource implements ViewListener {
         int x, y;
         System.out.println("It's your turn to place your " + workerFirstOrSecond + " worker");
         System.out.print("Please enter a row:\t");
-        x = askIntToUser();
-        System.out.print("\tand a column:\t");
         y = askIntToUser();
+        System.out.print("\tand a column:\t");
+        x = askIntToUser();
+
 
         while (!checkCellInput(x, y)) {
             MessageUtility.displayErrorMessage("Invalid row or column");
             System.out.print("Please enter a row:\t");
-            x = askIntToUser();
-            System.out.print("\tand a column:\t");
             y = askIntToUser();
+            System.out.print("\tand a column:\t");
+            x = askIntToUser();
+
+
 
         }
 
@@ -807,16 +836,56 @@ public class CLIView extends EventSource implements ViewListener {
         }
         String currentPlayerUsername = event.getTurnRotation().get(0);
 
-        boolean yourTurn = yourUsername.toLowerCase().equals(currentPlayerUsername.toLowerCase());
+        boolean yourTurn = yourUsername.equalsIgnoreCase(currentPlayerUsername);
         clearScreen();
         System.out.println("GAME:");
         printTurnSequence(event);
 
         if (yourTurn) {
-            System.out.println("\nIt's your turn.");
+            System.out.println("\nIt's your turn. \n");
+            printMyInfo();
+            printOpponentsInfo();
         }
 
+    }
 
+    public void printMyInfo(){
+        switch(myColor){
+            case BLUE:
+                System.out.println("Your"+  BLUE_BRIGHT + " color" + ANSI_RESET);
+                break;
+            case PINK:
+                System.out.println("Your"  + MAGENTA_BRIGHT + " color" + ANSI_RESET);
+                break;
+            case ORANGE:
+                System.out.println("Your"  + RED_BRIGHT + " color" + ANSI_RESET);
+                break;
+        }
+        System.out.println("YOUR CARD: " + myCard.getName().toUpperCase());
+        System.out.println("\t" + myCard.getDescription());
+    }
+
+    private void printOpponentsInfo(){
+        for (Map.Entry<String, CardEnum> player : opponentsCard.entrySet()) {
+            System.out.println("OPPONENTS: ");
+            for (Map.Entry<String, WorkerColors> p : playersColor.entrySet()) {
+                if(p.getKey().equals(player.getKey())){
+                    switch(p.getValue()){
+                        case BLUE:
+                            System.out.println("- " + player.getKey().toUpperCase() + BLUE_BRIGHT + " (color)" + ANSI_RESET);
+                            break;
+                        case PINK:
+                            System.out.println("- " +  player.getKey().toUpperCase() + MAGENTA_BRIGHT + " (color)" + ANSI_RESET);
+                            break;
+                        case ORANGE:
+                            System.out.println("- " + player.getKey().toUpperCase() + RED_BRIGHT + " (color)" + ANSI_RESET);
+                            break;
+                    }
+                }
+            }
+            System.out.println("\tCard: " + player.getValue().getName().toUpperCase());
+            System.out.println("\t" + player.getValue().getDescription() + "\n");
+        }
     }
 
 
@@ -831,7 +900,7 @@ public class CLIView extends EventSource implements ViewListener {
                 System.out.print(ANSIColors.GREEN_UNDERLINED + s.toUpperCase() + ANSIColors.ANSI_RESET);
             } else {
                 System.out.print(" <<< ");
-                System.out.print(ANSIColors.ANSI_RESET + s.toUpperCase() + ANSIColors.ANSI_RESET);
+                System.out.print(ANSIColors.ANSI_RESET + s.toUpperCase() + ANSIColors.ANSI_RESET + "\n");
             }
         }
     }

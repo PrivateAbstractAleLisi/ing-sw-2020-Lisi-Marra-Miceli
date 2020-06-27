@@ -63,6 +63,7 @@ public class ANSIColors {
     public static final String PURPLE_BRIGHT = "\033[0;95m"; // PURPLE
     public static final String CYAN_BRIGHT = "\033[0;96m";   // CYAN
     public static final String WHITE_BRIGHT = "\033[0;97m";  // WHITE
+    public static final String MAGENTA_BRIGHT = "\033[0;95m"; //MAGENTA
 
     // Bold High Intensity
     public static final String BLACK_BOLD_BRIGHT = "\033[1;90m"; // BLACK
