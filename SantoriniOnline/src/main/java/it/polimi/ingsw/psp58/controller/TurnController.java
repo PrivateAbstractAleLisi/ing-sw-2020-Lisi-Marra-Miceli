@@ -4,7 +4,6 @@ import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerCardsChosenEvent;
@@ -71,7 +70,10 @@ public class TurnController extends EventSource implements ControllerListener {
     public void checkIfThereIsChronus() {
         this.thereIsChronus = false;
         for (Player player : turnSequence.values()) {
-            if (player.getCard().getName() == CardEnum.CHRONUS) this.thereIsChronus = true;
+            if (player.getCard().getName() == CardEnum.CHRONUS) {
+                this.thereIsChronus = true;
+                break;
+            }
         }
     }
 
@@ -448,7 +450,7 @@ public class TurnController extends EventSource implements ControllerListener {
         List<Player> players = getPlayersSequenceAsList();
         Player playerToRemove = board.getPlayer(usernameToRemove);
         players.remove(playerToRemove);
-        Map<Integer, Player> newTurnSequence = new HashMap<Integer, Player>();
+        Map<Integer, Player> newTurnSequence = new HashMap<>();
 
         for (int i = 0; i < players.size(); i++) {
             newTurnSequence.put(i, players.get(i));
@@ -473,9 +475,9 @@ public class TurnController extends EventSource implements ControllerListener {
     }
 
     /**
-     * @param player
-     * @author: alelisi
-     * invoked by the virtual it.polimi.ingsw.sp58.view when a next turn it.polimi.ingsw.sp58.event is called
+     * invoked by the virtual view when a next turn event is called
+     * @param player player that is requiring the next turn
+     *
      */
     private void invokeNextTurn(Player player) {
         //checks if the player requesting next turn is the one that is playing the turn
@@ -506,7 +508,6 @@ public class TurnController extends EventSource implements ControllerListener {
     }
 
     /**
-     *
      * @param worker the worker to check if is the same of the one used before, if the player has already made a move
      * @return true if the worker passed as argument is the worker used in the prior moves, false if is different or if it is the first move of the turn
      */
@@ -516,12 +517,13 @@ public class TurnController extends EventSource implements ControllerListener {
 
     /**
      * Performs the actual move. sends a {@link CV_CommandExecutedGameEvent} and the next {@link CV_CommandRequestEvent} calling the {@code sendCommandRequest} method
+     *
      * @param player the player that makes the move
      * @param worker the worker he his using to make this move
-     * @param x the x position where the player wants to move
-     * @param y the y position where the player wants to move
+     * @param x      the x position where the player wants to move
+     * @param y      the y position where the player wants to move
      * @throws InvalidMovementException if the player can't perform that move
-     * @throws WinningException if the player has won
+     * @throws WinningException         if the player has won
      */
     private void performMove(Player player, Worker worker, int x, int y) throws InvalidMovementException, WinningException {
         player.getCard().move(worker, x, y, board.getIsland());
@@ -538,10 +540,11 @@ public class TurnController extends EventSource implements ControllerListener {
 
     /**
      * Checks if the player can actually move and if he calls the {@code performMove} method, otherwise sends an {@link CV_GameErrorGameEvent}
+     *
      * @param player the player that makes the move
      * @param worker the worker he his using to make this move
-     * @param x the x position where the player wants to move
-     * @param y the y position where the player wants to move
+     * @param x      the x position where the player wants to move
+     * @param y      the y position where the player wants to move
      */
     private void invokeMovement(Player player, Worker worker, int x, int y) {
 
@@ -576,11 +579,12 @@ public class TurnController extends EventSource implements ControllerListener {
 
     /**
      * Performs the actual build
+     *
      * @param player the player that makes the build
      * @param worker the worker he his using to make this build
-     * @param block the blockTypeEnum that the player wants to build
-     * @param x the x position where the player wants to build
-     * @param y the y position where the player wants to build
+     * @param block  the blockTypeEnum that the player wants to build
+     * @param x      the x position where the player wants to build
+     * @param y      the y position where the player wants to build
      */
     private void performBuild(Player player, Worker worker, BlockTypeEnum block, int x, int y) {
         try {
@@ -619,11 +623,12 @@ public class TurnController extends EventSource implements ControllerListener {
 
     /**
      * Checks if the player can actually build and if he can calls the {@code performBuild} method, otherwise sends an {@link CV_GameErrorGameEvent}
+     *
      * @param player the player that makes the build
      * @param worker the worker he his using to make this build
-     * @param block the blockTypeEnum that the player wants to build
-     * @param x the x position where the player wants to build
-     * @param y the y position where the player wants to build
+     * @param block  the blockTypeEnum that the player wants to build
+     * @param x      the x position where the player wants to build
+     * @param y      the y position where the player wants to build
      */
     private void invokeBuild(Player player, Worker worker, BlockTypeEnum block, int x, int y) {
         if (checkIsHisTurn(player)) {
@@ -640,7 +645,7 @@ public class TurnController extends EventSource implements ControllerListener {
     }
 
     /**
-     * checks if both movement and build are unavailable for choosen worker
+     * checks if both movement and build are unavailable for chosen worker
      *
      * @param workerChosen the worker you started the turn with
      * @return true if your choosen worker can't completely move or build
@@ -656,6 +661,7 @@ public class TurnController extends EventSource implements ControllerListener {
 
     /**
      * Checks the block to build and calls the {@code invokeBuild} if it is possible, sends error messages otherwise
+     *
      * @param event the {@link VC_PlayerCommandGameEvent} just arrived from the acting player of the turn
      */
     private void checkBuildCorrectness(VC_PlayerCommandGameEvent event) {
@@ -681,12 +687,13 @@ public class TurnController extends EventSource implements ControllerListener {
         }
     }
 
-    @Override
     /**
      * Parses the {@link VC_PlayerCommandGameEvent} just received by the client, checks his correctness and eventually performs the action.
      * Sends error messages otherwise.
+     *
      * @param event the event containing the command to compute
      */
+    @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
         printLogMessage("New Command from " + event.getFromPlayer().toUpperCase() + " -> " + event.toStringSmall());
 
@@ -753,7 +760,7 @@ public class TurnController extends EventSource implements ControllerListener {
     }
 
     /**
-     * Print in the Server console Error Stream an Errror Log from the current Class
+     * Print in the Server console Error Stream an Error Log from the current Class
      *
      * @param messageToPrint a {@link String} with the message to print
      */
@@ -763,77 +770,76 @@ public class TurnController extends EventSource implements ControllerListener {
 
     //NOT IMPLEMENTED
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         /* TurnController doesn't have to implement this handleEvent*/
     }
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_NewGameResponseEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
-
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(CC_ConnectionRequestGameEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(CC_NewGameResponseEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_PlayerCardChosenEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
         /* This class has not to implement this handleEvent*/
     }

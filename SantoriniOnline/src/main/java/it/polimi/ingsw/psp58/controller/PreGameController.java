@@ -27,13 +27,13 @@ import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
  * the placement of the workers, and choice of the first player. Then it lets start the actual game.
  */
 public class PreGameController extends EventSource implements ControllerListener {
-    private BoardManager boardManager;
+    private final BoardManager boardManager;
     private String challenger;
-    private Room room;
-    private Map<String, CardEnum> playersCardsCorrespondence;
+    private final Room room;
+    private final Map<String, CardEnum> playersCardsCorrespondence;
     private List<CardEnum> availableCards;
-    ArrayList<CardEnum> alreadyTakenCards;
-    private Map<Integer, Player> turnSequence;
+    private final ArrayList<CardEnum> alreadyTakenCards;
+    private final Map<Integer, Player> turnSequence;
     private int currentTurnIndex;
 
     public PreGameController(BoardManager boardManager, Room room) {
@@ -47,7 +47,6 @@ public class PreGameController extends EventSource implements ControllerListener
 
     /**
      * Method called by {@link Room} to initialize some information, sets the colors of the players and calls the {@code chooseChallenger} method
-     *
      */
     public void start() {
         printLogMessage("Pregame started");
@@ -56,7 +55,6 @@ public class PreGameController extends EventSource implements ControllerListener
     }
 
     /**
-     *
      * @return the name of the {@code challenger}
      */
     public String getChallenger() {
@@ -73,7 +71,7 @@ public class PreGameController extends EventSource implements ControllerListener
         List<String> players = room.getActiveUsers();
         challenger = players.get(number);
 
-        CV_PreGameStartedGameEvent preGameStartedGameEvent = new CV_PreGameStartedGameEvent("",challenger,players);
+        CV_PreGameStartedGameEvent preGameStartedGameEvent = new CV_PreGameStartedGameEvent("", challenger, players);
         notifyAllObserverByType(VIEW, preGameStartedGameEvent);
 
         for (String recipient : players) {
@@ -89,7 +87,6 @@ public class PreGameController extends EventSource implements ControllerListener
     }
 
     /**
-     *
      * @return a map of the correspondence of the player and the cards that they chosen
      */
     public Map<String, CardEnum> getPlayersCardsCorrespondence() {
@@ -97,7 +94,6 @@ public class PreGameController extends EventSource implements ControllerListener
     }
 
     /**
-     *
      * @return a map of the turn sequence
      */
     public Map<Integer, Player> getTurnSequence() {
@@ -136,10 +132,10 @@ public class PreGameController extends EventSource implements ControllerListener
         return players;
     }
 
-    @Override
     /**
      * Handles the event of the cards chosen by the challenger and sends a {@link CV_CardChoiceRequestGameEvent} to the player that has to choose a card
      */
+    @Override
     public void handleEvent(VC_ChallengerCardsChosenEvent event) {
         availableCards = event.getCardsChosen();
         for (CardEnum card : availableCards) {
@@ -180,11 +176,11 @@ public class PreGameController extends EventSource implements ControllerListener
         notifyAllObserverByType(VIEW, requestEvent);
     }
 
-    @Override
     /**
      * Handles the event of choice of a card from one player and if there is a next player that has to choose sends a new {@link CV_CardChoiceRequestGameEvent} to him,
      * else calls {@code challengerChooseFirstPlayer} to let the {@code challenger} choose the player that has to start
      */
+    @Override
     public void handleEvent(VC_PlayerCardChosenEvent event) {
         try {
             boardManager.takeCard(event.getCard());
@@ -208,7 +204,7 @@ public class PreGameController extends EventSource implements ControllerListener
                         notifyAllObserverByType(VIEW, requestEvent);
                     }
                 }
-                //send the it.polimi.ingsw.sp58.event to the next player that has to choose the card
+                //send the event to the next player that has to choose the card
                 CV_CardChoiceRequestGameEvent requestEvent = new CV_CardChoiceRequestGameEvent("Choose one card from the list", availableCards, alreadyTakenCards, players.get(indexOfNextChoosingPlayer));
                 notifyAllObserverByType(VIEW, requestEvent);
             } else { // there are no more cards remaining
@@ -224,7 +220,7 @@ public class PreGameController extends EventSource implements ControllerListener
     }
 
     /**
-     * Sends to the {@code challenger} a {@link CV_ChallengerChooseFirstPlayerRequestEvent} to let him choose the firt player
+     * Sends to the {@code challenger} a {@link CV_ChallengerChooseFirstPlayerRequestEvent} to let him choose the first player
      */
     public void challengerChooseFirstPlayer() {
         List<String> players = room.getActiveUsers();
@@ -239,10 +235,10 @@ public class PreGameController extends EventSource implements ControllerListener
         notifyAllObserverByType(VIEW, requestEvent);
     }
 
-    @Override
     /**
      * Handles the event of the {@code challenger} that has choose the player that has to start the turn. Then sets the {@code turnSequence} based on the choice and calls the {@code askPlaceFirstWorkerForCurrentUser} method
      */
+    @Override
     public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
         String firstPlayer = event.getUsername();
         int turnSequenceIndex = 0;
@@ -325,13 +321,12 @@ public class PreGameController extends EventSource implements ControllerListener
     }
 
     /**
-     * This method is called by handleEvent(VC_PlayerPlacedWorkerEvent it.polimi.ingsw.sp58.event) to place the worker
+     * This method is called by handleEvent(VC_PlayerPlacedWorkerEvent event) to place the worker
      *
-     * @param event
-     * @throws InvalidMovementException
-     * @throws CloneNotSupportedException
+     * @param event event with info about the placement
+     * @throws InvalidMovementException The placement isn't valid
      */
-    public void placeInvoke(VC_PlayerPlacedWorkerEvent event) throws InvalidMovementException, CloneNotSupportedException {
+    public void placeInvoke(VC_PlayerPlacedWorkerEvent event) throws InvalidMovementException {
         Player actingPlayer = boardManager.getPlayer(event.getActingPlayer());
         Worker worker = actingPlayer.getWorker(event.getId());
         int x = event.getPosX();
@@ -350,6 +345,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
     /**
      * Sends a {@link CV_IslandUpdateEvent} to the recipient. If there is no recipient sends it to all
+     *
      * @param recipient the recipient to which the island update has to be send
      */
     public void sendIslandUpdate(String recipient) {
@@ -364,7 +360,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
     /**
      * this method handle the VC_PlayerPlacedWorkerEvent.
-     * if the worker placed is the IDs.A it sends an it.polimi.ingsw.sp58.event asking for the placement of IDs.B worker to the same player
+     * if the worker placed is the IDs.A it sends an event asking for the placement of IDs.B worker to the same player
      * if the worker placed is the IDs.B the method increment the currentTurnIndex and call askPlaceFirstWorkerForCurrentUser()
      *
      * @param event the event containing the info of the placement of the worker
@@ -406,9 +402,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
             CV_PlayerPlaceWorkerRequestEvent requestEvent = new CV_PlayerPlaceWorkerRequestEvent("", event.getActingPlayer(), getCurrentIsland(), event.getId());
             notifyAllObserverByType(VIEW, requestEvent);
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException();
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             CV_PreGameErrorGameEvent errorEvent = new CV_PreGameErrorGameEvent("Worker not found", event.getActingPlayer());
             notifyAllObserverByType(VIEW, errorEvent);
 
@@ -438,52 +432,52 @@ public class PreGameController extends EventSource implements ControllerListener
     }
 
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_RoomSizeResponseGameEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_NewGameResponseEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_PlayerCommandGameEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(VC_ConnectionRequestGameEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(CC_ConnectionRequestGameEvent event) {
         /* This class has not to implement this handleEvent*/
     }
 
-    @Override
     /**
      * Not implemented handle of the event
      */
+    @Override
     public void handleEvent(CC_NewGameResponseEvent event) {
         /* This class has not to implement this handleEvent*/
     }
