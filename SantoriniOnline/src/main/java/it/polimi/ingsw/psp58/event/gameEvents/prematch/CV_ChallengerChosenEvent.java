@@ -4,7 +4,8 @@ import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 /**
- * notifies to a client that he's the challenger -> it triggers a method to pick 3 cards
+ * Event sent by the controller to the client when the challenger has to choose the cards.
+ * Contains the room size that will be the number of the cards that the challenger has to choose.
  */
 public class CV_ChallengerChosenEvent extends ViewGameEvent {
 

@@ -7,7 +7,8 @@ import it.polimi.ingsw.psp58.model.CardEnum;
 import java.util.List;
 
 /**
- * sent by the challenger client it.polimi.ingsw.sp58.view to the Server when a choice of 2 or 3 cards has been made
+ * Event sent by the client to the server when the challenger has chosen the cards.
+ * Contains the list of the cards chosen by the challenger.
  */
 public class VC_ChallengerCardsChosenEvent extends ControllerGameEvent {
     private List<CardEnum> cardsChosen;

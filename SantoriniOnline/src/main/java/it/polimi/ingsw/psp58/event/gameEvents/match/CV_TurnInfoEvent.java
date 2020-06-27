@@ -3,6 +3,9 @@ package it.polimi.ingsw.psp58.event.gameEvents.match;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
+/**
+ * Event sent by the controller to the player of the turn containing the info about what actions he has remaining in this turn.
+ */
 public class CV_TurnInfoEvent extends ViewGameEvent {
     private final int movementsRemaining;
     private final int buildRemaining;

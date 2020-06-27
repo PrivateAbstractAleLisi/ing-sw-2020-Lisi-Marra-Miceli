@@ -7,6 +7,9 @@ import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerChosenFirstP
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerCardChosenEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEvent;
 
+/**
+ * Interface implemented by classes of the controller that need to handle the events sent by the client
+ */
 public interface ControllerListener extends EventListener {
 
     //LOBBY EVENT

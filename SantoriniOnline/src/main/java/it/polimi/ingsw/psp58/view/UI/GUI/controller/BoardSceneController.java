@@ -203,7 +203,7 @@ public class BoardSceneController {
 
         resetWorkerStatus();
 
-        setUpPlayersCardsCorrespondence(event.getTurnSequence(), event.getPlayerWorkerColors());
+        setUpPlayersCardsCorrespondence(event.getPlayersCardsCorrespondence(), event.getPlayerWorkerColors());
 
         messagesQueue = new LinkedList<>();
     }

@@ -5,7 +5,8 @@ import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.model.CardEnum;
 
 /**
- * By View to it.polimi.ingsw.sp58.controller, sent when the current player has chosen the card to play with
+ * Event sent by the client to the server responding to a {@link CV_CardChoiceRequestGameEvent} when the player has to choose his card.
+ * Contains the card chosen by the player.
  */
 public class VC_PlayerCardChosenEvent extends ControllerGameEvent {
     private CardEnum card;

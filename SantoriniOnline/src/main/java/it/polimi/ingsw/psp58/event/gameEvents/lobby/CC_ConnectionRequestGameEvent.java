@@ -6,6 +6,10 @@ import it.polimi.ingsw.psp58.view.VirtualView;
 
 import java.net.InetAddress;
 
+/**
+ * Event sent by the {@link VirtualView} to the Controller to make a connection request for a player.
+ * Contains the username of the player, port, ip address and the virtualview reference.
+ */
 public class CC_ConnectionRequestGameEvent extends ControllerGameEvent {
 
     private final InetAddress userIP;

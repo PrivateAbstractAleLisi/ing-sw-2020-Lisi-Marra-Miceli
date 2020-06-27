@@ -5,6 +5,10 @@ import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 import java.util.List;
 
+/**
+ * Event sent by the controller to the client when a new turn begins.
+ * Contains the turn rotation and the username of the player that has to perform an action.
+ */
 public class CV_NewTurnEvent extends ViewGameEvent {
     private final String currentPlayer;
     private final List<String> turnRotation;
