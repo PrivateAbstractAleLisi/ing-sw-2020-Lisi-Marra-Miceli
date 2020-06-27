@@ -81,11 +81,11 @@ public class Command {
     }
 
     public int getFRow() {
-        return fx;
+        return fy;
     }
 
     public int getFColumn() {
-        return fy;
+        return fx;
     }
 
     public Worker.IDs getFWorker() {
