@@ -4,6 +4,9 @@ import it.polimi.ingsw.psp58.model.Card;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.Player;
 
+/**
+ * Artemis Card implementation.
+ */
 public class Atlas extends Card {
     public Atlas(Player player) {
         super(player);
@@ -11,7 +14,7 @@ public class Atlas extends Card {
     }
 
     /**
-     * Reset the {@code behaviour} of the {@link Player} to the default value of the card, some Gods need to override this method
+     * Reset the {@code behaviour} of the {@link Player} to the default value of the card and set true the {@code setCanBuildDomeEverywhere} behaviour.
      */
     @Override
     public void resetBehaviour() {

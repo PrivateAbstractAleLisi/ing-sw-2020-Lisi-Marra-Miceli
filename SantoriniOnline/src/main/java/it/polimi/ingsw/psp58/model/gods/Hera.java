@@ -6,6 +6,9 @@ import it.polimi.ingsw.psp58.model.Player;
 
 import java.util.List;
 
+/**
+ * Hera Card implementation.
+ */
 public class Hera extends Card {
 
     public Hera(Player p) {
@@ -13,6 +16,9 @@ public class Hera extends Card {
         name = CardEnum.HERA;
     }
 
+    /**
+     * Reset the {@code behaviour} of the {@link Player} to the default value of the card and set to false the {@code setCanWinOnPerimeterCell} behaviour for other players.
+     */
     @Override
     public void resetBehaviour() {
         super.resetBehaviour();
