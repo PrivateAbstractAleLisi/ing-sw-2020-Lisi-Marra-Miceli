@@ -32,17 +32,26 @@ import java.util.concurrent.TimeUnit;
 
 import static it.polimi.ingsw.psp58.auxiliary.ANSIColors.*;
 
+/**
+ * CLI version of the MVC View, it handles incoming events, displays messages, reads input, and sends events as an EventSource.
+ */
 public class CLIView extends EventSource implements ViewListener {
 
     //IN-OUT DATA FROM CONSOLE
     private PrintStream output;
     private Scanner input;
     private SantoriniClient client;
+    /**
+     * keeps a local copy of the last (valid) username
+     */
     private String myUsername;
+    /**
+     * local copy of the game card this client is playing
+     */
     private CardEnum myCard;
     private WorkerColors myColor;
     private String[] args;
-    private boolean enablePing=true;
+    private boolean enablePing = true;
     private Map<String, CardEnum> opponentsCard;
     private Map<String, WorkerColors> playersColor;
 
@@ -56,7 +65,9 @@ public class CLIView extends EventSource implements ViewListener {
 
     //MAIN METHODS
 
-
+    /**
+     * splash screen with Santorini ONLINE logo. Asking IP address and username to handle the login process.
+     */
     public void start() {
 
         boolean notConnected = true;
@@ -112,8 +123,8 @@ public class CLIView extends EventSource implements ViewListener {
         } while (notConnected);
 
 
-
     }
+
 
     private String askIPAddress() {
         System.out.println("Insert server IP Address (press ENTER for localhost): ");
@@ -210,13 +221,12 @@ public class CLIView extends EventSource implements ViewListener {
         return -1;
     }
 
-
-    //USERNAME VALIDATION:
-    private void checkUsernameOnSever() {
-        //TODO sends an it.polimi.ingsw.sp58.event to the server that the username has been inserted, the server checks if it's valid
-    }
-
-
+    /**
+     * checks if a username is locally valid (only alphanumeric chars, mix and max length )
+     *
+     * @param username the username that will be checked
+     * @return true if the username is not null, it has a correct length and it's alphanumeric
+     */
     public static boolean checkLocalUsernameAlphaNumeric(String username) {
         boolean notValid = (username == null || username.length() < 3 || username.length() > 16);
         if (notValid) {
@@ -226,6 +236,12 @@ public class CLIView extends EventSource implements ViewListener {
         }
     }
 
+    /**
+     * checks if an IP address is valid
+     *
+     * @param IP IP address in a string format
+     * @return true if the IP address is correct
+     */
     public static boolean checkValidIP(String IP) {
         boolean notValid = (IP == null || IP.length() < 7 || IP.length() > 15);
         if (notValid) return false;
@@ -387,21 +403,31 @@ public class CLIView extends EventSource implements ViewListener {
         }
     }
 
+    /**
+     * not implemented by the CLI, event is ignored
+     * @param event not implemented by the CLI
+     */
     @Override
     public void handleEvent(CV_PreGameStartedGameEvent event) {
-       //nothing
+        //nothing
     }
 
+    /**
+     * displays an error message (uppercase)
+     * @param event error message event that occurs during that pregame phase
+     */
     @Override
     public void handleEvent(CV_PreGameErrorGameEvent event) {
         MessageUtility.displayErrorMessage(event.getEventDescription().toUpperCase());
     }
 
 
-    @Override
+
     /**
-     * connection has been rejected for username already taken of room is full. It may ask to insert a new username
+     * displays an error because the connection has been rejected. If the username is taken it asks for a new username
+     * @param event connection rejected event due to the following causes: USER_TAKEN, WAIT_FOR_CREATION, SERVER_FULL
      */
+    @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
         String userProposal = "";
         switch (event.getErrorCode()) {
@@ -442,6 +468,11 @@ public class CLIView extends EventSource implements ViewListener {
         this.client.sendEvent(req);
     }
 
+
+    /**
+     * displays an error because the a reconnection has been rejected. this method then sends a new game response event to create a new game
+     * @param event reconnection rejected event due to the following causes: USER_TAKEN, WAIT_FOR_CREATION, SERVER_FULL
+     */
     @Override
     public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
         switch (event.getErrorCode()) {
@@ -462,10 +493,11 @@ public class CLIView extends EventSource implements ViewListener {
         client.sendEvent(responseEvent);
     }
 
-    @Override
-    /*
-    this user is the challenger, it has to choose the 3 cards
+    /**
+     * this user is chosen as the challenger and this methods handles this event. Asking the challenger to pick N cards with N = room size and then sends a ChallengerCardsChosenEvent
+     * @param event incoming event with room size
      */
+    @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
         System.out.println("⌛   WAITING   ⌛");
         System.out.println("The game is choosing the challenger...\n");
@@ -485,10 +517,12 @@ public class CLIView extends EventSource implements ViewListener {
 
     //CARD CHOICE
 
-    @Override
-    /*
-    this user has to choose a card from the remaining list
+
+    /**
+     * this user is asked to pick a card from an incoming available cards list
+     * @param event event containing a list of the available cards
      */
+    @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
 
         clearScreen();
@@ -499,14 +533,8 @@ public class CLIView extends EventSource implements ViewListener {
 
         Integer id;
 
-        //read from the console
-
-        boolean continueInput = true;
-
-
-        //id = input.nextInt();
         id = askIntToUser();
-        continueInput = false;
+
 
         while (!isSelectedCardValid(id, event.getAvailableCards())) {
             MessageUtility.displayErrorMessage(id + " is not a valid card number");
@@ -524,70 +552,97 @@ public class CLIView extends EventSource implements ViewListener {
         this.client.sendEvent(choice);
     }
 
-    @Override
-    /*
-    waiting both because of the challenger or because of other players choice is made
+    /**
+     * sets the CLI on a waiting layout because another user is choosing
+     * @param event event containing a description of the wait cause
      */
+    @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        if(!event.getActingPlayer().equals(myUsername)){
+        if (!event.getActingPlayer().equals(myUsername)) {
             clearScreen();
             System.out.println("⌛   WAITING   ⌛");
             System.out.println(event.getActingPlayer().toUpperCase() + " " + event.getEventDescription());
         }
     }
 
+    /**
+     * handles a worker placement event by copying the opponents colors (as well as this client's one) and cards
+     * @param event
+     */
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
-        this.playersColor=event.getPlayerWorkerColors();
-        for (Map.Entry<String, WorkerColors> entry : event.getPlayerWorkerColors().entrySet()){
-            if (entry.getKey().equals(myUsername)){
-                myColor= entry.getValue();
+        this.playersColor = event.getPlayerWorkerColors();
+        for (Map.Entry<String, WorkerColors> entry : event.getPlayerWorkerColors().entrySet()) {
+            if (entry.getKey().equals(myUsername)) {
+                myColor = entry.getValue();
             }
         }
         opponentsCard = new HashMap<>();
-        for (Map.Entry<String, CardEnum> entry : event.getTurnSequence().entrySet()){
-            if (!entry.getKey().equals(myUsername)){
+        for (Map.Entry<String, CardEnum> entry : event.getTurnSequence().entrySet()) {
+            if (!entry.getKey().equals(myUsername)) {
                 opponentsCard.put(entry.getKey(), entry.getValue());
-            }
-            else{
+            } else {
                 myCard = entry.getValue();
             }
         }
     }
 
+    /**
+     * ignored because the CLI doesn't handle this event
+     * @param event incoming event that is ignored
+     */
     @Override
     public void handleEvent(CV_CommandExecutedGameEvent event) {
 
     }
 
+    /**
+     * displays a waiting layout during the match if this client is not the one that is playing right now
+     * @param event incoming waiting event event that contains the acting player
+     */
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
-        if(!event.getActingPlayer().equals(myUsername)){
+        if (!event.getActingPlayer().equals(myUsername)) {
             System.out.println("\n⌛   WAITING   ⌛");
             System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
             printOpponentsInfo();
         }
     }
 
+    /**
+     * displays the information about this turn: movements and build remaining and if this client can climb or not
+     * @param event incoming event containing all the informations
+     */
     @Override
     public void handleEvent(CV_TurnInfoEvent event) {
-        System.out.println("Available moves: "+ event.getMovementsRemaining());
-        System.out.println("Available build: "+ event.getBuildRemaining());
-        System.out.println("Can climb: "+ event.getCanClimb());
+        System.out.println("Available moves: " + event.getMovementsRemaining());
+        System.out.println("Available build: " + event.getBuildRemaining());
+        System.out.println("Can climb: " + event.getCanClimb());
         System.out.println("\n");
     }
 
+    /**
+     * ignored because the CLI doen't support this kind of event
+     * @param cv_spectatorGameEvent event that is ignored
+     */
     @Override
     public void handleEvent(CV_SpectatorGameEvent cv_spectatorGameEvent) {
 
     }
 
-
+    /**
+     * displays an error message during the game phase
+     * @param event incoming event containing the error message
+     */
     @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
         MessageUtility.displayErrorMessage(event.getEventDescription().toUpperCase());
     }
 
+    /**
+     * it handles the request for the challenger to choose the first player
+     * @param event incoming request event
+     */
     @Override
     /*
     this user is the challenger, he has to choose the first player
@@ -638,12 +693,10 @@ public class CLIView extends EventSource implements ViewListener {
         System.out.println("");
     }
 
-    private void displayAvailableBehaviour(CV_CommandRequestEvent event) {
-        boolean canBuild, canMove;
-
-    }
-
-
+    /**
+     * it handles a command request from the server, this method reads and extracts a valid command from the CLI interface sending it back to the server
+     * @param event incoming command request event
+     */
     @Override
     public void handleEvent(CV_CommandRequestEvent event) {
 
@@ -713,6 +766,10 @@ public class CLIView extends EventSource implements ViewListener {
 
     }
 
+    /**
+     * displays a game over layout: Game Over if the client is not the winner, Winner! if the client won the match
+     * @param event
+     */
     @Override
     public void handleEvent(CV_GameOverEvent event) {
         clearScreen();
@@ -739,6 +796,12 @@ public class CLIView extends EventSource implements ViewListener {
         output.flush();
     }
 
+    /**
+     * checks if a cell has a valid board index
+     * @param x x-index of the cell
+     * @param y y-index of the cell
+     * @return true if the cell index is valid
+     */
     public boolean checkCellInput(int x, int y) {
 
         Range oneToFive = new Range(1, 5);
@@ -753,6 +816,10 @@ public class CLIView extends EventSource implements ViewListener {
         temp.displayIsland();
     }
 
+    /**
+     * displays an island update and asks the client to place the requested worker  to a valid location
+     * @param event incoming requst event
+     */
     @Override
     public void handleEvent(CV_PlayerPlaceWorkerRequestEvent event) {
 
@@ -787,10 +854,9 @@ public class CLIView extends EventSource implements ViewListener {
             x = askIntToUser();
 
 
-
         }
 
-        //subtracting  1 'cause 1...5 --> 0...4 on it.polimi.ingsw.sp58.model, it.polimi.ingsw.sp58.controller
+        //subtracting  1 because 1...5 --> 0...4 on it.polimi.ingsw.sp58.model, it.polimi.ingsw.sp58.controller
         VC_PlayerPlacedWorkerEvent response =
                 new VC_PlayerPlacedWorkerEvent("sending an x, y proposal ",
                         event.getActingPlayer(),
@@ -802,10 +868,11 @@ public class CLIView extends EventSource implements ViewListener {
 
     }
 
-    @Override
     /**
-     * you're the first player so you have to insert a room size to create a room.
+     * handles a request for the first connected player to choose a room size
+     * @param event incoming request event
      */
+    @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         int size = askGameRoomSize();
         VC_RoomSizeResponseGameEvent response;
@@ -813,8 +880,11 @@ public class CLIView extends EventSource implements ViewListener {
         client.sendEvent(response);
     }
 
-    //
 
+    /**
+     * clearing screen and printing  a "game is starting" message
+     * @param event incoming event
+     */
     @Override
     public void handleEvent(CV_GameStartedGameEvent event) {
 
@@ -827,6 +897,10 @@ public class CLIView extends EventSource implements ViewListener {
 
     //TURN
 
+    /**
+     * displays turn rotation and notifies the acting player, prints opponents and client info
+     * @param event incoming new turn event
+     */
     @Override
     public void handleEvent(CV_NewTurnEvent event) {
 
@@ -849,33 +923,39 @@ public class CLIView extends EventSource implements ViewListener {
 
     }
 
-    public void printMyInfo(){
-        switch(myColor){
+    /**
+     * prints info about the client's worker color and card
+     */
+    public void printMyInfo() {
+        switch (myColor) {
             case BLUE:
-                System.out.println("Your"+  BLUE_BRIGHT + " color" + ANSI_RESET);
+                System.out.println("Your" + BLUE_BRIGHT + " color" + ANSI_RESET);
                 break;
             case PINK:
-                System.out.println("Your"  + MAGENTA_BRIGHT + " color" + ANSI_RESET);
+                System.out.println("Your" + MAGENTA_BRIGHT + " color" + ANSI_RESET);
                 break;
             case ORANGE:
-                System.out.println("Your"  + RED_BRIGHT + " color" + ANSI_RESET);
+                System.out.println("Your" + RED_BRIGHT + " color" + ANSI_RESET);
                 break;
         }
         System.out.println("YOUR CARD: " + myCard.getName().toUpperCase());
         System.out.println("\t" + myCard.getDescription());
     }
 
-    private void printOpponentsInfo(){
+    /**
+     * prints opponents info (cards, colors and name);
+     */
+    private void printOpponentsInfo() {
         for (Map.Entry<String, CardEnum> player : opponentsCard.entrySet()) {
             System.out.println("OPPONENTS: ");
             for (Map.Entry<String, WorkerColors> p : playersColor.entrySet()) {
-                if(p.getKey().equals(player.getKey())){
-                    switch(p.getValue()){
+                if (p.getKey().equals(player.getKey())) {
+                    switch (p.getValue()) {
                         case BLUE:
                             System.out.println("- " + player.getKey().toUpperCase() + BLUE_BRIGHT + " (color)" + ANSI_RESET);
                             break;
                         case PINK:
-                            System.out.println("- " +  player.getKey().toUpperCase() + MAGENTA_BRIGHT + " (color)" + ANSI_RESET);
+                            System.out.println("- " + player.getKey().toUpperCase() + MAGENTA_BRIGHT + " (color)" + ANSI_RESET);
                             break;
                         case ORANGE:
                             System.out.println("- " + player.getKey().toUpperCase() + RED_BRIGHT + " (color)" + ANSI_RESET);
@@ -888,7 +968,10 @@ public class CLIView extends EventSource implements ViewListener {
         }
     }
 
-
+    /**
+     * prints the current turn sequence PLAYER1 <<< PLAYER2 <<< PLAYER 3 that represents the next 1/2 players and the current one
+     * @param event
+     */
     private void printTurnSequence(CV_NewTurnEvent event) {
         MessageUtility.printDivider();
 
@@ -905,13 +988,19 @@ public class CLIView extends EventSource implements ViewListener {
         }
     }
 
+    /**
+     * updates the island with a new one
+     * @param event the new island event incoming containing that island data
+     */
     @Override
     public void handleEvent(CV_IslandUpdateEvent event) {
         displayIslandUpdate(event.getNewIsland());
         System.out.println("");
     }
 
-
+ /*+
+ static method to clear and flush the CLI/console screen
+  */
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -919,6 +1008,10 @@ public class CLIView extends EventSource implements ViewListener {
 
     //NEW GAME AFTER GAME OVER
 
+    /**
+     * after a game over the client is asked if he want to play or not a new game
+     * @param event new game request event
+     */
     @Override
     public void handleEvent(CV_NewGameRequestEvent event) {
         MessageUtility.printValidMessage("Would you like to play another time?");
@@ -936,6 +1029,10 @@ public class CLIView extends EventSource implements ViewListener {
         client.sendEvent(responseEvent);
     }
 
+    /**
+     * quits the application after displaying a disconnection (error) message, game is over because a user left the room
+     * @param event
+     */
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
         clearScreen();
