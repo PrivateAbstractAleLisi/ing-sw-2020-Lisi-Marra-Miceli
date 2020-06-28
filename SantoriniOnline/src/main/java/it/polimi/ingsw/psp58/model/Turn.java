@@ -11,12 +11,12 @@ import java.util.List;
  * This class contains all the info of the specific turn of the player
  */
 public class Turn {
-    private Player currentPlayer;
+    private final Player currentPlayer;
     private Worker.IDs workerID;
     private int numberOfMove;
     private int numberOfBuild;
     private int[] startingPosition;
-    private BoardManager boardManager;
+    private final BoardManager boardManager;
     private boolean hasBuiltBeforeMove;
 
     public Turn(Player currentPlayer, BoardManager boardManager) {
@@ -78,7 +78,7 @@ public class Turn {
      */
     public List<int[]> validActions(Worker.IDs workerID, TurnAction action) {
         ArrayList<int[]> validMoves = new ArrayList<>();
-        int[] position = null;
+        int[] position;
         Worker worker = currentPlayer.getWorker(workerID);
         int[] currentPosition = worker.getPosition();
         for (int i = currentPosition[0] - 1; i <= currentPosition[0] + 1; i++) {
@@ -91,7 +91,7 @@ public class Turn {
                         validMoves.add(position);
                     }
                 } else if (action == TurnAction.BUILD &&
-                        currentPlayer.getCard().checkCellCostructionAvailability(currentPosition[0], currentPosition[1], i, j, boardManager.getIsland())) {
+                        currentPlayer.getCard().checkCellConstructionAvailability(currentPosition[0], currentPosition[1], i, j, boardManager.getIsland())) {
                         position = new int[2];
                         position[0] = i;
                         position[1] = j;

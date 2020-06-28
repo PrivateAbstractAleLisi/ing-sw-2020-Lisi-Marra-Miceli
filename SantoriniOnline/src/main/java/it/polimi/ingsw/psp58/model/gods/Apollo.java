@@ -34,7 +34,7 @@ public class Apollo extends Card {
      * @param desiredY Y Position where the player wants to move the worker
      * @param island   The current board of game
      * @throws InvalidMovementException Exception thrown when the coordinates are not valid
-     * @throws WinningException If the player won, throw a WinningException
+     * @throws WinningException         If the player won, throw a WinningException
      */
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
@@ -45,7 +45,7 @@ public class Apollo extends Card {
             if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
-            //decrementa il numero di movimenti rimasti
+            //decrease the number of required movements
             playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
             CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
@@ -71,7 +71,7 @@ public class Apollo extends Card {
             if (!checkWorkerPosition(island, worker, desiredX, desiredY) && !checkWorkerPosition(island, enemyWorker, actualX, actualY)) {
                 throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
             } else {
-                //Memorizzo l'altitudine del worker per poi controllare se è effettivamente salito
+                //memorize the high of worker and the check if the worker has won
                 int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();
                 checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);
             }
@@ -100,28 +100,28 @@ public class Apollo extends Card {
             return false;
         }
 
-        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+        //check if the coordinates of the destination are different from actual ones
         if (actualX == desiredX && actualY == desiredY) {
             return false;
         }
 
-        //verifica il behaviour permette di muoversi
+        //check if the behaviour allow a move
         if (behaviour.getMovementsRemaining() <= 0) {
             return false;
         }
-        //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)
+        //calculate the euclidean distance and check that distance < 2 (return false otherwise)
         if (distance(actualX, actualY, desiredX, desiredY) >= 2) {
             return false;
         }
         if (desiredCellCluster.isComplete()) {
             return false;
         }
-        //verifica il behaviour permette di salire
+        //check if the behavior allow to go up
         if (behaviour.isCanClimb()) {
-            //al max salgo di 1
+            //max 1 level of go up
             return actualCellCluster.getCostructionHeight() + 1 >= desiredCellCluster.getCostructionHeight();
         } else {
-            //non posso salire
+            //can't go up
             return actualCellCluster.getCostructionHeight() >= desiredCellCluster.getCostructionHeight();
         }
     }
