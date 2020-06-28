@@ -90,22 +90,22 @@ public class Demeter extends Card {
         }
 
         lastBuiltPosition = new int[]{desiredX, desiredY};
-        //decrementa il numero di blocchi da costruire rimasti e ritorno true
+        //decrease the number of BlockPlacementLeft
         playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);
     }
 
     /**
      * it doesn't update the lastBuiltPosition, it just checks if you have already built HERE or not in the turn
      *
-     * @param desidedX where you want to build
+     * @param desiredX where you want to build
      * @param desiredY where you want to build
      * @return false never built in this turn, true he built here
      */
-    private boolean hasAlreadyBuiltHereInThisTurn(int desidedX, int desiredY) {
+    private boolean hasAlreadyBuiltHereInThisTurn(int desiredX, int desiredY) {
         if (lastBuiltPosition[0] == -1 && lastBuiltPosition[1] == -1) { //he never built in this turn
             return false;
         } else { //he build at least one block
-            return lastBuiltPosition[0] == desidedX && lastBuiltPosition[1] == desiredY;
+            return lastBuiltPosition[0] == desiredX && lastBuiltPosition[1] == desiredY;
         }
     }
 

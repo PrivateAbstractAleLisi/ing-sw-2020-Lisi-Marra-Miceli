@@ -73,10 +73,11 @@ public abstract class Card {
         if (!isValidDestination(actualX, actualY, desiredX, desiredY, island)) {
             throw new InvalidMovementException("Invalid move for this worker");
         }
-        //decrease the number of required movements
-        playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
         island.moveWorker(worker, desiredX, desiredY);
+
+        //decrease the number of required movements
+        playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
             throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
         } else {
