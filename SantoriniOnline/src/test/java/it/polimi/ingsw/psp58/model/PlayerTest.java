@@ -47,7 +47,7 @@ public class PlayerTest {
 
     @Test
     public void setColor_normalColor_shouldReturnNormally() {
-        WorkerColors color = WorkerColors.WHITE;
+        WorkerColors color = WorkerColors.PINK;
         Player player = new Player("matteo" , boardManager);
         player.setColor(color);
         assertEquals(color, player.getColor());

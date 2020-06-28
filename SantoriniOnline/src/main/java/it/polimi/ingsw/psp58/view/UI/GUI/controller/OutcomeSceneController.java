@@ -8,9 +8,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
-import java.util.List;
-
-
+/**
+ * Last scene of a game with the info about who won and who lose and the menu to what to do after a game
+ */
 public class OutcomeSceneController {
     GUI gui;
 
@@ -23,7 +23,11 @@ public class OutcomeSceneController {
     @FXML
     private StackPane playAgainStackPane,spectatorStackPane;
 
-
+    /**
+     * Initialize the scene and displays the name of the winner
+     * @param winner the name of the winner of the game
+     * @param gui the main {@link GUI} instance
+     */
     public void initAndFillWinner(String winner, GUI gui) {
         this.gui = gui;
         spectatorStackPane.setDisable(true);
@@ -32,15 +36,21 @@ public class OutcomeSceneController {
         playAgainStackPane.setVisible(true);
         labelSubTitle.setVisible(true);
 
-        if (weAreTheChampions(winner)) {
+        if (isTheWinner(winner)) {
             labelTitle.setText("YOU WIN");
         } else {
             labelTitle.setText("YOU LOSE");
         }
-        labelSubTitle.setText(winner.toUpperCase() + " IS THE WINNER");
+        if(winner!= null){
+            labelSubTitle.setText(winner.toUpperCase() + " IS THE WINNER");
+        }
     }
 
-    public void initAndFillSpectator(List<String> losers, GUI gui) {
+    /**
+     * Shows for the first player who lost a 3-player game that he is now a spectator
+     * @param gui the main {@link GUI} instance
+     */
+    public void initAndFillSpectator(GUI gui) {
         this.gui = gui;
 
         spectatorStackPane.setDisable(false);
@@ -52,47 +62,55 @@ public class OutcomeSceneController {
         labelTitle.setText("YOU LOSE");
     }
 
-    private boolean weAreTheChampions(String winner) {
-        return winner != null && gui.getUsername().toLowerCase().equals(winner.toLowerCase());
+    /**
+     *
+     * @param username the name of the player it's needed to know if is the winner
+     * @return true if the parameter is the actual winner
+     */
+    private boolean isTheWinner(String username) {
+        return gui.getUsername().equalsIgnoreCase(username);
     }
 
     /**
-     * when you lost
-     *
-     * @param boardSceneController
+     * Sends to the client a {@link VC_NewGameResponseEvent} saying that the player doesn't want to play another game
      */
-    public void initSpectator(BoardSceneController boardSceneController) {
-        //board.enableSpectatorView
-    }
-
     private void sendClientTurnDownRequest() {
         VC_NewGameResponseEvent turnDown = new VC_NewGameResponseEvent(gui.getUsername() + " won't play again", false);
         gui.sendEvent(turnDown);
     }
 
-    @FXML //enable spectatorMode
+    /**
+     * Enables the spectator mode
+     */
+    @FXML
     public void spectatorButton(){
         gui.setShowBoardScene();
     }
 
-    @FXML //quits to desktop
+    /**
+     * Quits from the application closing it
+     */
+    @FXML
     public void quitOMCE() {
-        System.out.println("DEBUG desktop clicked");
         sendClientTurnDownRequest();
         Platform.exit();
         System.exit(0);
     }
 
-    @FXML //send an event to play another game
+    /**
+     * Sends a {@link VC_NewGameResponseEvent} to the server to play another game
+     */
+    @FXML
     public void playOMCE() {
-        System.out.println("DEBUG play again clicked");
         VC_NewGameResponseEvent playWithMe = new VC_NewGameResponseEvent(gui.getUsername() + " I wanna play a game with you", true);
         gui.sendEvent(playWithMe);
     }
 
+    /**
+     * Disconnects from this game and go back to the starting scene
+     */
     @FXML //disconnects and back to starting scene
     public void discoOMCE() {
-        System.out.println("DEBUG disconnect clicked");
         sendClientTurnDownRequest();
         gui.changeScene(gui.getStartingScene());
     }

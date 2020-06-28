@@ -15,9 +15,14 @@ public class LobbySceneController {
     @FXML
     private Label player1Text, player2Text, player3Text;
 
+
     private int numberOfPlayers = 0;
     private int roomSize = 0;
 
+    /**
+     * Updates all the info of the room scene
+     * @param event the {@link CV_RoomUpdateGameEvent} containing all the info of the room the user is in
+     */
     public void update(CV_RoomUpdateGameEvent event) {
         numberOfPlayers = event.getUsersInRoom().length;
         roomSize = event.getRoomSize();
@@ -41,6 +46,10 @@ public class LobbySceneController {
         }
     }
 
+    /**
+     * Initialize an array list with all the labels of the player name
+     * @return an array list containing the labels of the players name
+     */
     private List<Label> fillUsernameLabelsList() {
         return new ArrayList<>() {
             {

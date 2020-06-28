@@ -8,12 +8,18 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-
+/**
+ * Class that loads the ErrorScene to show the error messages to the player
+ */
 public class ErrorPopUp {
 
 
     FXMLLoader loader;
 
+    /**
+     * Loads the ErrorScene.fxml
+     * @return the ErrorScene.fxml just loaded
+     */
     private Scene loadScene() {
         loader = new FXMLLoader(
                 getClass().getResource("/scenes/ErrorScene.fxml"));
@@ -26,6 +32,11 @@ public class ErrorPopUp {
         return null;
     }
 
+    /**
+     * Displays the error message through a PopUp with a modal stage
+     * @param message the string containing the error message to display
+     * @param parentStage the stage on which the new modal stage will be displayed
+     */
     public void show(String message, Stage parentStage) {
 
         Stage stage = new Stage();
@@ -33,8 +44,6 @@ public class ErrorPopUp {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("ERROR");
         stage.setResizable(false);
-
-        // button.setOnAction(event -> stage.close());
 
         Scene scene = loadScene();
 

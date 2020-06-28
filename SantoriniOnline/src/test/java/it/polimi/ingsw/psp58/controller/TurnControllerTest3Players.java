@@ -35,7 +35,7 @@ public class TurnControllerTest3Players {
         //setup player 1
         boardManager.addPlayer("jack");
         Player p1 = boardManager.getPlayer("jack");
-        p1.setColor(WorkerColors.BEIGE);
+        p1.setColor(WorkerColors.ORANGE);
         p1.setCard(CardEnum.ARTEMIS);
         boardManager.getIsland().placeWorker(p1.getWorker(A), 1, 2);
         boardManager.getIsland().placeWorker(p1.getWorker(Worker.IDs.B), 3, 2);
@@ -54,7 +54,7 @@ public class TurnControllerTest3Players {
         p3.setCard(CardEnum.DEMETER);
         boardManager.getIsland().placeWorker(p3.getWorker(A), 4, 4);
         boardManager.getIsland().placeWorker(p3.getWorker(Worker.IDs.B), 0, 0);
-        p3.setColor(WorkerColors.WHITE);
+        p3.setColor(WorkerColors.PINK);
 
         //set a mock turnSequence
         turnSequence = new HashMap<>();

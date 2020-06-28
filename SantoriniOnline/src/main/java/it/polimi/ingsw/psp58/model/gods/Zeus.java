@@ -11,6 +11,9 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 import static it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum.DOME;
 
+/**
+ * Zeus Card implementation.
+ */
 public class Zeus extends Card {
 
     public Zeus(Player p) {
@@ -56,9 +59,6 @@ public class Zeus extends Card {
 
         //genero un array contenente la struttura del cellcluster (e il nuovo blocco) e l'analizzo nella funzione successiva
         int[] desiredConstruction = desiredCellCluster.toIntArrayWithHypo(block);
-        if (!isValidBlockPlacement(block, desiredConstruction, behaviour)) {
-            return false;
-        }
-        return true;
+        return isValidBlockPlacement(block, desiredConstruction, behaviour);
     }
 }

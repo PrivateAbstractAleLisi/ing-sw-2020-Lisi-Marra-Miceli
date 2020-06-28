@@ -196,7 +196,7 @@ public class PreGameController extends EventSource implements ControllerListener
 
             int indexOfChoosingPlayer = players.indexOf(event.getPlayer());
             int indexOfNextChoosingPlayer = indexOfChoosingPlayer;
-            if (availableCards.isEmpty()) { //there are cards remaining
+            if (!availableCards.isEmpty()) { //there are cards remaining
                 if ((indexOfChoosingPlayer < room.getSIZE() - 1)) {
                     indexOfNextChoosingPlayer++;
                 } else if ((indexOfChoosingPlayer == room.getSIZE() - 1)) {
