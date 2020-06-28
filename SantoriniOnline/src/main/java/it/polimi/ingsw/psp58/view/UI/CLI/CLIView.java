@@ -77,7 +77,11 @@ public class CLIView extends EventSource implements ViewListener {
                     case "-ping off":
                         enablePing = false;
                         break;
+                    default:
+                        enablePing = true;
+                        break;
                 }
+
             }
         }
 
@@ -93,7 +97,6 @@ public class CLIView extends EventSource implements ViewListener {
         System.out.println(ANSIColors.YELLOW_UNDERLINED + "Press Enter to Start:" + ANSIColors.ANSI_RESET + " ");
         input.nextLine();
 
-        //System.out.println("WELCOME, Client Started.");
         CLIView.clearScreen();
         do {
             String IP = askIPAddress();
@@ -105,7 +108,7 @@ public class CLIView extends EventSource implements ViewListener {
                 System.out.println("CLIENT: connected ");
 
                 clearScreen();
-                //MessageUtility.displayTitle();
+
                 String userProposal = askUsername();
 
                 //use last userProposal as my username
@@ -460,7 +463,7 @@ public class CLIView extends EventSource implements ViewListener {
         }
 
         //use last userProposal as my username
-        //TODO da fare evento apposta "username approvato"
+
         myUsername = userProposal;
 
         VC_ConnectionRequestGameEvent req;
@@ -627,7 +630,7 @@ public class CLIView extends EventSource implements ViewListener {
      */
     @Override
     public void handleEvent(CV_SpectatorGameEvent cv_spectatorGameEvent) {
-
+        //not implemented by CLI
     }
 
     /**
@@ -693,6 +696,11 @@ public class CLIView extends EventSource implements ViewListener {
         System.out.println("");
     }
 
+    private void printCommandIntro() {
+        System.out.println("Please insert a new command (type HELP to get command help box)");
+
+        System.out.println("Available actions to select: ");
+    }
     /**
      * it handles a command request from the server, this method reads and extracts a valid command from the CLI interface sending it back to the server
      * @param event incoming command request event
@@ -704,9 +712,8 @@ public class CLIView extends EventSource implements ViewListener {
         boolean keepAsking = true;
         Command com = null;
         while (keepAsking) {
-            System.out.println("Please insert a new command (type HELP to get command help box)");
 
-            System.out.println("Available actions to select: ");
+            printCommandIntro();
 
             for (TurnAction action : event.getAvailableActions()) {
                 System.out.println(" - " + action.toString());
@@ -910,7 +917,10 @@ public class CLIView extends EventSource implements ViewListener {
         }
         String currentPlayerUsername = event.getTurnRotation().get(0);
 
+
         boolean yourTurn = yourUsername.equalsIgnoreCase(currentPlayerUsername);
+
+
         clearScreen();
         System.out.println("GAME:");
         printTurnSequence(event);
