@@ -25,7 +25,7 @@ public class SantoriniServer {
     /**
      * Version of the server.
      */
-    public static final String SERVER_VERSION = "1.6.1";
+    public static final String SERVER_VERSION = "1.6.2";
 
     /**
      * Main method that creates the instance of Lobby, waits for new client and creates a Thread running a SantoriniServerClientHandler for each new client.

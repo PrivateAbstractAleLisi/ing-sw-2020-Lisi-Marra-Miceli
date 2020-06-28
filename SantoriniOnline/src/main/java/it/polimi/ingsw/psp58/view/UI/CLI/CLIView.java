@@ -5,15 +5,10 @@ import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.auxiliary.Range;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
-
-import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
-
 import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
@@ -23,7 +18,6 @@ import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
-import it.polimi.ingsw.psp58.view.UI.GUI.Message;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -545,7 +539,7 @@ public class CLIView extends EventSource implements ViewListener {
             }
         }
         opponentsCard = new HashMap<>();
-        for (Map.Entry<String, CardEnum> entry : event.getTurnSequence().entrySet()){
+        for (Map.Entry<String, CardEnum> entry : event.getPlayersCardsCorrespondence().entrySet()){
             if (!entry.getKey().equals(myUsername)){
                 opponentsCard.put(entry.getKey(), entry.getValue());
             }
