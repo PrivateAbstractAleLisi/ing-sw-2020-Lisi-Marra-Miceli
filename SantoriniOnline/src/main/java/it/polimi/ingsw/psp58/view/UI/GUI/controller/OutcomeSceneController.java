@@ -112,7 +112,8 @@ public class OutcomeSceneController {
     @FXML //disconnects and back to starting scene
     public void discoOMCE() {
         sendClientTurnDownRequest();
-        gui.changeScene(gui.getStartingScene());
+        gui.set
+       gui.restartStartingScene();
     }
 
 }
