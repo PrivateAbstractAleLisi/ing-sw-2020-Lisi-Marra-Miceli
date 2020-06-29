@@ -955,9 +955,9 @@
                                                                 <Font size="20.0" />
                                                             </font>
                                                         </Text>
-                                                        <ImageView fitHeight="100.0" pickOnBounds="true" preserveRatio="true">
+                                                        <ImageView pickOnBounds="true" preserveRatio="true">
                                                             <image>
-                                                                <Image url="@../images/hourglass.png" />
+                                                                <Image url="@../images/hourglass-very-low.gif" />
                                                             </image>
                                                         </ImageView>
                                                     </children>

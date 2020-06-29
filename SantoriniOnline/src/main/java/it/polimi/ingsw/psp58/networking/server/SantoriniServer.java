@@ -9,17 +9,38 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Starting class for the Server that create the instance of Lobby and accept each client creating a new Thread to handle the requests.
+ */
 public class SantoriniServer {
 
+    /**
+     * Socket Port to listen.
+     */
     public static final int SOCKET_PORT = 7557;
+    /**
+     * Timeout for the socket.
+     */
     public static final int SOCKET_TIMEOUT_S = 20;
-    public static final String SERVER_VERSION = "1.6.1";
+    /**
+     * Version of the server.
+     */
+    public static final String SERVER_VERSION = "1.6.2";
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * Main method that creates the instance of Lobby, waits for new client and creates a Thread running a SantoriniServerClientHandler for each new client.
+     * This method also accept console arguments to enable or disable some features:
+     * - "-ping-stamp" to print each Ping Message received
+     * - "-pingOff" to disable the Ping Service and the TimeOut on the socket.
+     * @param args Args to be  (see the description for more info).
+     * @throws IOException A IOException is thrown if is not possible to accept new clients.
+     */
+    public static void main(String[] args) throws IOException{
 
         boolean pingStamp = false;
         boolean enablePing = true;
 
+//        Create the Instance of Lobby Class
         Lobby.instance();
         ServerSocket socket;
 
@@ -35,13 +56,13 @@ public class SantoriniServer {
         if (args != null) {
             for (String currentArgument : args) {
                 switch (currentArgument) {
-                    case "-ping-stamp":
+                    case "-ping-stamp": //enable the print of all Ping message
                         pingStamp = true;
                         System.out.println("SERVER SETTINGS: <Ping Stamp> ON");
                         break;
-                    case "-pingOff":
+                    case "-pingOff": //Disable the Ping Service and timout
                         enablePing = false;
-                        System.out.println("SERVER SETTINGS: <Ping System> OFF");
+                        System.out.println("SERVER SETTINGS: <Ping Service> OFF");
                         break;
                 }
             }
@@ -63,10 +84,12 @@ public class SantoriniServer {
             t.start();
             printLogMessage("Client " + clientIpAddress + " in thread: " + threadID);
         }
-
-
     }
 
+    /**
+     * Print a formatted message with TimeStamp and other info.
+     * @param message Message to print.
+     */
     private static void printLogMessage(String message) {
         String timestamp = ZonedDateTime.now(ZoneId.of("Europe/Rome")).format(DateTimeFormatter.ofPattern("yyyy/MM/dd-HH:mm:ss"));
         System.out.println("SERVER (" + timestamp + "): " + message);

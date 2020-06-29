@@ -3,6 +3,9 @@ package it.polimi.ingsw.psp58.event.gameEvents.prematch;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 
+/**
+ * Event sent by the client to the server
+ */
 public class VC_ChallengerChosenFirstPlayerEvent extends ControllerGameEvent {
 
     public VC_ChallengerChosenFirstPlayerEvent(String username) {

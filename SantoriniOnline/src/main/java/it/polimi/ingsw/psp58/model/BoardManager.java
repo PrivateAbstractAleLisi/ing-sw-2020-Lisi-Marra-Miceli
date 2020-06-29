@@ -9,21 +9,23 @@ import javax.naming.LimitExceededException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * A class containing the main info about the game, such as the island, the list of the players and the cards,
+ * to make them easy accessible from the controller package
+ */
 public class BoardManager {
 
     //List of the players in the game
-    private List<Player> players;
+    private final List<Player> players;
 
     //Island of the game
-    private Island island;
+    private final Island island;
 
-    private List<CardEnum> cards;
-    private List<CardEnum> selectedCards;
-    private List<CardEnum> takenCards;
+    private final List<CardEnum> cards;
+    private final List<CardEnum> selectedCards;
+    private final List<CardEnum> takenCards;
 
-    private Map<String, CardEnum> playersCardsCorrespondence;
 
     /**
      * Constructor: initialize the game creating the island
@@ -32,12 +34,12 @@ public class BoardManager {
 
         island = new Island();
 
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
 
-        cards = new ArrayList<CardEnum>();
+        cards = new ArrayList<>();
         initializeCardList();
-        selectedCards = new ArrayList<CardEnum>();
-        takenCards = new ArrayList<CardEnum>();
+        selectedCards = new ArrayList<>();
+        takenCards = new ArrayList<>();
     }
 
     /**
@@ -88,24 +90,25 @@ public class BoardManager {
 
     /**
      * @param username the username of the player that should be removed from the game
-     * @throws InvalidWorkerRemovalException
      */
     public void removePlayer(String username) {
         Player player = null;
         for (Player p : players) {
             if (p.getUsername().equals(username)) player = p;
         }
-        if (player.getWorker(Worker.IDs.A) != null) {
-            Worker worker1 = player.getWorker(Worker.IDs.A);
-            player.removeWorker(Worker.IDs.A);
-            island.removeWorker(worker1);
+        if(player != null){
+            if(player.getWorker(Worker.IDs.A)!= null){
+                Worker worker1 = player.getWorker(Worker.IDs.A);
+                player.removeWorker(Worker.IDs.A);
+                island.removeWorker(worker1);
+            }
+            if (player.getWorker(Worker.IDs.B)!= null){
+                Worker worker2 = player.getWorker(Worker.IDs.B);
+                player.removeWorker(Worker.IDs.B);
+                island.removeWorker(worker2);
+            }
+            players.remove(player);
         }
-        if (player.getWorker(Worker.IDs.B) != null) {
-            Worker worker2 = player.getWorker(Worker.IDs.B);
-            player.removeWorker(Worker.IDs.B);
-            island.removeWorker(worker2);
-        }
-        players.remove(player);
     }
 
     /**
@@ -156,8 +159,8 @@ public class BoardManager {
     /**
      * @return a copy of the cards list
      */
-    public ArrayList<CardEnum> getCardsList() {
-        return new ArrayList<CardEnum>(cards);
+    public List<CardEnum> getCardsList() {
+        return new ArrayList<>(cards);
     }
 
     /**
@@ -179,11 +182,12 @@ public class BoardManager {
     /**
      * @return a copy of the list of the cards selected
      */
-    public ArrayList<CardEnum> getSelectedCards() {
-        return new ArrayList<CardEnum>(selectedCards);
+    public List<CardEnum> getSelectedCards() {
+        return new ArrayList<>(selectedCards);
     }
 
     /**
+     * Takes a cards from the selected ones and adds it to the taken one
      * @param card the card chosen by one player that should be added to the list selectedCards
      * @throws InvalidCardException if the card passed as input is not in the card list
      */
@@ -195,14 +199,7 @@ public class BoardManager {
     }
 
     /**
-     * @param playersCardsCorrespondence a map that memorize the correspondence of the players and the cards
-     */
-    public void setPlayersCardsCorrespondence(Map<String, CardEnum> playersCardsCorrespondence) {
-        this.playersCardsCorrespondence = playersCardsCorrespondence;
-    }
-
-    /**
-     * Resets all the player behaviour using their cards
+     * Resets all the {@link Player} {@link BehaviourManager} using their cards
      */
     public void resetAllPlayerBehaviour() {
         for (Player p : players) {
@@ -213,8 +210,8 @@ public class BoardManager {
     /**
      * @return a copy of the list of the cards taken
      */
-    public ArrayList<CardEnum> getTakenCards() {
-        return new ArrayList<CardEnum>(takenCards);
+    public List<CardEnum> getTakenCards() {
+        return new ArrayList<>(takenCards);
     }
 
     /**

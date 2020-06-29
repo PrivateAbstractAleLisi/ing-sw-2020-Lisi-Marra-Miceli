@@ -5,6 +5,10 @@ import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 import java.net.InetAddress;
 
+/**
+ * Event sent by the Controller to the client saying that the connection has not established.
+ * Contains the error message and the error code
+ */
 public class CV_ConnectionRejectedErrorGameEvent extends ViewGameEvent {
 
     private final String errorMessage;

@@ -4,6 +4,10 @@ import it.polimi.ingsw.psp58.auxiliary.IslandData;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
+/**
+ * Event sent by the controller to the client when an action has made by a player.
+ * Contains the update of the game board
+ */
 public class CV_IslandUpdateEvent extends ViewGameEvent {
     private final IslandData newIsland;
     private final String recipient;

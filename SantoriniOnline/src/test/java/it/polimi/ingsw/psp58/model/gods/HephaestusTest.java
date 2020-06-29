@@ -395,16 +395,4 @@ public class HephaestusTest {
         player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL1, 3, 3, boardManager.getIsland());
         player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL1, 3, 4, boardManager.getIsland());
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void build_invalidBuild_differentWorkers_shouldThrowException() throws InvalidMovementException, WinningException, InvalidBuildException, CloneNotSupportedException {
-        card.placeWorker(worker1, 2, 2, island);
-        card.placeWorker(worker1B, 4, 3, island);
-        //simulation of two turns
-        //first turn:
-        player1.getCard().move(player1.getWorker(Worker.IDs.A), 2, 3, boardManager.getIsland());
-        player1.getCard().build(player1.getWorker(Worker.IDs.A), BlockTypeEnum.LEVEL1, 3, 3, boardManager.getIsland());
-        player1.getCard().build(player1.getWorker(Worker.IDs.B), BlockTypeEnum.LEVEL2, 3, 3, boardManager.getIsland());
-    }
-
 }

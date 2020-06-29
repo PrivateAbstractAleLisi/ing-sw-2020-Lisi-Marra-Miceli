@@ -3,6 +3,10 @@ package it.polimi.ingsw.psp58.event.gameEvents.lobby;
 import it.polimi.ingsw.psp58.event.core.ViewListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
+/**
+ * Event sent by the Controller that occurs when a reconnection after a game has just finished was not successful.
+ * Contains the error code and the error message.
+ */
 public class CV_ReconnectionRejectedErrorGameEvent extends ViewGameEvent {
 
     private final String errorMessage;

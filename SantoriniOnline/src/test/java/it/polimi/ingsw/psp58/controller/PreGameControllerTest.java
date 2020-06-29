@@ -125,9 +125,9 @@ public class PreGameControllerTest {
         catch (Exception e) {
             pgc.handleEvent(new VC_ChallengerChosenFirstPlayerEvent("Rice"));
         }
-        assertEquals(pgc.getTurnSequence().get(0).getColor(), WorkerColors.BEIGE);
+        assertEquals(pgc.getTurnSequence().get(0).getColor(), WorkerColors.ORANGE);
         assertEquals(pgc.getTurnSequence().get(1).getColor(), WorkerColors.BLUE);
-        assertEquals(pgc.getTurnSequence().get(2).getColor(), WorkerColors.WHITE);
+        assertEquals(pgc.getTurnSequence().get(2).getColor(), WorkerColors.PINK);
         WorkerColors [] chosen = new WorkerColors[]{pgc.getTurnSequence().get(0).getColor(), pgc.getTurnSequence().get(1).getColor(), pgc.getTurnSequence().get(2).getColor()};
         chosen = new WorkerColors[]{pgc.getTurnSequence().get(0).getColor(), pgc.getTurnSequence().get(1).getColor(), pgc.getTurnSequence().get(2).getColor()};
         assertTrue(noDupes(chosen));

@@ -5,6 +5,9 @@ import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 import java.util.List;
 
+/**
+ * Event to notify the client that the pre game is started. Contains information about the challenger and the players list
+ */
 public class CV_PreGameStartedGameEvent extends ViewGameEvent {
     private final String challenger;
 

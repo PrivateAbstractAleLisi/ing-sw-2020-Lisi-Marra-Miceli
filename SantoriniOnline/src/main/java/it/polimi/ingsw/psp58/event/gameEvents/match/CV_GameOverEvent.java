@@ -5,6 +5,9 @@ import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
 
 import java.util.List;
 
+/**
+ * Event sent by the controller to the client when the game is over. Contains the info of who won and lost the game.
+ */
 public class CV_GameOverEvent extends ViewGameEvent {
     private final String winner;
     private final List<String> losers;

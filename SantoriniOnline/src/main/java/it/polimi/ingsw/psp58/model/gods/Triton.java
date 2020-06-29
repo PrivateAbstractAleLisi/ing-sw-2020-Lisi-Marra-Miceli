@@ -8,6 +8,9 @@ import it.polimi.ingsw.psp58.model.Player;
 import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
+/**
+ * Triton Card implementation.
+ */
 public class Triton extends Card {
 
     public Triton(Player p) {
@@ -23,8 +26,8 @@ public class Triton extends Card {
      * @param desiredX X Position where the player wants to move the worker
      * @param desiredY Y Position where the player wants to move the worker
      * @param island   The current board of game
-     * @throws InvalidMovementException
-     * @throws WinningException
+     * @throws InvalidMovementException Exception thrown when the coordinates are not valid
+     * @throws WinningException If the player won, throw a WinningException
      */
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
@@ -37,16 +40,16 @@ public class Triton extends Card {
             throw new InvalidMovementException("Invalid move for this worker");
         }
 
-        //se posso allora mi sposto
+        //effective move
         island.moveWorker(worker, desiredX, desiredY);
 
-        //decrementa il numero di movimenti rimasti
+        //decrease the number of required movements
         playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
             throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
         } else {
-            //Memorizzo l'altitudine del worker per poi controllare se è effettivamente salito
+            //memorize the high of worker and the check if the worker has won
             int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();
             checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);
         }

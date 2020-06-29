@@ -14,7 +14,6 @@ import java.util.List;
  */
 public abstract class EventSource {
 
-//    private Map<ListenerType, List<EventListener>> listeners; //all
     private List<ViewListener> viewListeners;
     private List<ControllerListener> controllerListeners;
 
@@ -25,7 +24,7 @@ public abstract class EventSource {
 
     /**
      * @param type  the category of listeners that will be notified
-     * @param event notified by
+     * @param event the event that will notify the listener
      */
     public synchronized void  notifyAllObserverByType(ListenerType type, GameEvent event) {
 
@@ -67,6 +66,7 @@ public abstract class EventSource {
     /**
      * detaches the listener from all the categories
      *
+     * @param type the {@link ListenerType} of the listener passed as parameter
      * @param listener the listener that will be removed
      */
     public void detachListenerByType(ListenerType type, EventListener listener) {
@@ -79,8 +79,6 @@ public abstract class EventSource {
                 break;
         }
     }
-
-
 
 
 }

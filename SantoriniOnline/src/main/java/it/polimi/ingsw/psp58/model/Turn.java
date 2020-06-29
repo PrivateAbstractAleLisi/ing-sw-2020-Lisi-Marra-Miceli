@@ -5,14 +5,18 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+/**
+ * This class contains all the info of the specific turn of the player
+ */
 public class Turn {
-    private Player currentPlayer;
+    private final Player currentPlayer;
     private Worker.IDs workerID;
     private int numberOfMove;
     private int numberOfBuild;
     private int[] startingPosition;
-    private BoardManager boardManager;
+    private final BoardManager boardManager;
     private boolean hasBuiltBeforeMove;
 
     public Turn(Player currentPlayer, BoardManager boardManager) {
@@ -72,53 +76,71 @@ public class Turn {
      * @param action   the action to perform
      * @return a list of all the possible move or build destination
      */
-    public ArrayList<int[]> validActions(Worker.IDs workerID, TurnAction action) {
-        ArrayList<int[]> validMoves = new ArrayList<int[]>();
-        int[] position = null;
+    public List<int[]> validActions(Worker.IDs workerID, TurnAction action) {
+        ArrayList<int[]> validMoves = new ArrayList<>();
+        int[] position;
         Worker worker = currentPlayer.getWorker(workerID);
-        int[] startingPosition = worker.getPosition();
-        for (int i = startingPosition[0] - 1; i <= startingPosition[0] + 1; i++) {
-            for (int j = startingPosition[1] - 1; j <= startingPosition[1] + 1; j++) {
+        int[] currentPosition = worker.getPosition();
+        for (int i = currentPosition[0] - 1; i <= currentPosition[0] + 1; i++) {
+            for (int j = currentPosition[1] - 1; j <= currentPosition[1] + 1; j++) {
                 if (action == TurnAction.MOVE) {
-                    if (currentPlayer.getCard().checkCellMovementAvailability(startingPosition[0], startingPosition[1], i, j, boardManager.getIsland())) {
+                    if (currentPlayer.getCard().checkCellMovementAvailability(currentPosition[0], currentPosition[1], i, j, boardManager.getIsland())) {
                         position = new int[2];
                         position[0] = i;
                         position[1] = j;
                         validMoves.add(position);
                     }
-                } else if (action == TurnAction.BUILD) {
-                    if (currentPlayer.getCard().checkCellCostructionAvailability(startingPosition[0], startingPosition[1], i, j, boardManager.getIsland())) {
+                } else if (action == TurnAction.BUILD &&
+                        currentPlayer.getCard().checkCellConstructionAvailability(currentPosition[0], currentPosition[1], i, j, boardManager.getIsland())) {
                         position = new int[2];
                         position[0] = i;
                         position[1] = j;
                         validMoves.add(position);
-                    }
+
                 }
             }
         }
         return validMoves;
     }
 
+    /**
+     * @return the number of {@code MOVE} the player has performed during this specific turn
+     */
     public int getNumberOfMove() {
         return numberOfMove;
     }
 
+    /**
+     * Increments the {@code numberOfMove} integer of the class
+     */
     public void incrementNumberOfMove() {
         this.numberOfMove++;
     }
 
+    /**
+     * @return the number of {@code BUILD} the player has performed during this specific turn
+     */
     public int getNumberOfBuild() {
         return numberOfBuild;
     }
 
+    /**
+     * Increments the {@code numberOfBuild} integer of the class
+     */
     public void incrementNumberOfBuild() {
         this.numberOfBuild++;
     }
 
+    /**
+     * @return true if the player has built before moving, false otherwise
+     */
     public boolean getHasBuiltBeforeMove() {
         return hasBuiltBeforeMove;
     }
 
+    /**
+     * @param hasBuiltBeforeMove the boolean that says if the player has built before the move
+     */
     public void setHasBuiltBeforeMove(boolean hasBuiltBeforeMove) {
         this.hasBuiltBeforeMove = hasBuiltBeforeMove;
     }

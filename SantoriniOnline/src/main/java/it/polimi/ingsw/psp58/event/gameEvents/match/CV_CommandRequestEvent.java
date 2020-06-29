@@ -6,6 +6,10 @@ import it.polimi.ingsw.psp58.model.TurnAction;
 
 import java.util.List;
 
+/**
+ * Event sent by the Controller to the client when the server expect a command from the user.
+ * It contains the available actions for this user and all the possible movements and build for both the worker A and B.
+ */
 public class CV_CommandRequestEvent extends ViewGameEvent {
     private final List<TurnAction> availableActions;
 

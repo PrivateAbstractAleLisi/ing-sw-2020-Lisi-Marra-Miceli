@@ -4,6 +4,10 @@ import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
+/**
+ * Event sent by the client to the server responding to a {@link CV_PlayerPlaceWorkerRequestEvent} when the player has to place a worker.
+ * Contains the id of the worker to place and the x and y position.
+ */
 public class VC_PlayerPlacedWorkerEvent extends ControllerGameEvent {
 
 

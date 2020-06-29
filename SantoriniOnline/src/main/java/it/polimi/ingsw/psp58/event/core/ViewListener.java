@@ -12,6 +12,9 @@ import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 
+/**
+ * Interface implemented by classes of the view that need to handle the events sent by the server
+ */
 public interface ViewListener extends EventListener {
 
     void handleEvent(PlayerDisconnectedViewEvent event);

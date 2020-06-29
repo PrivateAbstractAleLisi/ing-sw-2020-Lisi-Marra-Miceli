@@ -10,11 +10,12 @@ import it.polimi.ingsw.psp58.model.gamemap.Island;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 /**
+ * Demeter Card implementation.
  * @author Ale Lisi
  */
 public class Demeter extends Card {
     int[] lastBuiltPosition;
-    private Worker.IDs workerChoosen;
+    private Worker.IDs workerChosen;
 
     public Demeter(Player p) {
         super(p);
@@ -22,6 +23,18 @@ public class Demeter extends Card {
         lastBuiltPosition = new int[]{-1, -1};
     }
 
+    /**
+     * Check if the construction can be done from the actual position of the {@link Worker}.
+     * If the player try to build on the same cell twice return false.
+     * @param block    level of construction {@link Player} wants to build
+     * @param actualX  Actual X Position of the worker
+     * @param actualY  Actual Y Position of the worker
+     * @param desiredX X Position where the player wants to place the worker
+     * @param desiredY Y Position where the player wants to place the worker
+     * @param island   The current board of game
+     * @return true when the construction can be done from the actual position, false otherwise
+     * @throws IndexOutOfBoundsException if the indexes of the desired position aren't valid.
+     */
     @Override
     protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
         if (hasAlreadyBuiltHereInThisTurn(desiredX, desiredY)) {
@@ -30,11 +43,22 @@ public class Demeter extends Card {
         return super.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island);
     }
 
+
+    /**
+     * Build a block, near a {@link Worker}, in the the desired coordinates.
+     *
+     * @param worker   A worker of the actual player
+     * @param block    level of block desired to build
+     * @param desiredX X Position where the player wants to build the block
+     * @param desiredY Y Position where the player wants to build the block
+     * @param island   The current board of game
+     * @throws InvalidBuildException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
+     */
     @Override
-    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
+    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException {
         int actualX = worker.getPosition()[0];
         int actualY = worker.getPosition()[1];
-        int[] oldCellCluster = null;
+        int[] oldCellCluster;
 
         CellCluster old = island.getCellCluster(desiredX, desiredY);
         if (old.getCostructionHeight() != 0) {
@@ -47,11 +71,11 @@ public class Demeter extends Card {
             throw new InvalidBuildException("Invalid build for this worker");
         }
 
-        //check se utilizzo lo stesso worker
+        //check if it's the same worker
         if (lastBuiltPosition[0] == -1 && lastBuiltPosition[1] == -1) {
-            workerChoosen = worker.getWorkerID();
+            workerChosen = worker.getWorkerID();
         }else {
-            if (worker.getWorkerID() != workerChoosen) {
+            if (worker.getWorkerID() != workerChosen) {
                 throw new IllegalArgumentException("DEMETER: on the second building you must use the same worker");
             }
         }
@@ -66,28 +90,28 @@ public class Demeter extends Card {
         }
 
         lastBuiltPosition = new int[]{desiredX, desiredY};
-        //decrementa il numero di blocchi da costruire rimasti e ritorno true
+        //decrease the number of BlockPlacementLeft
         playedBy.getBehaviour().setBlockPlacementLeft(playedBy.getBehaviour().getBlockPlacementLeft() - 1);
     }
 
     /**
-     * it doesn't update the lastBuiltPosition, it just checks if you have already built here or not in the turn
+     * it doesn't update the lastBuiltPosition, it just checks if you have already built HERE or not in the turn
      *
-     * @param desidedX where you want to build
+     * @param desiredX where you want to build
      * @param desiredY where you want to build
      * @return false never built in this turn, true he built here
      */
-    private boolean hasAlreadyBuiltHereInThisTurn(int desidedX, int desiredY) {
+    private boolean hasAlreadyBuiltHereInThisTurn(int desiredX, int desiredY) {
         if (lastBuiltPosition[0] == -1 && lastBuiltPosition[1] == -1) { //he never built in this turn
             return false;
         } else { //he build at least one block
-            if (lastBuiltPosition[0] == desidedX && lastBuiltPosition[1] == desiredY) {
-                return true;
-            }
+            return lastBuiltPosition[0] == desiredX && lastBuiltPosition[1] == desiredY;
         }
-        return false;
     }
 
+    /**
+     * Reset the {@code behaviour} of the {@link Player} to the default value of the card and set 2 the block placement left.
+     */
     @Override
     public void resetBehaviour() {
 

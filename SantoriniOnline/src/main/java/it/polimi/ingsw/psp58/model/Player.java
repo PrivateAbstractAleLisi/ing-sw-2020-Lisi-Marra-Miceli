@@ -8,14 +8,14 @@ import java.util.List;
 
 public class Player {
 
-    private String username;
+    private final String username;
 
-    private ArrayList<Worker> workers = new ArrayList<Worker>();
+    private final ArrayList<Worker> workers = new ArrayList<>();
     private WorkerColors color;
 
     private BoardManager boardManager;
     private Card card;
-    private BehaviourManager behaviour;
+    private final BehaviourManager behaviour;
 
     /**
      * Constructor of the player class
@@ -30,11 +30,6 @@ public class Player {
         workers.add(worker1);
         Worker worker2 = new Worker(Worker.IDs.B, username);
         workers.add(worker2);
-    }
-
-    public Player(String username) {
-        this.username = username;
-        behaviour = new BehaviourManager();
     }
 
     /**
@@ -52,8 +47,7 @@ public class Player {
     }
 
     /**
-     * Creates the card from the input string and link it to the player
-     *
+     * Creates the card from the input {@link CardEnum} and set it to the player
      * @param cardToSet the card chosen by the player
      */
     public void setCard(CardEnum cardToSet) {
@@ -114,7 +108,8 @@ public class Player {
     }
 
     /**
-     * @return the card the player is using
+     *
+     * @return the {@link Card} the player is playing with
      */
     public Card getCard() {
         return card;
@@ -126,23 +121,6 @@ public class Player {
     public BehaviourManager getBehaviour() {
         return behaviour;
     }
-
-    /*
-    /**
-     * @param worker the worker to be added in the workers
-     * @throws InvalidWorkerException if there are already two workers or there is already one with the same ID
-     */
-    /*public void setWorker(Worker worker) throws InvalidWorkerException {
-        if (workers.size() == 2)
-            throw new InvalidWorkerException("Already two workers for this player");
-        for (Worker w : workers) {
-            if (w.getWorkerID() == worker.getWorkerID())
-                throw new InvalidWorkerException("Already a worker with the same ID");
-        }
-        workers.add(worker);
-    }
-
-     */
 
 
     /**

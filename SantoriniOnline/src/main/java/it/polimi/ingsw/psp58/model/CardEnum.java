@@ -6,7 +6,7 @@ public enum CardEnum {
     ARTEMIS(2, "Artemis", "Your Worker may move one additional time, but not back to its initial space.", "/images/gods/02_Artemis.png"),
     ATHENA(3, "Athena", "If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.", "/images/gods/03_Athena.png"),
     ATLAS(4, "Atlas", "Your Worker may build a dome at any level.", "/images/gods/04_Atlas.png"),
-    DEMETER(5, "Demeter", "Your Worker may build one additional time, but not on the same space.", "/images/gods/05_Demer.png"),
+    DEMETER(5, "Demeter", "Your Worker may build one additional time, but not on the same space.", "/images/gods/05_Demeter.png"),
     HEPHAESTUS(6, "Hephaestus", "Your Worker may build one additional block (not dome) on top of your first block.", "/images/gods/06_Hephaestus.png"),
     MINOTAUR(8, "Minotaur", "Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level.", "/images/gods/08_Minotaur.png"),
     PAN(9, "Pan", "You also win if your Worker moves down two or more levels.", "/images/gods/09_Pan.png"),
@@ -18,10 +18,10 @@ public enum CardEnum {
     ZEUS(30, "Zeus", "Your Worker may build a block under itself.","/images/gods/30_Zeus.png"),
     SUPERUSER(99, "Superuser", "You can do what the F**k you want", "/images/gods/99_Superuser.png");
 
-    private int number;
-    private String name;
-    private String description;
-    private String imgUrl;
+    private final int number;
+    private final String name;
+    private final String description;
+    private final String imgUrl;
 
     CardEnum(int number, String name, String description, String imgUrl) {
         this.number = number;
