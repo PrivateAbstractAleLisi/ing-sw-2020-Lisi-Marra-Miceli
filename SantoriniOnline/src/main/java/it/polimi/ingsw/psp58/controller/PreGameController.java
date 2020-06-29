@@ -326,7 +326,7 @@ public class PreGameController extends EventSource implements ControllerListener
      * @param event event with info about the placement
      * @throws InvalidMovementException The placement isn't valid
      */
-    public void placeInvoke(VC_PlayerPlacedWorkerEvent event) throws InvalidMovementException {
+    private void placeInvoke(VC_PlayerPlacedWorkerEvent event) throws InvalidMovementException {
         Player actingPlayer = boardManager.getPlayer(event.getActingPlayer());
         Worker worker = actingPlayer.getWorker(event.getId());
         int x = event.getPosX();
@@ -348,7 +348,7 @@ public class PreGameController extends EventSource implements ControllerListener
      *
      * @param recipient the recipient to which the island update has to be send
      */
-    public void sendIslandUpdate(String recipient) {
+    private void sendIslandUpdate(String recipient) {
         IslandData currentIsland = boardManager.getIsland().getIslandDataCopy();
         CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent("island update", currentIsland, recipient);
         notifyAllObserverByType(VIEW, islandUpdateEvent);

@@ -21,26 +21,26 @@ public class BehaviourManagerTest {
     @Test
     public void getMovementsRemaining() {
         //default 1
-        assertEquals(behaviour.getMovementsRemaining(), 1);
+        assertEquals(1, behaviour.getMovementsRemaining());
     }
 
     @org.junit.Test
     public void setMovementsRemaining() {
         behaviour.setMovementsRemaining(5);
-        assertEquals(behaviour.getMovementsRemaining(), 5);
+        assertEquals(5, behaviour.getMovementsRemaining());
     }
 
     //    Block to Place Left
     @Test
     public void getBlockPlacementLeft() {
         //default 1
-        assertEquals(behaviour.getBlockPlacementLeft(), 1);
+        assertEquals(1, behaviour.getBlockPlacementLeft());
     }
 
     @org.junit.Test
     public void setBlockPlacementLeft() {
         behaviour.setBlockPlacementLeft(8);
-        assertEquals(behaviour.getBlockPlacementLeft(), 8);
+        assertEquals(8, behaviour.getBlockPlacementLeft());
     }
 
     //    Build dome everywhere
