@@ -1,5 +1,8 @@
 package it.polimi.ingsw.psp58.auxiliary;
 
+/**
+ * auxiliary class that represents a natural numbers range between low and high (including upper and lower bounds)
+ */
 public class Range {
 
     private int low;
@@ -12,6 +15,11 @@ public class Range {
 
     }
 
+    /**
+     * checks if the number is or is between the range
+     * @param number the number that could be in the range
+     * @return true if the number is or is between the range
+     */
     public boolean contains(int number) {
         return (number >= low && number <= high);
 
@@ -28,6 +36,12 @@ public class Range {
     private final int lower = 0;
     private final int upper = 4;
 
+    /**
+     * checks if a given cell indexes are both inside the range or not
+     * @param x x index of a cell
+     * @param y y index of a cell
+     * @return true if the cell x and y indexes are both inside the range
+     */
     public boolean isIndexOfCellInRange(int x, int y) {
         return (x >= lower && x <= upper) && (y >= lower && y <= upper);
     }

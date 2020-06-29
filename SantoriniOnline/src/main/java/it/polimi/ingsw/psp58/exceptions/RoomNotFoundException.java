@@ -1,5 +1,8 @@
 package it.polimi.ingsw.psp58.exceptions;
 
+/**
+ * thrown during the client disconnection process when a room it's not found
+ */
 public class RoomNotFoundException extends Exception {
     /**
      * Constructs a new exception with the specified detail message.  The

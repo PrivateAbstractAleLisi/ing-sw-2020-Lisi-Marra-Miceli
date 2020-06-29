@@ -6,6 +6,9 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
 import java.io.Serializable;
 
+/**
+ * this class represents a model CellCluster
+ */
 public class CellClusterData implements Serializable {
 
     private final int[] blocks;
