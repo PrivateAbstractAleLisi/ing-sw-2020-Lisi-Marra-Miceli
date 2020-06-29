@@ -13,8 +13,10 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 
@@ -141,8 +143,6 @@ public class SantoriniClient extends EventSource implements Runnable {
     private void startPing(){
         try {
             InetAddress serverInetAddress = InetAddress.getByName(IP);
-          /*  Thread pinger = new Thread(new ClientPing(serverInetAddress), "pinger");
-            pinger.start(); */
 
             ping = new Thread(() -> {
 
