@@ -2,6 +2,9 @@ package it.polimi.ingsw.psp58.auxiliary;
 
 import java.io.Serializable;
 
+/**
+ * this class represents a model Island using a matrix of CellClusterData
+ */
 public class IslandData implements Serializable {
 
     private CellClusterData[][] grid;

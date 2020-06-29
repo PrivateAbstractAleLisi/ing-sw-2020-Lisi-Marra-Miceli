@@ -7,6 +7,9 @@ import it.polimi.ingsw.psp58.auxiliary.IslandData;
 
 import static it.polimi.ingsw.psp58.auxiliary.ANSIColors.*;
 
+/**
+ * utility class that displays an Island using data from IslandData
+ */
 public class IslandUtility {
 
     private IslandData data;
@@ -15,7 +18,11 @@ public class IslandUtility {
         this.data = data;
     }
 
-
+    /**
+     * prints the right string for a single cell cluster
+     * @param x x position
+     * @param y y position
+     */
     private void printCellCluster(int x, int y) {
         String cellClusterContent = ANSI_WHITE + "┃ " + ANSI_RESET;
         if (data.getCellCluster(x, y).isFree()) {
@@ -68,6 +75,9 @@ public class IslandUtility {
         System.out.print(cellClusterContent);
     }
 
+    /**
+     * displays an island with a grid using the data from an IslandData object. Every cell cluster is printed as a sequence of characters.
+     */
     public void displayIsland() {
 
 

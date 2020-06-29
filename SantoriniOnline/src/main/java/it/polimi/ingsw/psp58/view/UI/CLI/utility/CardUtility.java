@@ -4,10 +4,16 @@ import it.polimi.ingsw.psp58.model.CardEnum;
 
 import java.util.List;
 
+/**
+ * static methods that help printing a list of cards
+ */
 public class CardUtility {
 
     CardEnum cards;
 
+    /**
+     * prints every card in CardEnum as a list NUMBER. CARD NAME: DESCRIPTION
+     */
     public static void displayAllCards() {
 
         System.out.println("AVAILABLE CARDS: \n");
@@ -20,6 +26,10 @@ public class CardUtility {
         }
     }
 
+    /**
+     * prints every card in a given list as a list NUMBER. CARD NAME: DESCRIPTION
+     * @param cards the list of cards that will be printed
+     */
     public static void displayAllAvailableCards(List<CardEnum> cards) {
         System.out.println("AVAILABLE CARDS: \n");
         for (CardEnum card : cards) {

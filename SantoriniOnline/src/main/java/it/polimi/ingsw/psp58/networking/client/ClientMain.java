@@ -7,9 +7,16 @@ import javafx.application.Application;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-
+/**
+ * Server program entry point
+ */
 public class ClientMain {
 
+    private final static String errorValid = "\nERROR: please insert a valid integer.\n";
+    /**
+     * Server program entry point, starts cli or gui
+     * @param args used to toggle ping on / off and to choose between CLI and GUI.
+     */
     public static void main(String[] args) {
         boolean viewModeArg = false;
         boolean enablePing = true;
@@ -63,13 +70,13 @@ public class ClientMain {
                 try {
                     viewModeChoice = input.nextInt();
                     if (viewModeChoice != 1 && viewModeChoice != 2) {
-                        System.out.println("ERROR: please insert a valid integer.");
+                        System.out.println(errorValid);
                     } else {
                         continueInput = false;
                     }
 
                 } catch (InputMismatchException e) {
-                    System.out.println("ERROR: please insert a valid integer.");
+                    System.out.println(errorValid);
                 }
 
             }

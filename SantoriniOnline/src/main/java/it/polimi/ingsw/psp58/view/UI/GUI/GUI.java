@@ -32,7 +32,7 @@ public class GUI extends Application implements ViewListener {
     private static final String ONLINE_SERVER_IP = "23.23.52.127";
 
     private boolean enablePing = true;
-    private boolean alreadyDisconnectedRecently = true;
+    private boolean alreadyDisconnectedRecently = false;
 
     private String username;
 
@@ -70,30 +70,17 @@ public class GUI extends Application implements ViewListener {
     public void disconnectionHandle(String message) {
         if (!alreadyDisconnectedRecently) {
             showError("You've been disconnected from the server." + (message.isEmpty() ? "" : " " + message));
-            FXMLLoader loaderStartingScene = new FXMLLoader(
-                    getClass().getResource("/scenes/StartingScene.fxml"));
-            try {
-                startingScene = new Scene(loaderStartingScene.load());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-            startingSceneController = loaderStartingScene.getController();
-            startingSceneController.setGui(this);
-            try {
-                startingSceneController.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            changeScene(startingScene);
+            restartStartingScene();
         }
     }
 
-    @Override
+
     /**
      * The first method called by the main one. Loads the {@code startingScene}, {@code startingSceneController},
      * {@code lobbyScene} and {@code lobbySceneController} and show the starting one.
      */
+    @Override
     public void start(Stage primaryStage) throws IOException {
         List<String> args = getParameters().getRaw();
 
@@ -108,14 +95,7 @@ public class GUI extends Application implements ViewListener {
         stage = primaryStage;
         stage.setResizable(false);
 
-        //set up the starting scene and controller
-        FXMLLoader loaderStartingScene = new FXMLLoader(
-                getClass().getResource("/scenes/StartingScene.fxml"));
-        startingScene = new Scene(loaderStartingScene.load());
-
-        startingSceneController = loaderStartingScene.getController();
-        startingSceneController.setGui(this);
-        startingSceneController.start();
+        setNewStartingScene();
 
         //set up the lobby scene and controller
         FXMLLoader lobbySceneLoader = new FXMLLoader(
@@ -131,6 +111,26 @@ public class GUI extends Application implements ViewListener {
         stage.setOnCloseRequest(e -> closeApp());
     }
 
+    private void setNewStartingScene() throws IOException {
+        //set up the starting scene and controller
+        FXMLLoader loaderStartingScene = new FXMLLoader(
+                getClass().getResource("/scenes/StartingScene.fxml"));
+        startingScene = new Scene(loaderStartingScene.load());
+
+        startingSceneController = loaderStartingScene.getController();
+        startingSceneController.setGui(this);
+        startingSceneController.start();
+    }
+
+    public void restartStartingScene(){
+        try {
+            setNewStartingScene();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        changeScene(startingScene);
+    }
+
     @Override
     public void handleEvent(CV_RoomSizeRequestGameEvent event) {
         resetDisconnectionBoolean();
@@ -140,7 +140,6 @@ public class GUI extends Application implements ViewListener {
             e.printStackTrace();
         }
         startingSceneController.complete();
-
     }
 
     /**
@@ -379,6 +378,7 @@ public class GUI extends Application implements ViewListener {
      */
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
+        resetDisconnectionBoolean();
         System.out.println("Room Update received");
         lobbySceneController.update(event);
         if (!stage.getScene().equals(lobbyScene)) {

@@ -21,12 +21,13 @@ public class OutcomeSceneController {
     @FXML
     private Label labelSubTitle;
     @FXML
-    private StackPane playAgainStackPane,spectatorStackPane;
+    private StackPane playAgainStackPane, spectatorStackPane;
 
     /**
      * Initialize the scene and displays the name of the winner
+     *
      * @param winner the name of the winner of the game
-     * @param gui the main {@link GUI} instance
+     * @param gui    the main {@link GUI} instance
      */
     public void initAndFillWinner(String winner, GUI gui) {
         this.gui = gui;
@@ -41,13 +42,14 @@ public class OutcomeSceneController {
         } else {
             labelTitle.setText("YOU LOSE");
         }
-        if(winner!= null){
+        if (winner != null) {
             labelSubTitle.setText(winner.toUpperCase() + " IS THE WINNER");
         }
     }
 
     /**
      * Shows for the first player who lost a 3-player game that he is now a spectator
+     *
      * @param gui the main {@link GUI} instance
      */
     public void initAndFillSpectator(GUI gui) {
@@ -63,7 +65,6 @@ public class OutcomeSceneController {
     }
 
     /**
-     *
      * @param username the name of the player it's needed to know if is the winner
      * @return true if the parameter is the actual winner
      */
@@ -83,7 +84,7 @@ public class OutcomeSceneController {
      * Enables the spectator mode
      */
     @FXML
-    public void spectatorButton(){
+    public void spectatorButton() {
         gui.setShowBoardScene();
     }
 
@@ -112,7 +113,7 @@ public class OutcomeSceneController {
     @FXML //disconnects and back to starting scene
     public void discoOMCE() {
         sendClientTurnDownRequest();
-        gui.changeScene(gui.getStartingScene());
+        gui.restartStartingScene();
     }
 
 }

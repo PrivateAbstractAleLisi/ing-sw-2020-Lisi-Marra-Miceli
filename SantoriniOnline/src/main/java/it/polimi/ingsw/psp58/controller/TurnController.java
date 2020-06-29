@@ -37,9 +37,7 @@ public class TurnController extends EventSource implements ControllerListener {
     private int currentTurnIndex;
     private Turn currentTurnInstance;
     private int currentTurnNumber;
-
     private boolean thereIsChronus;
-
     private int numberOfPlayers;
     private Player currentPlayer;
     private final BoardManager board;
@@ -67,7 +65,7 @@ public class TurnController extends EventSource implements ControllerListener {
     /**
      * checks if there is Chronus in the game and set the apposite boolean
      */
-    public void checkIfThereIsChronus() {
+    private void checkIfThereIsChronus() {
         this.thereIsChronus = false;
         for (Player player : turnSequence.values()) {
             if (player.getCard().getName() == CardEnum.CHRONUS) {
@@ -173,7 +171,7 @@ public class TurnController extends EventSource implements ControllerListener {
      * @param availableMovementsA all the possible destination for the worker A
      * @param availableMovementsB all the possible destination for the worker B
      */
-    public void setUpAvailableMovements(BehaviourManager behaviour, List<int[]> availableMovementsA, List<int[]> availableMovementsB) {
+    private void setUpAvailableMovements(BehaviourManager behaviour, List<int[]> availableMovementsA, List<int[]> availableMovementsB) {
         if (currentTurnInstance.getNumberOfMove() == 0 && currentTurnInstance.getNumberOfBuild() == 0) { // he can move with any of the two workers
 
             //gets the possibles move for the worker A
@@ -198,7 +196,7 @@ public class TurnController extends EventSource implements ControllerListener {
      * @param availableBuildA all the possible destination for the build of the worker A
      * @param availableBuildB all the possible destination for the build of the worker B
      */
-    public void setUpAvailableBuild(List<int[]> availableBuildA, List<int[]> availableBuildB) {
+    private void setUpAvailableBuild(List<int[]> availableBuildA, List<int[]> availableBuildB) {
         if (currentTurnInstance.getNumberOfMove() == 0) { // the player can build with any worker (ONLY PROMETHEUS)
             availableBuildA.addAll(currentTurnInstance.validActions(IDs.A, BUILD));
             availableBuildB.addAll(currentTurnInstance.validActions(IDs.B, BUILD));
@@ -219,7 +217,7 @@ public class TurnController extends EventSource implements ControllerListener {
      * @param player           the name of the player
      * @return true if he lost, false otherwise
      */
-    public boolean checkLose(List<TurnAction> availableActions, String player) {
+    private boolean checkLose(List<TurnAction> availableActions, String player) {
         if (availableActions.isEmpty()) { //the player has no actions possibles so he loses
             lose(player);
             return true;
@@ -233,7 +231,7 @@ public class TurnController extends EventSource implements ControllerListener {
      * @param actingPlayer the name of the player that has to make an action
      * @return true if {@code MOVE} is a possible action, false otherwise
      */
-    public boolean canMove(String actingPlayer) {
+    private boolean canMove(String actingPlayer) {
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
         int numberOfBuild = currentTurnInstance.getNumberOfBuild();
@@ -248,7 +246,7 @@ public class TurnController extends EventSource implements ControllerListener {
      * @param actingPlayer the name of the player that has to make an action
      * @return true if {@code BUILD} is a possible action, false otherwise
      */
-    public boolean canBuild(String actingPlayer) {
+    private boolean canBuild(String actingPlayer) {
         BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
         int numberOfMove = currentTurnInstance.getNumberOfMove();
@@ -263,7 +261,7 @@ public class TurnController extends EventSource implements ControllerListener {
      *
      * @return true if {@code PASS} is a possible action, false otherwise
      */
-    public boolean canPassTurn() {
+    private boolean canPassTurn() {
         boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;
         if (isPrometheus) {
             //if is Prometheus, check more things
@@ -468,7 +466,7 @@ public class TurnController extends EventSource implements ControllerListener {
     /**
      * Sends a {@link CV_IslandUpdateEvent} with updated island, after an action has been performed, to all the players
      */
-    public void sendIslandUpdate() {
+    private void sendIslandUpdate() {
         IslandData currentIsland = board.getIsland().getIslandDataCopy();
         CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent("island update", currentIsland);
         notifyAllObserverByType(VIEW, islandUpdateEvent);
@@ -499,7 +497,7 @@ public class TurnController extends EventSource implements ControllerListener {
      * @param player the player on which the method check if is his turn
      * @return true if is the turn of the {@code player}, false otherwise
      */
-    public boolean checkIsHisTurn(Player player) {
+    private boolean checkIsHisTurn(Player player) {
         if (!player.getUsername().equals(getCurrentPlayerUser())) {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("is not your turn!", player.getUsername());
             notifyAllObserverByType(VIEW, errorEvent);

@@ -4,6 +4,9 @@ import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
 
+/**
+ * a command that is inserted into the CLI during a match
+ */
 public class Command {
 
     //Native
@@ -19,6 +22,14 @@ public class Command {
     TurnAction action;
     BlockTypeEnum fblock;
 
+    /**
+     * builds a command with its fields
+     * @param com command identifier
+     * @param x x position
+     * @param y y position
+     * @param id worker id
+     * @param block block id
+     */
     public Command(String com, String x, String y, String id, String block) {
         this.x = x;
         this.y = y;
@@ -27,7 +38,11 @@ public class Command {
         this.com = com;
     }
 
-
+    /**
+     * converts the command fields from String to the right classes. int for position, Worker.IDs for worker, TurnAction for action identifier
+     * and BlockTypeEnum for the building block identifier.
+     * @return true if the command is extracted correctly;
+     */
     public boolean extract() {
 
         try {

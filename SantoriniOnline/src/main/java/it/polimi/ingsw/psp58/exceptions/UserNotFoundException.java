@@ -1,5 +1,8 @@
 package it.polimi.ingsw.psp58.exceptions;
 
+/**
+ * thrown when trying to find a user in a room but the user doesn't exists
+ */
 public class UserNotFoundException extends Exception {
     /**
      * Constructs a new exception with the specified detail message.  The
