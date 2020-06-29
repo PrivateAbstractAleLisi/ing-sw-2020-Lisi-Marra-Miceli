@@ -18,7 +18,10 @@
 | Advanced Gods | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
 | Undo | [![RED](https://placehold.it/15/f03c15/f03c15)](#) |
 
-## Jar Files
+## Execution of Jar Files
+### Requirements
+Requires Java 11 or more recent versions.
+
 ### *Server*
 To execute the **Server** download the *server.jar* and execute the following command into the terminal:
 `` java -jar server.jar``
@@ -52,7 +55,8 @@ The program accept different line arguments to set few main settings of the prog
 
 
 ## Compile with Maven
-To compile the program use Intellij Idea, select the desired profile (*Server*, *Client-Win* or *Client-Mac*), execute ``clean`` lifecycle phase and then execute the ``package`` lifecycle phase.
+To compile the program use Intellij Idea, select the desired profile (*Server*, *Client-Win* or *Client-Mac*), execute the following Maven command:
+``mvn clean package``
 <br>In the folder *Target* you'll find the .jar file for the desired profile.
 <br>Please note that *Client-Win* and *Client-Mac* profiles are almost identical: the only difference between them is the order wich the ``javafx`` dependencies are added.
 

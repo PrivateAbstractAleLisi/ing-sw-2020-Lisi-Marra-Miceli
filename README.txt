@@ -20,7 +20,10 @@ Advanced Functionality
 - Persistence
 - Advanced Gods 
 
-## Jar Files
+## Execution of  Jar Files
+### Requirements
+Requires Java 11 or more recent versions
+
 ### Server
 To execute the Server download the server.jar and execute the following command into the terminal:
  java -jar server.jar
@@ -56,7 +59,7 @@ If both (-cli and -gui) commands are used at the same time, the program will ask
 
 
 ## Compile with Maven
-To compile the program use Intellij Idea, select the desired profile (Server, Client-Win or Client-Mac), execute clean lifecycle phase and then execute the package lifecycle phase.
+To compile the program use Intellij Idea, select the desired profile (Server, Client-Win or Client-Mac), execute the following Maven command: "mvn clean package"
 
 In the folder Target you'll find the .jar file for the desired profile.
 
