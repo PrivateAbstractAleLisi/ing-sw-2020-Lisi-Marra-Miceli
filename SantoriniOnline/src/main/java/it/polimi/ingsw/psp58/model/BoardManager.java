@@ -12,19 +12,19 @@ import java.util.List;
 
 /**
  * A class containing the main info about the game, such as the island, the list of the players and the cards,
- * to make them easy accessible from the it.polimi.ingsw.psp58.controller package
+ * to make them easy accessible from the controller package
  */
 public class BoardManager {
 
     //List of the players in the game
-    private List<Player> players;
+    private final List<Player> players;
 
     //Island of the game
-    private Island island;
+    private final Island island;
 
-    private List<CardEnum> cards;
-    private List<CardEnum> selectedCards;
-    private List<CardEnum> takenCards;
+    private final List<CardEnum> cards;
+    private final List<CardEnum> selectedCards;
+    private final List<CardEnum> takenCards;
 
 
     /**

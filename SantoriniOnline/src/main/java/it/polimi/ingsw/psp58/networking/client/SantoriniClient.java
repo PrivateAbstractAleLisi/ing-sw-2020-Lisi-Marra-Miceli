@@ -3,8 +3,8 @@ package it.polimi.ingsw.psp58.networking.client;
 import it.polimi.ingsw.psp58.event.core.EventListener;
 import it.polimi.ingsw.psp58.event.core.EventSource;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
-import it.polimi.ingsw.psp58.event.gameEvents.connection.PingEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.ViewGameEvent;
+import it.polimi.ingsw.psp58.event.gameEvents.connection.PingEvent;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.MessageUtility;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.application.Platform;
@@ -40,6 +40,8 @@ public class SantoriniClient extends EventSource implements Runnable {
      * if it's true the client will ping the server
      */
     private boolean enablePing;
+
+    private Thread ping;
 
     private GUI guiIstance;
 
@@ -80,28 +82,7 @@ public class SantoriniClient extends EventSource implements Runnable {
 
         }
         if (enablePing) {
-
-
-            Thread ping = new Thread(() -> {
-
-                try {
-                    int counter = 0;
-                    while (true) {
-                        Thread.sleep(5000);
-                        out.writeObject(new PingEvent("Ping #" + counter));
-                        counter++;
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    System.out.println("Unable to send it.polimi.ingsw.sp58.event to server");
-                } finally {
-                    Thread.currentThread().interrupt();
-                }
-            });
-            ping.start();
-
-
+            startPing();
         }
 
         //open the in/out stream from the server
@@ -157,6 +138,40 @@ public class SantoriniClient extends EventSource implements Runnable {
         }
     }
 
+    private void startPing(){
+        try {
+            InetAddress serverInetAddress = InetAddress.getByName(IP);
+          /*  Thread pinger = new Thread(new ClientPing(serverInetAddress), "pinger");
+            pinger.start(); */
+
+            ping = new Thread(() -> {
+
+                try {
+                    int counter = 0;
+                    while (true) {
+                        Thread.sleep(5000);
+                        out.writeObject(new PingEvent("Ping #" + counter));
+                        counter++;
+                    }
+                } catch (InterruptedException e) {
+                    System.out.println("Ping system disable");
+                } catch (IOException e) {
+                    System.out.println("Unable to send it.polimi.ingsw.sp58.event to server");
+                } finally {
+                    Thread.currentThread().interrupt();
+                }
+            });
+            ping.start();
+
+        } catch (UnknownHostException e) {
+            System.out.println("Unable to convert IP address to InetAddress");
+        }
+    }
+
+    private void stopPing(){
+        ping.interrupt();
+    }
+
     public boolean isConnectionOpen() {
         return connectionOpen;
     }
@@ -166,6 +181,9 @@ public class SantoriniClient extends EventSource implements Runnable {
      */
     public void closeConnection() {
 
+        if(enablePing && ping.isAlive()){
+            stopPing();
+        }
         try {
             serverSocket.close();
             if (guiIstance != null) {

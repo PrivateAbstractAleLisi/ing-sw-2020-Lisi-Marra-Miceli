@@ -3,6 +3,10 @@ package it.polimi.ingsw.psp58.event.gameEvents.lobby;
 import it.polimi.ingsw.psp58.event.core.ControllerListener;
 import it.polimi.ingsw.psp58.event.gameEvents.ControllerGameEvent;
 
+/**
+ * Event sent by the client to the server to request a connection.
+ * Contains the proposed username, the ip address and the port.
+ */
 public class VC_ConnectionRequestGameEvent extends ControllerGameEvent {
 
     private final String IP;

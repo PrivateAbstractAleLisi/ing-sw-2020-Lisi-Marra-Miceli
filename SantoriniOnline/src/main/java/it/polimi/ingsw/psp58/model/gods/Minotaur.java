@@ -39,7 +39,7 @@ public class Minotaur extends Card {
             int actualY = worker.getPosition()[1];
             CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
 
-            //ADDED Verifico che il worker sulla cella desiderata sia di un altro giocatore
+            //ADDED check if the worker in the desired cellCluster is an opposite worker
             if (desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
@@ -48,7 +48,7 @@ public class Minotaur extends Card {
                 throw new InvalidMovementException("Invalid move for this worker");
             }
 
-            //decrementa il numero di movimenti rimasti
+            //decrease the number of required movements
             playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
             Worker enemyWorker = getEnemyWorker(desiredX, desiredY, island);
@@ -61,7 +61,7 @@ public class Minotaur extends Card {
             if (!checkWorkerPosition(island, worker, desiredX, desiredY) && !checkWorkerPosition(island, enemyWorker, shiftedCoordinates[0], shiftedCoordinates[1])) {
                 throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
             } else {
-                //Memorizzo l'altitudine del worker per poi controllare se è effettivamente salito
+                //memorize the high of worker and the check if the worker has won
                 int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();
                 checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);
             }
@@ -86,6 +86,7 @@ public class Minotaur extends Card {
         CellCluster desiredCellCluster = island.getCellCluster(desiredX, desiredY);
         BehaviourManager behaviour = playedBy.getBehaviour();
 
+        //calculate if the movement is on a valid direction using the god power
         if (desiredCellCluster.getWorkerOwnerUsername() != null) {
             if (desiredCellCluster.getWorkerOwnerUsername().equals(playedBy.getUsername())) {
                 return false;
@@ -101,35 +102,29 @@ public class Minotaur extends Card {
             }
         }
 
-
-        //Verifico che la coordinate di destinazione siano diverse da quelle attuali
+        //check if the coordinates of the destination are different from actual ones
         if (actualX == desiredX && actualY == desiredY) {
             return false;
         }
-        //verifica il behaviour permette di muoversi
+        //check if the behaviour allow a move
         if (behaviour.getMovementsRemaining() <= 0) {
             return false;
         }
-        //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)
+        //calculate the euclidean distance and check that distance < 2 (return false otherwise)
         if (distance(actualX, actualY, desiredX, desiredY) >= 2) {
             return false;
         }
         if (desiredCellCluster.isComplete()) {
             return false;
         }
-        //verifica il behaviour permette di salire
+        //check if the behavior allow to go up
         if (behaviour.isCanClimb()) {
-            //al max salgo di 1
-            if (actualCellCluster.getCostructionHeight() + 1 < desiredCellCluster.getCostructionHeight()) {
-                return false;
-            }
+            //max 1 level of go up
+            return actualCellCluster.getCostructionHeight() + 1 >= desiredCellCluster.getCostructionHeight();
         } else {
-            //non posso salire
-            if (actualCellCluster.getCostructionHeight() < desiredCellCluster.getCostructionHeight()) {
-                return false;
-            }
+            //can't go up
+            return actualCellCluster.getCostructionHeight() >= desiredCellCluster.getCostructionHeight();
         }
-        return true;
     }
 
     /**

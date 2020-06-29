@@ -38,7 +38,7 @@ public class Zeus extends Card {
         boolean samePosition = actualX == desiredX && actualY == desiredY;
         BehaviourManager behaviour = playedBy.getBehaviour();
 
-        //verifica il behaviour permette di costruire
+        //check if the behavior allow to build
         if (behaviour.getBlockPlacementLeft() <= 0) {
             return false;
         }
@@ -52,12 +52,12 @@ public class Zeus extends Card {
         if(samePosition && block==DOME){
             return false;
         }
-        //calcola la distanza euclidea e verifica che sia min di 2 (ritorna false altrimenti)
+        //calculate the euclidean distance and check that distance < 2 (return false otherwise)
         if (distance(actualX, actualY, desiredX, desiredY) >= 2) {
             return false;
         }
 
-        //genero un array contenente la struttura del cellcluster (e il nuovo blocco) e l'analizzo nella funzione successiva
+        //generate an array with the cellCluster structure (plus the new block) and analyze that with the next function
         int[] desiredConstruction = desiredCellCluster.toIntArrayWithHypo(block);
         return isValidBlockPlacement(block, desiredConstruction, behaviour);
     }

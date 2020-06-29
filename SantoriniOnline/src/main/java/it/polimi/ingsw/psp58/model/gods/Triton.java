@@ -40,16 +40,16 @@ public class Triton extends Card {
             throw new InvalidMovementException("Invalid move for this worker");
         }
 
-        //se posso allora mi sposto
+        //effective move
         island.moveWorker(worker, desiredX, desiredY);
 
-        //decrementa il numero di movimenti rimasti
+        //decrease the number of required movements
         playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
             throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
         } else {
-            //Memorizzo l'altitudine del worker per poi controllare se è effettivamente salito
+            //memorize the high of worker and the check if the worker has won
             int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();
             checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);
         }

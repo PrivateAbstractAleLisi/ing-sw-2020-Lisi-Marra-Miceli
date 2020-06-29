@@ -46,7 +46,7 @@ public class Artemis extends Card {
      */
     @Override
     public void move(Worker worker, int desiredX, int desiredY, Island island) throws InvalidMovementException, WinningException {
-        //dove parte il mio worker
+        //where my worker starts in this move
         int actualX = worker.getPosition()[0];
         int actualY = worker.getPosition()[1];
 
@@ -55,14 +55,14 @@ public class Artemis extends Card {
             throw new InvalidMovementException("Invalid move for this worker");
         }
 
-        //se non mi sono mai mosso mi salvo da dove parto
+        //if it's my first move during the turn, save my starting position
         if (startingPosition[0] == -1 && startingPosition[1] == -1) {
             startingPosition = new int[2];
             workerChosen = worker.getWorkerID();
             startingPosition[0] = actualX;
             startingPosition[1] = actualY;
         }
-        //se è la seconda volta che mi muovo allora controllo che non sto tornando dove ero prima
+        //if it's the second move, check if the destination is different from my starting position during the turn
         else {
             if (desiredX == startingPosition[0] && desiredY == startingPosition[1]) {
                 throw new IllegalArgumentException("ARTEMIS: on the second movement you can't come back to starting position");
@@ -72,16 +72,15 @@ public class Artemis extends Card {
             }
         }
 
-        //se posso allora mi sposto
         island.moveWorker(worker, desiredX, desiredY);
 
-        //decrementa il numero di movimenti rimasti
+        //decrease the number of required movements
         playedBy.getBehaviour().setMovementsRemaining(playedBy.getBehaviour().getMovementsRemaining() - 1);
 
         if (!checkWorkerPosition(island, worker, desiredX, desiredY)) {
             throw new InvalidMovementException("The move is valid but there was an error applying desired changes");
         } else {
-            //Memorizzo l'altitudine del worker per poi controllare se è effettivamente salito
+            //memorize the high of worker and the check if the worker has won
             int oldAltitudeOfPlayer = island.getCellCluster(actualX, actualY).getCostructionHeight();
             checkWin(island, desiredX, desiredY, oldAltitudeOfPlayer);
         }
@@ -97,7 +96,7 @@ public class Artemis extends Card {
         super.resetBehaviour();
         playedBy.getBehaviour().setMovementsRemaining(2);
 
-        //convenzione
+        //decided during develop
         startingPosition[0] = -1;
         startingPosition[1] = -1;
     }

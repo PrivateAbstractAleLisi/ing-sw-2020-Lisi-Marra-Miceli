@@ -75,7 +75,9 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
      */
     private void connectionLost() {
         printLogMessage("Method connectionLost called: " + clientSocket.getInetAddress().toString() + " port: " + clientSocket.getPort());
-        stopPing();
+        if (enablePing && ping.isAlive()) {
+            stopPing();
+        }
         //if the connection is not lost caused by another player crashed
         if (!clientVV.isAnotherPlayerInRoomCrashed()) {
 
