@@ -368,10 +368,13 @@ public class Lobby extends EventSource implements ControllerListener {
         }
     }
 
+
     /**
      * Disconnect a user in a Room and clean everything.
      *
      * @param username Username of disconnecting user
+     * @throws UserNotFoundException User not found
+     * @throws RoomNotFoundException Room not found
      */
     private void disconnectUserInARoom(String username) throws UserNotFoundException, RoomNotFoundException {
         Room roomWithUser = getRoomWithUser(username.toLowerCase());
