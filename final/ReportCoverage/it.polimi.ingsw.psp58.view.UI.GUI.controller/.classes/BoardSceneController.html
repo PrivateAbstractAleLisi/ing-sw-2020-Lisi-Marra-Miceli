@@ -1,0 +1,1346 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BoardSceneController</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.view.UI.GUI.controller</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BoardSceneController (it.polimi.ingsw.psp58.view.UI.GUI.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BoardSceneController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 64)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 372)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BoardSceneController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 65)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 375)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.view.UI.GUI.controller;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
+<i>4</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.IslandData;
+<i>5</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
+<i>6</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
+<i>7</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
+<i>8</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.match.*;
+<i>9</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PlayerPlaceWorkerRequestEvent;
+<i>10</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_WaitPreMatchGameEvent;
+<i>11</i>&nbsp;import it.polimi.ingsw.psp58.model.CardEnum;
+<i>12</i>&nbsp;import it.polimi.ingsw.psp58.model.TurnAction;
+<i>13</i>&nbsp;import it.polimi.ingsw.psp58.model.WorkerColors;
+<i>14</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+<i>15</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.Worker;
+<i>16</i>&nbsp;import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
+<i>17</i>&nbsp;import it.polimi.ingsw.psp58.view.UI.GUI.Message;
+<i>18</i>&nbsp;import it.polimi.ingsw.psp58.view.UI.GUI.boardstate.*;
+<i>19</i>&nbsp;import it.polimi.ingsw.psp58.view.UI.GUI.controller.exceptions.WorkerLockedException;
+<i>20</i>&nbsp;import javafx.application.Platform;
+<i>21</i>&nbsp;import javafx.fxml.FXML;
+<i>22</i>&nbsp;import javafx.scene.Node;
+<i>23</i>&nbsp;import javafx.scene.control.Button;
+<i>24</i>&nbsp;import javafx.scene.control.Label;
+<i>25</i>&nbsp;import javafx.scene.effect.DropShadow;
+<i>26</i>&nbsp;import javafx.scene.image.Image;
+<i>27</i>&nbsp;import javafx.scene.image.ImageView;
+<i>28</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>29</i>&nbsp;import javafx.scene.layout.*;
+<i>30</i>&nbsp;import javafx.scene.paint.Color;
+<i>31</i>&nbsp;import javafx.scene.text.Font;
+<i>32</i>&nbsp;import javafx.scene.text.Text;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import java.util.*;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * This class handle the entire match using the Pattern State.
+<i>38</i>&nbsp; * It receives lots of events and updates the board on the screen.
+<i>39</i>&nbsp; */
+<i>40</i>&nbsp;
+<b class="nc"><i>41</i>&nbsp;public class BoardSceneController {</b>
+<i>42</i>&nbsp;    /**
+<i>43</i>&nbsp;     * Color of my workers.
+<i>44</i>&nbsp;     */
+<i>45</i>&nbsp;    private WorkerColors myColor;
+<i>46</i>&nbsp;    /**
+<i>47</i>&nbsp;     * {@link String} with my username.
+<i>48</i>&nbsp;     */
+<b class="nc"><i>49</i>&nbsp;    private String myUsername = &quot;&quot;;</b>
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * Main {@link GUI} object.
+<i>52</i>&nbsp;     */
+<i>53</i>&nbsp;    private GUI gui;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /**
+<i>56</i>&nbsp;     * {@code boolean} is true if my turn just began and I need to show the popup.
+<i>57</i>&nbsp;     */
+<b class="nc"><i>58</i>&nbsp;    private boolean myTurnFirstActionPopup = false;</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /**
+<i>61</i>&nbsp;     * Last island update, overwritten many times during the match.
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    private IslandData lastIslandUpdate;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * The last {@link GridPane} content saved as {@link StackPane} matrix.
+<i>66</i>&nbsp;     */
+<i>67</i>&nbsp;    private StackPane[][] lastGridPane;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    //STATE PATTERN
+<i>70</i>&nbsp;    /**
+<i>71</i>&nbsp;     * Current selected worker.
+<i>72</i>&nbsp;     */
+<i>73</i>&nbsp;    private WorkerStatus workerStatus;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * Current State of the game for this player.
+<i>76</i>&nbsp;     */
+<i>77</i>&nbsp;    private GameStateAbstract currentStateInstance;
+<i>78</i>&nbsp;    /**
+<i>79</i>&nbsp;     * The game board with all the elements.
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    @FXML
+<i>82</i>&nbsp;    private GridPane board;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /**
+<i>85</i>&nbsp;     * {@link VBox} that contains the info about the card of the local player.
+<i>86</i>&nbsp;     */
+<i>87</i>&nbsp;    @FXML
+<i>88</i>&nbsp;    private VBox myCardInfo;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    /**
+<i>91</i>&nbsp;     * {@link VBox} that contains the info about the first opponent&#39;s card.
+<i>92</i>&nbsp;     */
+<i>93</i>&nbsp;    @FXML
+<i>94</i>&nbsp;    private VBox cardInfo1;
+<i>95</i>&nbsp;    /**
+<i>96</i>&nbsp;     * {@link VBox} that contains the info about the second opponent&#39;s card.
+<i>97</i>&nbsp;     */
+<i>98</i>&nbsp;    @FXML
+<i>99</i>&nbsp;    private VBox cardInfo2;
+<i>100</i>&nbsp;    /**
+<i>101</i>&nbsp;     * {@link VBox} that contains the info about the current turn limitation.
+<i>102</i>&nbsp;     */
+<i>103</i>&nbsp;    @FXML
+<i>104</i>&nbsp;    private VBox turnInfo;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    //ACTION BUTTONS
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * {@link StackPane} that contains all the bottom buttons.
+<i>109</i>&nbsp;     */
+<i>110</i>&nbsp;    @FXML
+<i>111</i>&nbsp;    private StackPane commandGameButtonPane;
+<i>112</i>&nbsp;    /**
+<i>113</i>&nbsp;     * {@link Button} Move Button
+<i>114</i>&nbsp;     */
+<i>115</i>&nbsp;    @FXML
+<i>116</i>&nbsp;    private Button moveButton;
+<i>117</i>&nbsp;    /**
+<i>118</i>&nbsp;     * {@link Button} Build Button
+<i>119</i>&nbsp;     */
+<i>120</i>&nbsp;    @FXML
+<i>121</i>&nbsp;    private Button buildButton;
+<i>122</i>&nbsp;    /**
+<i>123</i>&nbsp;     * {@link Button} Pass Button
+<i>124</i>&nbsp;     */
+<i>125</i>&nbsp;    @FXML
+<i>126</i>&nbsp;    private Button passButton;
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    //BLOCKS
+<i>129</i>&nbsp;    /**
+<i>130</i>&nbsp;     * {@link HBox} Level 1 HBox
+<i>131</i>&nbsp;     */
+<i>132</i>&nbsp;    @FXML
+<i>133</i>&nbsp;    private HBox l1Box;
+<i>134</i>&nbsp;    /**
+<i>135</i>&nbsp;     * {@link HBox} Level 2 HBox
+<i>136</i>&nbsp;     */
+<i>137</i>&nbsp;    @FXML
+<i>138</i>&nbsp;    private HBox l2Box;
+<i>139</i>&nbsp;    /**
+<i>140</i>&nbsp;     * {@link HBox} Level 3 HBox
+<i>141</i>&nbsp;     */
+<i>142</i>&nbsp;    @FXML
+<i>143</i>&nbsp;    private HBox l3Box;
+<i>144</i>&nbsp;    /**
+<i>145</i>&nbsp;     * {@link HBox} Dome HBox
+<i>146</i>&nbsp;     */
+<i>147</i>&nbsp;    @FXML
+<i>148</i>&nbsp;    private HBox domeBox;
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;    //WORKERS
+<i>151</i>&nbsp;    /**
+<i>152</i>&nbsp;     * {@link ImageView} Miniatures of Worker A
+<i>153</i>&nbsp;     */
+<i>154</i>&nbsp;    @FXML
+<i>155</i>&nbsp;    private ImageView workerSlotA;
+<i>156</i>&nbsp;    /**
+<i>157</i>&nbsp;     * {@link ImageView} Miniatures of Worker B
+<i>158</i>&nbsp;     */
+<i>159</i>&nbsp;    @FXML
+<i>160</i>&nbsp;    private ImageView workerSlotB;
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;    //TURN SEQUENCE
+<i>163</i>&nbsp;    /**
+<i>164</i>&nbsp;     * {@link Label} with Turn Sequence
+<i>165</i>&nbsp;     */
+<i>166</i>&nbsp;    @FXML
+<i>167</i>&nbsp;    private Label turnSequence;
+<i>168</i>&nbsp;    /**
+<i>169</i>&nbsp;     * {@link VBox} that contains the Turn Sequence.
+<i>170</i>&nbsp;     */
+<i>171</i>&nbsp;    @FXML
+<i>172</i>&nbsp;    private VBox turnSequenceVBox;
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;    //RightMessage
+<i>175</i>&nbsp;    /**
+<i>176</i>&nbsp;     * {@link Text} that contains the current message showed at the screen in the right side of the scene.
+<i>177</i>&nbsp;     */
+<i>178</i>&nbsp;    @FXML
+<i>179</i>&nbsp;    private Text rightMessage;
+<i>180</i>&nbsp;    /**
+<i>181</i>&nbsp;     * {@link Queue} of the messages that have to been showed in the right side of the scene.
+<i>182</i>&nbsp;     */
+<i>183</i>&nbsp;    private LinkedList&lt;String&gt; messagesQueue;
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;    /**
+<i>186</i>&nbsp;     * First method to call when the Game starts. The method begin the worker placement procedure.
+<i>187</i>&nbsp;     *
+<i>188</i>&nbsp;     * @param event The {@link CV_WorkerPlacementGameEvent} event that trigger the placement of the workers
+<i>189</i>&nbsp;     */
+<i>190</i>&nbsp;    public void init(CV_WorkerPlacementGameEvent event) {
+<b class="nc"><i>191</i>&nbsp;        initializeIsland();</b>
+<i>192</i>&nbsp;
+<b class="nc"><i>193</i>&nbsp;        this.myUsername = gui.getUsername();</b>
+<b class="nc"><i>194</i>&nbsp;        this.myColor = event.getPlayerWorkerColors().get(myUsername.toLowerCase());</b>
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;        showTurnSequence(false);</b>
+<b class="nc"><i>197</i>&nbsp;        hideAllTurnInfo();</b>
+<i>198</i>&nbsp;
+<b class="nc"><i>199</i>&nbsp;        String url = getWorkerUrl(myColor);</b>
+<i>200</i>&nbsp;
+<b class="nc"><i>201</i>&nbsp;        workerSlotA.setImage(new Image(url));</b>
+<b class="nc"><i>202</i>&nbsp;        workerSlotB.setImage(new Image(url));</b>
+<i>203</i>&nbsp;
+<b class="nc"><i>204</i>&nbsp;        resetWorkerStatus();</b>
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;        setUpPlayersCardsCorrespondence(event.getPlayersCardsCorrespondence(), event.getPlayerWorkerColors());</b>
+<i>207</i>&nbsp;
+<b class="nc"><i>208</i>&nbsp;        messagesQueue = new LinkedList&lt;&gt;();</b>
+<i>209</i>&nbsp;    }
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>212</i>&nbsp;                                         BOARD CLICK
+<i>213</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;    /**
+<i>216</i>&nbsp;     * Method called each time the user click on the board.
+<i>217</i>&nbsp;     * It gets the coordinates of the click and calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+<i>218</i>&nbsp;     *
+<i>219</i>&nbsp;     * @param mouseEvent Event with information about the mouse click
+<i>220</i>&nbsp;     */
+<i>221</i>&nbsp;    public void onClickEventCellCluster(MouseEvent mouseEvent) {
+<b class="nc"><i>222</i>&nbsp;        StackPane source = (StackPane) mouseEvent.getSource();</b>
+<b class="nc"><i>223</i>&nbsp;        Integer colIndex = GridPane.getColumnIndex(source);</b>
+<b class="nc"><i>224</i>&nbsp;        Integer rowIndex = GridPane.getRowIndex(source);</b>
+<b class="nc"><i>225</i>&nbsp;        System.out.printf(&quot;Mouse clicked cell [%d, %d]%n&quot;, colIndex, rowIndex);</b>
+<b class="nc"><i>226</i>&nbsp;        currentStateInstance.handleClick(colIndex, rowIndex);</b>
+<i>227</i>&nbsp;    }
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>230</i>&nbsp;                                         BUTTONS CLICK
+<i>231</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;    /**
+<i>234</i>&nbsp;     * Method called each time the user click on the MOVE button.
+<i>235</i>&nbsp;     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+<i>236</i>&nbsp;     */
+<i>237</i>&nbsp;    public void moveButtonClick() {
+<b class="nc"><i>238</i>&nbsp;        currentStateInstance.handleClick(TurnAction.MOVE);</b>
+<i>239</i>&nbsp;    }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;    /**
+<i>242</i>&nbsp;     * Method called each time the user click on the BUILD button.
+<i>243</i>&nbsp;     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+<i>244</i>&nbsp;     */
+<i>245</i>&nbsp;    public void buildButtonClick() {
+<b class="nc"><i>246</i>&nbsp;        currentStateInstance.handleClick(TurnAction.BUILD);</b>
+<i>247</i>&nbsp;    }
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;    /**
+<i>250</i>&nbsp;     * Method called each time the user click on the PASS button.
+<i>251</i>&nbsp;     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+<i>252</i>&nbsp;     */
+<i>253</i>&nbsp;    public void passButtonClick() {
+<b class="nc"><i>254</i>&nbsp;        currentStateInstance.handleClick(TurnAction.PASS);</b>
+<i>255</i>&nbsp;    }
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;    /**
+<i>258</i>&nbsp;     * Method called when an user, in Spectator State (mode) click the exit button.
+<i>259</i>&nbsp;     */
+<i>260</i>&nbsp;    public void exitSpectatorModeClick() {
+<b class="nc"><i>261</i>&nbsp;        gui.closeApp();</b>
+<i>262</i>&nbsp;    }
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>265</i>&nbsp;                                         BLOCKS CLICK
+<i>266</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;    /**
+<i>269</i>&nbsp;     * Method called each time the user click on the LEVEL1 block.
+<i>270</i>&nbsp;     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+<i>271</i>&nbsp;     */
+<i>272</i>&nbsp;    public void level1Click() {
+<b class="nc"><i>273</i>&nbsp;        currentStateInstance.handleClick(BlockTypeEnum.LEVEL1);</b>
+<i>274</i>&nbsp;    }
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;    /**
+<i>277</i>&nbsp;     * Method called each time the user click on the LEVEL2 block.
+<i>278</i>&nbsp;     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+<i>279</i>&nbsp;     */
+<i>280</i>&nbsp;    public void level2Click() {
+<b class="nc"><i>281</i>&nbsp;        currentStateInstance.handleClick(BlockTypeEnum.LEVEL2);</b>
+<i>282</i>&nbsp;    }
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;    /**
+<i>285</i>&nbsp;     * Method called each time the user click on the LEVEL3 block.
+<i>286</i>&nbsp;     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+<i>287</i>&nbsp;     */
+<i>288</i>&nbsp;    public void level3Click() {
+<b class="nc"><i>289</i>&nbsp;        currentStateInstance.handleClick(BlockTypeEnum.LEVEL3);</b>
+<i>290</i>&nbsp;    }
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;    /**
+<i>293</i>&nbsp;     * Method called each time the user click on the DOME block.
+<i>294</i>&nbsp;     * It calls the {@code handleClickOnButton} method on the {@code currentStateInstance}.
+<i>295</i>&nbsp;     */
+<i>296</i>&nbsp;    public void domeClick() {
+<b class="nc"><i>297</i>&nbsp;        currentStateInstance.handleClick(BlockTypeEnum.DOME);</b>
+<i>298</i>&nbsp;    }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>301</i>&nbsp;                                         STATUS and HANDLE METHODS
+<i>302</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>303</i>&nbsp;
+<i>304</i>&nbsp;    //STATUS
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;    /**
+<i>307</i>&nbsp;     * Reset the worker status in this class creating a new {@link WorkerStatus}
+<i>308</i>&nbsp;     */
+<i>309</i>&nbsp;    private void resetWorkerStatus() {
+<b class="nc"><i>310</i>&nbsp;        workerStatus = new WorkerStatus();</b>
+<i>311</i>&nbsp;    }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    /**
+<i>314</i>&nbsp;     * Return the {@link WorkerStatus} of the turn
+<i>315</i>&nbsp;     *
+<i>316</i>&nbsp;     * @return The {@link WorkerStatus} of the turn
+<i>317</i>&nbsp;     */
+<i>318</i>&nbsp;    public WorkerStatus getWorkerStatus() {
+<b class="nc"><i>319</i>&nbsp;        return workerStatus;</b>
+<i>320</i>&nbsp;    }
+<i>321</i>&nbsp;
+<i>322</i>&nbsp;    /**
+<i>323</i>&nbsp;     * It prepare the waiting view disabling all the buttons and the glow
+<i>324</i>&nbsp;     */
+<i>325</i>&nbsp;    public void setWaitingView() {
+<b class="nc"><i>326</i>&nbsp;        disableAllActionButtons();</b>
+<b class="nc"><i>327</i>&nbsp;        resetWorkerStatus();</b>
+<i>328</i>&nbsp;    }
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;    /**
+<i>331</i>&nbsp;     * This method disable all buttons and prepare the scene for spectator mode.
+<i>332</i>&nbsp;     */
+<i>333</i>&nbsp;    private void setSpectatorView() {
+<b class="nc"><i>334</i>&nbsp;        commandGameButtonPane.getChildren().get(0).setVisible(false);</b>
+<b class="nc"><i>335</i>&nbsp;        commandGameButtonPane.getChildren().get(0).setDisable(true);</b>
+<b class="nc"><i>336</i>&nbsp;        commandGameButtonPane.getChildren().get(1).setVisible(true);</b>
+<b class="nc"><i>337</i>&nbsp;        commandGameButtonPane.getChildren().get(1).setDisable(false);</b>
+<i>338</i>&nbsp;    }
+<i>339</i>&nbsp;
+<i>340</i>&nbsp;    /**
+<i>341</i>&nbsp;     * Set the {@link WaitGameState} State waiting for a {@link CV_PlayerPlaceWorkerRequestEvent}.
+<i>342</i>&nbsp;     *
+<i>343</i>&nbsp;     * @param event A {@link CV_WorkerPlacementGameEvent} that notify the beginning of WorkerPlacement Phase.
+<i>344</i>&nbsp;     */
+<i>345</i>&nbsp;    public void handle(CV_WorkerPlacementGameEvent event) {
+<b class="nc"><i>346</i>&nbsp;        GameStateAbstract nextState = new WaitGameState(this);</b>
+<b class="nc"><i>347</i>&nbsp;        setWaitingView();</b>
+<b class="nc"><i>348</i>&nbsp;        this.currentStateInstance = nextState;</b>
+<b class="nc"><i>349</i>&nbsp;        showTurnSequence(false);</b>
+<i>350</i>&nbsp;    }
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;    /**
+<i>353</i>&nbsp;     * Set the {@link PlaceWorkerGameState} State and ask to the player to place a worker.
+<i>354</i>&nbsp;     *
+<i>355</i>&nbsp;     * @param event Contains the {@code workerID} of the worker to place.
+<i>356</i>&nbsp;     */
+<i>357</i>&nbsp;    public void handle(CV_PlayerPlaceWorkerRequestEvent event) {
+<b class="nc"><i>358</i>&nbsp;        GameStateAbstract nextState = new PlaceWorkerGameState(gui, this);</b>
+<i>359</i>&nbsp;        try {
+<b class="nc"><i>360</i>&nbsp;            workerStatus.setSelectedWorker(event.getWorkerToPlace());</b>
+<b class="nc"><i>361</i>&nbsp;        } catch (WorkerLockedException e) {</b>
+<b class="nc"><i>362</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>363</i>&nbsp;        }</b>
+<i>364</i>&nbsp;
+<b class="nc"><i>365</i>&nbsp;        setLastIslandUpdate(event.getIsland());</b>
+<b class="nc"><i>366</i>&nbsp;        updateIsland(event.getIsland());</b>
+<b class="nc"><i>367</i>&nbsp;        handleWorkerPlacement(event.getWorkerToPlace());</b>
+<i>368</i>&nbsp;
+<b class="nc"><i>369</i>&nbsp;        this.currentStateInstance = nextState;</b>
+<i>370</i>&nbsp;    }
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;    /**
+<i>373</i>&nbsp;     * Set the {@link WaitGameState} State waiting for another event.
+<i>374</i>&nbsp;     *
+<i>375</i>&nbsp;     * @param event A {@link CV_WaitPreMatchGameEvent} that notify a Wait Phase.
+<i>376</i>&nbsp;     */
+<i>377</i>&nbsp;    public void handle(CV_WaitPreMatchGameEvent event) {
+<b class="nc"><i>378</i>&nbsp;        GameStateAbstract nextState = new WaitGameState(this);</b>
+<b class="nc"><i>379</i>&nbsp;        setWaitingView();</b>
+<b class="nc"><i>380</i>&nbsp;        this.currentStateInstance = nextState;</b>
+<i>381</i>&nbsp;    }
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;    /**
+<i>384</i>&nbsp;     * Set the {@link WaitGameState} State waiting for another event.
+<i>385</i>&nbsp;     *
+<i>386</i>&nbsp;     * @param event A {@link CV_WaitMatchGameEvent} that notify a Wait Phase.
+<i>387</i>&nbsp;     */
+<i>388</i>&nbsp;    public void handle(CV_WaitMatchGameEvent event) {
+<b class="nc"><i>389</i>&nbsp;        if (!event.getActingPlayer().equals(myUsername)) {</b>
+<b class="nc"><i>390</i>&nbsp;            GameStateAbstract nextState = new WaitGameState(this);</b>
+<b class="nc"><i>391</i>&nbsp;            setWaitingView();</b>
+<b class="nc"><i>392</i>&nbsp;            addMessageToQueueList(event.getEventDescription().toUpperCase() + &quot; &quot; + event.getActingPlayer().toUpperCase());</b>
+<b class="nc"><i>393</i>&nbsp;            this.currentStateInstance = nextState;</b>
+<i>394</i>&nbsp;        }
+<i>395</i>&nbsp;    }
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;
+<i>398</i>&nbsp;    /**
+<i>399</i>&nbsp;     * Set the {@link WaitGameState} State waiting for a {@link CV_NewTurnEvent}.
+<i>400</i>&nbsp;     *
+<i>401</i>&nbsp;     * @param event A {@link CV_GameStartedGameEvent} that notify the beginning of Game Phase.
+<i>402</i>&nbsp;     */
+<i>403</i>&nbsp;    public void handle(CV_GameStartedGameEvent event) {
+<b class="nc"><i>404</i>&nbsp;        setGlowByNode(false, workerSlotA);</b>
+<b class="nc"><i>405</i>&nbsp;        setGlowByNode(false, workerSlotB);</b>
+<b class="nc"><i>406</i>&nbsp;        GameStateAbstract nextState = new WaitGameState(this);</b>
+<b class="nc"><i>407</i>&nbsp;        setWaitingView();</b>
+<b class="nc"><i>408</i>&nbsp;        this.currentStateInstance = nextState;</b>
+<b class="nc"><i>409</i>&nbsp;        addMessageToQueueList(&quot;Game is starting!&quot;);</b>
+<i>410</i>&nbsp;    }
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;    /**
+<i>413</i>&nbsp;     * Set the {@link CommandGameState} State for the acting player and update the {@code TurnSequence} for all the players.
+<i>414</i>&nbsp;     *
+<i>415</i>&nbsp;     * @param event A {@link CV_NewTurnEvent} that notify the beginning of the new turn.
+<i>416</i>&nbsp;     */
+<i>417</i>&nbsp;    public void handle(CV_NewTurnEvent event) {
+<b class="nc"><i>418</i>&nbsp;        updateTurnSequence(event.getTurnRotation());</b>
+<b class="nc"><i>419</i>&nbsp;        disableAllWorkerGlow();</b>
+<b class="nc"><i>420</i>&nbsp;        resetWorkerStatus();</b>
+<i>421</i>&nbsp;
+<b class="nc"><i>422</i>&nbsp;        if (event.getCurrentPlayerUsername().equals(myUsername)) {</b>
+<b class="nc"><i>423</i>&nbsp;            currentStateInstance = new CommandGameState(gui, this);</b>
+<b class="nc"><i>424</i>&nbsp;            resetWorkerStatus();</b>
+<b class="nc"><i>425</i>&nbsp;            myTurnFirstActionPopup = true;</b>
+<i>426</i>&nbsp;        } else {
+<b class="nc"><i>427</i>&nbsp;            hideAllTurnInfo();</b>
+<i>428</i>&nbsp;        }
+<i>429</i>&nbsp;    }
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;    /**
+<i>432</i>&nbsp;     * Set up the {@code turnInfo}
+<i>433</i>&nbsp;     *
+<i>434</i>&nbsp;     * @param event A {@link CV_TurnInfoEvent} that notify the what you able to do in your turn.
+<i>435</i>&nbsp;     */
+<i>436</i>&nbsp;    public void handle(CV_TurnInfoEvent event) {
+<b class="nc"><i>437</i>&nbsp;        updateTurnInfo(event.getCanClimb(), event.getMovementsRemaining(), event.getBuildRemaining());</b>
+<i>438</i>&nbsp;    }
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;    /**
+<i>441</i>&nbsp;     * Enable the buttons and notify {@code currentStateInstance} to wait an user input.
+<i>442</i>&nbsp;     *
+<i>443</i>&nbsp;     * @param event Contains the {@code availableActions} for this player.
+<i>444</i>&nbsp;     */
+<i>445</i>&nbsp;    public void handle(CV_CommandRequestEvent event) {
+<b class="nc"><i>446</i>&nbsp;        enableActionButtons(event.getAvailableActions());</b>
+<b class="nc"><i>447</i>&nbsp;        disableAllGreenActionButton();</b>
+<b class="nc"><i>448</i>&nbsp;        disableAllGreenBuildingBlock();</b>
+<b class="nc"><i>449</i>&nbsp;        deactivateAllGlowOnPanels();</b>
+<i>450</i>&nbsp;
+<i>451</i>&nbsp;        //if worker is not locked, it will be deleted
+<b class="nc"><i>452</i>&nbsp;        workerStatus.resetSelectedWorker();</b>
+<i>453</i>&nbsp;
+<b class="nc"><i>454</i>&nbsp;        currentStateInstance.updateFromServer(event);</b>
+<b class="nc"><i>455</i>&nbsp;        if (myTurnFirstActionPopup) {</b>
+<b class="nc"><i>456</i>&nbsp;            displayPopupMessage(&quot;IT&#39;S YOUR TURN!&quot;);</b>
+<b class="nc"><i>457</i>&nbsp;            myTurnFirstActionPopup = false;</b>
+<i>458</i>&nbsp;        }
+<i>459</i>&nbsp;    }
+<i>460</i>&nbsp;
+<i>461</i>&nbsp;    /**
+<i>462</i>&nbsp;     * Notify the {@code currentStateInstance} that the player command has been executed
+<i>463</i>&nbsp;     *
+<i>464</i>&nbsp;     * @param event {@link CV_CommandExecutedGameEvent} means that the command has been executed
+<i>465</i>&nbsp;     */
+<i>466</i>&nbsp;    public void handle(CV_CommandExecutedGameEvent event) {
+<b class="nc"><i>467</i>&nbsp;        System.out.println(&quot;DEBUG: CV_CommandExecutedGameEvent event has arrived&quot;);</b>
+<b class="nc"><i>468</i>&nbsp;        currentStateInstance.updateFromServer(event);</b>
+<i>469</i>&nbsp;    }
+<i>470</i>&nbsp;
+<i>471</i>&nbsp;    /**
+<i>472</i>&nbsp;     * Prepare the Game scene and ask to the player to place a worker.
+<i>473</i>&nbsp;     *
+<i>474</i>&nbsp;     * @param workerRequested Contains the worker to place.
+<i>475</i>&nbsp;     */
+<i>476</i>&nbsp;    public void handleWorkerPlacement(Worker.IDs workerRequested) {
+<b class="nc"><i>477</i>&nbsp;        disableAllActionButtons();</b>
+<b class="nc"><i>478</i>&nbsp;        setGlowByNode(false, workerSlotA);</b>
+<b class="nc"><i>479</i>&nbsp;        setGlowByNode(false, workerSlotB);</b>
+<b class="nc"><i>480</i>&nbsp;        if (workerRequested == Worker.IDs.A) {</b>
+<b class="nc"><i>481</i>&nbsp;            setGlowByNode(true, workerSlotA);</b>
+<b class="nc"><i>482</i>&nbsp;            addMessageToQueueList(&quot;Please place the FIRST worker&quot;);</b>
+<b class="nc"><i>483</i>&nbsp;        } else if (workerRequested == Worker.IDs.B) {</b>
+<b class="nc"><i>484</i>&nbsp;            setGlowByNode(true, workerSlotB);</b>
+<b class="nc"><i>485</i>&nbsp;            addMessageToQueueList(&quot;Please place the SECOND worker&quot;);</b>
+<i>486</i>&nbsp;        }
+<i>487</i>&nbsp;    }
+<i>488</i>&nbsp;
+<i>489</i>&nbsp;    /**
+<i>490</i>&nbsp;     * Prepare the Spectator Mode and set the State to Spectator.
+<i>491</i>&nbsp;     *
+<i>492</i>&nbsp;     * @param event Event with Spectator Info
+<i>493</i>&nbsp;     */
+<i>494</i>&nbsp;    public void handle(CV_SpectatorGameEvent event) {
+<b class="nc"><i>495</i>&nbsp;        if (event.getSpectatorPlayer().equals(myUsername)) {</b>
+<b class="nc"><i>496</i>&nbsp;            GameStateAbstract nextState = new SpectatorGameState(this);</b>
+<b class="nc"><i>497</i>&nbsp;            setSpectatorView();</b>
+<b class="nc"><i>498</i>&nbsp;            this.currentStateInstance = nextState;</b>
+<b class="nc"><i>499</i>&nbsp;        } else {</b>
+<b class="nc"><i>500</i>&nbsp;            opponentPlayerSpectator(event.getSpectatorPlayer());</b>
+<i>501</i>&nbsp;        }
+<i>502</i>&nbsp;    }
+<i>503</i>&nbsp;
+<i>504</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>505</i>&nbsp;                                         ACTION BUTTONS METHODS
+<i>506</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>507</i>&nbsp;
+<i>508</i>&nbsp;    /**
+<i>509</i>&nbsp;     * Enable the available Action Buttons.
+<i>510</i>&nbsp;     *
+<i>511</i>&nbsp;     * @param availableActions Contains the available actions for this player at the moment.
+<i>512</i>&nbsp;     */
+<i>513</i>&nbsp;    public void enableActionButtons(List&lt;TurnAction&gt; availableActions) {
+<b class="nc"><i>514</i>&nbsp;        for (TurnAction action : availableActions) {</b>
+<b class="nc"><i>515</i>&nbsp;            switch (action) {</b>
+<i>516</i>&nbsp;                case MOVE:
+<b class="nc"><i>517</i>&nbsp;                    moveButton.setDisable(false);</b>
+<b class="nc"><i>518</i>&nbsp;                    break;</b>
+<i>519</i>&nbsp;                case BUILD:
+<b class="nc"><i>520</i>&nbsp;                    buildButton.setDisable(false);</b>
+<b class="nc"><i>521</i>&nbsp;                    break;</b>
+<i>522</i>&nbsp;                case PASS:
+<b class="nc"><i>523</i>&nbsp;                    passButton.setDisable(false);</b>
+<i>524</i>&nbsp;                    break;
+<i>525</i>&nbsp;            }
+<b class="nc"><i>526</i>&nbsp;        }</b>
+<i>527</i>&nbsp;    }
+<i>528</i>&nbsp;
+<i>529</i>&nbsp;    /**
+<i>530</i>&nbsp;     * Disable the Action Buttons at once.
+<i>531</i>&nbsp;     */
+<i>532</i>&nbsp;    public void disableAllActionButtons() {
+<b class="nc"><i>533</i>&nbsp;        moveButton.setDisable(true);</b>
+<b class="nc"><i>534</i>&nbsp;        buildButton.setDisable(true);</b>
+<b class="nc"><i>535</i>&nbsp;        passButton.setDisable(true);</b>
+<i>536</i>&nbsp;    }
+<i>537</i>&nbsp;
+<i>538</i>&nbsp;    /**
+<i>539</i>&nbsp;     * Enable the Green Glow around the button that has been selected.
+<i>540</i>&nbsp;     *
+<i>541</i>&nbsp;     * @param enable      {@link Boolean} value, if true enable the glow, if false disable the glow.
+<i>542</i>&nbsp;     * @param buttonToSet {@link TurnAction} that indicates the button to set.
+<i>543</i>&nbsp;     */
+<i>544</i>&nbsp;    public void setGreenActionButton(boolean enable, TurnAction buttonToSet) {
+<b class="nc"><i>545</i>&nbsp;        if (enable) {</b>
+<b class="nc"><i>546</i>&nbsp;            moveButton.setEffect(null);</b>
+<b class="nc"><i>547</i>&nbsp;            buildButton.setEffect(null);</b>
+<b class="nc"><i>548</i>&nbsp;            passButton.setEffect(null);</b>
+<i>549</i>&nbsp;        }
+<i>550</i>&nbsp;        Button button;
+<b class="nc"><i>551</i>&nbsp;        switch (buttonToSet) {</b>
+<i>552</i>&nbsp;            case MOVE:
+<b class="nc"><i>553</i>&nbsp;                button = moveButton;</b>
+<b class="nc"><i>554</i>&nbsp;                break;</b>
+<i>555</i>&nbsp;            case BUILD:
+<b class="nc"><i>556</i>&nbsp;                button = buildButton;</b>
+<b class="nc"><i>557</i>&nbsp;                break;</b>
+<i>558</i>&nbsp;            case PASS:
+<i>559</i>&nbsp;            default:
+<b class="nc"><i>560</i>&nbsp;                button = passButton;</b>
+<i>561</i>&nbsp;        }
+<i>562</i>&nbsp;
+<b class="nc"><i>563</i>&nbsp;        if (enable) {</b>
+<b class="nc"><i>564</i>&nbsp;            System.out.println(&quot;DEBUG: setButtonGlow on &quot; + buttonToSet);</b>
+<i>565</i>&nbsp;
+<b class="nc"><i>566</i>&nbsp;            DropShadow dropShadow = new DropShadow();</b>
+<b class="nc"><i>567</i>&nbsp;            dropShadow.setRadius(14.5);</b>
+<b class="nc"><i>568</i>&nbsp;            dropShadow.setOffsetX(0);</b>
+<b class="nc"><i>569</i>&nbsp;            dropShadow.setOffsetY(0);</b>
+<b class="nc"><i>570</i>&nbsp;            dropShadow.setSpread(0.6);</b>
+<b class="nc"><i>571</i>&nbsp;            dropShadow.setColor(Color.rgb(50, 180, 50));</b>
+<b class="nc"><i>572</i>&nbsp;            button.setEffect(dropShadow);</b>
+<b class="nc"><i>573</i>&nbsp;        } else {</b>
+<b class="nc"><i>574</i>&nbsp;            button.setEffect(null);</b>
+<i>575</i>&nbsp;        }
+<i>576</i>&nbsp;
+<i>577</i>&nbsp;    }
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;    /**
+<i>580</i>&nbsp;     * Disable the Green Glow around all the Action Buttons at once.
+<i>581</i>&nbsp;     */
+<i>582</i>&nbsp;    private void disableAllGreenActionButton() {
+<b class="nc"><i>583</i>&nbsp;        moveButton.setEffect(null);</b>
+<b class="nc"><i>584</i>&nbsp;        buildButton.setEffect(null);</b>
+<b class="nc"><i>585</i>&nbsp;        passButton.setEffect(null);</b>
+<i>586</i>&nbsp;    }
+<i>587</i>&nbsp;
+<i>588</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>589</i>&nbsp;                                         BUILDING BLOCKS METHODS
+<i>590</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>591</i>&nbsp;
+<i>592</i>&nbsp;    /**
+<i>593</i>&nbsp;     * Enable the Green Glow around the Block that has been selected.
+<i>594</i>&nbsp;     *
+<i>595</i>&nbsp;     * @param enable     {@link Boolean} value, if true enable the glow, if false disable the glow.
+<i>596</i>&nbsp;     * @param blockToSet {@link BlockTypeEnum} that indicates the block to set.
+<i>597</i>&nbsp;     */
+<i>598</i>&nbsp;    public void setGreenBuildingBlocks(boolean enable, BlockTypeEnum blockToSet) {
+<b class="nc"><i>599</i>&nbsp;        if (enable) {</b>
+<b class="nc"><i>600</i>&nbsp;            l1Box.setEffect(null);</b>
+<b class="nc"><i>601</i>&nbsp;            l2Box.setEffect(null);</b>
+<b class="nc"><i>602</i>&nbsp;            l3Box.setEffect(null);</b>
+<b class="nc"><i>603</i>&nbsp;            domeBox.setEffect(null);</b>
+<i>604</i>&nbsp;        }
+<i>605</i>&nbsp;        HBox hBox;
+<b class="nc"><i>606</i>&nbsp;        switch (blockToSet) {</b>
+<i>607</i>&nbsp;            case LEVEL1:
+<b class="nc"><i>608</i>&nbsp;                hBox = l1Box;</b>
+<b class="nc"><i>609</i>&nbsp;                break;</b>
+<i>610</i>&nbsp;            case LEVEL2:
+<b class="nc"><i>611</i>&nbsp;                hBox = l2Box;</b>
+<b class="nc"><i>612</i>&nbsp;                break;</b>
+<i>613</i>&nbsp;            case LEVEL3:
+<b class="nc"><i>614</i>&nbsp;                hBox = l3Box;</b>
+<b class="nc"><i>615</i>&nbsp;                break;</b>
+<i>616</i>&nbsp;            case DOME:
+<i>617</i>&nbsp;            default:
+<b class="nc"><i>618</i>&nbsp;                hBox = domeBox;</b>
+<i>619</i>&nbsp;        }
+<i>620</i>&nbsp;
+<b class="nc"><i>621</i>&nbsp;        if (enable) {</b>
+<b class="nc"><i>622</i>&nbsp;            System.out.println(&quot;DEBUG: setButtonGlow on &quot; + blockToSet);</b>
+<i>623</i>&nbsp;
+<b class="nc"><i>624</i>&nbsp;            DropShadow dropShadow = new DropShadow();</b>
+<b class="nc"><i>625</i>&nbsp;            dropShadow.setRadius(14.5);</b>
+<b class="nc"><i>626</i>&nbsp;            dropShadow.setOffsetX(0);</b>
+<b class="nc"><i>627</i>&nbsp;            dropShadow.setOffsetY(0);</b>
+<b class="nc"><i>628</i>&nbsp;            dropShadow.setSpread(0.6);</b>
+<b class="nc"><i>629</i>&nbsp;            dropShadow.setColor(Color.rgb(50, 180, 50));</b>
+<b class="nc"><i>630</i>&nbsp;            hBox.setEffect(dropShadow);</b>
+<b class="nc"><i>631</i>&nbsp;        } else {</b>
+<b class="nc"><i>632</i>&nbsp;            hBox.setEffect(null);</b>
+<i>633</i>&nbsp;        }
+<i>634</i>&nbsp;
+<i>635</i>&nbsp;
+<i>636</i>&nbsp;    }
+<i>637</i>&nbsp;
+<i>638</i>&nbsp;    /**
+<i>639</i>&nbsp;     * Disable the Green Glow around all the Building Blocks at once.
+<i>640</i>&nbsp;     */
+<i>641</i>&nbsp;    public void disableAllGreenBuildingBlock() {
+<b class="nc"><i>642</i>&nbsp;        l1Box.setEffect(null);</b>
+<b class="nc"><i>643</i>&nbsp;        l2Box.setEffect(null);</b>
+<b class="nc"><i>644</i>&nbsp;        l3Box.setEffect(null);</b>
+<b class="nc"><i>645</i>&nbsp;        domeBox.setEffect(null);</b>
+<i>646</i>&nbsp;    }
+<i>647</i>&nbsp;
+<i>648</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>649</i>&nbsp;                                         TURN SEQUENCE METHODS
+<i>650</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>651</i>&nbsp;
+<i>652</i>&nbsp;    /**
+<i>653</i>&nbsp;     * Show or hide the Turn Sequence Box.
+<i>654</i>&nbsp;     *
+<i>655</i>&nbsp;     * @param enable True to show the Turn Sequence, false to hide.
+<i>656</i>&nbsp;     */
+<i>657</i>&nbsp;    private void showTurnSequence(boolean enable) {
+<b class="nc"><i>658</i>&nbsp;        turnSequenceVBox.setVisible(enable);</b>
+<i>659</i>&nbsp;    }
+<i>660</i>&nbsp;
+<i>661</i>&nbsp;    /**
+<i>662</i>&nbsp;     * Update the Turn Sequence list in the high-left corner.
+<i>663</i>&nbsp;     *
+<i>664</i>&nbsp;     * @param sequence {@code List&lt;String&gt;} containing the list of current players and their cards.
+<i>665</i>&nbsp;     */
+<i>666</i>&nbsp;    public void updateTurnSequence(List&lt;String&gt; sequence) {
+<b class="nc"><i>667</i>&nbsp;        StringBuilder turnSequenceText = new StringBuilder();</b>
+<b class="nc"><i>668</i>&nbsp;        boolean first = true;</b>
+<b class="nc"><i>669</i>&nbsp;        for (String username : sequence) {</b>
+<b class="nc"><i>670</i>&nbsp;            if (first) {</b>
+<b class="nc"><i>671</i>&nbsp;                turnSequenceText.append(&quot; &quot;);</b>
+<b class="nc"><i>672</i>&nbsp;                first = false;</b>
+<i>673</i>&nbsp;            } else {
+<b class="nc"><i>674</i>&nbsp;                turnSequenceText.append(&quot; &lt;&lt; &quot;);</b>
+<i>675</i>&nbsp;            }
+<b class="nc"><i>676</i>&nbsp;            turnSequenceText.append(username.toUpperCase());</b>
+<b class="nc"><i>677</i>&nbsp;            if (username.equals(myUsername)) {</b>
+<b class="nc"><i>678</i>&nbsp;                turnSequenceText.append(&quot; (YOU)&quot;.toUpperCase());</b>
+<i>679</i>&nbsp;            }
+<b class="nc"><i>680</i>&nbsp;        }</b>
+<b class="nc"><i>681</i>&nbsp;        turnSequence.setText(turnSequenceText.toString());</b>
+<b class="nc"><i>682</i>&nbsp;        showTurnSequence(true);</b>
+<i>683</i>&nbsp;    }
+<i>684</i>&nbsp;
+<i>685</i>&nbsp;     /* ----------------------------------------------------------------------------------------------
+<i>686</i>&nbsp;                                         ISLAND METHODS
+<i>687</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>688</i>&nbsp;
+<i>689</i>&nbsp;    /**
+<i>690</i>&nbsp;     * Handle the Island Update: memorize the event and update the scene.
+<i>691</i>&nbsp;     *
+<i>692</i>&nbsp;     * @param event An {@link  CV_IslandUpdateEvent} contains the last update of the island.
+<i>693</i>&nbsp;     */
+<i>694</i>&nbsp;    public void handle(CV_IslandUpdateEvent event) {
+<b class="nc"><i>695</i>&nbsp;        updateIsland(event.getNewIsland());</b>
+<i>696</i>&nbsp;    }
+<i>697</i>&nbsp;
+<i>698</i>&nbsp;    /**
+<i>699</i>&nbsp;     * Get last update of the Island.
+<i>700</i>&nbsp;     *
+<i>701</i>&nbsp;     * @return {@link IslandData} last update of the island.
+<i>702</i>&nbsp;     */
+<i>703</i>&nbsp;    public IslandData getLastIslandUpdate() {
+<b class="nc"><i>704</i>&nbsp;        return lastIslandUpdate;</b>
+<i>705</i>&nbsp;    }
+<i>706</i>&nbsp;
+<i>707</i>&nbsp;    /**
+<i>708</i>&nbsp;     * Generates a StackPane containing the information of the {@link CellClusterData} passed as input
+<i>709</i>&nbsp;     * @param cellClusterData the {@link CellClusterData} to visualize
+<i>710</i>&nbsp;     * @return the stackPane with the information of the cellClusterData
+<i>711</i>&nbsp;     */
+<i>712</i>&nbsp;    private StackPane generateStackPane(CellClusterData cellClusterData){
+<b class="nc"><i>713</i>&nbsp;        StackPane stackPane = new StackPane();</b>
+<b class="nc"><i>714</i>&nbsp;        Pane pane = new Pane();</b>
+<b class="nc"><i>715</i>&nbsp;        Pane upperPane = new Pane();</b>
+<b class="nc"><i>716</i>&nbsp;        upperPane.setVisible(false);</b>
+<i>717</i>&nbsp;
+<i>718</i>&nbsp;        //if there are construction blocks adds the image
+<b class="nc"><i>719</i>&nbsp;        if (cellClusterData.getBlocks() != null &amp;&amp; (cellClusterData.getBlocks().length &gt; 0 || cellClusterData.isDomeOnTop())) {</b>
+<b class="nc"><i>720</i>&nbsp;            pane.getChildren().add(getBlockImage(cellClusterData));</b>
+<i>721</i>&nbsp;        }
+<i>722</i>&nbsp;
+<i>723</i>&nbsp;        //if there is a worker adds the image
+<b class="nc"><i>724</i>&nbsp;        if (cellClusterData.getWorkerOnTop() != null) {</b>
+<b class="nc"><i>725</i>&nbsp;            pane.getChildren().add(getWorkerImage(cellClusterData));</b>
+<i>726</i>&nbsp;
+<i>727</i>&nbsp;
+<i>728</i>&nbsp;        }
+<b class="nc"><i>729</i>&nbsp;        stackPane.getChildren().addAll(pane, upperPane);</b>
+<b class="nc"><i>730</i>&nbsp;        stackPane.setOnMouseClicked(this::onClickEventCellCluster);</b>
+<b class="nc"><i>731</i>&nbsp;        return stackPane;</b>
+<i>732</i>&nbsp;    }
+<i>733</i>&nbsp;
+<i>734</i>&nbsp;    /**
+<i>735</i>&nbsp;     * This method refresh and update the Island on the screen.
+<i>736</i>&nbsp;     *
+<i>737</i>&nbsp;     * @param island An {@link IslandData} with the last update of the island.
+<i>738</i>&nbsp;     */
+<i>739</i>&nbsp;    public void updateIsland(IslandData island) {
+<b class="nc"><i>740</i>&nbsp;        setLastIslandUpdate(island);</b>
+<i>741</i>&nbsp;
+<b class="nc"><i>742</i>&nbsp;        Platform.runLater(() -&gt; {</b>
+<b class="nc"><i>743</i>&nbsp;            for (int x = 0; x &lt; 5; x++) {</b>
+<b class="nc"><i>744</i>&nbsp;                for (int y = 0; y &lt; 5; y++) {</b>
+<b class="nc"><i>745</i>&nbsp;                    CellClusterData cellClusterData = island.getCellCluster(x, y);</b>
+<b class="nc"><i>746</i>&nbsp;                    StackPane stackPane = generateStackPane(cellClusterData);</b>
+<i>747</i>&nbsp;
+<b class="nc"><i>748</i>&nbsp;                    GridPane.setConstraints(stackPane, x, y);</b>
+<i>749</i>&nbsp;
+<b class="nc"><i>750</i>&nbsp;                    board.getChildren().remove(lastGridPane[x][y]);</b>
+<b class="nc"><i>751</i>&nbsp;                    board.getChildren().add(stackPane);</b>
+<i>752</i>&nbsp;
+<b class="nc"><i>753</i>&nbsp;                    lastGridPane[x][y] = stackPane;</b>
+<i>754</i>&nbsp;
+<b class="nc"><i>755</i>&nbsp;                    if (cellClusterData.getWorkerOnTop() != null &amp;&amp; workerStatus.isAlreadySelectedWorker() &amp;&amp;</b>
+<b class="nc"><i>756</i>&nbsp;                            cellClusterData.getWorkerColor().equals(myColor) &amp;&amp;</b>
+<b class="nc"><i>757</i>&nbsp;                            workerStatus.getSelectedWorker().equals(cellClusterData.getWorkerOnTop())) {</b>
+<i>758</i>&nbsp;
+<b class="nc"><i>759</i>&nbsp;                        setWorkerGlow(true, x, y);</b>
+<i>760</i>&nbsp;                    }
+<i>761</i>&nbsp;                }
+<i>762</i>&nbsp;            }
+<i>763</i>&nbsp;        });
+<i>764</i>&nbsp;
+<i>765</i>&nbsp;    }
+<i>766</i>&nbsp;
+<i>767</i>&nbsp;    /**
+<i>768</i>&nbsp;     * Set last update of the Island.
+<i>769</i>&nbsp;     *
+<i>770</i>&nbsp;     * @param lastIslandUpdate {@link IslandData} last update of the island.
+<i>771</i>&nbsp;     */
+<i>772</i>&nbsp;    public void setLastIslandUpdate(IslandData lastIslandUpdate) {
+<b class="nc"><i>773</i>&nbsp;        this.lastIslandUpdate = lastIslandUpdate;</b>
+<i>774</i>&nbsp;    }
+<i>775</i>&nbsp;
+<i>776</i>&nbsp;    /**
+<i>777</i>&nbsp;     * This method create the Island on the Screen.
+<i>778</i>&nbsp;     */
+<i>779</i>&nbsp;    public void initializeIsland() {
+<b class="nc"><i>780</i>&nbsp;        lastGridPane = new StackPane[5][5];</b>
+<b class="nc"><i>781</i>&nbsp;        for (int x = 0; x &lt; 5; x++) {</b>
+<b class="nc"><i>782</i>&nbsp;            for (int y = 0; y &lt; 5; y++) {</b>
+<b class="nc"><i>783</i>&nbsp;                StackPane stackPane = new StackPane();</b>
+<b class="nc"><i>784</i>&nbsp;                Pane pane = new Pane();</b>
+<b class="nc"><i>785</i>&nbsp;                Pane upperPane = new Pane();</b>
+<b class="nc"><i>786</i>&nbsp;                upperPane.setVisible(false);</b>
+<i>787</i>&nbsp;
+<b class="nc"><i>788</i>&nbsp;                stackPane.getChildren().addAll(pane, upperPane);</b>
+<b class="nc"><i>789</i>&nbsp;                stackPane.setOnMouseClicked(this::onClickEventCellCluster);</b>
+<b class="nc"><i>790</i>&nbsp;                GridPane.setConstraints(stackPane, y, x); //node, column, row</b>
+<i>791</i>&nbsp;
+<b class="nc"><i>792</i>&nbsp;                board.getChildren().add(stackPane);</b>
+<i>793</i>&nbsp;
+<b class="nc"><i>794</i>&nbsp;                lastGridPane[x][y] = stackPane;</b>
+<i>795</i>&nbsp;            }
+<i>796</i>&nbsp;        }
+<i>797</i>&nbsp;    }
+<i>798</i>&nbsp;
+<i>799</i>&nbsp;    /**
+<i>800</i>&nbsp;     * Create the right {@link ImageView} based on the given {@link CellClusterData}.
+<i>801</i>&nbsp;     *
+<i>802</i>&nbsp;     * @param cellClusterData CellCluster to obtain the {@link ImageView}.
+<i>803</i>&nbsp;     * @return {@link ImageView} of the given {@link CellClusterData}.
+<i>804</i>&nbsp;     */
+<i>805</i>&nbsp;    public ImageView getBlockImage(CellClusterData cellClusterData) {
+<b class="nc"><i>806</i>&nbsp;        String url = getUrlFromCellCluster(cellClusterData);</b>
+<i>807</i>&nbsp;
+<b class="nc"><i>808</i>&nbsp;        ImageView image = new ImageView();</b>
+<b class="nc"><i>809</i>&nbsp;        image.setFitWidth(100);</b>
+<b class="nc"><i>810</i>&nbsp;        image.setFitHeight(100);</b>
+<b class="nc"><i>811</i>&nbsp;        image.setPreserveRatio(true);</b>
+<b class="nc"><i>812</i>&nbsp;        image.setImage(new Image(url));</b>
+<b class="nc"><i>813</i>&nbsp;        return image;</b>
+<i>814</i>&nbsp;    }
+<i>815</i>&nbsp;
+<i>816</i>&nbsp;    /**
+<i>817</i>&nbsp;     * Activate the Glow of possible Actions on the Game Board.
+<i>818</i>&nbsp;     *
+<i>819</i>&nbsp;     * @param panelPositions Index of panel to Glow.
+<i>820</i>&nbsp;     * @param actionClicked  Action clicked to choose the color.
+<i>821</i>&nbsp;     */
+<i>822</i>&nbsp;    public void activateGlowOnPanels(List&lt;int[]&gt; panelPositions, TurnAction actionClicked) {
+<b class="nc"><i>823</i>&nbsp;        for (int[] position : panelPositions) {</b>
+<b class="nc"><i>824</i>&nbsp;            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(position[0], position[1]);</b>
+<b class="nc"><i>825</i>&nbsp;            if (actionClicked == TurnAction.MOVE) {</b>
+<b class="nc"><i>826</i>&nbsp;                Pane pane = (Pane) stackPane.getChildren().get(1);</b>
+<b class="nc"><i>827</i>&nbsp;                pane.setVisible(true);</b>
+<b class="nc"><i>828</i>&nbsp;                pane.setStyle(&quot;-fx-background-color: rgba(0,255,255,0.73)&quot;);</b>
+<b class="nc"><i>829</i>&nbsp;            } else if (actionClicked == TurnAction.BUILD) {</b>
+<b class="nc"><i>830</i>&nbsp;                stackPane.getChildren().get(1).setVisible(true);</b>
+<b class="nc"><i>831</i>&nbsp;                stackPane.getChildren().get(1).setStyle(&quot;-fx-background-color: rgba(165,42,42,0.52)&quot;);</b>
+<i>832</i>&nbsp;            }
+<b class="nc"><i>833</i>&nbsp;        }</b>
+<i>834</i>&nbsp;    }
+<i>835</i>&nbsp;
+<i>836</i>&nbsp;    /**
+<i>837</i>&nbsp;     * Deactivate all the glow for possible Actions on the Game Board.
+<i>838</i>&nbsp;     */
+<i>839</i>&nbsp;    public void deactivateAllGlowOnPanels() {
+<b class="nc"><i>840</i>&nbsp;        for (int i = 0; i &lt; 5; i++) {</b>
+<b class="nc"><i>841</i>&nbsp;            for (int j = 0; j &lt; 5; j++) {</b>
+<b class="nc"><i>842</i>&nbsp;                StackPane stackPane = (StackPane) getNodeByRowColumnIndex(i, j);</b>
+<b class="nc"><i>843</i>&nbsp;                stackPane.getChildren().get(1).setVisible(false);</b>
+<i>844</i>&nbsp;            }
+<i>845</i>&nbsp;        }
+<i>846</i>&nbsp;    }
+<i>847</i>&nbsp;
+<i>848</i>&nbsp;    /**
+<i>849</i>&nbsp;     * This method create the Url of the Resource based on the {@link CellClusterData}.
+<i>850</i>&nbsp;     *
+<i>851</i>&nbsp;     * @param cellClusterData {@link CellClusterData} of the block to print.
+<i>852</i>&nbsp;     * @return The Url of the requested resource.
+<i>853</i>&nbsp;     */
+<i>854</i>&nbsp;    public String getUrlFromCellCluster(CellClusterData cellClusterData) {
+<b class="nc"><i>855</i>&nbsp;        String url = &quot;/images/cellcluster/&quot;;</b>
+<i>856</i>&nbsp;
+<b class="nc"><i>857</i>&nbsp;        int[] blocks = cellClusterData.getBlocks();</b>
+<b class="nc"><i>858</i>&nbsp;        boolean domeOnTop = cellClusterData.isDomeOnTop();</b>
+<i>859</i>&nbsp;
+<i>860</i>&nbsp;        //construct the url of the image
+<b class="nc"><i>861</i>&nbsp;        if ((blocks.length == 1 &amp;&amp; blocks[0] == 4)) {</b>
+<b class="nc"><i>862</i>&nbsp;            if (domeOnTop) url = url + &quot;L0_DOME.png&quot;;</b>
+<b class="nc"><i>863</i>&nbsp;            return url;</b>
+<i>864</i>&nbsp;        } else {
+<b class="nc"><i>865</i>&nbsp;            if (blocks[blocks.length - 1] == 4) {</b>
+<b class="nc"><i>866</i>&nbsp;                blocks = Arrays.copyOfRange(blocks, 0, blocks.length - 1);</b>
+<i>867</i>&nbsp;            }
+<b class="nc"><i>868</i>&nbsp;            switch (blocks[blocks.length - 1]) {</b>
+<i>869</i>&nbsp;                case 1: {
+<b class="nc"><i>870</i>&nbsp;                    url = url + &quot;L1&quot;;</b>
+<b class="nc"><i>871</i>&nbsp;                    break;</b>
+<i>872</i>&nbsp;                }
+<i>873</i>&nbsp;                case 2: {
+<b class="nc"><i>874</i>&nbsp;                    url = url + &quot;L2&quot;;</b>
+<b class="nc"><i>875</i>&nbsp;                    break;</b>
+<i>876</i>&nbsp;                }
+<i>877</i>&nbsp;                case 3: {
+<b class="nc"><i>878</i>&nbsp;                    url = url + &quot;L3&quot;;</b>
+<b class="nc"><i>879</i>&nbsp;                    break;</b>
+<i>880</i>&nbsp;                }
+<i>881</i>&nbsp;                default:
+<b class="nc"><i>882</i>&nbsp;                    System.out.println(&quot;ERROR&quot;);</b>
+<i>883</i>&nbsp;            }
+<b class="nc"><i>884</i>&nbsp;            if (domeOnTop) {</b>
+<b class="nc"><i>885</i>&nbsp;                url = url + &quot;_DOME&quot;;</b>
+<i>886</i>&nbsp;            }
+<b class="nc"><i>887</i>&nbsp;            url = url + &quot;.png&quot;;</b>
+<i>888</i>&nbsp;        }
+<b class="nc"><i>889</i>&nbsp;        return url;</b>
+<i>890</i>&nbsp;    }
+<i>891</i>&nbsp;
+<i>892</i>&nbsp;    /**
+<i>893</i>&nbsp;     * Get the Board {@link Node} at the give indexes
+<i>894</i>&nbsp;     *
+<i>895</i>&nbsp;     * @param row    Row index
+<i>896</i>&nbsp;     * @param column Column index
+<i>897</i>&nbsp;     * @return The Node at given indexes
+<i>898</i>&nbsp;     */
+<i>899</i>&nbsp;    public Node getNodeByRowColumnIndex(final int row, final int column) {
+<b class="nc"><i>900</i>&nbsp;        return lastGridPane[row][column];</b>
+<i>901</i>&nbsp;    }
+<i>902</i>&nbsp;
+<i>903</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>904</i>&nbsp;                                         UTILITY METHODS
+<i>905</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>906</i>&nbsp;
+<i>907</i>&nbsp;    /**
+<i>908</i>&nbsp;     * Set the GUI.
+<i>909</i>&nbsp;     *
+<i>910</i>&nbsp;     * @param gui Main {@link GUI} class.
+<i>911</i>&nbsp;     */
+<i>912</i>&nbsp;    public void setGui(GUI gui) {
+<b class="nc"><i>913</i>&nbsp;        this.gui = gui;</b>
+<i>914</i>&nbsp;    }
+<i>915</i>&nbsp;
+<i>916</i>&nbsp;    /**
+<i>917</i>&nbsp;     * Displays a message to the user with a popup panel
+<i>918</i>&nbsp;     *
+<i>919</i>&nbsp;     * @param message the message you would like to display
+<i>920</i>&nbsp;     */
+<i>921</i>&nbsp;    public void displayPopupMessage(String message) {
+<b class="nc"><i>922</i>&nbsp;        Message.show(250, 200, message.toUpperCase(), gui.getStage());</b>
+<i>923</i>&nbsp;    }
+<i>924</i>&nbsp;
+<i>925</i>&nbsp;    /**
+<i>926</i>&nbsp;     * Add a low priority message to a Queue List to show on the right pane.
+<i>927</i>&nbsp;     *
+<i>928</i>&nbsp;     * @param messageToShow {@link String} to print.
+<i>929</i>&nbsp;     */
+<i>930</i>&nbsp;    public void addMessageToQueueList(String messageToShow) {
+<b class="nc"><i>931</i>&nbsp;        messagesQueue.add(messageToShow);</b>
+<b class="nc"><i>932</i>&nbsp;        showMessageOntRightPane();</b>
+<i>933</i>&nbsp;    }
+<i>934</i>&nbsp;
+<i>935</i>&nbsp;    /**
+<i>936</i>&nbsp;     * Show the first message of the queue on the right pane
+<i>937</i>&nbsp;     */
+<i>938</i>&nbsp;    private void showMessageOntRightPane() {
+<b class="nc"><i>939</i>&nbsp;        rightMessage.setText(messagesQueue.remove());</b>
+<i>940</i>&nbsp;    }
+<i>941</i>&nbsp;
+<i>942</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>943</i>&nbsp;                                         WORKER UTILITY AND METHODS
+<i>944</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>945</i>&nbsp;
+<i>946</i>&nbsp;    /**
+<i>947</i>&nbsp;     * Get the Url for the image with the right worker
+<i>948</i>&nbsp;     *
+<i>949</i>&nbsp;     * @param color {@code WorkerColor} of the Worker
+<i>950</i>&nbsp;     * @return The Url of the Image of the Worker with the given Color.
+<i>951</i>&nbsp;     */
+<i>952</i>&nbsp;    private String getWorkerUrl(WorkerColors color) {
+<b class="nc"><i>953</i>&nbsp;        String url = &quot;/images/cellcluster/&quot;;</b>
+<b class="nc"><i>954</i>&nbsp;        switch (color) {</b>
+<i>955</i>&nbsp;            case PINK:
+<b class="nc"><i>956</i>&nbsp;                url = url + &quot;W_PINK.png&quot;;</b>
+<b class="nc"><i>957</i>&nbsp;                break;</b>
+<i>958</i>&nbsp;            case BLUE:
+<b class="nc"><i>959</i>&nbsp;                url = url + &quot;W_BLUE.png&quot;;</b>
+<b class="nc"><i>960</i>&nbsp;                break;</b>
+<i>961</i>&nbsp;            case ORANGE:
+<b class="nc"><i>962</i>&nbsp;                url = url + &quot;W_ORANGE.png&quot;;</b>
+<i>963</i>&nbsp;                break;
+<i>964</i>&nbsp;        }
+<b class="nc"><i>965</i>&nbsp;        return url;</b>
+<i>966</i>&nbsp;    }
+<i>967</i>&nbsp;
+<i>968</i>&nbsp;    /**
+<i>969</i>&nbsp;     * Set the Glow for the Worker with Coordinates.
+<i>970</i>&nbsp;     *
+<i>971</i>&nbsp;     * @param enable {@code True} to enable, {@code false} to disable.
+<i>972</i>&nbsp;     * @param x      X Coordinate
+<i>973</i>&nbsp;     * @param y      Y Coordinate
+<i>974</i>&nbsp;     */
+<i>975</i>&nbsp;    public void setWorkerGlow(boolean enable, int x, int y) {
+<b class="nc"><i>976</i>&nbsp;        Node node = getNodeByRowColumnIndex(x, y);</b>
+<b class="nc"><i>977</i>&nbsp;        System.out.println(&quot;DEBUG: setWorkerGlow &quot; + enable + &quot; &quot; + x + &quot; &quot; + y);</b>
+<b class="nc"><i>978</i>&nbsp;        setGlowByNode(enable, node);</b>
+<i>979</i>&nbsp;    }
+<i>980</i>&nbsp;
+<i>981</i>&nbsp;    /**
+<i>982</i>&nbsp;     * Set the Glow for the Worker with {@code WorkerID}.
+<i>983</i>&nbsp;     *
+<i>984</i>&nbsp;     * @param enable   {@code True} to enable, {@code false} to disable.
+<i>985</i>&nbsp;     * @param workerID ID of the worker to set.
+<i>986</i>&nbsp;     */
+<i>987</i>&nbsp;    public void setWorkerGlow(boolean enable, Worker.IDs workerID) {
+<b class="nc"><i>988</i>&nbsp;        for (int i = 0; i &lt; 5; i++) {</b>
+<b class="nc"><i>989</i>&nbsp;            for (int j = 0; j &lt; 5; j++) {</b>
+<b class="nc"><i>990</i>&nbsp;                CellClusterData cellClusterData = lastIslandUpdate.getCellCluster(i, j);</b>
+<b class="nc"><i>991</i>&nbsp;                if (cellClusterData.getWorkerOnTop() != null &amp;&amp; cellClusterData.getWorkerOnTop().equals(workerID) &amp;&amp; cellClusterData.getUsernamePlayer().equals(myUsername)) {</b>
+<b class="nc"><i>992</i>&nbsp;                    setWorkerGlow(enable, i, j);</b>
+<i>993</i>&nbsp;                }
+<i>994</i>&nbsp;            }
+<i>995</i>&nbsp;        }
+<i>996</i>&nbsp;    }
+<i>997</i>&nbsp;
+<i>998</i>&nbsp;    /**
+<i>999</i>&nbsp;     * Set the Glow for the Worker with {@link Node}.
+<i>1000</i>&nbsp;     *
+<i>1001</i>&nbsp;     * @param enable {@code True} to enable, {@code false} to disable.
+<i>1002</i>&nbsp;     * @param node   {@link Node} where to find the Worker
+<i>1003</i>&nbsp;     */
+<i>1004</i>&nbsp;    private void setGlowByNode(boolean enable, Node node) {
+<b class="nc"><i>1005</i>&nbsp;        if (enable) {</b>
+<b class="nc"><i>1006</i>&nbsp;            DropShadow dropShadow = new DropShadow();</b>
+<b class="nc"><i>1007</i>&nbsp;            dropShadow.setRadius(14.5);</b>
+<b class="nc"><i>1008</i>&nbsp;            dropShadow.setWidth(30);</b>
+<b class="nc"><i>1009</i>&nbsp;            dropShadow.setHeight(30);</b>
+<b class="nc"><i>1010</i>&nbsp;            dropShadow.setOffsetX(0);</b>
+<b class="nc"><i>1011</i>&nbsp;            dropShadow.setOffsetY(0);</b>
+<b class="nc"><i>1012</i>&nbsp;            dropShadow.setSpread(0.6);</b>
+<b class="nc"><i>1013</i>&nbsp;            dropShadow.setColor(Color.rgb(255, 234, 5));</b>
+<b class="nc"><i>1014</i>&nbsp;            node.setEffect(dropShadow);</b>
+<b class="nc"><i>1015</i>&nbsp;        } else {</b>
+<b class="nc"><i>1016</i>&nbsp;            node.setEffect(null);</b>
+<i>1017</i>&nbsp;        }
+<i>1018</i>&nbsp;    }
+<i>1019</i>&nbsp;
+<i>1020</i>&nbsp;    /**
+<i>1021</i>&nbsp;     * Deactivate the glow on all the workers.
+<i>1022</i>&nbsp;     */
+<i>1023</i>&nbsp;    private void disableAllWorkerGlow() {
+<b class="nc"><i>1024</i>&nbsp;        if (lastIslandUpdate != null) {</b>
+<b class="nc"><i>1025</i>&nbsp;            setWorkerGlow(false, Worker.IDs.A);</b>
+<b class="nc"><i>1026</i>&nbsp;            setWorkerGlow(false, Worker.IDs.B);</b>
+<i>1027</i>&nbsp;        }
+<i>1028</i>&nbsp;    }
+<i>1029</i>&nbsp;
+<i>1030</i>&nbsp;    /**
+<i>1031</i>&nbsp;     * Get WorkerID
+<i>1032</i>&nbsp;     *
+<i>1033</i>&nbsp;     * @param x X Coordinate
+<i>1034</i>&nbsp;     * @param y Y Coordinate
+<i>1035</i>&nbsp;     * @return WorkerID
+<i>1036</i>&nbsp;     */
+<i>1037</i>&nbsp;    public Worker.IDs getWorkerID(int x, int y) {
+<b class="nc"><i>1038</i>&nbsp;        return lastIslandUpdate.getCellCluster(x, y).getWorkerOnTop();</b>
+<i>1039</i>&nbsp;    }
+<i>1040</i>&nbsp;
+<i>1041</i>&nbsp;    /**
+<i>1042</i>&nbsp;     * Get the {@link ImageView} of the Worker.
+<i>1043</i>&nbsp;     *
+<i>1044</i>&nbsp;     * @param cellClusterData CellCluster with the worker.
+<i>1045</i>&nbsp;     * @return {@link ImageView} of the Worker
+<i>1046</i>&nbsp;     */
+<i>1047</i>&nbsp;    public ImageView getWorkerImage(CellClusterData cellClusterData) {
+<b class="nc"><i>1048</i>&nbsp;        String url = getWorkerUrl(cellClusterData.getWorkerColor());</b>
+<b class="nc"><i>1049</i>&nbsp;        ImageView workerImage = new ImageView();</b>
+<b class="nc"><i>1050</i>&nbsp;        workerImage.setFitWidth(100);</b>
+<b class="nc"><i>1051</i>&nbsp;        workerImage.setFitHeight(100);</b>
+<b class="nc"><i>1052</i>&nbsp;        workerImage.setPreserveRatio(true);</b>
+<b class="nc"><i>1053</i>&nbsp;        workerImage.setImage(new Image(url));</b>
+<b class="nc"><i>1054</i>&nbsp;        return workerImage;</b>
+<i>1055</i>&nbsp;    }
+<i>1056</i>&nbsp;
+<i>1057</i>&nbsp;    /* ----------------------------------------------------------------------------------------------
+<i>1058</i>&nbsp;                                        CARDS &amp; INFO - UTILITY AND METHODS
+<i>1059</i>&nbsp;       ----------------------------------------------------------------------------------------------*/
+<i>1060</i>&nbsp;
+<i>1061</i>&nbsp;    /**
+<i>1062</i>&nbsp;     * Set all the Info of Cards and Players
+<i>1063</i>&nbsp;     *
+<i>1064</i>&nbsp;     * @param playersCardsCorrespondence {@code Map&lt;String, CardEnum&gt;} with info about Player names and Cards.
+<i>1065</i>&nbsp;     * @param playerWorkerColors         {@code Map&lt;String, WorkerColors&gt;} with info about Player names and Colors.
+<i>1066</i>&nbsp;     */
+<i>1067</i>&nbsp;    public void setUpPlayersCardsCorrespondence(Map&lt;String, CardEnum&gt; playersCardsCorrespondence, Map&lt;String, WorkerColors&gt; playerWorkerColors) {
+<b class="nc"><i>1068</i>&nbsp;        int index = 0;</b>
+<b class="nc"><i>1069</i>&nbsp;        for (Map.Entry&lt;String, CardEnum&gt; entry : playersCardsCorrespondence.entrySet()) {</b>
+<b class="nc"><i>1070</i>&nbsp;            if (entry.getKey().equals(myUsername)) { //set up local user info</b>
+<b class="nc"><i>1071</i>&nbsp;                setUpMyCardInfo(entry.getValue());</b>
+<i>1072</i>&nbsp;            } else { //set up the opponents&#39; info
+<b class="nc"><i>1073</i>&nbsp;                setUpOpponentsCardInfo(index, entry.getKey(), entry.getValue(), playerWorkerColors.get(entry.getKey()));</b>
+<b class="nc"><i>1074</i>&nbsp;                index++;</b>
+<i>1075</i>&nbsp;            }
+<b class="nc"><i>1076</i>&nbsp;        }</b>
+<b class="nc"><i>1077</i>&nbsp;        if (playersCardsCorrespondence.values().size() == 2) {</b>
+<b class="nc"><i>1078</i>&nbsp;            cardInfo2.setVisible(false);</b>
+<i>1079</i>&nbsp;        }
+<i>1080</i>&nbsp;    }
+<i>1081</i>&nbsp;
+<i>1082</i>&nbsp;    /**
+<i>1083</i>&nbsp;     * Set my info on left pane
+<i>1084</i>&nbsp;     *
+<i>1085</i>&nbsp;     * @param card My Card name
+<i>1086</i>&nbsp;     */
+<i>1087</i>&nbsp;    public void setUpMyCardInfo(CardEnum card) {
+<i>1088</i>&nbsp;        //set up info of local user
+<i>1089</i>&nbsp;        //username
+<b class="nc"><i>1090</i>&nbsp;        StackPane pane = (StackPane) myCardInfo.getChildren().get(0);</b>
+<b class="nc"><i>1091</i>&nbsp;        Label cardName = (Label) pane.getChildren().get(1);</b>
+<b class="nc"><i>1092</i>&nbsp;        cardName.setText(card.getName());</b>
+<i>1093</i>&nbsp;
+<i>1094</i>&nbsp;        //card image and description
+<i>1095</i>&nbsp;        //image
+<b class="nc"><i>1096</i>&nbsp;        HBox hBox = (HBox) myCardInfo.getChildren().get(1);</b>
+<b class="nc"><i>1097</i>&nbsp;        Image myCard = new Image(card.getImgUrl());</b>
+<b class="nc"><i>1098</i>&nbsp;        ImageView imageView = (ImageView) hBox.getChildren().get(0);</b>
+<b class="nc"><i>1099</i>&nbsp;        imageView.setImage(myCard);</b>
+<i>1100</i>&nbsp;
+<i>1101</i>&nbsp;        //description
+<b class="nc"><i>1102</i>&nbsp;        Text cardDescription = (Text) hBox.getChildren().get(1);</b>
+<i>1103</i>&nbsp;
+<b class="nc"><i>1104</i>&nbsp;        setupCardDescription(cardDescription, card, true);</b>
+<i>1105</i>&nbsp;    }
+<i>1106</i>&nbsp;
+<i>1107</i>&nbsp;    /**
+<i>1108</i>&nbsp;     * Set all the info of opposite players.
+<i>1109</i>&nbsp;     *
+<i>1110</i>&nbsp;     * @param index       Index of opposite player.
+<i>1111</i>&nbsp;     * @param player      Name of the player.
+<i>1112</i>&nbsp;     * @param card        Card of the player
+<i>1113</i>&nbsp;     * @param workerColor Color of the player.
+<i>1114</i>&nbsp;     */
+<i>1115</i>&nbsp;    public void setUpOpponentsCardInfo(int index, String player, CardEnum card, WorkerColors workerColor) {
+<i>1116</i>&nbsp;        VBox actualVBox;
+<b class="nc"><i>1117</i>&nbsp;        if (index == 0) {</b>
+<b class="nc"><i>1118</i>&nbsp;            actualVBox = cardInfo1;</b>
+<i>1119</i>&nbsp;        } else {
+<b class="nc"><i>1120</i>&nbsp;            actualVBox = cardInfo2;</b>
+<i>1121</i>&nbsp;        }
+<i>1122</i>&nbsp;        //set up the name
+<b class="nc"><i>1123</i>&nbsp;        HBox upperHBox = (HBox) actualVBox.getChildren().get(0);</b>
+<b class="nc"><i>1124</i>&nbsp;        Label name = (Label) upperHBox.getChildren().get(0);</b>
+<b class="nc"><i>1125</i>&nbsp;        name.setText(player.toUpperCase());</b>
+<i>1126</i>&nbsp;
+<b class="nc"><i>1127</i>&nbsp;        ImageView smallWorker = (ImageView) upperHBox.getChildren().get(1);</b>
+<b class="nc"><i>1128</i>&nbsp;        String url = getWorkerUrl(workerColor);</b>
+<b class="nc"><i>1129</i>&nbsp;        smallWorker.setImage(new Image(url));</b>
+<i>1130</i>&nbsp;
+<i>1131</i>&nbsp;        //set up the image of the card
+<b class="nc"><i>1132</i>&nbsp;        HBox lowerHBox = (HBox) actualVBox.getChildren().get(1);</b>
+<b class="nc"><i>1133</i>&nbsp;        ImageView cardImage = (ImageView) lowerHBox.getChildren().get(0);</b>
+<b class="nc"><i>1134</i>&nbsp;        Image image = new Image(card.getImgUrl());</b>
+<b class="nc"><i>1135</i>&nbsp;        cardImage.setImage(image);</b>
+<i>1136</i>&nbsp;
+<i>1137</i>&nbsp;        //set up the name and the description of the card
+<b class="nc"><i>1138</i>&nbsp;        VBox vBox = (VBox) lowerHBox.getChildren().get(1);</b>
+<b class="nc"><i>1139</i>&nbsp;        Label cardName = (Label) vBox.getChildren().get(0);</b>
+<b class="nc"><i>1140</i>&nbsp;        cardName.setText(card.getName());</b>
+<b class="nc"><i>1141</i>&nbsp;        Text cardDescription = (Text) vBox.getChildren().get(1);</b>
+<b class="nc"><i>1142</i>&nbsp;        setupCardDescription(cardDescription, card, false);</b>
+<i>1143</i>&nbsp;    }
+<i>1144</i>&nbsp;
+<i>1145</i>&nbsp;    /**
+<i>1146</i>&nbsp;     * Set spectator info for opposite player.
+<i>1147</i>&nbsp;     *
+<i>1148</i>&nbsp;     * @param spectatorPlayer Name of spectator player
+<i>1149</i>&nbsp;     */
+<i>1150</i>&nbsp;    private void opponentPlayerSpectator(String spectatorPlayer) {
+<i>1151</i>&nbsp;        VBox actualVBox;
+<b class="nc"><i>1152</i>&nbsp;        HBox upperHBox = (HBox) cardInfo1.getChildren().get(0);</b>
+<b class="nc"><i>1153</i>&nbsp;        Label name1 = (Label) upperHBox.getChildren().get(0);</b>
+<i>1154</i>&nbsp;
+<b class="nc"><i>1155</i>&nbsp;        if (name1.getText().equals(spectatorPlayer)) {</b>
+<b class="nc"><i>1156</i>&nbsp;            actualVBox = cardInfo1;</b>
+<i>1157</i>&nbsp;        } else {
+<b class="nc"><i>1158</i>&nbsp;            actualVBox = cardInfo2;</b>
+<i>1159</i>&nbsp;        }
+<i>1160</i>&nbsp;
+<b class="nc"><i>1161</i>&nbsp;        Label name = (Label) upperHBox.getChildren().get(0);</b>
+<b class="nc"><i>1162</i>&nbsp;        name.setText(spectatorPlayer.toUpperCase() + &quot; - Spectator&quot;);</b>
+<b class="nc"><i>1163</i>&nbsp;        actualVBox.setDisable(true);</b>
+<i>1164</i>&nbsp;    }
+<i>1165</i>&nbsp;
+<i>1166</i>&nbsp;    /**
+<i>1167</i>&nbsp;     * Set the proper Card description with the right size.
+<i>1168</i>&nbsp;     *
+<i>1169</i>&nbsp;     * @param cardDescription {@link Text} field that contains the card description.
+<i>1170</i>&nbsp;     * @param card            Card to show.
+<i>1171</i>&nbsp;     * @param isMyCard        {@code boolean} value, true if the card is mine, false otherwise.
+<i>1172</i>&nbsp;     */
+<i>1173</i>&nbsp;    private void setupCardDescription(Text cardDescription, CardEnum card, boolean isMyCard) {
+<b class="nc"><i>1174</i>&nbsp;        int minSize = 12;</b>
+<b class="nc"><i>1175</i>&nbsp;        if (isMyCard) {</b>
+<b class="nc"><i>1176</i>&nbsp;            minSize = 15;</b>
+<i>1177</i>&nbsp;        }
+<b class="nc"><i>1178</i>&nbsp;        String fontName = cardDescription.getFont().getName();</b>
+<b class="nc"><i>1179</i>&nbsp;        int descriptionLength = card.getDescription().length();</b>
+<b class="nc"><i>1180</i>&nbsp;        if (descriptionLength &gt; 70) {</b>
+<b class="nc"><i>1181</i>&nbsp;            if (descriptionLength &gt; 100) {</b>
+<b class="nc"><i>1182</i>&nbsp;                if (descriptionLength &gt; 120) {</b>
+<i>1183</i>&nbsp;                    // descriptionLength &gt; 120
+<b class="nc"><i>1184</i>&nbsp;                    cardDescription.setFont(Font.font(fontName, minSize));</b>
+<i>1185</i>&nbsp;                } else {
+<i>1186</i>&nbsp;                    // 100 &lt; descriptionLength &lt;= 120
+<b class="nc"><i>1187</i>&nbsp;                    cardDescription.setFont(Font.font(fontName, minSize + 2));</b>
+<i>1188</i>&nbsp;                }
+<i>1189</i>&nbsp;            } else {
+<i>1190</i>&nbsp;                // 70 &lt; descriptionLength &lt;= 100
+<b class="nc"><i>1191</i>&nbsp;                cardDescription.setFont(Font.font(fontName, minSize + 4));</b>
+<i>1192</i>&nbsp;            }
+<i>1193</i>&nbsp;        } else {
+<i>1194</i>&nbsp;            // descriptionLength &lt;=70
+<b class="nc"><i>1195</i>&nbsp;            cardDescription.setFont(Font.font(fontName, minSize + 6));</b>
+<i>1196</i>&nbsp;        }
+<b class="nc"><i>1197</i>&nbsp;        cardDescription.setText(card.getDescription());</b>
+<i>1198</i>&nbsp;    }
+<i>1199</i>&nbsp;
+<i>1200</i>&nbsp;    /**
+<i>1201</i>&nbsp;     * Set info about the turn, such as Number of Possible Movements ecc.
+<i>1202</i>&nbsp;     *
+<i>1203</i>&nbsp;     * @param climb             {@link String} can Climb.
+<i>1204</i>&nbsp;     * @param numberOfMovements {@code int} number of movements.
+<i>1205</i>&nbsp;     * @param numberOfBuilding  {@code int} number of buildings.
+<i>1206</i>&nbsp;     */
+<i>1207</i>&nbsp;    public void updateTurnInfo(String climb, int numberOfMovements, int numberOfBuilding) {
+<i>1208</i>&nbsp;        //set if can climb
+<b class="nc"><i>1209</i>&nbsp;        Label canClimb = (Label) turnInfo.getChildren().get(1);</b>
+<b class="nc"><i>1210</i>&nbsp;        canClimb.setText(&quot;can climb: &quot; + climb.toUpperCase());</b>
+<b class="nc"><i>1211</i>&nbsp;        canClimb.setVisible(true);</b>
+<i>1212</i>&nbsp;
+<i>1213</i>&nbsp;        //set number of moves
+<b class="nc"><i>1214</i>&nbsp;        Label numberOfMoves = (Label) turnInfo.getChildren().get(2);</b>
+<b class="nc"><i>1215</i>&nbsp;        numberOfMoves.setText(&quot;available MOVE: &quot; + numberOfMovements);</b>
+<b class="nc"><i>1216</i>&nbsp;        numberOfMoves.setVisible(true);</b>
+<i>1217</i>&nbsp;
+<i>1218</i>&nbsp;        //set number of builds
+<b class="nc"><i>1219</i>&nbsp;        Label numberOfBuilds = (Label) turnInfo.getChildren().get(3);</b>
+<b class="nc"><i>1220</i>&nbsp;        numberOfBuilds.setText(&quot;available BUILD: &quot; + numberOfBuilding);</b>
+<b class="nc"><i>1221</i>&nbsp;        numberOfBuilds.setVisible(true);</b>
+<i>1222</i>&nbsp;    }
+<i>1223</i>&nbsp;
+<i>1224</i>&nbsp;    /**
+<i>1225</i>&nbsp;     * Hide all the turn info
+<i>1226</i>&nbsp;     */
+<i>1227</i>&nbsp;    public void hideAllTurnInfo() {
+<b class="nc"><i>1228</i>&nbsp;        Label canClimb = (Label) turnInfo.getChildren().get(1);</b>
+<b class="nc"><i>1229</i>&nbsp;        canClimb.setVisible(false);</b>
+<i>1230</i>&nbsp;
+<b class="nc"><i>1231</i>&nbsp;        Label numberOfMoves = (Label) turnInfo.getChildren().get(2);</b>
+<b class="nc"><i>1232</i>&nbsp;        numberOfMoves.setVisible(false);</b>
+<i>1233</i>&nbsp;
+<b class="nc"><i>1234</i>&nbsp;        Label numberOfBuilds = (Label) turnInfo.getChildren().get(3);</b>
+<b class="nc"><i>1235</i>&nbsp;        numberOfBuilds.setVisible(false);</b>
+<i>1236</i>&nbsp;    }
+<i>1237</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-01 23:41</div>
+</div>
+</body>
+</html>

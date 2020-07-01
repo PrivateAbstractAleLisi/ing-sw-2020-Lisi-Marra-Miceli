@@ -1,0 +1,951 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TurnController</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.controller</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TurnController (it.polimi.ingsw.psp58.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TurnController</td>
+<td class="coverageStat">
+  <span class="percent">
+    80,9%
+  </span>
+  <span class="absValue">
+    (38/ 47)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85,4%
+  </span>
+  <span class="absValue">
+    (276/ 323)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TurnController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    81,2%
+  </span>
+  <span class="absValue">
+    (39/ 48)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85,5%
+  </span>
+  <span class="absValue">
+    (277/ 324)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.controller;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.IslandData;
+<i>4</i>&nbsp;import it.polimi.ingsw.psp58.event.core.ControllerListener;
+<i>5</i>&nbsp;import it.polimi.ingsw.psp58.event.core.EventSource;
+<i>6</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
+<i>7</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
+<i>8</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.match.*;
+<i>9</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerCardsChosenEvent;
+<i>10</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerChosenFirstPlayerEvent;
+<i>11</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerCardChosenEvent;
+<i>12</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_PlayerPlacedWorkerEvent;
+<i>13</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
+<i>14</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
+<i>15</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.WinningException;
+<i>16</i>&nbsp;import it.polimi.ingsw.psp58.model.*;
+<i>17</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+<i>18</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.Worker;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;import java.util.ArrayList;
+<i>21</i>&nbsp;import java.util.HashMap;
+<i>22</i>&nbsp;import java.util.List;
+<i>23</i>&nbsp;import java.util.Map;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
+<i>26</i>&nbsp;import static it.polimi.ingsw.psp58.model.TurnAction.*;
+<i>27</i>&nbsp;import static it.polimi.ingsw.psp58.model.gamemap.Worker.IDs;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * This class filters VirtualView events, it creates a turn(on model) for current player and manages it.
+<i>31</i>&nbsp; * It also handles all the information and {@link TurnAction} related to the turn, operating with all the references it has on the model.
+<i>32</i>&nbsp; */
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;public class TurnController extends EventSource implements ControllerListener {
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    private Map&lt;Integer, Player&gt; turnSequence;
+<i>37</i>&nbsp;    private int currentTurnIndex;
+<i>38</i>&nbsp;    private Turn currentTurnInstance;
+<i>39</i>&nbsp;    private int currentTurnNumber;
+<i>40</i>&nbsp;    private boolean thereIsChronus;
+<i>41</i>&nbsp;    private int numberOfPlayers;
+<i>42</i>&nbsp;    private Player currentPlayer;
+<i>43</i>&nbsp;    private final BoardManager board;
+<i>44</i>&nbsp;    private final Room room;
+<i>45</i>&nbsp;
+<b class="fc"><i>46</i>&nbsp;    public TurnController(BoardManager boardManager, Map&lt;Integer, Player&gt; turnSequence, int numberOfPlayers, Room room) {</b>
+<b class="fc"><i>47</i>&nbsp;        this.board = boardManager;</b>
+<b class="fc"><i>48</i>&nbsp;        this.turnSequence = turnSequence;</b>
+<b class="fc"><i>49</i>&nbsp;        this.currentTurnIndex = -1;</b>
+<b class="fc"><i>50</i>&nbsp;        this.numberOfPlayers = numberOfPlayers;</b>
+<b class="fc"><i>51</i>&nbsp;        this.currentTurnNumber = 0;</b>
+<b class="fc"><i>52</i>&nbsp;        this.room = room;</b>
+<b class="fc"><i>53</i>&nbsp;        checkIfThereIsChronus();</b>
+<b class="fc"><i>54</i>&nbsp;    }</b>
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * sets a turnSequence.
+<i>58</i>&nbsp;     *
+<i>59</i>&nbsp;     * @param turnSequence adds a [TURN_NUMBER, PLAYER] map representing for each player its position in the turn rotation
+<i>60</i>&nbsp;     */
+<i>61</i>&nbsp;    public void setTurnSequence(Map&lt;Integer, Player&gt; turnSequence) {
+<b class="fc"><i>62</i>&nbsp;        this.turnSequence = turnSequence;</b>
+<b class="fc"><i>63</i>&nbsp;    }</b>
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    /**
+<i>66</i>&nbsp;     * checks if there is Chronus in the game and set the apposite boolean
+<i>67</i>&nbsp;     */
+<i>68</i>&nbsp;    private void checkIfThereIsChronus() {
+<b class="fc"><i>69</i>&nbsp;        this.thereIsChronus = false;</b>
+<b class="fc"><i>70</i>&nbsp;        for (Player player : turnSequence.values()) {</b>
+<b class="fc"><i>71</i>&nbsp;            if (player.getCard().getName() == CardEnum.CHRONUS) {</b>
+<b class="fc"><i>72</i>&nbsp;                this.thereIsChronus = true;</b>
+<b class="fc"><i>73</i>&nbsp;                break;</b>
+<i>74</i>&nbsp;            }
+<b class="fc"><i>75</i>&nbsp;        }</b>
+<b class="fc"><i>76</i>&nbsp;    }</b>
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    public void setNumberOfPlayers(int numberOfPlayers) {
+<b class="fc"><i>79</i>&nbsp;        this.numberOfPlayers = numberOfPlayers;</b>
+<b class="fc"><i>80</i>&nbsp;    }</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    public int getCurrentTurnNumber() {
+<b class="fc"><i>83</i>&nbsp;        return this.currentTurnNumber;</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    public String getCurrentPlayerUser() {
+<b class="fc"><i>87</i>&nbsp;        return this.currentPlayer.getUsername();</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    public Turn getCurrentTurnInstance() {
+<b class="fc"><i>91</i>&nbsp;        return currentTurnInstance;</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /**
+<i>95</i>&nbsp;     * Called by the PreGame: start the match sending the first Events
+<i>96</i>&nbsp;     */
+<i>97</i>&nbsp;    public void firstTurn() {
+<b class="fc"><i>98</i>&nbsp;        if (currentTurnNumber == 0) {</b>
+<b class="fc"><i>99</i>&nbsp;            printLogMessage(&quot;First turn is starting&quot;);</b>
+<b class="fc"><i>100</i>&nbsp;            nextTurn();</b>
+<i>101</i>&nbsp;        }
+<b class="fc"><i>102</i>&nbsp;    }</b>
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    /**
+<i>105</i>&nbsp;     * This method send a NewTurnEvent to all players, with basic info about the new turn
+<i>106</i>&nbsp;     */
+<i>107</i>&nbsp;    private void sendNewTurnEvent() {
+<b class="fc"><i>108</i>&nbsp;        List&lt;String&gt; turnList = getCurrentTurnListUsername();</b>
+<b class="fc"><i>109</i>&nbsp;        CV_NewTurnEvent event = new CV_NewTurnEvent(&quot;is your turn!&quot;, currentPlayer.getUsername(), turnList);</b>
+<b class="fc"><i>110</i>&nbsp;        notifyAllObserverByType(VIEW, event);</b>
+<b class="fc"><i>111</i>&nbsp;    }</b>
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    /**
+<i>114</i>&nbsp;     * This method return a List of {@link Player} the turnSequence where the first element is the {@code currentPlayer}
+<i>115</i>&nbsp;     *
+<i>116</i>&nbsp;     * @return List of {@link Player} the turnSequence where the first element is the {@code currentPlayer}
+<i>117</i>&nbsp;     */
+<i>118</i>&nbsp;    private List&lt;Player&gt; getCurrentTurnList() {
+<b class="fc"><i>119</i>&nbsp;        List&lt;Player&gt; actualTurnSequence = getPlayersSequenceAsList();</b>
+<i>120</i>&nbsp;
+<b class="fc"><i>121</i>&nbsp;        List&lt;Player&gt; currentTurn = new ArrayList&lt;&gt;();</b>
+<i>122</i>&nbsp;
+<b class="fc"><i>123</i>&nbsp;        int index = this.currentTurnIndex;</b>
+<i>124</i>&nbsp;
+<b class="fc"><i>125</i>&nbsp;        while (currentTurn.size() &lt; numberOfPlayers) {</b>
+<b class="fc"><i>126</i>&nbsp;            currentTurn.add(actualTurnSequence.get(index));</b>
+<b class="fc"><i>127</i>&nbsp;            if (index == numberOfPlayers - 1) {</b>
+<b class="fc"><i>128</i>&nbsp;                index = 0;</b>
+<i>129</i>&nbsp;            } else {
+<b class="fc"><i>130</i>&nbsp;                index++;</b>
+<i>131</i>&nbsp;            }
+<i>132</i>&nbsp;        }
+<i>133</i>&nbsp;
+<b class="fc"><i>134</i>&nbsp;        return currentTurn;</b>
+<i>135</i>&nbsp;    }
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;    /**
+<i>138</i>&nbsp;     * This method return a List of {@link String} the turnSequence where the first element is the {@code currentPlayer}
+<i>139</i>&nbsp;     *
+<i>140</i>&nbsp;     * @return List of {@link String} the turnSequence where the first element is the {@code currentPlayer}
+<i>141</i>&nbsp;     */
+<i>142</i>&nbsp;    public List&lt;String&gt; getCurrentTurnListUsername() {
+<b class="fc"><i>143</i>&nbsp;        List&lt;String&gt; usernameTurnList = new ArrayList&lt;&gt;();</b>
+<i>144</i>&nbsp;
+<b class="fc"><i>145</i>&nbsp;        List&lt;Player&gt; playerTurnList = getCurrentTurnList();</b>
+<i>146</i>&nbsp;
+<b class="fc"><i>147</i>&nbsp;        for (Player player : playerTurnList) {</b>
+<b class="fc"><i>148</i>&nbsp;            usernameTurnList.add(player.getUsername());</b>
+<b class="fc"><i>149</i>&nbsp;        }</b>
+<i>150</i>&nbsp;
+<b class="fc"><i>151</i>&nbsp;        return usernameTurnList;</b>
+<i>152</i>&nbsp;    }
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /**
+<i>155</i>&nbsp;     * This method return the {@code turnSequence} as List
+<i>156</i>&nbsp;     *
+<i>157</i>&nbsp;     * @return return the turn sequence as List
+<i>158</i>&nbsp;     */
+<i>159</i>&nbsp;    private List&lt;Player&gt; getPlayersSequenceAsList() {
+<b class="fc"><i>160</i>&nbsp;        List&lt;Player&gt; players = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>161</i>&nbsp;        for (Map.Entry&lt;Integer, Player&gt; player : turnSequence.entrySet()) {</b>
+<b class="fc"><i>162</i>&nbsp;            players.add(player.getValue());</b>
+<b class="fc"><i>163</i>&nbsp;        }</b>
+<b class="fc"><i>164</i>&nbsp;        return players;</b>
+<i>165</i>&nbsp;    }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;    /**
+<i>168</i>&nbsp;     * Adds all the available destination for both the worker A and the worker B
+<i>169</i>&nbsp;     *
+<i>170</i>&nbsp;     * @param behaviour           the {@link BehaviourManager} of the player that has to make the move
+<i>171</i>&nbsp;     * @param availableMovementsA all the possible destination for the worker A
+<i>172</i>&nbsp;     * @param availableMovementsB all the possible destination for the worker B
+<i>173</i>&nbsp;     */
+<i>174</i>&nbsp;    private void setUpAvailableMovements(BehaviourManager behaviour, List&lt;int[]&gt; availableMovementsA, List&lt;int[]&gt; availableMovementsB) {
+<b class="fc"><i>175</i>&nbsp;        if (currentTurnInstance.getNumberOfMove() == 0 &amp;&amp; currentTurnInstance.getNumberOfBuild() == 0) { // he can move with any of the two workers</b>
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;            //gets the possibles move for the worker A
+<b class="fc"><i>178</i>&nbsp;            availableMovementsA.addAll(currentTurnInstance.validActions(IDs.A, MOVE));</b>
+<i>179</i>&nbsp;            //gets the possible moves for the worker B
+<b class="fc"><i>180</i>&nbsp;            availableMovementsB.addAll(currentTurnInstance.validActions(IDs.B, MOVE));</b>
+<b class="fc"><i>181</i>&nbsp;        } else if (behaviour.getMovementsRemaining() != 0) { // the player can make a second move with the worker used for the other actions, also PROMETHEUS that has built before move</b>
+<i>182</i>&nbsp;
+<b class="fc"><i>183</i>&nbsp;            if (currentTurnInstance.getWorkerID() == IDs.A) { //the player has moved with the worker A</b>
+<b class="fc"><i>184</i>&nbsp;                availableMovementsA.addAll(currentTurnInstance.validActions(IDs.A, MOVE));</b>
+<i>185</i>&nbsp;
+<b class="fc"><i>186</i>&nbsp;            } else if (currentTurnInstance.getWorkerID() == IDs.B) { //the player has moved with the worker B</b>
+<i>187</i>&nbsp;
+<b class="fc"><i>188</i>&nbsp;                availableMovementsB.addAll(currentTurnInstance.validActions(IDs.B, MOVE));</b>
+<i>189</i>&nbsp;            }
+<i>190</i>&nbsp;        }
+<b class="fc"><i>191</i>&nbsp;    }</b>
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    /**
+<i>194</i>&nbsp;     * Adds all the available cell in which the player can build with both the worker A and the worker B
+<i>195</i>&nbsp;     *
+<i>196</i>&nbsp;     * @param availableBuildA all the possible destination for the build of the worker A
+<i>197</i>&nbsp;     * @param availableBuildB all the possible destination for the build of the worker B
+<i>198</i>&nbsp;     */
+<i>199</i>&nbsp;    private void setUpAvailableBuild(List&lt;int[]&gt; availableBuildA, List&lt;int[]&gt; availableBuildB) {
+<b class="fc"><i>200</i>&nbsp;        if (currentTurnInstance.getNumberOfMove() == 0) { // the player can build with any worker (ONLY PROMETHEUS)</b>
+<b class="fc"><i>201</i>&nbsp;            availableBuildA.addAll(currentTurnInstance.validActions(IDs.A, BUILD));</b>
+<b class="fc"><i>202</i>&nbsp;            availableBuildB.addAll(currentTurnInstance.validActions(IDs.B, BUILD));</b>
+<i>203</i>&nbsp;        } else {
+<b class="fc"><i>204</i>&nbsp;            Worker.IDs id = currentTurnInstance.getWorkerID();</b>
+<b class="fc"><i>205</i>&nbsp;            if (id == IDs.A) {</b>
+<b class="fc"><i>206</i>&nbsp;                availableBuildA.addAll(currentTurnInstance.validActions(id, BUILD));</b>
+<b class="fc"><i>207</i>&nbsp;            } else if (id == IDs.B) {</b>
+<b class="fc"><i>208</i>&nbsp;                availableBuildB.addAll(currentTurnInstance.validActions(id, BUILD));</b>
+<i>209</i>&nbsp;            }
+<i>210</i>&nbsp;        }
+<b class="fc"><i>211</i>&nbsp;    }</b>
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;    /**
+<i>214</i>&nbsp;     * Checks, during the calculation of the possible action of the turn, if the player has no possible action and so he has to lose
+<i>215</i>&nbsp;     *
+<i>216</i>&nbsp;     * @param availableActions the list of the possible {@link TurnAction} of the player
+<i>217</i>&nbsp;     * @param player           the name of the player
+<i>218</i>&nbsp;     * @return true if he lost, false otherwise
+<i>219</i>&nbsp;     */
+<i>220</i>&nbsp;    private boolean checkLose(List&lt;TurnAction&gt; availableActions, String player) {
+<b class="fc"><i>221</i>&nbsp;        if (availableActions.isEmpty()) { //the player has no actions possibles so he loses</b>
+<b class="fc"><i>222</i>&nbsp;            lose(player);</b>
+<b class="fc"><i>223</i>&nbsp;            return true;</b>
+<i>224</i>&nbsp;        }
+<b class="fc"><i>225</i>&nbsp;        return false;</b>
+<i>226</i>&nbsp;    }
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;    /**
+<i>229</i>&nbsp;     * Checks if {@code MOVE} is a possible action for the phase of the turn for the {@code actingPlayer}
+<i>230</i>&nbsp;     *
+<i>231</i>&nbsp;     * @param actingPlayer the name of the player that has to make an action
+<i>232</i>&nbsp;     * @return true if {@code MOVE} is a possible action, false otherwise
+<i>233</i>&nbsp;     */
+<i>234</i>&nbsp;    private boolean canMove(String actingPlayer) {
+<b class="fc"><i>235</i>&nbsp;        BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();</b>
+<b class="fc"><i>236</i>&nbsp;        boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;</b>
+<b class="fc"><i>237</i>&nbsp;        int numberOfBuild = currentTurnInstance.getNumberOfBuild();</b>
+<i>238</i>&nbsp;
+<b class="fc"><i>239</i>&nbsp;        return (behaviour.getMovementsRemaining() &gt; 0) &amp;&amp;</b>
+<i>240</i>&nbsp;                ((numberOfBuild == 0) || ((isPrometheus) &amp;&amp; (numberOfBuild == 1)));
+<i>241</i>&nbsp;    }
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    /**
+<i>244</i>&nbsp;     * Checks if {@code BUILD} is a possible action for the phase of the turn for the {@code actingPlayer}
+<i>245</i>&nbsp;     *
+<i>246</i>&nbsp;     * @param actingPlayer the name of the player that has to make an action
+<i>247</i>&nbsp;     * @return true if {@code BUILD} is a possible action, false otherwise
+<i>248</i>&nbsp;     */
+<i>249</i>&nbsp;    private boolean canBuild(String actingPlayer) {
+<b class="fc"><i>250</i>&nbsp;        BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();</b>
+<b class="fc"><i>251</i>&nbsp;        boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;</b>
+<b class="fc"><i>252</i>&nbsp;        int numberOfMove = currentTurnInstance.getNumberOfMove();</b>
+<b class="fc"><i>253</i>&nbsp;        int numberOfBuild = currentTurnInstance.getNumberOfBuild();</b>
+<i>254</i>&nbsp;
+<b class="fc"><i>255</i>&nbsp;        return (behaviour.getBlockPlacementLeft() &gt; 0) &amp;&amp;</b>
+<i>256</i>&nbsp;                ((numberOfMove &gt; 0) || ((isPrometheus) &amp;&amp; (numberOfMove == 0) &amp;&amp; (numberOfBuild == 0)));
+<i>257</i>&nbsp;    }
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;    /**
+<i>260</i>&nbsp;     * Checks if {@code PASS} is a possible action for the phase of the turn for the {@code actingPlayer}
+<i>261</i>&nbsp;     *
+<i>262</i>&nbsp;     * @return true if {@code PASS} is a possible action, false otherwise
+<i>263</i>&nbsp;     */
+<i>264</i>&nbsp;    private boolean canPassTurn() {
+<b class="fc"><i>265</i>&nbsp;        boolean isPrometheus = currentPlayer.getCard().getName() == CardEnum.PROMETHEUS;</b>
+<b class="fc"><i>266</i>&nbsp;        if (isPrometheus) {</b>
+<i>267</i>&nbsp;            //if is Prometheus, check more things
+<b class="fc"><i>268</i>&nbsp;            boolean hasBuiltBeforeMove = currentTurnInstance.getHasBuiltBeforeMove();</b>
+<b class="fc"><i>269</i>&nbsp;            boolean normalValidTurn = currentTurnInstance.getNumberOfBuild() == 1 &amp;&amp; !hasBuiltBeforeMove;</b>
+<b class="fc"><i>270</i>&nbsp;            boolean powerValidTurn = currentTurnInstance.getNumberOfBuild() == 2 &amp;&amp; hasBuiltBeforeMove;</b>
+<i>271</i>&nbsp;
+<b class="fc"><i>272</i>&nbsp;            return (currentTurnInstance.getNumberOfMove() == 1 &amp;&amp; (normalValidTurn || powerValidTurn));</b>
+<i>273</i>&nbsp;        }
+<b class="fc"><i>274</i>&nbsp;        return (currentTurnInstance.getNumberOfMove() &gt; 0 &amp;&amp; currentTurnInstance.getNumberOfBuild() &gt; 0);</b>
+<i>275</i>&nbsp;    }
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;    /**
+<i>278</i>&nbsp;     * Sends to the {@code actingPlayer} a {@link CV_CommandExecutedGameEvent} event to let the client know that the command has been executed correctly
+<i>279</i>&nbsp;     *
+<i>280</i>&nbsp;     * @param actingPlayer the recipient for the event
+<i>281</i>&nbsp;     */
+<i>282</i>&nbsp;    private void sendCommandExecuted(String actingPlayer) {
+<b class="fc"><i>283</i>&nbsp;        CV_CommandExecutedGameEvent event = new CV_CommandExecutedGameEvent(&quot;&quot;, actingPlayer);</b>
+<b class="fc"><i>284</i>&nbsp;        notifyAllObserverByType(VIEW, event);</b>
+<b class="fc"><i>285</i>&nbsp;    }</b>
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;    /**
+<i>288</i>&nbsp;     * Sends a {@link CV_CommandRequestEvent} to the {@code actingPlayer} containing all the possible {@link TurnAction}, movements and build that he can perform.
+<i>289</i>&nbsp;     * If there aren&#39;t it calls the {@code lose} method because the {@code actingPlayer} has to lose the game
+<i>290</i>&nbsp;     *
+<i>291</i>&nbsp;     * @param actingPlayer the name of the player that has to perform an action
+<i>292</i>&nbsp;     */
+<i>293</i>&nbsp;    private void sendCommandRequest(String actingPlayer) {
+<b class="fc"><i>294</i>&nbsp;        List&lt;TurnAction&gt; availableActions = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>295</i>&nbsp;        BehaviourManager behaviour = board.getPlayer(actingPlayer).getBehaviour();</b>
+<i>296</i>&nbsp;
+<b class="fc"><i>297</i>&nbsp;        List&lt;int[]&gt; availableMovementsA = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>298</i>&nbsp;        List&lt;int[]&gt; availableMovementsB = new ArrayList&lt;&gt;();</b>
+<i>299</i>&nbsp;
+<b class="fc"><i>300</i>&nbsp;        List&lt;int[]&gt; availableBuildA = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>301</i>&nbsp;        List&lt;int[]&gt; availableBuildB = new ArrayList&lt;&gt;();</b>
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;        //Check if the player can MOVE and set the possible moves
+<b class="fc"><i>304</i>&nbsp;        if (canMove(actingPlayer)) {//MOVE may be a valid action</b>
+<i>305</i>&nbsp;
+<b class="fc"><i>306</i>&nbsp;            setUpAvailableMovements(behaviour, availableMovementsA, availableMovementsB);</b>
+<i>307</i>&nbsp;
+<i>308</i>&nbsp;            //if there any MOVE is actually a valid action
+<b class="fc"><i>309</i>&nbsp;            if (!availableMovementsA.isEmpty() || !availableMovementsB.isEmpty()) {</b>
+<b class="fc"><i>310</i>&nbsp;                availableActions.add(MOVE);</b>
+<i>311</i>&nbsp;            }
+<i>312</i>&nbsp;        }
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;        //Check if the player can BUILD and set the possible builds
+<b class="fc"><i>316</i>&nbsp;        if (canBuild(actingPlayer)) { //BUILD may be a valid action</b>
+<i>317</i>&nbsp;
+<b class="fc"><i>318</i>&nbsp;            setUpAvailableBuild(availableBuildA, availableBuildB);</b>
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;            //if there any BUILD is actually a valid action
+<b class="fc"><i>321</i>&nbsp;            if (!availableBuildA.isEmpty() || !availableBuildB.isEmpty()) {</b>
+<b class="fc"><i>322</i>&nbsp;                availableActions.add(BUILD);</b>
+<i>323</i>&nbsp;            }
+<i>324</i>&nbsp;        }
+<i>325</i>&nbsp;
+<b class="fc"><i>326</i>&nbsp;        if (canPassTurn()) { //the player can terminate the turn</b>
+<b class="fc"><i>327</i>&nbsp;            availableActions.add(PASS);</b>
+<i>328</i>&nbsp;        }
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;        //checks if the player loses or not
+<b class="fc"><i>331</i>&nbsp;        if (!checkLose(availableActions, actingPlayer)) {</b>
+<i>332</i>&nbsp;            //send info of the turn
+<b class="fc"><i>333</i>&nbsp;            CV_TurnInfoEvent infoEvent = new CV_TurnInfoEvent(&quot;&quot;, behaviour.getMovementsRemaining(), behaviour.getBlockPlacementLeft(), behaviour.isCanClimb(), actingPlayer);</b>
+<b class="fc"><i>334</i>&nbsp;            notifyAllObserverByType(VIEW, infoEvent);</b>
+<i>335</i>&nbsp;            //send the event for the command selection
+<b class="fc"><i>336</i>&nbsp;            CV_CommandRequestEvent requestEvent = new CV_CommandRequestEvent(&quot;this are the actions you can do&quot;, availableActions, availableBuildA, availableMovementsA,</b>
+<i>337</i>&nbsp;                    availableBuildB, availableMovementsB, actingPlayer);
+<b class="fc"><i>338</i>&nbsp;            notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>339</i>&nbsp;        }
+<b class="fc"><i>340</i>&nbsp;    }</b>
+<i>341</i>&nbsp;
+<i>342</i>&nbsp;    /**
+<i>343</i>&nbsp;     * Method called when a player perform a {@code pass} action and create a new {@link Turn} instance for the next player in the {@code turnSequence}.
+<i>344</i>&nbsp;     * Then notify the actingPlayer calling the {@code sendCommandRequest} method.
+<i>345</i>&nbsp;     */
+<i>346</i>&nbsp;    private void nextTurn() {
+<b class="fc"><i>347</i>&nbsp;        currentTurnInstance = null; //destroys current turn on model</b>
+<b class="fc"><i>348</i>&nbsp;        if (this.currentTurnIndex == numberOfPlayers - 1) {</b>
+<b class="fc"><i>349</i>&nbsp;            this.currentTurnIndex = 0;</b>
+<i>350</i>&nbsp;        } else {
+<b class="fc"><i>351</i>&nbsp;            this.currentTurnIndex++;</b>
+<i>352</i>&nbsp;        }
+<i>353</i>&nbsp;
+<b class="fc"><i>354</i>&nbsp;        currentPlayer = turnSequence.get(currentTurnIndex);</b>
+<b class="fc"><i>355</i>&nbsp;        currentTurnInstance = new Turn(currentPlayer, board);</b>
+<b class="fc"><i>356</i>&nbsp;        currentTurnNumber++;</b>
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;        //Notify All Players
+<b class="fc"><i>359</i>&nbsp;        String currentPlayerUsername = currentPlayer.getUsername();</b>
+<b class="fc"><i>360</i>&nbsp;        List&lt;Player&gt; players = getPlayersSequenceAsList();</b>
+<i>361</i>&nbsp;
+<b class="fc"><i>362</i>&nbsp;        sendNewTurnEvent();</b>
+<i>363</i>&nbsp;
+<b class="fc"><i>364</i>&nbsp;        for (Player recipient : players) {</b>
+<b class="fc"><i>365</i>&nbsp;            if (!recipient.getUsername().equals(currentPlayerUsername)) {</b>
+<b class="fc"><i>366</i>&nbsp;                CV_WaitMatchGameEvent requestEvent = new CV_WaitMatchGameEvent(&quot;Is the turn of&quot;, currentPlayerUsername, recipient.getUsername());</b>
+<b class="fc"><i>367</i>&nbsp;                notifyAllObserverByType(VIEW, requestEvent);</b>
+<i>368</i>&nbsp;            }
+<b class="fc"><i>369</i>&nbsp;        }</b>
+<b class="fc"><i>370</i>&nbsp;        sendIslandUpdate();</b>
+<b class="fc"><i>371</i>&nbsp;        sendCommandRequest(currentPlayerUsername);</b>
+<b class="fc"><i>372</i>&nbsp;        printLogMessage(&quot;New turn for &quot; + currentPlayerUsername.toUpperCase());</b>
+<b class="fc"><i>373</i>&nbsp;    }</b>
+<i>374</i>&nbsp;
+<i>375</i>&nbsp;    /**
+<i>376</i>&nbsp;     * Sends the {@link CV_GameOverEvent} and then a {@link CV_NewGameRequestEvent} to all the players
+<i>377</i>&nbsp;     *
+<i>378</i>&nbsp;     * @param winner the name of the player that has won
+<i>379</i>&nbsp;     */
+<i>380</i>&nbsp;    private void win(Player winner) {
+<b class="fc"><i>381</i>&nbsp;        List&lt;String&gt; losingPlayers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>382</i>&nbsp;        for (Map.Entry&lt;Integer, Player&gt; player : turnSequence.entrySet()) {</b>
+<b class="fc"><i>383</i>&nbsp;            if (!player.getValue().getUsername().equals(winner.getUsername())) {</b>
+<b class="fc"><i>384</i>&nbsp;                losingPlayers.add(player.getValue().getUsername());</b>
+<i>385</i>&nbsp;            }
+<b class="fc"><i>386</i>&nbsp;        }</b>
+<b class="fc"><i>387</i>&nbsp;        CV_GameOverEvent gameOverEvent = new CV_GameOverEvent(&quot;lose&quot;, winner.getUsername(), losingPlayers);</b>
+<b class="fc"><i>388</i>&nbsp;        notifyAllObserverByType(VIEW, gameOverEvent);</b>
+<b class="fc"><i>389</i>&nbsp;        printLogMessage(winner.getUsername().toUpperCase() + &quot;IS THE WINNER&quot;);</b>
+<i>390</i>&nbsp;
+<b class="fc"><i>391</i>&nbsp;        room.setRoomMustBeCleanedTrue();</b>
+<b class="fc"><i>392</i>&nbsp;        CV_NewGameRequestEvent requestEvent = new CV_NewGameRequestEvent(&quot;Do you want to play with me again?&quot;);</b>
+<b class="fc"><i>393</i>&nbsp;        notifyAllObserverByType(VIEW, requestEvent);</b>
+<b class="fc"><i>394</i>&nbsp;    }</b>
+<i>395</i>&nbsp;
+<i>396</i>&nbsp;    /**
+<i>397</i>&nbsp;     * Removes the {@code player} from the {@code turnSequence}, decrements the {@code numberOfPlayers}, removes his worker from the island, sends a {@link CV_GameOverEvent} to the loser.
+<i>398</i>&nbsp;     * If is a two player match let the other player win, if is a three player one the losing player becomes a spectator.
+<i>399</i>&nbsp;     *
+<i>400</i>&nbsp;     * @param player the name of the player that lost the game
+<i>401</i>&nbsp;     */
+<i>402</i>&nbsp;    private void lose(String player) {
+<b class="fc"><i>403</i>&nbsp;        printLogMessage(player.toUpperCase() + &quot;LOST THE GAME&quot;);</b>
+<b class="fc"><i>404</i>&nbsp;        if (numberOfPlayers == 3) {</b>
+<i>405</i>&nbsp;            //removes the player from the list
+<b class="fc"><i>406</i>&nbsp;            Integer playerIndex = 0;</b>
+<b class="fc"><i>407</i>&nbsp;            for (Integer integer : turnSequence.keySet()) {</b>
+<b class="fc"><i>408</i>&nbsp;                if (turnSequence.get(integer).getUsername().equals(player)) {</b>
+<b class="fc"><i>409</i>&nbsp;                    playerIndex = integer;</b>
+<i>410</i>&nbsp;                }
+<b class="fc"><i>411</i>&nbsp;            }</b>
+<b class="fc"><i>412</i>&nbsp;            turnSequence.remove(playerIndex);</b>
+<b class="fc"><i>413</i>&nbsp;            numberOfPlayers = 2;</b>
+<i>414</i>&nbsp;
+<i>415</i>&nbsp;            //removes the workers of that player from the island
+<b class="fc"><i>416</i>&nbsp;            Player defeatedPlayer = board.getPlayer(player);</b>
+<b class="fc"><i>417</i>&nbsp;            if (defeatedPlayer.getCard().getName() == CardEnum.CHRONUS) {</b>
+<b class="nc"><i>418</i>&nbsp;                this.thereIsChronus = false;</b>
+<i>419</i>&nbsp;            }
+<b class="fc"><i>420</i>&nbsp;            board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.A));</b>
+<b class="fc"><i>421</i>&nbsp;            board.getIsland().removeWorker(defeatedPlayer.getWorker(IDs.B));</b>
+<i>422</i>&nbsp;
+<b class="fc"><i>423</i>&nbsp;            List&lt;String&gt; losers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>424</i>&nbsp;            losers.add(player);</b>
+<b class="fc"><i>425</i>&nbsp;            CV_GameOverEvent gameOverEvent = new CV_GameOverEvent(&quot;lose&quot;, null, losers);</b>
+<b class="fc"><i>426</i>&nbsp;            notifyAllObserverByType(VIEW, gameOverEvent);</b>
+<i>427</i>&nbsp;
+<b class="fc"><i>428</i>&nbsp;            removePlayerFromGame(player);</b>
+<b class="fc"><i>429</i>&nbsp;            room.setSpectator(player);</b>
+<b class="fc"><i>430</i>&nbsp;            CV_SpectatorGameEvent spectatorGameEvent = new CV_SpectatorGameEvent(&quot;&quot;, player);</b>
+<b class="fc"><i>431</i>&nbsp;            notifyAllObserverByType(VIEW, spectatorGameEvent);</b>
+<b class="fc"><i>432</i>&nbsp;            nextTurn();</b>
+<b class="fc"><i>433</i>&nbsp;        } else if (numberOfPlayers == 2) {</b>
+<b class="nc"><i>434</i>&nbsp;            if (turnSequence.get(0).getUsername().equals(player)) { //the loser</b>
+<b class="nc"><i>435</i>&nbsp;                win(turnSequence.get(1)); //the other one wins the game</b>
+<i>436</i>&nbsp;            } else {
+<b class="nc"><i>437</i>&nbsp;                win(turnSequence.get(0)); //the other one wins the game</b>
+<i>438</i>&nbsp;            }
+<i>439</i>&nbsp;        }
+<b class="fc"><i>440</i>&nbsp;    }</b>
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;    /**
+<i>443</i>&nbsp;     * Removes a {@link Player} from the {@code turnSequence} remaking a new one if there are others players in the game
+<i>444</i>&nbsp;     *
+<i>445</i>&nbsp;     * @param usernameToRemove the name of the player to remove
+<i>446</i>&nbsp;     */
+<i>447</i>&nbsp;    private void removePlayerFromGame(String usernameToRemove) {
+<b class="fc"><i>448</i>&nbsp;        List&lt;Player&gt; players = getPlayersSequenceAsList();</b>
+<b class="fc"><i>449</i>&nbsp;        Player playerToRemove = board.getPlayer(usernameToRemove);</b>
+<b class="fc"><i>450</i>&nbsp;        players.remove(playerToRemove);</b>
+<b class="fc"><i>451</i>&nbsp;        Map&lt;Integer, Player&gt; newTurnSequence = new HashMap&lt;&gt;();</b>
+<i>452</i>&nbsp;
+<b class="fc"><i>453</i>&nbsp;        for (int i = 0; i &lt; players.size(); i++) {</b>
+<b class="fc"><i>454</i>&nbsp;            newTurnSequence.put(i, players.get(i));</b>
+<i>455</i>&nbsp;        }
+<i>456</i>&nbsp;
+<b class="fc"><i>457</i>&nbsp;        setTurnSequence(newTurnSequence);</b>
+<b class="fc"><i>458</i>&nbsp;        setNumberOfPlayers(players.size());</b>
+<b class="fc"><i>459</i>&nbsp;        if (currentTurnIndex == 0) {</b>
+<b class="nc"><i>460</i>&nbsp;            currentTurnIndex = numberOfPlayers - 1;</b>
+<i>461</i>&nbsp;        } else {
+<b class="fc"><i>462</i>&nbsp;            currentTurnIndex--;</b>
+<i>463</i>&nbsp;        }
+<b class="fc"><i>464</i>&nbsp;    }</b>
+<i>465</i>&nbsp;
+<i>466</i>&nbsp;    /**
+<i>467</i>&nbsp;     * Sends a {@link CV_IslandUpdateEvent} with updated island, after an action has been performed, to all the players
+<i>468</i>&nbsp;     */
+<i>469</i>&nbsp;    private void sendIslandUpdate() {
+<b class="fc"><i>470</i>&nbsp;        IslandData currentIsland = board.getIsland().getIslandDataCopy();</b>
+<b class="fc"><i>471</i>&nbsp;        CV_IslandUpdateEvent islandUpdateEvent = new CV_IslandUpdateEvent(&quot;island update&quot;, currentIsland);</b>
+<b class="fc"><i>472</i>&nbsp;        notifyAllObserverByType(VIEW, islandUpdateEvent);</b>
+<b class="fc"><i>473</i>&nbsp;    }</b>
+<i>474</i>&nbsp;
+<i>475</i>&nbsp;    /**
+<i>476</i>&nbsp;     * invoked by the virtual view when a next turn event is called
+<i>477</i>&nbsp;     * @param player player that is requiring the next turn
+<i>478</i>&nbsp;     *
+<i>479</i>&nbsp;     */
+<i>480</i>&nbsp;    private void invokeNextTurn(Player player) {
+<i>481</i>&nbsp;        //checks if the player requesting next turn is the one that is playing the turn
+<b class="fc"><i>482</i>&nbsp;        if (currentTurnInstance.getCurrentPlayer().getUsername().equals(player.getUsername())) {</b>
+<b class="fc"><i>483</i>&nbsp;            if (canPassTurn()) {</b>
+<b class="fc"><i>484</i>&nbsp;                player.getCard().resetBehaviour();</b>
+<b class="fc"><i>485</i>&nbsp;                nextTurn();</b>
+<i>486</i>&nbsp;            } else {
+<b class="nc"><i>487</i>&nbsp;                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;you can&#39;t pass turn!&quot;, player.getUsername());</b>
+<b class="nc"><i>488</i>&nbsp;                notifyAllObserverByType(VIEW, errorEvent);</b>
+<b class="nc"><i>489</i>&nbsp;                sendCommandRequest(player.getUsername());</b>
+<i>490</i>&nbsp;            }
+<i>491</i>&nbsp;        }
+<b class="fc"><i>492</i>&nbsp;    }</b>
+<i>493</i>&nbsp;
+<i>494</i>&nbsp;    /**
+<i>495</i>&nbsp;     * Checks if is the turn of the {@code player}
+<i>496</i>&nbsp;     *
+<i>497</i>&nbsp;     * @param player the player on which the method check if is his turn
+<i>498</i>&nbsp;     * @return true if is the turn of the {@code player}, false otherwise
+<i>499</i>&nbsp;     */
+<i>500</i>&nbsp;    private boolean checkIsHisTurn(Player player) {
+<b class="fc"><i>501</i>&nbsp;        if (!player.getUsername().equals(getCurrentPlayerUser())) {</b>
+<b class="nc"><i>502</i>&nbsp;            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;is not your turn!&quot;, player.getUsername());</b>
+<b class="nc"><i>503</i>&nbsp;            notifyAllObserverByType(VIEW, errorEvent);</b>
+<b class="nc"><i>504</i>&nbsp;            return false;</b>
+<b class="fc"><i>505</i>&nbsp;        } else return true;</b>
+<i>506</i>&nbsp;    }
+<i>507</i>&nbsp;
+<i>508</i>&nbsp;    /**
+<i>509</i>&nbsp;     * @param worker the worker to check if is the same of the one used before, if the player has already made a move
+<i>510</i>&nbsp;     * @return true if the worker passed as argument is the worker used in the prior moves, false if is different or if it is the first move of the turn
+<i>511</i>&nbsp;     */
+<i>512</i>&nbsp;    private boolean checkIsUsingTheSameWorker(Worker worker) {
+<b class="fc"><i>513</i>&nbsp;        return (currentTurnInstance.getNumberOfBuild() &gt; 0 || currentTurnInstance.getNumberOfMove() &gt; 0) &amp;&amp; (worker.getWorkerID() != currentTurnInstance.getWorkerID());</b>
+<i>514</i>&nbsp;    }
+<i>515</i>&nbsp;
+<i>516</i>&nbsp;    /**
+<i>517</i>&nbsp;     * Performs the actual move. sends a {@link CV_CommandExecutedGameEvent} and the next {@link CV_CommandRequestEvent} calling the {@code sendCommandRequest} method
+<i>518</i>&nbsp;     *
+<i>519</i>&nbsp;     * @param player the player that makes the move
+<i>520</i>&nbsp;     * @param worker the worker he his using to make this move
+<i>521</i>&nbsp;     * @param x      the x position where the player wants to move
+<i>522</i>&nbsp;     * @param y      the y position where the player wants to move
+<i>523</i>&nbsp;     * @throws InvalidMovementException if the player can&#39;t perform that move
+<i>524</i>&nbsp;     * @throws WinningException         if the player has won
+<i>525</i>&nbsp;     */
+<i>526</i>&nbsp;    private void performMove(Player player, Worker worker, int x, int y) throws InvalidMovementException, WinningException {
+<b class="fc"><i>527</i>&nbsp;        player.getCard().move(worker, x, y, board.getIsland());</b>
+<b class="fc"><i>528</i>&nbsp;        currentTurnInstance.incrementNumberOfMove();</b>
+<b class="fc"><i>529</i>&nbsp;        currentTurnInstance.chooseWorker(worker.getWorkerID());</b>
+<i>530</i>&nbsp;
+<b class="fc"><i>531</i>&nbsp;        sendIslandUpdate();</b>
+<b class="fc"><i>532</i>&nbsp;        if (isCompletelyLocked(currentTurnInstance.getWorkerID())) {</b>
+<b class="nc"><i>533</i>&nbsp;            lose(currentPlayer.getUsername());</b>
+<i>534</i>&nbsp;        }
+<b class="fc"><i>535</i>&nbsp;        sendCommandExecuted(player.getUsername());</b>
+<b class="fc"><i>536</i>&nbsp;        sendCommandRequest(player.getUsername());</b>
+<b class="fc"><i>537</i>&nbsp;    }</b>
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;    /**
+<i>540</i>&nbsp;     * Checks if the player can actually move and if he calls the {@code performMove} method, otherwise sends an {@link CV_GameErrorGameEvent}
+<i>541</i>&nbsp;     *
+<i>542</i>&nbsp;     * @param player the player that makes the move
+<i>543</i>&nbsp;     * @param worker the worker he his using to make this move
+<i>544</i>&nbsp;     * @param x      the x position where the player wants to move
+<i>545</i>&nbsp;     * @param y      the y position where the player wants to move
+<i>546</i>&nbsp;     */
+<i>547</i>&nbsp;    private void invokeMovement(Player player, Worker worker, int x, int y) {
+<i>548</i>&nbsp;
+<b class="fc"><i>549</i>&nbsp;        if (checkIsHisTurn(player)) {</b>
+<i>550</i>&nbsp;            //check if it&#39;s not the first time he moves / build, if yes check if he&#39;s using the same worker
+<b class="fc"><i>551</i>&nbsp;            if (checkIsUsingTheSameWorker(worker)) {</b>
+<b class="nc"><i>552</i>&nbsp;                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;you can move only with the same used during the turn!&quot;, player.getUsername());</b>
+<b class="nc"><i>553</i>&nbsp;                notifyAllObserverByType(VIEW, errorEvent);</b>
+<b class="nc"><i>554</i>&nbsp;                sendCommandRequest(player.getUsername());</b>
+<b class="nc"><i>555</i>&nbsp;            } else {</b>
+<i>556</i>&nbsp;                //is your turn and your worker is ok, you may try to move:
+<i>557</i>&nbsp;                try {
+<b class="fc"><i>558</i>&nbsp;                    performMove(player, worker, x, y);</b>
+<b class="fc"><i>559</i>&nbsp;                } catch (InvalidMovementException | IllegalArgumentException e) {</b>
+<b class="fc"><i>560</i>&nbsp;                    printErrorLogMessage(e.toString() + &quot; - A new CommandRequest has been send.&quot;);</b>
+<i>561</i>&nbsp;
+<b class="fc"><i>562</i>&nbsp;                    CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;This is a invalid move!&quot;, player.getUsername());</b>
+<b class="fc"><i>563</i>&nbsp;                    notifyAllObserverByType(VIEW, errorEvent);</b>
+<b class="fc"><i>564</i>&nbsp;                    sendCommandRequest(player.getUsername());</b>
+<b class="nc"><i>565</i>&nbsp;                } catch (WinningException e) {</b>
+<b class="nc"><i>566</i>&nbsp;                    sendIslandUpdate();</b>
+<i>567</i>&nbsp;                    try {
+<b class="nc"><i>568</i>&nbsp;                        Thread.sleep(300);</b>
+<b class="nc"><i>569</i>&nbsp;                    } catch (InterruptedException interruptedException) {</b>
+<b class="nc"><i>570</i>&nbsp;                        interruptedException.printStackTrace();</b>
+<b class="nc"><i>571</i>&nbsp;                    }</b>
+<b class="nc"><i>572</i>&nbsp;                    win(player);</b>
+<b class="fc"><i>573</i>&nbsp;                }</b>
+<i>574</i>&nbsp;            }
+<i>575</i>&nbsp;        }
+<b class="fc"><i>576</i>&nbsp;    }</b>
+<i>577</i>&nbsp;
+<i>578</i>&nbsp;    /**
+<i>579</i>&nbsp;     * Performs the actual build
+<i>580</i>&nbsp;     *
+<i>581</i>&nbsp;     * @param player the player that makes the build
+<i>582</i>&nbsp;     * @param worker the worker he his using to make this build
+<i>583</i>&nbsp;     * @param block  the blockTypeEnum that the player wants to build
+<i>584</i>&nbsp;     * @param x      the x position where the player wants to build
+<i>585</i>&nbsp;     * @param y      the y position where the player wants to build
+<i>586</i>&nbsp;     */
+<i>587</i>&nbsp;    private void performBuild(Player player, Worker worker, BlockTypeEnum block, int x, int y) {
+<i>588</i>&nbsp;        try {
+<b class="fc"><i>589</i>&nbsp;            player.getCard().build(worker, block, x, y, board.getIsland());</b>
+<b class="fc"><i>590</i>&nbsp;            currentTurnInstance.incrementNumberOfBuild();</b>
+<b class="fc"><i>591</i>&nbsp;            if (currentTurnInstance.getNumberOfMove() == 0) {</b>
+<b class="fc"><i>592</i>&nbsp;                currentTurnInstance.setHasBuiltBeforeMove(true);</b>
+<i>593</i>&nbsp;            }
+<i>594</i>&nbsp;
+<b class="fc"><i>595</i>&nbsp;            if (currentTurnInstance.getWorkerID() == null) currentTurnInstance.chooseWorker(worker.getWorkerID());</b>
+<i>596</i>&nbsp;
+<b class="fc"><i>597</i>&nbsp;            sendIslandUpdate();</b>
+<i>598</i>&nbsp;
+<i>599</i>&nbsp;            //if there is Chronus and this build has made the fifth complete tower Chronus wins
+<b class="fc"><i>600</i>&nbsp;            if (thereIsChronus &amp;&amp; board.getIsland().getNumberOfCompleteTowers() &gt;= 5) {</b>
+<b class="fc"><i>601</i>&nbsp;                Player playerHasToWin = null;</b>
+<b class="fc"><i>602</i>&nbsp;                for (Player p : turnSequence.values()) {</b>
+<b class="fc"><i>603</i>&nbsp;                    if (p.getCard().getName() == CardEnum.CHRONUS) playerHasToWin = p;</b>
+<b class="fc"><i>604</i>&nbsp;                }</b>
+<b class="fc"><i>605</i>&nbsp;                win(playerHasToWin);</b>
+<i>606</i>&nbsp;            }
+<b class="fc"><i>607</i>&nbsp;            sendCommandExecuted(player.getUsername());</b>
+<b class="fc"><i>608</i>&nbsp;            sendCommandRequest(player.getUsername());</b>
+<i>609</i>&nbsp;
+<b class="fc"><i>610</i>&nbsp;        } catch (InvalidBuildException | IllegalArgumentException e) {</b>
+<b class="fc"><i>611</i>&nbsp;            printErrorLogMessage(e.toString() + &quot; - A new CommandRequest has been send.&quot;);</b>
+<i>612</i>&nbsp;
+<b class="fc"><i>613</i>&nbsp;            CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;this is a invalid build!&quot;, player.getUsername());</b>
+<b class="fc"><i>614</i>&nbsp;            notifyAllObserverByType(VIEW, errorEvent);</b>
+<b class="fc"><i>615</i>&nbsp;            sendCommandRequest(player.getUsername());</b>
+<b class="fc"><i>616</i>&nbsp;        }</b>
+<b class="fc"><i>617</i>&nbsp;    }</b>
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;    /**
+<i>620</i>&nbsp;     * Checks if the player can actually build and if he can calls the {@code performBuild} method, otherwise sends an {@link CV_GameErrorGameEvent}
+<i>621</i>&nbsp;     *
+<i>622</i>&nbsp;     * @param player the player that makes the build
+<i>623</i>&nbsp;     * @param worker the worker he his using to make this build
+<i>624</i>&nbsp;     * @param block  the blockTypeEnum that the player wants to build
+<i>625</i>&nbsp;     * @param x      the x position where the player wants to build
+<i>626</i>&nbsp;     * @param y      the y position where the player wants to build
+<i>627</i>&nbsp;     */
+<i>628</i>&nbsp;    private void invokeBuild(Player player, Worker worker, BlockTypeEnum block, int x, int y) {
+<b class="fc"><i>629</i>&nbsp;        if (checkIsHisTurn(player)) {</b>
+<i>630</i>&nbsp;            //check if it&#39;s not the first time he moves / build, if yes check if he&#39;s using the same worker
+<b class="fc"><i>631</i>&nbsp;            if ((currentTurnInstance.getNumberOfBuild() &gt; 0 || currentTurnInstance.getNumberOfMove() &gt; 0) &amp;&amp; (worker.getWorkerID() != currentTurnInstance.getWorkerID())) {</b>
+<b class="nc"><i>632</i>&nbsp;                CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent(&quot;you can build only with the same used during the turn!&quot;, player.getUsername());</b>
+<b class="nc"><i>633</i>&nbsp;                notifyAllObserverByType(VIEW, errorEvent);</b>
+<b class="nc"><i>634</i>&nbsp;                sendCommandRequest(player.getUsername());</b>
+<b class="nc"><i>635</i>&nbsp;            } else {</b>
+<i>636</i>&nbsp;                //is your turn and your worker is ok, you may try build:
+<b class="fc"><i>637</i>&nbsp;                performBuild(player, worker, block, x, y);</b>
+<i>638</i>&nbsp;            }
+<i>639</i>&nbsp;        }
+<b class="fc"><i>640</i>&nbsp;    }</b>
+<i>641</i>&nbsp;
+<i>642</i>&nbsp;    /**
+<i>643</i>&nbsp;     * checks if both movement and build are unavailable for chosen worker
+<i>644</i>&nbsp;     *
+<i>645</i>&nbsp;     * @param workerChosen the worker you started the turn with
+<i>646</i>&nbsp;     * @return true if your choosen worker can&#39;t completely move or build
+<i>647</i>&nbsp;     */
+<i>648</i>&nbsp;    private boolean isCompletelyLocked(IDs workerChosen) {
+<i>649</i>&nbsp;
+<i>650</i>&nbsp;        //get available movement cells for each worker
+<b class="fc"><i>651</i>&nbsp;        List&lt;int[]&gt; availableMovements = currentTurnInstance.validActions(workerChosen, MOVE);</b>
+<b class="fc"><i>652</i>&nbsp;        List&lt;int[]&gt; availableBuild = currentTurnInstance.validActions(workerChosen, BUILD);</b>
+<i>653</i>&nbsp;
+<b class="fc"><i>654</i>&nbsp;        return (availableMovements.isEmpty() &amp;&amp; availableBuild.isEmpty());</b>
+<i>655</i>&nbsp;    }
+<i>656</i>&nbsp;
+<i>657</i>&nbsp;    /**
+<i>658</i>&nbsp;     * Checks the block to build and calls the {@code invokeBuild} if it is possible, sends error messages otherwise
+<i>659</i>&nbsp;     *
+<i>660</i>&nbsp;     * @param event the {@link VC_PlayerCommandGameEvent} just arrived from the acting player of the turn
+<i>661</i>&nbsp;     */
+<i>662</i>&nbsp;    private void checkBuildCorrectness(VC_PlayerCommandGameEvent event) {
+<i>663</i>&nbsp;        Worker worker;
+<i>664</i>&nbsp;        int[] position;
+<i>665</i>&nbsp;        try {
+<b class="fc"><i>666</i>&nbsp;            worker = currentPlayer.getWorker(event.getWorkerID());</b>
+<b class="fc"><i>667</i>&nbsp;            position = event.getPosition();</b>
+<i>668</i>&nbsp;            BlockTypeEnum blockToBuild;
+<i>669</i>&nbsp;
+<b class="fc"><i>670</i>&nbsp;            if (event.isBlockSet()) {</b>
+<b class="fc"><i>671</i>&nbsp;                blockToBuild = event.getBlockToBuild();</b>
+<i>672</i>&nbsp;            } else {
+<b class="fc"><i>673</i>&nbsp;                blockToBuild = board.getIsland().getCellCluster(position[0], position[1]).nextBlockToBuild();</b>
+<b class="fc"><i>674</i>&nbsp;                printLogMessage(&quot;Block to build found: &quot; + blockToBuild);</b>
+<i>675</i>&nbsp;            }
+<b class="fc"><i>676</i>&nbsp;            invokeBuild(currentPlayer, worker, blockToBuild, position[0], position[1]);</b>
+<b class="nc"><i>677</i>&nbsp;        } catch (InvalidBuildException e) {</b>
+<b class="nc"><i>678</i>&nbsp;            CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent(&quot;Automatic block selection failed, please select a valid block&quot;, event.fromPlayer);</b>
+<b class="nc"><i>679</i>&nbsp;            notifyAllObserverByType(VIEW, errorGameEvent);</b>
+<b class="nc"><i>680</i>&nbsp;            sendCommandRequest(currentPlayer.getUsername());</b>
+<b class="nc"><i>681</i>&nbsp;            printLogMessage(&quot;Block to build not found. New command request sent.&quot;);</b>
+<b class="fc"><i>682</i>&nbsp;        }</b>
+<b class="fc"><i>683</i>&nbsp;    }</b>
+<i>684</i>&nbsp;
+<i>685</i>&nbsp;    /**
+<i>686</i>&nbsp;     * Parses the {@link VC_PlayerCommandGameEvent} just received by the client, checks his correctness and eventually performs the action.
+<i>687</i>&nbsp;     * Sends error messages otherwise.
+<i>688</i>&nbsp;     *
+<i>689</i>&nbsp;     * @param event the event containing the command to compute
+<i>690</i>&nbsp;     */
+<i>691</i>&nbsp;    @Override
+<i>692</i>&nbsp;    public void handleEvent(VC_PlayerCommandGameEvent event) {
+<b class="fc"><i>693</i>&nbsp;        printLogMessage(&quot;New Command from &quot; + event.getFromPlayer().toUpperCase() + &quot; -&gt; &quot; + event.toStringSmall());</b>
+<i>694</i>&nbsp;
+<i>695</i>&nbsp;        try {
+<b class="fc"><i>696</i>&nbsp;            if (isCommandEventValid(event)) {</b>
+<b class="fc"><i>697</i>&nbsp;                if (event.getFromPlayer().equals(currentPlayer.getUsername())) {</b>
+<i>698</i>&nbsp;                    Worker worker;
+<i>699</i>&nbsp;                    int[] position;
+<b class="fc"><i>700</i>&nbsp;                    switch (event.getCommand()) {</b>
+<i>701</i>&nbsp;                        case MOVE:
+<b class="fc"><i>702</i>&nbsp;                            worker = currentPlayer.getWorker(event.getWorkerID());</b>
+<b class="fc"><i>703</i>&nbsp;                            position = event.getPosition();</b>
+<b class="fc"><i>704</i>&nbsp;                            invokeMovement(currentPlayer, worker, position[0], position[1]);</b>
+<b class="fc"><i>705</i>&nbsp;                            break;</b>
+<i>706</i>&nbsp;                        case BUILD:
+<b class="fc"><i>707</i>&nbsp;                            checkBuildCorrectness(event);</b>
+<b class="fc"><i>708</i>&nbsp;                            break;</b>
+<i>709</i>&nbsp;                        case PASS:
+<b class="fc"><i>710</i>&nbsp;                            invokeNextTurn(currentPlayer);</b>
+<b class="fc"><i>711</i>&nbsp;                            break;</b>
+<i>712</i>&nbsp;                    }
+<i>713</i>&nbsp;                } else {
+<i>714</i>&nbsp;                    //if the player who sent the command is not the currentPlayer
+<b class="fc"><i>715</i>&nbsp;                    printErrorLogMessage(event.fromPlayer.toUpperCase() + &quot; is not the current player. Command rejected&quot;);</b>
+<b class="fc"><i>716</i>&nbsp;                    CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent(&quot;It&#39;s not your turn, please wait!&quot;, event.fromPlayer);</b>
+<b class="fc"><i>717</i>&nbsp;                    notifyAllObserverByType(VIEW, errorGameEvent);</b>
+<b class="fc"><i>718</i>&nbsp;                }</b>
+<i>719</i>&nbsp;            } else {
+<i>720</i>&nbsp;                //if the command is not well formatted send an error
+<b class="fc"><i>721</i>&nbsp;                printErrorLogMessage(&quot;Some error in the command event: &quot; + event);</b>
+<b class="fc"><i>722</i>&nbsp;                if (event.fromPlayer != null) {</b>
+<b class="fc"><i>723</i>&nbsp;                    CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent(&quot;The command request wasn&#39;t valid. Please retry.&quot;, event.fromPlayer);</b>
+<b class="fc"><i>724</i>&nbsp;                    notifyAllObserverByType(VIEW, errorGameEvent);</b>
+<b class="fc"><i>725</i>&nbsp;                    sendCommandRequest(event.fromPlayer);</b>
+<b class="fc"><i>726</i>&nbsp;                } else {</b>
+<b class="nc"><i>727</i>&nbsp;                    printErrorLogMessage(&quot;Not able to send events to this player because is Unknown&quot;);</b>
+<i>728</i>&nbsp;                }
+<i>729</i>&nbsp;            }
+<b class="nc"><i>730</i>&nbsp;        } catch (NullPointerException e) {</b>
+<b class="nc"><i>731</i>&nbsp;            printErrorLogMessage(&quot;Some error in the command event: &quot; + event);</b>
+<b class="nc"><i>732</i>&nbsp;            CV_GameErrorGameEvent errorGameEvent = new CV_GameErrorGameEvent(&quot;The command request wasn&#39;t valid. Please retry.&quot;, event.fromPlayer);</b>
+<b class="nc"><i>733</i>&nbsp;            notifyAllObserverByType(VIEW, errorGameEvent);</b>
+<b class="nc"><i>734</i>&nbsp;            sendCommandRequest(event.fromPlayer);</b>
+<b class="fc"><i>735</i>&nbsp;        }</b>
+<b class="fc"><i>736</i>&nbsp;    }</b>
+<i>737</i>&nbsp;
+<i>738</i>&nbsp;    /**
+<i>739</i>&nbsp;     * Checks if the {@link VC_PlayerCommandGameEvent} received by the client is a correct and complete one
+<i>740</i>&nbsp;     *
+<i>741</i>&nbsp;     * @param commandEvent the {@link VC_PlayerCommandGameEvent} that has just received by the client
+<i>742</i>&nbsp;     * @return true if the command is correct and complete, false otherwise
+<i>743</i>&nbsp;     */
+<i>744</i>&nbsp;    private boolean isCommandEventValid(VC_PlayerCommandGameEvent commandEvent) {
+<b class="fc"><i>745</i>&nbsp;        return commandEvent.isCommandEventValid() &amp;&amp; getCurrentTurnListUsername().contains(commandEvent.getFromPlayer());</b>
+<i>746</i>&nbsp;    }
+<i>747</i>&nbsp;
+<i>748</i>&nbsp;    /**
+<i>749</i>&nbsp;     * Print in the Server console a Log from the current Class
+<i>750</i>&nbsp;     *
+<i>751</i>&nbsp;     * @param messageToPrint a {@link String} with the message to print
+<i>752</i>&nbsp;     */
+<i>753</i>&nbsp;    private void printLogMessage(String messageToPrint) {
+<b class="fc"><i>754</i>&nbsp;        System.out.println(&quot;\t \tROOM(&quot; + room.getRoomID() + &quot;)-GAME: &quot; + messageToPrint);</b>
+<b class="fc"><i>755</i>&nbsp;    }</b>
+<i>756</i>&nbsp;
+<i>757</i>&nbsp;    /**
+<i>758</i>&nbsp;     * Print in the Server console Error Stream an Error Log from the current Class
+<i>759</i>&nbsp;     *
+<i>760</i>&nbsp;     * @param messageToPrint a {@link String} with the message to print
+<i>761</i>&nbsp;     */
+<i>762</i>&nbsp;    private void printErrorLogMessage(String messageToPrint) {
+<b class="fc"><i>763</i>&nbsp;        System.err.println(&quot;\t \tROOM(&quot; + room.getRoomID() + &quot;)-GAME: &quot; + messageToPrint);</b>
+<b class="fc"><i>764</i>&nbsp;    }</b>
+<i>765</i>&nbsp;
+<i>766</i>&nbsp;    //NOT IMPLEMENTED
+<i>767</i>&nbsp;
+<i>768</i>&nbsp;    /**
+<i>769</i>&nbsp;     * Not implemented handle of the event
+<i>770</i>&nbsp;     */
+<i>771</i>&nbsp;    @Override
+<i>772</i>&nbsp;    public void handleEvent(VC_RoomSizeResponseGameEvent event) {
+<i>773</i>&nbsp;        /* TurnController doesn&#39;t have to implement this handleEvent*/
+<b class="nc"><i>774</i>&nbsp;    }</b>
+<i>775</i>&nbsp;
+<i>776</i>&nbsp;    /**
+<i>777</i>&nbsp;     * Not implemented handle of the event
+<i>778</i>&nbsp;     */
+<i>779</i>&nbsp;    @Override
+<i>780</i>&nbsp;    public void handleEvent(VC_NewGameResponseEvent event) {
+<i>781</i>&nbsp;        /* This class has not to implement this handleEvent*/
+<b class="nc"><i>782</i>&nbsp;    }</b>
+<i>783</i>&nbsp;
+<i>784</i>&nbsp;    /**
+<i>785</i>&nbsp;     * Not implemented handle of the event
+<i>786</i>&nbsp;     */
+<i>787</i>&nbsp;    @Override
+<i>788</i>&nbsp;    public void handleEvent(VC_ConnectionRequestGameEvent event) {
+<i>789</i>&nbsp;        /* This class has not to implement this handleEvent*/
+<b class="nc"><i>790</i>&nbsp;    }</b>
+<i>791</i>&nbsp;
+<i>792</i>&nbsp;    /**
+<i>793</i>&nbsp;     * Not implemented handle of the event
+<i>794</i>&nbsp;     */
+<i>795</i>&nbsp;    @Override
+<i>796</i>&nbsp;    public void handleEvent(CC_ConnectionRequestGameEvent event) {
+<i>797</i>&nbsp;        /* This class has not to implement this handleEvent*/
+<b class="nc"><i>798</i>&nbsp;    }</b>
+<i>799</i>&nbsp;
+<i>800</i>&nbsp;    /**
+<i>801</i>&nbsp;     * Not implemented handle of the event
+<i>802</i>&nbsp;     */
+<i>803</i>&nbsp;    @Override
+<i>804</i>&nbsp;    public void handleEvent(CC_NewGameResponseEvent event) {
+<i>805</i>&nbsp;        /* This class has not to implement this handleEvent*/
+<b class="nc"><i>806</i>&nbsp;    }</b>
+<i>807</i>&nbsp;
+<i>808</i>&nbsp;
+<i>809</i>&nbsp;    /**
+<i>810</i>&nbsp;     * Not implemented handle of the event
+<i>811</i>&nbsp;     */
+<i>812</i>&nbsp;    @Override
+<i>813</i>&nbsp;    public void handleEvent(VC_ChallengerCardsChosenEvent event) {
+<i>814</i>&nbsp;        /* This class has not to implement this handleEvent*/
+<b class="nc"><i>815</i>&nbsp;    }</b>
+<i>816</i>&nbsp;
+<i>817</i>&nbsp;    /**
+<i>818</i>&nbsp;     * Not implemented handle of the event
+<i>819</i>&nbsp;     */
+<i>820</i>&nbsp;    @Override
+<i>821</i>&nbsp;    public void handleEvent(VC_PlayerCardChosenEvent event) {
+<i>822</i>&nbsp;        /* This class has not to implement this handleEvent*/
+<b class="nc"><i>823</i>&nbsp;    }</b>
+<i>824</i>&nbsp;
+<i>825</i>&nbsp;    /**
+<i>826</i>&nbsp;     * Not implemented handle of the event
+<i>827</i>&nbsp;     */
+<i>828</i>&nbsp;    @Override
+<i>829</i>&nbsp;    public void handleEvent(VC_ChallengerChosenFirstPlayerEvent event) {
+<i>830</i>&nbsp;        /* This class has not to implement this handleEvent*/
+<b class="nc"><i>831</i>&nbsp;    }</b>
+<i>832</i>&nbsp;
+<i>833</i>&nbsp;
+<i>834</i>&nbsp;    /**
+<i>835</i>&nbsp;     * Not implemented handle of the event
+<i>836</i>&nbsp;     */
+<i>837</i>&nbsp;    @Override
+<i>838</i>&nbsp;    public void handleEvent(VC_PlayerPlacedWorkerEvent event) {
+<i>839</i>&nbsp;        /* This class has not to implement this handleEvent*/
+<b class="nc"><i>840</i>&nbsp;    }</b>
+<i>841</i>&nbsp;
+<i>842</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-01 23:41</div>
+</div>
+</body>
+</html>

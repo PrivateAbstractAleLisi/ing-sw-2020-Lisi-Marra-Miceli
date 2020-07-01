@@ -1,0 +1,132 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Message</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.view.UI.GUI</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Message (it.polimi.ingsw.psp58.view.UI.GUI)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Message</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.view.UI.GUI;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import javafx.geometry.Pos;
+<i>4</i>&nbsp;import javafx.scene.Scene;
+<i>5</i>&nbsp;import javafx.scene.control.Button;
+<i>6</i>&nbsp;import javafx.scene.control.Label;
+<i>7</i>&nbsp;import javafx.scene.layout.VBox;
+<i>8</i>&nbsp;import javafx.stage.Modality;
+<i>9</i>&nbsp;import javafx.stage.Stage;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;/**
+<i>12</i>&nbsp; * Used to diplay message
+<i>13</i>&nbsp; */
+<b class="nc"><i>14</i>&nbsp;public class Message {</b>
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    /**
+<i>17</i>&nbsp;     * Displays a PopUp message with a modal stage
+<i>18</i>&nbsp;     * @param x the width of the modal stage
+<i>19</i>&nbsp;     * @param y the height of the modal stage
+<i>20</i>&nbsp;     * @param message the string containing the message to display
+<i>21</i>&nbsp;     * @param parentStage the stage that this modal stage will overlap
+<i>22</i>&nbsp;     */
+<i>23</i>&nbsp;    public static void show(int x, int y, String message, Stage parentStage) {
+<i>24</i>&nbsp;
+<b class="nc"><i>25</i>&nbsp;        Stage stage = new Stage();</b>
+<i>26</i>&nbsp;
+<b class="nc"><i>27</i>&nbsp;        stage.initModality(Modality.APPLICATION_MODAL);</b>
+<b class="nc"><i>28</i>&nbsp;        stage.setMinWidth(x);</b>
+<b class="nc"><i>29</i>&nbsp;        stage.setMinHeight(y);</b>
+<i>30</i>&nbsp;
+<b class="nc"><i>31</i>&nbsp;        Label label = new Label(message);</b>
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;
+<b class="nc"><i>34</i>&nbsp;        VBox vBox = new VBox(15);</b>
+<i>35</i>&nbsp;
+<b class="nc"><i>36</i>&nbsp;        Button button = new Button(&quot;OK&quot;);</b>
+<i>37</i>&nbsp;
+<b class="nc"><i>38</i>&nbsp;        button.setOnAction(event -&gt; stage.close());</b>
+<i>39</i>&nbsp;
+<b class="nc"><i>40</i>&nbsp;        vBox.getChildren().addAll(label, button);</b>
+<i>41</i>&nbsp;
+<b class="nc"><i>42</i>&nbsp;        vBox.setAlignment(Pos.CENTER);</b>
+<i>43</i>&nbsp;
+<b class="nc"><i>44</i>&nbsp;        Scene scene = new Scene(vBox);</b>
+<b class="nc"><i>45</i>&nbsp;        stage.setScene(scene);</b>
+<b class="nc"><i>46</i>&nbsp;        stage.initOwner(parentStage);</b>
+<b class="nc"><i>47</i>&nbsp;        stage.showAndWait();</b>
+<i>48</i>&nbsp;    }
+<i>49</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-01 23:41</div>
+</div>
+</body>
+</html>

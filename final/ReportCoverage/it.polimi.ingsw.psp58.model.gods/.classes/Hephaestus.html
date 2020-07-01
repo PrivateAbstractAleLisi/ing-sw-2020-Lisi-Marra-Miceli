@@ -1,0 +1,182 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Hephaestus</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.model.gods</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Hephaestus (it.polimi.ingsw.psp58.model.gods)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Hephaestus</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95,7%
+  </span>
+  <span class="absValue">
+    (22/ 23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.model.gods;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.psp58.model.BehaviourManager;
+<i>4</i>&nbsp;import it.polimi.ingsw.psp58.model.Card;
+<i>5</i>&nbsp;import it.polimi.ingsw.psp58.model.CardEnum;
+<i>6</i>&nbsp;import it.polimi.ingsw.psp58.model.Player;
+<i>7</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
+<i>8</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum;
+<i>9</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.Island;
+<i>10</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.Worker;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;/**
+<i>13</i>&nbsp; * Hephaestus Card implementation.
+<i>14</i>&nbsp; */
+<i>15</i>&nbsp;public class Hephaestus extends Card {
+<i>16</i>&nbsp;    private int[] lastBuiltPosition;
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    public Hephaestus(Player player) {
+<b class="fc"><i>19</i>&nbsp;        super(player);</b>
+<b class="fc"><i>20</i>&nbsp;        name = CardEnum.HEPHAESTUS;</b>
+<b class="fc"><i>21</i>&nbsp;        lastBuiltPosition = new int[]{-1, -1};</b>
+<b class="fc"><i>22</i>&nbsp;    }</b>
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    /**
+<i>25</i>&nbsp;     * It doesn&#39;t update the lastBuiltPosition, it just checks if you have already built here or not in the turn
+<i>26</i>&nbsp;     *
+<i>27</i>&nbsp;     * @param desiredX where you want to build
+<i>28</i>&nbsp;     * @param desiredY where you want to build
+<i>29</i>&nbsp;     * @return false never built in this turn, true he built here
+<i>30</i>&nbsp;     */
+<i>31</i>&nbsp;    private boolean hasAlreadyBuiltHereInThisTurn(int desiredX, int desiredY) {
+<b class="fc"><i>32</i>&nbsp;        if (lastBuiltPosition[1] == -1 &amp;&amp; lastBuiltPosition[0] == -1) { //he never built in this turn</b>
+<b class="nc"><i>33</i>&nbsp;            return false;</b>
+<i>34</i>&nbsp;        } else { //he build at least one block
+<b class="fc"><i>35</i>&nbsp;            return lastBuiltPosition[0] == desiredX &amp;&amp; lastBuiltPosition[1] == desiredY;</b>
+<i>36</i>&nbsp;        }
+<i>37</i>&nbsp;    }
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    /**
+<i>40</i>&nbsp;     * Check if the player has already built during this turn.
+<i>41</i>&nbsp;     * @return true if the player already build during this turn, false otherwise
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    private boolean hasAlreadyBuiltInThisTurn() {
+<b class="fc"><i>44</i>&nbsp;        return !(lastBuiltPosition[1] == -1 &amp;&amp; lastBuiltPosition[0] == -1);</b>
+<i>45</i>&nbsp;    }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     * Build a block, near a {@link Worker}, in the the desired coordinates.
+<i>49</i>&nbsp;     *
+<i>50</i>&nbsp;     * @param worker   A worker of the actual player
+<i>51</i>&nbsp;     * @param block    level of block desired to build
+<i>52</i>&nbsp;     * @param desiredX X Position where the player wants to build the block
+<i>53</i>&nbsp;     * @param desiredY Y Position where the player wants to build the block
+<i>54</i>&nbsp;     * @param island   The current board of game
+<i>55</i>&nbsp;     * @throws InvalidBuildException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
+<i>56</i>&nbsp;     */
+<i>57</i>&nbsp;    @Override
+<i>58</i>&nbsp;    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException {
+<b class="fc"><i>59</i>&nbsp;        super.build(worker, block, desiredX, desiredY, island);</b>
+<b class="fc"><i>60</i>&nbsp;        lastBuiltPosition[0] = desiredX;</b>
+<b class="fc"><i>61</i>&nbsp;        lastBuiltPosition[1] = desiredY;</b>
+<b class="fc"><i>62</i>&nbsp;    }</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * Check if the construction can be done from the actual position of the {@link Worker}.
+<i>66</i>&nbsp;     * If the player try to build twice but not in the same cell, return false.
+<i>67</i>&nbsp;     *
+<i>68</i>&nbsp;     * @param block    level of construction {@link Player} wants to build
+<i>69</i>&nbsp;     * @param actualX  Actual X Position of the worker
+<i>70</i>&nbsp;     * @param actualY  Actual Y Position of the worker
+<i>71</i>&nbsp;     * @param desiredX X Position where the player wants to place the worker
+<i>72</i>&nbsp;     * @param desiredY Y Position where the player wants to place the worker
+<i>73</i>&nbsp;     * @param island   The current board of game
+<i>74</i>&nbsp;     * @return true when the construction can be done from the actual position, false otherwise
+<i>75</i>&nbsp;     * @throws IndexOutOfBoundsException if the indexes of the desired position aren&#39;t valid.
+<i>76</i>&nbsp;     */
+<i>77</i>&nbsp;    @Override
+<i>78</i>&nbsp;    protected boolean isValidConstruction(BlockTypeEnum block, int actualX, int actualY, int desiredX, int desiredY, Island island) throws IndexOutOfBoundsException {
+<b class="fc"><i>79</i>&nbsp;        if (hasAlreadyBuiltInThisTurn()) {</b>
+<b class="fc"><i>80</i>&nbsp;            if (hasAlreadyBuiltHereInThisTurn(desiredX, desiredY)) {</b>
+<b class="fc"><i>81</i>&nbsp;                if (block == BlockTypeEnum.DOME) return false;</b>
+<b class="fc"><i>82</i>&nbsp;                else return super.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island);</b>
+<b class="fc"><i>83</i>&nbsp;            } else return false;</b>
+<i>84</i>&nbsp;        }
+<b class="fc"><i>85</i>&nbsp;        return super.isValidConstruction(block, actualX, actualY, desiredX, desiredY, island);</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /**
+<i>89</i>&nbsp;     * Reset the {@code behaviour} of the {@link Player} to the default value of the card and set 2 the block placement left.
+<i>90</i>&nbsp;     */
+<i>91</i>&nbsp;    @Override
+<i>92</i>&nbsp;    public void resetBehaviour() {
+<b class="fc"><i>93</i>&nbsp;        BehaviourManager behaviour = playedBy.getBehaviour();</b>
+<b class="fc"><i>94</i>&nbsp;        super.resetBehaviour();</b>
+<b class="fc"><i>95</i>&nbsp;        behaviour.setBlockPlacementLeft(2); //the worker may build one additional time</b>
+<i>96</i>&nbsp;
+<b class="fc"><i>97</i>&nbsp;        lastBuiltPosition = new int[]{-1, -1};</b>
+<b class="fc"><i>98</i>&nbsp;    }</b>
+<i>99</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-01 23:41</div>
+</div>
+</body>
+</html>
