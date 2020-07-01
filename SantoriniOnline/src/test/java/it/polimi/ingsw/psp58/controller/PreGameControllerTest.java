@@ -3,6 +3,7 @@ package it.polimi.ingsw.psp58.controller;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.VC_ChallengerChosenFirstPlayerEvent;
 import it.polimi.ingsw.psp58.exceptions.AlreadyExistingPlayerException;
 import it.polimi.ingsw.psp58.model.BoardManager;
+import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.Player;
 import it.polimi.ingsw.psp58.model.WorkerColors;
 import it.polimi.ingsw.psp58.view.VirtualView;
@@ -22,8 +23,8 @@ import static org.mockito.Mockito.mock;
 
 public class PreGameControllerTest {
 
-    PreGameController pgc;
-    BoardManager bm;
+    PreGameController preGameController;
+    BoardManager boardManager;
     Room room3;
 
     private void fillRoom() {
@@ -33,22 +34,23 @@ public class PreGameControllerTest {
         room3.addUser("Rice", mock(VirtualView.class));
 
         room3.addUser("MasterTheorem", mock(VirtualView.class));
-
     }
 
     private void fillBM() throws LimitExceededException, AlreadyExistingPlayerException {
-        bm = new BoardManager();
-        bm.addPlayer(new Player("Turing", bm));
-        bm.addPlayer(new Player("Rice",bm ));
-        bm.addPlayer(new Player("MasterTheorem",bm));
+        boardManager = new BoardManager();
+        boardManager.addPlayer(new Player("Turing", boardManager));
+        boardManager.addPlayer(new Player("Rice", boardManager));
+        boardManager.addPlayer(new Player("MasterTheorem", boardManager));
+        boardManager.getPlayer("Turing").setCard(CardEnum.APOLLO);
+        boardManager.getPlayer("Rice").setCard(CardEnum.PAN);
+        boardManager.getPlayer("MasterTheorem").setCard(CardEnum.ZEUS);
     }
+
     @Before
     public void setUp() throws Exception {
         fillRoom();
         fillBM();
-        pgc = new PreGameController(bm, room3);
-
-
+        preGameController = new PreGameController(boardManager, room3);
     }
 
     @After
@@ -57,15 +59,15 @@ public class PreGameControllerTest {
 
     @Test
     public void start() {
-        pgc.start();
+        preGameController.start();
     }
 
     @Test
     public void chooseChallenger() {
-        pgc.chooseChallenger();
-        String challenger = pgc.getChallenger();
+        preGameController.chooseChallenger();
+        String challenger = preGameController.getChallenger();
 
-        Map <Integer,Player> seq  = pgc.getTurnSequence();
+        Map<Integer, Player> seq = preGameController.getTurnSequence();
         assertTrue(challenger.equals("Turing") ||
                 challenger.equals("Rice") ||
                 challenger.equals("MasterTheorem"));
@@ -74,21 +76,21 @@ public class PreGameControllerTest {
 
         //checks if the challenger choice is random
         for (int i = 0; i < 2048; i++) {
-            pgc.chooseChallenger();
+            preGameController.chooseChallenger();
             if (!first) {
-                if (pgc.getChallenger().equals("Turing")) {
+                if (preGameController.getChallenger().equals("Turing")) {
                     first = true;
                     System.out.println("first is the challenger");
                 }
             }
             if (!second) {
-                if (pgc.getChallenger().equals("Turing")) {
+                if (preGameController.getChallenger().equals("Turing")) {
                     second = true;
                     System.out.println("second is the challenger");
                 }
             }
             if (!last) {
-                if (pgc.getChallenger().equals("MasterTheorem")) {
+                if (preGameController.getChallenger().equals("MasterTheorem")) {
                     System.out.println("third is the challenger");
                     last = true;
                 }
@@ -112,29 +114,21 @@ public class PreGameControllerTest {
 
     @Test
     public void setColors() throws Exception {
-
-
-
         WorkerColors[] valArr = WorkerColors.values();
         List<WorkerColors> values = Arrays.asList(valArr);
-        pgc.start();
+        preGameController.start();
 
         try {
-            pgc.handleEvent(new VC_ChallengerChosenFirstPlayerEvent("Turing"));
+            preGameController.handleEvent(new VC_ChallengerChosenFirstPlayerEvent("Turing"));
+        } catch (Exception e) {
+            preGameController.handleEvent(new VC_ChallengerChosenFirstPlayerEvent("Rice"));
         }
-        catch (Exception e) {
-            pgc.handleEvent(new VC_ChallengerChosenFirstPlayerEvent("Rice"));
-        }
-        assertEquals(pgc.getTurnSequence().get(0).getColor(), WorkerColors.ORANGE);
-        assertEquals(pgc.getTurnSequence().get(1).getColor(), WorkerColors.BLUE);
-        assertEquals(pgc.getTurnSequence().get(2).getColor(), WorkerColors.PINK);
-        WorkerColors [] chosen = new WorkerColors[]{pgc.getTurnSequence().get(0).getColor(), pgc.getTurnSequence().get(1).getColor(), pgc.getTurnSequence().get(2).getColor()};
-        chosen = new WorkerColors[]{pgc.getTurnSequence().get(0).getColor(), pgc.getTurnSequence().get(1).getColor(), pgc.getTurnSequence().get(2).getColor()};
+        assertEquals(preGameController.getTurnSequence().get(0).getColor(), WorkerColors.ORANGE);
+        assertEquals(preGameController.getTurnSequence().get(1).getColor(), WorkerColors.BLUE);
+        assertEquals(preGameController.getTurnSequence().get(2).getColor(), WorkerColors.PINK);
+        WorkerColors[] chosen = new WorkerColors[]{preGameController.getTurnSequence().get(0).getColor(), preGameController.getTurnSequence().get(1).getColor(), preGameController.getTurnSequence().get(2).getColor()};
+        chosen = new WorkerColors[]{preGameController.getTurnSequence().get(0).getColor(), preGameController.getTurnSequence().get(1).getColor(), preGameController.getTurnSequence().get(2).getColor()};
         assertTrue(noDupes(chosen));
-
-
-
     }
-
 
 }
