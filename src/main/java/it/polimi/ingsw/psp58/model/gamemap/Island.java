@@ -7,19 +7,19 @@ import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
 import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
 import it.polimi.ingsw.psp58.auxiliary.IslandData;
 
+/**
+ * This class represents the board game with the matrix of CellCluster
+ */
 public class Island {
+    private final Range indexRange;
 
-
-    private Range indexRange;
-
-    private CellCluster[][] grid;
+    private final CellCluster[][] grid;
 
     private int numberOfCompleteTowers;
 
     /**
      * Constructor, initialize all the island's cells using a for loop
      */
-
     public Island() {
         grid = new CellCluster[5][5];
 
@@ -66,10 +66,6 @@ public class Island {
         if (isWorkerAlreadyPlaced(w)) {
             return;
         }
-/*
-        if (isWorkerAlreadyPlaced(w)) {
-            throw new IllegalArgumentException("Worker already placed by the player on the island");
-        } */
 
         grid[x][y].addWorker(w);
         w.setPlacedOnIsland(true);
@@ -109,8 +105,6 @@ public class Island {
      * @throws InvalidBuildException when you try to build in the wrong order or if the cell is full
      */
     public void buildBlock(BlockTypeEnum b, int x, int y) throws InvalidBuildException {
-
-
         if (!inRange(x, y)) {
             throw new IndexOutOfBoundsException("Index out of island bounds");
         }
@@ -118,14 +112,10 @@ public class Island {
         CellCluster xy = grid[x][y];
 
         if (xy.checkBuildingBlockOrder(b)) { //Checks if this block is inserted the order is legal
-            //System.out.println("DEBUG: Island: placing block " +  b.toString() + " Block order is right");
             xy.build(b);
-            // System.out.println("DEBUG: Island: block placed");
         } else {
-            //System.err.println("DEBUG: Island: after placing block " + b.toString() + " Block order is wrong");
             throw new InvalidBuildException("By inserting this block the costruction order is invalid.");
         }
-        //System.out.println("DEBUG: Island: block build on position" + x + "," + y + " block type: " + b.toString());
     }
 
     /**
@@ -165,8 +155,6 @@ public class Island {
     }
 
     private boolean isWorkerAlreadyPlaced(Worker w) {
-
-
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if (grid[i][j].hasWorkerOnTop() && grid[i][j].getWorkerID().equals(w.getWorkerID())) {

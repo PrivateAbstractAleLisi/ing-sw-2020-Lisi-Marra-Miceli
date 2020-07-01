@@ -47,7 +47,7 @@ public class StartingSceneController {
 
     /**
      *
-     * @throws IOException
+     * @throws IOException IOException
      */
     public void start() throws IOException {
         loadText.setText("");

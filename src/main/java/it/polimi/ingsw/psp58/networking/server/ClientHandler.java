@@ -208,6 +208,7 @@ public class ClientHandler extends EventSource implements Runnable {
 
     /**
      * closes the clientSocket but propagates the exception
+     * @throws IOException IO Exception
      */
     public void closeSocketConnection() throws IOException {
 
@@ -225,7 +226,7 @@ public class ClientHandler extends EventSource implements Runnable {
 
     /**
      * displays a message using a logger on the server
-     * @param message
+     * @param message message to print
      */
     private void printLogMessage(String message) {
         String timestamp = ZonedDateTime.now(ZoneId.of("Europe/Rome")).format(DateTimeFormatter.ofPattern("yyyy/MM/dd-HH:mm:ss"));

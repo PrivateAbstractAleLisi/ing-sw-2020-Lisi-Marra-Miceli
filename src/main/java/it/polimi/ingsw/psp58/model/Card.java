@@ -97,7 +97,7 @@ public abstract class Card {
      * @param island   The current board of game
      * @throws InvalidBuildException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
      */
-    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
+    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException {
         int actualX = worker.getPosition()[0];
         int actualY = worker.getPosition()[1];
         int[] oldCellCluster;

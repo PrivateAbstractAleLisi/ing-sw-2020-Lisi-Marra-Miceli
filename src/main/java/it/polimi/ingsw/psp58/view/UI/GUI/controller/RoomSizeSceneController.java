@@ -138,7 +138,7 @@ public class RoomSizeSceneController {
 
     /**
      * Sets the room size calling the {@code turnDown} method
-     * @param number
+     * @param number number chosen by the user
      */
     private void choice(int number) {
         background.setEffect(new Bloom());

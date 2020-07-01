@@ -1,5 +1,8 @@
 package it.polimi.ingsw.psp58.model;
 
+/**
+ * Enum with all the card info
+ */
 public enum CardEnum {
     
     APOLLO(1, "Apollo", "Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.", "/images/gods/01_Apollo.png"),

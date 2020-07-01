@@ -3,22 +3,27 @@ package it.polimi.ingsw.psp58.model.gamemap;
 
 import it.polimi.ingsw.psp58.model.WorkerColors;
 
+/**
+ * Worker class with info about the owner
+ */
 public class Worker {
 
-
+    /**
+     * Worker ID (A or B)
+     */
     public enum IDs {
         A, B;
     }
 
-    private IDs workerID;
-    private String playerUsername;
+    private final IDs workerID;
+    private final String playerUsername;
     private boolean isPlacedOnIsland;
     private WorkerColors color;
 
     private int[] position;
 
     /**
-     *  Costruttore per la classe worker
+     *  Worker constructor
      * @param workerID id del worker: ogni player ne ha due A e B.
      * @param playerUsername l'username (stringa) del giocatore che possiede questo worker
      */
@@ -47,9 +52,8 @@ public class Worker {
     //2D
 
     /**
-     * @author: Ale Lisi
-     * @param posX
-     * @param posY
+     * @param posX x position
+     * @param posY y position
      */
     public void setPosition (int posX, int posY) {
         position = new int[2];
@@ -57,7 +61,6 @@ public class Worker {
         position[1] = posY;
     }
     /**
-     * @author: Ale Lisi
      * @return a 2D vector [X component, Y component], null if worker isn't  placed already
      */
     public int[] getPosition () {

@@ -6,6 +6,9 @@ import javafx.scene.control.Label;
 
 import java.util.*;
 
+/**
+ * Controller of LobbyScene, receives Room updates from the server and handle this updates
+ */
 public class LobbySceneController {
     @FXML
     private Label roomPlayersNumberText;

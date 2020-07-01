@@ -1,5 +1,8 @@
 package it.polimi.ingsw.psp58.model;
 
+/**
+ * Colors assigned to the players
+ */
 public enum WorkerColors {
         ORANGE(0),
         BLUE(1),

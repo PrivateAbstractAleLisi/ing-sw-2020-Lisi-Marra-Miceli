@@ -25,14 +25,6 @@ public class Range {
 
     }
 
-    /**
-     * @author alelisi
-     * checks if index of island cell is inside the island or not 0..4 0..4
-     * @param x x index of a cell
-     * @param y y index of a cell
-     * @return true if is in range, false otherwise
-     */
-
     private final int lower = 0;
     private final int upper = 4;
 

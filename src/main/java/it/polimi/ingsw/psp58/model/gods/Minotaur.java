@@ -136,6 +136,7 @@ public class Minotaur extends Card {
      * @param desiredY Y Position where the player wants to move the worker
      * @param island   The current board of game
      * @return true if the worker in the desired CellCluster can shift in the same direction, false otherwise
+     * @throws InvalidMovementException Exception thrown when the coordinates are not valid
      */
     private boolean isValidDirectionShift(int actualX, int actualY, int desiredX, int desiredY, Island island) throws InvalidMovementException {
         int[] shiftedCoordinates = getShiftedCoordinates(actualX, actualY, desiredX, desiredY);
@@ -151,6 +152,7 @@ public class Minotaur extends Card {
      * @param desiredX X Position where the player wants to move the worker
      * @param desiredY Y Position where the player wants to move the worker
      * @return the coordinates of the shift movement
+     * @throws InvalidMovementException Exception thrown when the coordinates are not valid
      */
     private int[] getShiftedCoordinates(int actualX, int actualY, int desiredX, int desiredY) throws InvalidMovementException {
         int directionOnX = desiredX - actualX;

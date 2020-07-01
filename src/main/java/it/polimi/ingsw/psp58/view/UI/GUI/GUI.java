@@ -23,7 +23,9 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.util.List;
 
-
+/**
+ * Main GUI class with JavaFX scenes and controllers.
+ */
 public class GUI extends Application implements ViewListener {
     private Stage stage;
 
@@ -122,6 +124,9 @@ public class GUI extends Application implements ViewListener {
         startingSceneController.start();
     }
 
+    /**
+     * Restart the starting scene
+     */
     public void restartStartingScene(){
         try {
             setNewStartingScene();
@@ -264,7 +269,7 @@ public class GUI extends Application implements ViewListener {
     }
 
     /**
-     * @return
+     * @return the ClientSocket
      */
     public ClientSocket getClient() {
         return client;
@@ -317,10 +322,10 @@ public class GUI extends Application implements ViewListener {
         alreadyDisconnectedRecently = false;
     }
 
-    @Override
     /**
      * Handles the {@link CV_ConnectionRejectedErrorGameEvent} showing a {@link ErrorPopUp} message
      */
+    @Override
     public void handleEvent(CV_ConnectionRejectedErrorGameEvent event) {
 
         getStartingSceneController().enableAllLoginFields();
@@ -335,10 +340,10 @@ public class GUI extends Application implements ViewListener {
 
     }
 
-    @Override
     /**
      * Show a {@link ErrorPopUp} with the error message
      */
+    @Override
     public void handleEvent(CV_ReconnectionRejectedErrorGameEvent event) {
         showError("Please wait few seconds and retry.");
     }
@@ -352,11 +357,11 @@ public class GUI extends Application implements ViewListener {
         new ErrorPopUp().show(message, stage);
     }
 
-    @Override
     /**
      * Shows the error message related to the game phase
      * @param event the event received from the server containing the error to display
      */
+    @Override
     public void handleEvent(CV_GameErrorGameEvent event) {
         showError(event.getEventDescription());
     }

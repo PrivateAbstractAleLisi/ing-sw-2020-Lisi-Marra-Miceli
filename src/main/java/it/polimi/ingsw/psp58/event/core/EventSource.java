@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Alessandro Lisi
  * an observable objects that generates events notifying all the attached listeners
  */
 public abstract class EventSource {

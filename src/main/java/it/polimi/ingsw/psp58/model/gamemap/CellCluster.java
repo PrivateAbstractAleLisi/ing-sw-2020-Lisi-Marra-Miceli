@@ -9,27 +9,28 @@ import java.util.List;
 
 import static it.polimi.ingsw.psp58.model.gamemap.BlockTypeEnum.*; //Controllare che cosa significa, generato automaticamente
 
+/**
+ * This class represents the single cell of the board game
+ */
 public class CellCluster implements Cloneable {
-    private List<BlockTypeEnum> construction;
+    private final List<BlockTypeEnum> construction;
     private boolean isComplete, isFree;
     private Worker worker;
-//    private final int x,y;
 
     public CellCluster() {
-        construction = new ArrayList<BlockTypeEnum>();
+        construction = new ArrayList<>();
         isComplete = false;
         isFree = true;
-        isComplete = false;
     }
 
     /**
      * Checks if the construction inside this cell has a valid CostructionBlock order
      *
+     * @param toBeAdded block to be added
      * @return true if the order is valid, false otherwise
      */
     public boolean checkBuildingBlockOrder(BlockTypeEnum toBeAdded) {
-        List<BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
-        constructionAfter.addAll(construction);
+        List<BlockTypeEnum> constructionAfter = new ArrayList<>(construction);
         constructionAfter.add(toBeAdded);
 
         int[] array = toIntArray(constructionAfter);
@@ -90,8 +91,7 @@ public class CellCluster implements Cloneable {
     }
 
     public int[] toIntArrayWithHypo(BlockTypeEnum toBeAdded) {
-        List<BlockTypeEnum> constructionAfter = new ArrayList<BlockTypeEnum>();
-        constructionAfter.addAll(construction);
+        List<BlockTypeEnum> constructionAfter = new ArrayList<>(construction);
         constructionAfter.add(toBeAdded);
 
         return toIntArray(constructionAfter);
@@ -154,7 +154,6 @@ public class CellCluster implements Cloneable {
 
 
     public void removeWorker() {
-        //worker.setPosition(-1, -1);
         worker = null;
     }
 
@@ -181,18 +180,8 @@ public class CellCluster implements Cloneable {
         return null;
     }
 
-    /*
-        public Object clone() throws
-                CloneNotSupportedException
-        {
-            return super.clone();
-        }
-        */
     public Object clone() throws CloneNotSupportedException {
-
         return super.clone();
-
-
     }
 
     public WorkerColors getWorkerColor() {
@@ -206,8 +195,8 @@ public class CellCluster implements Cloneable {
         if (getCostructionHeight() == 0) {
             return LEVEL1;
         } else {
-            BlockTypeEnum lastBlockBuilt = construction.get(getCostructionHeight()-1);
-            switch (lastBlockBuilt){
+            BlockTypeEnum lastBlockBuilt = construction.get(getCostructionHeight() - 1);
+            switch (lastBlockBuilt) {
                 case LEVEL1:
                     return LEVEL2;
                 case LEVEL2:
@@ -220,6 +209,4 @@ public class CellCluster implements Cloneable {
         }
         return null;
     }
-
-
 }

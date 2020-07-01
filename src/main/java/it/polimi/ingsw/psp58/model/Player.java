@@ -6,6 +6,9 @@ import it.polimi.ingsw.psp58.model.gamemap.Worker;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents a player in the model and contains player info and card.
+ */
 public class Player {
 
     private final String username;
@@ -21,6 +24,7 @@ public class Player {
      * Constructor of the player class
      *
      * @param username the name of the player
+     * @param boardManager boardManager of this match
      */
     public Player(String username, BoardManager boardManager) {
         this.username = username;

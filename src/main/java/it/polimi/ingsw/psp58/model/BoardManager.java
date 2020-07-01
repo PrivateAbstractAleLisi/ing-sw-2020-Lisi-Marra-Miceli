@@ -46,6 +46,7 @@ public class BoardManager {
     /**
      * @param player the player to add
      * @throws LimitExceededException if there are already three player in the game
+     * @throws AlreadyExistingPlayerException if the player is already present
      */
     public void addPlayer(Player player) throws LimitExceededException, AlreadyExistingPlayerException {
         if (players.size() < 3) {
@@ -60,6 +61,7 @@ public class BoardManager {
     /**
      * @param username the username of the player to add
      * @throws LimitExceededException if there are already three player in the game
+     * @throws AlreadyExistingPlayerException if the player is already present
      */
     public void addPlayer(String username) throws LimitExceededException, AlreadyExistingPlayerException {
         if (players.size() < 3) {

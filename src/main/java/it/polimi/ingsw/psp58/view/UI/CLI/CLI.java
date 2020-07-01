@@ -564,7 +564,7 @@ public class CLI extends EventSource implements ViewListener {
 
     /**
      * handles a worker placement event by copying the opponents colors (as well as this client's one) and cards
-     * @param event
+     * @param event CV_WorkerPlacementGameEvent event
      */
     @Override
     public void handleEvent(CV_WorkerPlacementGameEvent event) {
@@ -769,7 +769,7 @@ public class CLI extends EventSource implements ViewListener {
 
     /**
      * displays a game over layout: Game Over if the client is not the winner, Winner! if the client won the match
-     * @param event
+     * @param event Info about GameOver
      */
     @Override
     public void handleEvent(CV_GameOverEvent event) {
@@ -973,8 +973,8 @@ public class CLI extends EventSource implements ViewListener {
     }
 
     /**
-     * prints the current turn sequence PLAYER1 <<< PLAYER2 <<< PLAYER 3 that represents the next 1/2 players and the current one
-     * @param event
+     * prints the current turn sequence PLAYER1 - PLAYER2 - PLAYER 3 that represents the next 1/2 players and the current one
+     * @param event event with info about the new turn
      */
     private void printTurnSequence(CV_NewTurnEvent event) {
         MessageUtility.printDivider();
@@ -1035,7 +1035,7 @@ public class CLI extends EventSource implements ViewListener {
 
     /**
      * quits the application after displaying a disconnection (error) message, game is over because a user left the room
-     * @param event
+     * @param event Event with info about disconnected player
      */
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
