@@ -16,7 +16,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.CardEnum;
 import it.polimi.ingsw.psp58.model.TurnAction;
 import it.polimi.ingsw.psp58.model.WorkerColors;
-import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
+import it.polimi.ingsw.psp58.networking.client.ClientSocket;
 import it.polimi.ingsw.psp58.view.UI.CLI.utility.*;
 
 import java.io.IOException;
@@ -29,12 +29,12 @@ import static it.polimi.ingsw.psp58.auxiliary.ANSIColors.*;
 /**
  * CLI version of the MVC View, it handles incoming events, displays messages, reads input, and sends events as an EventSource.
  */
-public class CLIView extends EventSource implements ViewListener {
+public class CLI extends EventSource implements ViewListener {
 
     //IN-OUT DATA FROM CONSOLE
     private PrintStream output;
     private Scanner input;
-    private SantoriniClient client;
+    private ClientSocket client;
     /**
      * keeps a local copy of the last (valid) username
      */
@@ -49,7 +49,7 @@ public class CLIView extends EventSource implements ViewListener {
     private Map<String, CardEnum> opponentsCard;
     private Map<String, WorkerColors> playersColor;
 
-    public CLIView(String[] args) {
+    public CLI(String[] args) {
         this.output = System.out;
         this.input = new Scanner(System.in);
         this.args = args.clone();
@@ -91,12 +91,12 @@ public class CLIView extends EventSource implements ViewListener {
         System.out.println(ANSIColors.YELLOW_UNDERLINED + "Press Enter to Start:" + ANSIColors.ANSI_RESET + " ");
         input.nextLine();
 
-        CLIView.clearScreen();
+        CLI.clearScreen();
         do {
             String IP = askIPAddress();
 
             //set up the client
-            client = new SantoriniClient(this, IP, enablePing);
+            client = new ClientSocket(this, IP, enablePing);
             try {
                 client.begin();
                 System.out.println("CLIENT: connected ");

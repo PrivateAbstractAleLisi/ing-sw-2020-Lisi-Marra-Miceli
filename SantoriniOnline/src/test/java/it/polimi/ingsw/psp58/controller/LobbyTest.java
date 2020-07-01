@@ -2,7 +2,7 @@ package it.polimi.ingsw.psp58.controller;
 
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.CC_ConnectionRequestGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_RoomSizeResponseGameEvent;
-import it.polimi.ingsw.psp58.networking.server.SantoriniServer;
+import it.polimi.ingsw.psp58.SantoriniServer;
 import it.polimi.ingsw.psp58.view.VirtualView;
 import org.junit.After;
 import org.junit.Before;

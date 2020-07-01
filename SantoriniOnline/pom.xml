@@ -42,27 +42,27 @@
         </dependency>
 
         <!--JAVAFX FOR ALL OS-->
-<!--        <dependency>-->
-<!--            <groupId>org.openjfx</groupId>-->
-<!--            <artifactId>javafx-graphics</artifactId>-->
-<!--            <version>11.0.2</version>-->
-<!--            <classifier>mac</classifier>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.openjfx</groupId>-->
-<!--            <artifactId>javafx-graphics</artifactId>-->
-<!--            <version>11.0.2</version>-->
-<!--            <classifier>win</classifier>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.openjfx</groupId>-->
-<!--            <artifactId>javafx-graphics</artifactId>-->
-<!--            <version>11.0.2</version>-->
-<!--            <classifier>linux</classifier>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.openjfx</groupId>-->
+        <!--            <artifactId>javafx-graphics</artifactId>-->
+        <!--            <version>11.0.2</version>-->
+        <!--            <classifier>mac</classifier>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.openjfx</groupId>-->
+        <!--            <artifactId>javafx-graphics</artifactId>-->
+        <!--            <version>11.0.2</version>-->
+        <!--            <classifier>win</classifier>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.openjfx</groupId>-->
+        <!--            <artifactId>javafx-graphics</artifactId>-->
+        <!--            <version>11.0.2</version>-->
+        <!--            <classifier>linux</classifier>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.mockito</groupId>
@@ -121,7 +121,7 @@
                                     <transformers>
                                         <transformer
                                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                            <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
+                                            <mainClass>it.polimi.ingsw.psp58.ClientMain</mainClass>
                                         </transformer>
                                     </transformers>
                                 </configuration>
@@ -195,7 +195,7 @@
                                     <transformers>
                                         <transformer
                                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                            <mainClass>it.polimi.ingsw.psp58.networking.client.ClientMain</mainClass>
+                                            <mainClass>it.polimi.ingsw.psp58.ClientMain</mainClass>
                                         </transformer>
                                     </transformers>
                                 </configuration>
@@ -240,8 +240,7 @@
                                     <transformers>
                                         <transformer
                                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                            <mainClass>it.polimi.ingsw.psp58.networking.server.SantoriniServer
-                                            </mainClass>
+                                            <mainClass>it.polimi.ingsw.psp58.SantoriniServer</mainClass>
                                         </transformer>
                                     </transformers>
                                 </configuration>

@@ -1,6 +1,7 @@
-package it.polimi.ingsw.psp58.networking.server;
+package it.polimi.ingsw.psp58;
 
 import it.polimi.ingsw.psp58.controller.Lobby;
+import it.polimi.ingsw.psp58.networking.server.ClientHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -77,7 +78,7 @@ public class SantoriniServer {
             String clientIpAddress = clientIncoming.getInetAddress().toString().substring(1);
             printLogMessage("New client accepted:\tIPAddress: " + clientIpAddress + "\tPort: " + clientIncoming.getPort());
             String threadID = clientIpAddress + "@" + clientIncoming.getPort();
-            SantoriniServerClientHandler handler = new SantoriniServerClientHandler(clientIncoming, threadID, pingStamp, enablePing);
+            ClientHandler handler = new ClientHandler(clientIncoming, threadID, pingStamp, enablePing);
 
             //Starts a new thread to handle this client
             Thread t = new Thread(handler, "santorini_server_" + threadID);

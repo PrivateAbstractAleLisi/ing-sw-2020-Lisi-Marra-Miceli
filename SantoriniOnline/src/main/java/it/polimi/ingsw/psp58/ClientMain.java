@@ -1,6 +1,6 @@
-package it.polimi.ingsw.psp58.networking.client;
+package it.polimi.ingsw.psp58;
 
-import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
+import it.polimi.ingsw.psp58.view.UI.CLI.CLI;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.application.Application;
 
@@ -89,7 +89,7 @@ public class ClientMain {
         switch (viewModeChoice) {
             case 1:
                 //starts the cli
-                CLIView cli = new CLIView(argsString);
+                CLI cli = new CLI(argsString);
                 cli.start();
                 break;
             case 2:

@@ -10,7 +10,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEv
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
 import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
-import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
+import it.polimi.ingsw.psp58.networking.client.ClientSocket;
 import it.polimi.ingsw.psp58.view.UI.GUI.controller.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -36,7 +36,7 @@ public class GUI extends Application implements ViewListener {
 
     private String username;
 
-    private SantoriniClient client;
+    private ClientSocket client;
 
     private Scene startingScene;
     private StartingSceneController startingSceneController;
@@ -230,7 +230,7 @@ public class GUI extends Application implements ViewListener {
     }
 
     /**
-     * Send the event {@link ControllerGameEvent} passed as parameter using the {@code sendEvent} method on the {@link SantoriniClient}
+     * Send the event {@link ControllerGameEvent} passed as parameter using the {@code sendEvent} method on the {@link ClientSocket}
      *
      * @param event the event that needs to be sent
      */
@@ -255,18 +255,18 @@ public class GUI extends Application implements ViewListener {
     }
 
     /**
-     * Sets the local {@link SantoriniClient} instance of the player
+     * Sets the local {@link ClientSocket} instance of the player
      *
      * @param client the client of the local player
      */
-    public void setClient(SantoriniClient client) {
+    public void setClient(ClientSocket client) {
         this.client = client;
     }
 
     /**
      * @return
      */
-    public SantoriniClient getClient() {
+    public ClientSocket getClient() {
         return client;
     }
 

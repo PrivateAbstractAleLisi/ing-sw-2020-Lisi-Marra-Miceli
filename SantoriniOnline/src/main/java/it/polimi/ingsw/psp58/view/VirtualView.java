@@ -15,7 +15,7 @@ import it.polimi.ingsw.psp58.event.gameEvents.match.*;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
 import it.polimi.ingsw.psp58.model.gamemap.Worker;
-import it.polimi.ingsw.psp58.networking.server.SantoriniServerClientHandler;
+import it.polimi.ingsw.psp58.networking.server.ClientHandler;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -59,14 +59,14 @@ public class VirtualView extends EventSource implements ViewListener, Controller
     /**
      * Where the socket is handled.
      */
-    private final SantoriniServerClientHandler client;
+    private final ClientHandler client;
 
     /**
      * Create the VirtualView and prepare to receive the first event.
      *
      * @param client {@code SantoriniServerClientHandler} with the ref to the Socket.
      */
-    public VirtualView(SantoriniServerClientHandler client) {
+    public VirtualView(ClientHandler client) {
         this.lobby = Lobby.instance();
         //listening to each other
         attachListenerByType(CONTROLLER, lobby);

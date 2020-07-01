@@ -23,7 +23,7 @@ import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 /**
  * This class is the process that reads and writes using the socket, sending and receiving events from the server. Incoming events are notified to the View
  */
-public class SantoriniClient extends EventSource implements Runnable {
+public class ClientSocket extends EventSource implements Runnable {
 
     /**
      * This client view, can be either CLI or GUI.
@@ -48,14 +48,14 @@ public class SantoriniClient extends EventSource implements Runnable {
     private GUI guiIstance;
 
 
-    public SantoriniClient(EventListener userInterface, String ipAddress, boolean enablePing) {
+    public ClientSocket(EventListener userInterface, String ipAddress, boolean enablePing) {
         this.userInterface = userInterface;
         this.IP = ipAddress;
         this.enablePing = enablePing;
         attachListenerByType(VIEW, userInterface);
     }
 
-    public SantoriniClient(EventListener userInterface, String ipAddress, boolean enablePing, GUI guiIstance) {
+    public ClientSocket(EventListener userInterface, String ipAddress, boolean enablePing, GUI guiIstance) {
         this.userInterface = userInterface;
         this.IP = ipAddress;
         this.enablePing = enablePing;

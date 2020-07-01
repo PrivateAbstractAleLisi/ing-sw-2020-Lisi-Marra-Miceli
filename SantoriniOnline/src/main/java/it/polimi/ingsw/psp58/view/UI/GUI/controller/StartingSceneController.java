@@ -1,8 +1,8 @@
 package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 
 import it.polimi.ingsw.psp58.event.gameEvents.lobby.VC_ConnectionRequestGameEvent;
-import it.polimi.ingsw.psp58.networking.client.SantoriniClient;
-import it.polimi.ingsw.psp58.view.UI.CLI.CLIView;
+import it.polimi.ingsw.psp58.networking.client.ClientSocket;
+import it.polimi.ingsw.psp58.view.UI.CLI.CLI;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -120,8 +120,8 @@ public class StartingSceneController {
 
         String userProposal = userField.getText().toLowerCase();
 
-        boolean localUserIsValid = CLIView.checkLocalUsernameAlphaNumeric(userProposal);
-        boolean localIpIsValid = CLIView.checkValidIP(selectedIP);
+        boolean localUserIsValid = CLI.checkLocalUsernameAlphaNumeric(userProposal);
+        boolean localIpIsValid = CLI.checkValidIP(selectedIP);
 
         if (localIpIsValid && localUserIsValid) {
             try {
@@ -145,14 +145,14 @@ public class StartingSceneController {
     }
 
     /**
-     * Initialize the {@link SantoriniClient} and the connection with the server then sends a {@link VC_ConnectionRequestGameEvent} to the server an
+     * Initialize the {@link ClientSocket} and the connection with the server then sends a {@link VC_ConnectionRequestGameEvent} to the server an
      * @param userProposal the username chosen by the player
-     * @throws IOException if it fails to create and initialize the {@link SantoriniClient} and the connection with the server
+     * @throws IOException if it fails to create and initialize the {@link ClientSocket} and the connection with the server
      */
     private void tryConnection(String userProposal) throws IOException {
         //set up the client
         loadText.setText(updateLoadText("establishing connection"));
-        SantoriniClient client = new SantoriniClient(gui, selectedIP, gui.isPingEnabled(), gui);
+        ClientSocket client = new ClientSocket(gui, selectedIP, gui.isPingEnabled(), gui);
         client.begin();
         gui.setClient(client);
         VC_ConnectionRequestGameEvent req = new VC_ConnectionRequestGameEvent("connection attempt", "--", 0, userProposal);

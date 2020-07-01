@@ -22,7 +22,7 @@ import static it.polimi.ingsw.psp58.event.core.ListenerType.VIEW;
 /**
  * server thread that handles the client connection and socket read/write methods
  */
-public class SantoriniServerClientHandler extends EventSource implements Runnable {
+public class ClientHandler extends EventSource implements Runnable {
 
     private final Socket clientSocket;
     private final String threadID;
@@ -38,7 +38,7 @@ public class SantoriniServerClientHandler extends EventSource implements Runnabl
      */
     final VirtualView clientVV;
 
-    public SantoriniServerClientHandler(Socket clientSocket, String threadID, boolean pingStamp, boolean enablePing) {
+    public ClientHandler(Socket clientSocket, String threadID, boolean pingStamp, boolean enablePing) {
         this.clientSocket = clientSocket;
         this.clientVV = new VirtualView(this);
         makeConnections();
