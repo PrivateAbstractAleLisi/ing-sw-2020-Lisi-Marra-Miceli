@@ -3,15 +3,13 @@
 *.iml
 *.iws
 .idea/**
-
-# Mac
-.DS_Store
-SantoriniOnline/.idea/**
-SantoriniOnline/src/main/java/model/NaiveTesting.java
-SantoriniOnline/SantoriniOnline.iml
-SantoriniOnline/target/**
+target/**
 desktop.ini
 Icon
 .debris/**
-Rubbish/tmp/lock
-SantoriniOnline/dependency-reduced-pom.xml
+Rubbish/**
+dependency-reduced-pom.xml
+
+# Mac
+.DS_Store
+
