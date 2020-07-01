@@ -55,7 +55,7 @@ public class Prometheus extends Card {
      * @throws InvalidBuildException Exception thrown when the coordinates are not valid, or the behaviour of the player block this action
      */
     @Override
-    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException, CloneNotSupportedException {
+    public void build(Worker worker, BlockTypeEnum block, int desiredX, int desiredY, Island island) throws InvalidBuildException {
         super.build(worker, block, desiredX, desiredY, island);
         hasAlreadyBuilt = true;
     }

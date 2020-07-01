@@ -613,10 +613,7 @@ public class TurnController extends EventSource implements ControllerListener {
             CV_GameErrorGameEvent errorEvent = new CV_GameErrorGameEvent("this is a invalid build!", player.getUsername());
             notifyAllObserverByType(VIEW, errorEvent);
             sendCommandRequest(player.getUsername());
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("Clone not supported!");
         }
-
     }
 
     /**
