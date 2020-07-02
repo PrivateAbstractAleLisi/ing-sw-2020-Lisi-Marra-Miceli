@@ -1,0 +1,129 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Pan</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.model.gods</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Pan (it.polimi.ingsw.psp58.model.gods)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Pan</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/ 11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.model.gods;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.psp58.model.Card;
+<i>4</i>&nbsp;import it.polimi.ingsw.psp58.model.CardEnum;
+<i>5</i>&nbsp;import it.polimi.ingsw.psp58.model.Player;
+<i>6</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.WinningException;
+<i>7</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.CellCluster;
+<i>8</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.Island;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; * Pan Card implementation.
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; * @author alelisi
+<i>14</i>&nbsp; */
+<i>15</i>&nbsp;public class Pan extends Card {
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;    public Pan(Player p) {
+<b class="fc"><i>18</i>&nbsp;        super(p);</b>
+<b class="fc"><i>19</i>&nbsp;        name = CardEnum.PAN;</b>
+<i>20</i>&nbsp;
+<b class="fc"><i>21</i>&nbsp;    }</b>
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;    /**
+<i>24</i>&nbsp;     * Check if the player reached the third level during his turn or if Pan moved down by 2 levels.
+<i>25</i>&nbsp;     *
+<i>26</i>&nbsp;     * @param island              The current board of game
+<i>27</i>&nbsp;     * @param x                   The X Coordinate where the Worker is
+<i>28</i>&nbsp;     * @param y                   The y Coordinate where the Worker is
+<i>29</i>&nbsp;     * @param oldAltitudeOfPlayer The altitude of worker before the move
+<i>30</i>&nbsp;     * @throws WinningException The exception for the winning
+<i>31</i>&nbsp;     */
+<i>32</i>&nbsp;    @Override
+<i>33</i>&nbsp;    protected void checkWin(Island island, int x, int y, int oldAltitudeOfPlayer) throws WinningException {
+<b class="fc"><i>34</i>&nbsp;        super.checkWin(island, x, y, oldAltitudeOfPlayer);</b>
+<b class="fc"><i>35</i>&nbsp;        CellCluster cellCluster = island.getCellCluster(x, y);</b>
+<b class="fc"><i>36</i>&nbsp;        boolean isAPerimeterCell = (x == 0 || x == 4 || y == 0 || y == 4);</b>
+<i>37</i>&nbsp;
+<b class="fc"><i>38</i>&nbsp;        int deltaH = oldAltitudeOfPlayer - cellCluster.getCostructionHeight();</b>
+<i>39</i>&nbsp;
+<b class="fc"><i>40</i>&nbsp;        System.out.println(&quot;DEBUG: PAN: worker is going down from &quot; + oldAltitudeOfPlayer + &quot; to &quot; + cellCluster.getCostructionHeight() + &quot;, delta is &quot; + deltaH);</b>
+<b class="fc"><i>41</i>&nbsp;        if ((playedBy.getBehaviour().canWinOnPerimeterCell() || !isAPerimeterCell) &amp;&amp; deltaH &gt;= 2) {</b>
+<b class="fc"><i>42</i>&nbsp;            throw new WinningException(&quot;Worker went down of two levels of more&quot;);</b>
+<i>43</i>&nbsp;        }
+<i>44</i>&nbsp;
+<b class="fc"><i>45</i>&nbsp;    }</b>
+<i>46</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-01 23:41</div>
+</div>
+</body>
+</html>

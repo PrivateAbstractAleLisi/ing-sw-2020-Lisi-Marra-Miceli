@@ -1,0 +1,170 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Player</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Player (model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Player</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85%
+  </span>
+  <span class="absValue">
+    (17/ 20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import java.util.ArrayList;
+<i>4</i>&nbsp;import model.gamemap.Worker;
+<i>5</i>&nbsp;import model.Card;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;public class Player {
+<i>8</i>&nbsp;    private String username;
+<b class="fc"><i>9</i>&nbsp;    private ArrayList&lt;Worker&gt; workersList = new ArrayList&lt;Worker&gt;();</b>
+<i>10</i>&nbsp;    private WorkerColors color;
+<i>11</i>&nbsp;    private Card card;
+<i>12</i>&nbsp;    protected GameManager match;
+<i>13</i>&nbsp;    protected BehaviourManager behaviour;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;    /**
+<i>16</i>&nbsp;     * Constructor of the player class
+<i>17</i>&nbsp;     * @param username the name of the player
+<i>18</i>&nbsp;     */
+<b class="fc"><i>19</i>&nbsp;    public Player(String username) {</b>
+<b class="fc"><i>20</i>&nbsp;        this.username= username;</b>
+<b class="fc"><i>21</i>&nbsp;    }</b>
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;    /**
+<i>24</i>&nbsp;     *
+<i>25</i>&nbsp;     * @return the username of the player
+<i>26</i>&nbsp;     */
+<i>27</i>&nbsp;    public String getUsername(){
+<b class="fc"><i>28</i>&nbsp;        return username;</b>
+<i>29</i>&nbsp;    }
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;    /**
+<i>32</i>&nbsp;     *
+<i>33</i>&nbsp;     * @param card the card chosen by the player
+<i>34</i>&nbsp;     */
+<i>35</i>&nbsp;    public void setCard(Card card) {
+<b class="nc"><i>36</i>&nbsp;        card = card;</b>
+<b class="nc"><i>37</i>&nbsp;    }</b>
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    /**
+<i>40</i>&nbsp;     *
+<i>41</i>&nbsp;     * @return the card the player is using
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    public Card getCard(){
+<b class="nc"><i>44</i>&nbsp;    return null; //PLACEHOLDER</b>
+<i>45</i>&nbsp;    }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     *
+<i>49</i>&nbsp;     * @param worker the worker to be added in the workersList
+<i>50</i>&nbsp;     */
+<i>51</i>&nbsp;    public void setWorker(Worker worker) {
+<b class="fc"><i>52</i>&nbsp;        workersList.add(worker);</b>
+<b class="fc"><i>53</i>&nbsp;    }</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /**
+<i>56</i>&nbsp;     *
+<i>57</i>&nbsp;     * @param id the id of the worker to return
+<i>58</i>&nbsp;     * @return the worker of the id passed by parameter
+<i>59</i>&nbsp;     */
+<i>60</i>&nbsp;    public Worker getWorker(Worker.IDs id){
+<b class="fc"><i>61</i>&nbsp;        Worker w = null;</b>
+<b class="fc"><i>62</i>&nbsp;        for (Worker x : workersList){</b>
+<i>63</i>&nbsp;            //needed method getWorkerID in class Worker
+<b class="fc"><i>64</i>&nbsp;            if (x.getWorkerID() == id){</b>
+<b class="fc"><i>65</i>&nbsp;                w = x;</b>
+<i>66</i>&nbsp;            }
+<b class="fc"><i>67</i>&nbsp;        }</b>
+<b class="fc"><i>68</i>&nbsp;        return w;</b>
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    /**
+<i>72</i>&nbsp;     * Set the color of the player
+<i>73</i>&nbsp;     * @param color the color representative of the player
+<i>74</i>&nbsp;     */
+<i>75</i>&nbsp;    public void setColor (WorkerColors color){
+<b class="fc"><i>76</i>&nbsp;        this.color= color;</b>
+<b class="fc"><i>77</i>&nbsp;    }</b>
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    /**
+<i>80</i>&nbsp;     *
+<i>81</i>&nbsp;     * @return the color of the workers of the player
+<i>82</i>&nbsp;     */
+<i>83</i>&nbsp;    public WorkerColors getColor() {
+<b class="fc"><i>84</i>&nbsp;        WorkerColors colorCopy= color;</b>
+<b class="fc"><i>85</i>&nbsp;        return colorCopy;</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-03-31 15:23</div>
+</div>
+</body>
+</html>

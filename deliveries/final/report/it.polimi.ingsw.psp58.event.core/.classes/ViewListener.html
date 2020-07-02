@@ -1,0 +1,119 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ViewListener</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.event.core</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ViewListener (it.polimi.ingsw.psp58.event.core)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ViewListener</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.event.core;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;
+<i>4</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
+<i>5</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_SpectatorGameEvent;
+<i>6</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.match.CV_GameErrorGameEvent;
+<i>7</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.prematch.CV_PreGameErrorGameEvent;
+<i>8</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.connection.PlayerDisconnectedViewEvent;
+<i>9</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_GameStartedGameEvent;
+<i>10</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.lobby.*;
+<i>11</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.match.*;
+<i>12</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
+<i>13</i>&nbsp;import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_WorkerPlacementGameEvent;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;/**
+<i>16</i>&nbsp; * Interface implemented by classes of the view that need to handle the events sent by the server
+<i>17</i>&nbsp; */
+<i>18</i>&nbsp;public interface ViewListener extends EventListener {
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    void handleEvent(PlayerDisconnectedViewEvent event);
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;    //LOBBY EVENT
+<i>23</i>&nbsp;    void handleEvent(CV_ConnectionRejectedErrorGameEvent event);
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    void handleEvent(CV_ReconnectionRejectedErrorGameEvent event);
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;    void handleEvent(CV_NewGameRequestEvent event);
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    void handleEvent(CV_RoomSizeRequestGameEvent event);
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;    void handleEvent(CV_RoomUpdateGameEvent event);
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    //PREMATCH
+<i>35</i>&nbsp;    void handleEvent(CV_PreGameStartedGameEvent event);
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    void handleEvent(CV_PreGameErrorGameEvent event);
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    void handleEvent(CV_CardChoiceRequestGameEvent event);
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event);
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    void handleEvent(CV_PlayerPlaceWorkerRequestEvent event);
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    void handleEvent(CV_ChallengerChosenEvent event);
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    void handleEvent(CV_WaitPreMatchGameEvent event);
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    //MATCH
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    void handleEvent(CV_GameStartedGameEvent event);
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    void handleEvent(CV_GameErrorGameEvent event);
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    void handleEvent(CV_WorkerPlacementGameEvent event);
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    void handleEvent(CV_CommandExecutedGameEvent event);
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    void handleEvent(CV_CommandRequestEvent event);
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    void handleEvent(CV_GameOverEvent event);
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    void handleEvent(CV_NewTurnEvent event);
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    void handleEvent(CV_IslandUpdateEvent event);
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    void handleEvent(CV_WaitMatchGameEvent event);
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    void handleEvent(CV_TurnInfoEvent CVTurnInfoEvent);
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    void handleEvent(CV_SpectatorGameEvent cv_spectatorGameEvent);
+<i>72</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-01 23:41</div>
+</div>
+</body>
+</html>

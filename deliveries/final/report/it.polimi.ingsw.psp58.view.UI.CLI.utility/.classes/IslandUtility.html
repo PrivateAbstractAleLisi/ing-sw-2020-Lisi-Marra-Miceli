@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: IslandUtility</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.view.UI.CLI.utility</a> ]
+</div>
+
+<h1>Coverage Summary for Class: IslandUtility (it.polimi.ingsw.psp58.view.UI.CLI.utility)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IslandUtility</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (46/ 46)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">IslandUtility$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (47/ 47)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.view.UI.CLI.utility;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.psp58.model.WorkerColors;
+<i>4</i>&nbsp;import it.polimi.ingsw.psp58.model.gamemap.Worker;
+<i>5</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
+<i>6</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.IslandData;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;import static it.polimi.ingsw.psp58.auxiliary.ANSIColors.*;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; * utility class that displays an Island using data from IslandData
+<i>12</i>&nbsp; */
+<i>13</i>&nbsp;public class IslandUtility {
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;    private IslandData data;
+<i>16</i>&nbsp;
+<b class="fc"><i>17</i>&nbsp;    public IslandUtility(IslandData data) {</b>
+<b class="fc"><i>18</i>&nbsp;        this.data = data;</b>
+<b class="fc"><i>19</i>&nbsp;    }</b>
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    /**
+<i>22</i>&nbsp;     * prints the right string for a single cell cluster
+<i>23</i>&nbsp;     * @param x x position
+<i>24</i>&nbsp;     * @param y y position
+<i>25</i>&nbsp;     */
+<i>26</i>&nbsp;    private void printCellCluster(int x, int y) {
+<b class="fc"><i>27</i>&nbsp;        String cellClusterContent = ANSI_WHITE + &quot;? &quot; + ANSI_RESET;</b>
+<b class="fc"><i>28</i>&nbsp;        if (data.getCellCluster(x, y).isFree()) {</b>
+<b class="fc"><i>29</i>&nbsp;            cellClusterContent = cellClusterContent + &quot;     &quot;; //EMPTY : + 5 CHARS</b>
+<b class="fc"><i>30</i>&nbsp;        } else if (data.getCellCluster(x, y).isDomeOnTop()) {</b>
+<b class="fc"><i>31</i>&nbsp;            cellClusterContent = cellClusterContent + &quot;  ?  &quot;; //DOME   +5 CHARS (4 EMPTY)</b>
+<i>32</i>&nbsp;        } else {
+<b class="fc"><i>33</i>&nbsp;            CellClusterData xy = data.getCellCluster(x, y);</b>
+<b class="fc"><i>34</i>&nbsp;            int height = xy.getBlocks().length;</b>
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;
+<b class="fc"><i>37</i>&nbsp;            switch (height) {</b>
+<i>38</i>&nbsp;                case 1:
+<b class="fc"><i>39</i>&nbsp;                    cellClusterContent += &quot; 1 &quot;;</b>
+<b class="fc"><i>40</i>&nbsp;                    break;</b>
+<i>41</i>&nbsp;                case 2:
+<b class="fc"><i>42</i>&nbsp;                    cellClusterContent += &quot; 2 &quot;;</b>
+<b class="fc"><i>43</i>&nbsp;                    break;</b>
+<i>44</i>&nbsp;                case 3:
+<b class="fc"><i>45</i>&nbsp;                    cellClusterContent += &quot; 3 &quot;;</b>
+<b class="fc"><i>46</i>&nbsp;                    break;</b>
+<i>47</i>&nbsp;                default:
+<b class="fc"><i>48</i>&nbsp;                    cellClusterContent += &quot;   &quot;;</b>
+<i>49</i>&nbsp;                    break;
+<i>50</i>&nbsp;            }
+<i>51</i>&nbsp;
+<b class="fc"><i>52</i>&nbsp;            if (xy.getWorkerOnTop() != null) {</b>
+<i>53</i>&nbsp;
+<b class="fc"><i>54</i>&nbsp;                WorkerColors color = xy.getWorkerColor();</b>
+<b class="fc"><i>55</i>&nbsp;                Character workerLetter = xy.getWorkerOnTop().equals(Worker.IDs.A) ? &#39;A&#39; : &#39;B&#39;;</b>
+<b class="fc"><i>56</i>&nbsp;                switch (color) {</b>
+<i>57</i>&nbsp;                    case ORANGE:
+<b class="fc"><i>58</i>&nbsp;                        cellClusterContent += RED_BRIGHT + workerLetter + &quot; &quot; + ANSI_RESET;</b>
+<b class="fc"><i>59</i>&nbsp;                        break;</b>
+<i>60</i>&nbsp;                    case BLUE:
+<b class="fc"><i>61</i>&nbsp;                        cellClusterContent += BLUE_BRIGHT + workerLetter + &quot; &quot; + ANSI_RESET;</b>
+<b class="fc"><i>62</i>&nbsp;                        break;</b>
+<i>63</i>&nbsp;                    case PINK:
+<b class="fc"><i>64</i>&nbsp;                        cellClusterContent += MAGENTA_BRIGHT + workerLetter + &quot; &quot; + ANSI_RESET;</b>
+<i>65</i>&nbsp;                        break;
+<i>66</i>&nbsp;                }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;
+<b class="fc"><i>69</i>&nbsp;            } else {</b>
+<b class="fc"><i>70</i>&nbsp;                cellClusterContent += &quot;  &quot;;</b>
+<i>71</i>&nbsp;            }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;        }
+<i>74</i>&nbsp;
+<b class="fc"><i>75</i>&nbsp;        System.out.print(cellClusterContent);</b>
+<b class="fc"><i>76</i>&nbsp;    }</b>
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    /**
+<i>79</i>&nbsp;     * displays an island with a grid using the data from an IslandData object. Every cell cluster is printed as a sequence of characters.
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    public void displayIsland() {
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;
+<b class="fc"><i>84</i>&nbsp;        System.out.print(&quot;COL ?  &quot;);</b>
+<i>85</i>&nbsp;
+<b class="fc"><i>86</i>&nbsp;        for (int c = 0; c &lt; 5; c++) {</b>
+<b class="fc"><i>87</i>&nbsp;            System.out.print(&quot;   &quot; + (c + 1) + &quot;   &quot;);</b>
+<i>88</i>&nbsp;        }
+<i>89</i>&nbsp;
+<b class="fc"><i>90</i>&nbsp;        for (int row = 0; row &lt; 5; row++) {</b>
+<b class="fc"><i>91</i>&nbsp;            System.out.println(&quot;&quot;);</b>
+<i>92</i>&nbsp;
+<b class="fc"><i>93</i>&nbsp;            if (row != 0) {</b>
+<b class="fc"><i>94</i>&nbsp;                System.out.println(ANSI_WHITE + &quot;       ????????????????????????????????????&quot; + ANSI_RESET);</b>
+<i>95</i>&nbsp;            } else {
+<b class="fc"><i>96</i>&nbsp;                System.out.println(&quot;ROW ?  &quot; + ANSI_WHITE + &quot;????????????????????????????????????&quot; + ANSI_RESET);</b>
+<i>97</i>&nbsp;            }
+<i>98</i>&nbsp;
+<b class="fc"><i>99</i>&nbsp;            System.out.print(&quot;    &quot; + (row + 1) + &quot;  &quot;);</b>
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;
+<b class="fc"><i>102</i>&nbsp;            for (int column = 0; column &lt; 5; column++) {</b>
+<b class="fc"><i>103</i>&nbsp;                printCellCluster(column, row);</b>
+<i>104</i>&nbsp;            }
+<b class="fc"><i>105</i>&nbsp;            System.out.print(ANSI_WHITE + &quot;?&quot; + ANSI_RESET);</b>
+<i>106</i>&nbsp;        }
+<b class="fc"><i>107</i>&nbsp;        System.out.println(&quot;&quot;);</b>
+<b class="fc"><i>108</i>&nbsp;        System.out.println(ANSI_WHITE + &quot;       ????????????????????????????????????&quot; + ANSI_RESET);</b>
+<b class="fc"><i>109</i>&nbsp;    }</b>
+<i>110</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-01 23:41</div>
+</div>
+</body>
+</html>

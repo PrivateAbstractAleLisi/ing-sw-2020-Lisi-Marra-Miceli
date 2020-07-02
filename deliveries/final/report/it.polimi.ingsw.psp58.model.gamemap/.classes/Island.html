@@ -1,0 +1,278 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Island</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.psp58.model.gamemap</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Island (it.polimi.ingsw.psp58.model.gamemap)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Island</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94,2%
+  </span>
+  <span class="absValue">
+    (65/ 69)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.psp58.model.gamemap;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;
+<i>4</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.Range;
+<i>5</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.InvalidBuildException;
+<i>6</i>&nbsp;import it.polimi.ingsw.psp58.exceptions.InvalidMovementException;
+<i>7</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.CellClusterData;
+<i>8</i>&nbsp;import it.polimi.ingsw.psp58.auxiliary.IslandData;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; * This class represents the board game with the matrix of CellCluster
+<i>12</i>&nbsp; */
+<i>13</i>&nbsp;public class Island {
+<i>14</i>&nbsp;    private final Range indexRange;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    private final CellCluster[][] grid;
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    private int numberOfCompleteTowers;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    /**
+<i>21</i>&nbsp;     * Constructor, initialize all the island&#39;s cells using a for loop
+<i>22</i>&nbsp;     */
+<b class="fc"><i>23</i>&nbsp;    public Island() {</b>
+<b class="fc"><i>24</i>&nbsp;        grid = new CellCluster[5][5];</b>
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;        //initialize *all cells* with a double for
+<b class="fc"><i>27</i>&nbsp;        for (int i = 0; i &lt; 5; i++) {</b>
+<b class="fc"><i>28</i>&nbsp;            for (int j = 0; j &lt; 5; j++) {</b>
+<b class="fc"><i>29</i>&nbsp;                grid[i][j] = new CellCluster();</b>
+<i>30</i>&nbsp;            }
+<i>31</i>&nbsp;        }
+<i>32</i>&nbsp;
+<b class="fc"><i>33</i>&nbsp;        indexRange = new Range(0, 4);</b>
+<b class="fc"><i>34</i>&nbsp;        numberOfCompleteTowers = 0;</b>
+<i>35</i>&nbsp;
+<b class="fc"><i>36</i>&nbsp;        System.out.println(&quot;DEBUG: Island has been initialized&quot;);</b>
+<i>37</i>&nbsp;
+<b class="fc"><i>38</i>&nbsp;    }</b>
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /**
+<i>41</i>&nbsp;     * @param x index of the cell (x)
+<i>42</i>&nbsp;     * @param y index of the cell (x)
+<i>43</i>&nbsp;     * @return true if the index are correct, otherwise false.
+<i>44</i>&nbsp;     */
+<i>45</i>&nbsp;    private boolean inRange(int x, int y) {
+<b class="fc"><i>46</i>&nbsp;        if (indexRange.contains(x) &amp;&amp; indexRange.contains(y)) {</b>
+<b class="fc"><i>47</i>&nbsp;            return true;</b>
+<i>48</i>&nbsp;        } else {
+<b class="fc"><i>49</i>&nbsp;            return false;</b>
+<i>50</i>&nbsp;        }
+<i>51</i>&nbsp;    }
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    /**
+<i>54</i>&nbsp;     * it places the worker on the board only if it&#39;s not already placed.
+<i>55</i>&nbsp;     *
+<i>56</i>&nbsp;     * @param w Worker that has to be placed
+<i>57</i>&nbsp;     * @param x index of the cell (x) where the worker will be placed
+<i>58</i>&nbsp;     * @param y index of the cell (y) where the worker will be placed
+<i>59</i>&nbsp;     * @throws InvalidMovementException when you try to place a worker in a cell the has already a worker on top
+<i>60</i>&nbsp;     */
+<i>61</i>&nbsp;    public void placeWorker(Worker w, int x, int y) throws InvalidMovementException {
+<i>62</i>&nbsp;
+<b class="fc"><i>63</i>&nbsp;        if (!inRange(x, y)) {</b>
+<b class="fc"><i>64</i>&nbsp;            throw new IndexOutOfBoundsException();</b>
+<i>65</i>&nbsp;        }
+<b class="fc"><i>66</i>&nbsp;        if (isWorkerAlreadyPlaced(w)) {</b>
+<b class="fc"><i>67</i>&nbsp;            return;</b>
+<i>68</i>&nbsp;        }
+<i>69</i>&nbsp;
+<b class="fc"><i>70</i>&nbsp;        grid[x][y].addWorker(w);</b>
+<b class="fc"><i>71</i>&nbsp;        w.setPlacedOnIsland(true);</b>
+<b class="fc"><i>72</i>&nbsp;        w.setPosition(x, y);</b>
+<i>73</i>&nbsp;
+<b class="fc"><i>74</i>&nbsp;        System.out.println(&quot;DEBUG: Island: worker placed at index &quot; + x + &quot;,&quot; + y);</b>
+<b class="fc"><i>75</i>&nbsp;    }</b>
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * @param w Worker that has to be placed
+<i>79</i>&nbsp;     * @param x index of the cell (x) where the worker will be placed
+<i>80</i>&nbsp;     * @param y index of the cell (y) where the worker will be placed
+<i>81</i>&nbsp;     * @throws InvalidMovementException when you try to move a worker in a cell the has already a worker on top
+<i>82</i>&nbsp;     */
+<i>83</i>&nbsp;    public void moveWorker(Worker w, int x, int y) throws InvalidMovementException {
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;
+<b class="fc"><i>86</i>&nbsp;        if (!inRange(x, y)) {</b>
+<b class="fc"><i>87</i>&nbsp;            throw new IndexOutOfBoundsException();</b>
+<i>88</i>&nbsp;        }
+<b class="fc"><i>89</i>&nbsp;        int oldX = w.getPosition()[0];</b>
+<b class="fc"><i>90</i>&nbsp;        int oldY = w.getPosition()[1];</b>
+<b class="fc"><i>91</i>&nbsp;        grid[oldX][oldY].removeWorker(); //TODO gestire (forse conviene internamente) il caso dove non posso rimuovere nessuno</b>
+<b class="fc"><i>92</i>&nbsp;        grid[x][y].addWorker(w);</b>
+<b class="fc"><i>93</i>&nbsp;        w.setPosition(x, y); //RIPETERE CODICE</b>
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;
+<b class="fc"><i>96</i>&nbsp;        System.out.println(&quot;DEBUG: Island: worker successfully moved from position &quot; + oldX + &quot;,&quot; + oldY + &quot;to position &quot; +</b>
+<i>97</i>&nbsp;                +x + &quot;,&quot; + y);
+<i>98</i>&nbsp;
+<b class="fc"><i>99</i>&nbsp;    }</b>
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    /**
+<i>102</i>&nbsp;     * @param b the block you want to build over the cell
+<i>103</i>&nbsp;     * @param x index of the cell (x)
+<i>104</i>&nbsp;     * @param y index of the cell (y)
+<i>105</i>&nbsp;     * @throws InvalidBuildException when you try to build in the wrong order or if the cell is full
+<i>106</i>&nbsp;     */
+<i>107</i>&nbsp;    public void buildBlock(BlockTypeEnum b, int x, int y) throws InvalidBuildException {
+<b class="fc"><i>108</i>&nbsp;        if (!inRange(x, y)) {</b>
+<b class="nc"><i>109</i>&nbsp;            throw new IndexOutOfBoundsException(&quot;Index out of island bounds&quot;);</b>
+<i>110</i>&nbsp;        }
+<i>111</i>&nbsp;
+<b class="fc"><i>112</i>&nbsp;        CellCluster xy = grid[x][y];</b>
+<i>113</i>&nbsp;
+<b class="fc"><i>114</i>&nbsp;        if (xy.checkBuildingBlockOrder(b)) { //Checks if this block is inserted the order is legal</b>
+<b class="fc"><i>115</i>&nbsp;            xy.build(b);</b>
+<i>116</i>&nbsp;        } else {
+<b class="fc"><i>117</i>&nbsp;            throw new InvalidBuildException(&quot;By inserting this block the costruction order is invalid.&quot;);</b>
+<i>118</i>&nbsp;        }
+<b class="fc"><i>119</i>&nbsp;    }</b>
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    /**
+<i>122</i>&nbsp;     * finds the worker and removes it from the board
+<i>123</i>&nbsp;     *
+<i>124</i>&nbsp;     * @param w worker that will be removed
+<i>125</i>&nbsp;     */
+<i>126</i>&nbsp;    public void removeWorker(Worker w) {
+<b class="fc"><i>127</i>&nbsp;        int[] pos = w.getPosition();</b>
+<b class="fc"><i>128</i>&nbsp;        CellCluster hasWorkerIn = grid[pos[0]][pos[1]];</b>
+<b class="fc"><i>129</i>&nbsp;        if (hasWorkerIn.hasWorkerOnTop()) {</b>
+<b class="fc"><i>130</i>&nbsp;            hasWorkerIn.removeWorker();</b>
+<b class="fc"><i>131</i>&nbsp;            w.setPlacedOnIsland(false);</b>
+<i>132</i>&nbsp;        }
+<b class="fc"><i>133</i>&nbsp;    }</b>
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    /**
+<i>136</i>&nbsp;     * @param x index of the cell (x)
+<i>137</i>&nbsp;     * @param y index of the cell (y)
+<i>138</i>&nbsp;     * @return a copy of the CellCluster at position (x,y)
+<i>139</i>&nbsp;     */
+<i>140</i>&nbsp;    public CellCluster getCellCluster(int x, int y) {
+<i>141</i>&nbsp;
+<b class="fc"><i>142</i>&nbsp;        if (!inRange(x, y)) {</b>
+<b class="fc"><i>143</i>&nbsp;            throw new IndexOutOfBoundsException(&quot;Index out of island bounds&quot;);</b>
+<i>144</i>&nbsp;        }
+<i>145</i>&nbsp;
+<b class="fc"><i>146</i>&nbsp;        CellCluster real = grid[x][y];</b>
+<b class="fc"><i>147</i>&nbsp;        CellCluster copy = null;</b>
+<i>148</i>&nbsp;        try {
+<b class="fc"><i>149</i>&nbsp;            copy = (CellCluster) real.clone();</b>
+<b class="fc"><i>150</i>&nbsp;            return copy;</b>
+<b class="nc"><i>151</i>&nbsp;        } catch (CloneNotSupportedException e) {</b>
+<b class="nc"><i>152</i>&nbsp;            e.printStackTrace();</b>
+<i>153</i>&nbsp;        }
+<b class="nc"><i>154</i>&nbsp;        return null;</b>
+<i>155</i>&nbsp;    }
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;    private boolean isWorkerAlreadyPlaced(Worker w) {
+<b class="fc"><i>158</i>&nbsp;        for (int i = 0; i &lt; 5; i++) {</b>
+<b class="fc"><i>159</i>&nbsp;            for (int j = 0; j &lt; 5; j++) {</b>
+<b class="fc"><i>160</i>&nbsp;                if (grid[i][j].hasWorkerOnTop() &amp;&amp; grid[i][j].getWorkerID().equals(w.getWorkerID())) {</b>
+<b class="fc"><i>161</i>&nbsp;                    if (grid[i][j].getWorkerOwnerUsername().equals(w.getPlayerUsername())) {</b>
+<b class="fc"><i>162</i>&nbsp;                        return true;</b>
+<i>163</i>&nbsp;                    }
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;                }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;            }
+<i>168</i>&nbsp;        }
+<b class="fc"><i>169</i>&nbsp;        return false;</b>
+<i>170</i>&nbsp;    }
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;    private CellClusterData[][] getGridData() {
+<b class="fc"><i>173</i>&nbsp;        CellClusterData[][] newGrid = new CellClusterData[5][5];</b>
+<b class="fc"><i>174</i>&nbsp;        for (int i = 0; i &lt; 5; i++) {</b>
+<b class="fc"><i>175</i>&nbsp;            for (int j = 0; j &lt; 5; j++) {</b>
+<b class="fc"><i>176</i>&nbsp;                newGrid[i][j] = new CellClusterData(getCellCluster(i, j));</b>
+<i>177</i>&nbsp;            }
+<i>178</i>&nbsp;        }
+<b class="fc"><i>179</i>&nbsp;        return newGrid;</b>
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    public IslandData getIslandDataCopy() {
+<b class="fc"><i>183</i>&nbsp;        IslandData copy = new IslandData();</b>
+<b class="fc"><i>184</i>&nbsp;        copy.fillIsland(getGridData());</b>
+<b class="fc"><i>185</i>&nbsp;        return copy;</b>
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    public void incrementNumberOfCompleteTowers() {
+<b class="fc"><i>189</i>&nbsp;        numberOfCompleteTowers++;</b>
+<b class="fc"><i>190</i>&nbsp;    }</b>
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;    public int getNumberOfCompleteTowers() {
+<b class="fc"><i>193</i>&nbsp;        return numberOfCompleteTowers;</b>
+<i>194</i>&nbsp;    }
+<i>195</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-01 23:41</div>
+</div>
+</body>
+</html>

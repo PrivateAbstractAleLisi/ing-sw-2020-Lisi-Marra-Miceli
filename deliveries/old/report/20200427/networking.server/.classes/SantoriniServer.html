@@ -1,0 +1,129 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SantoriniServer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">networking.server</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SantoriniServer (networking.server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SantoriniServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package networking.server;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import controller.Lobby;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import java.io.IOException;
+<i>6</i>&nbsp;import java.net.ServerSocket;
+<i>7</i>&nbsp;import java.net.Socket;
+<i>8</i>&nbsp;
+<b class="nc"><i>9</i>&nbsp;public class SantoriniServer {</b>
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;    public final static int SOCKET_PORT = 7557;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;    public static void main(String[] args) throws IOException {
+<i>14</i>&nbsp;
+<b class="nc"><i>15</i>&nbsp;        Lobby lobby = Lobby.instance();</b>
+<i>16</i>&nbsp;        ServerSocket socket;
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;        try {
+<i>19</i>&nbsp;            //Creates a socket on the server
+<b class="nc"><i>20</i>&nbsp;            socket = new ServerSocket(SOCKET_PORT);</b>
+<b class="nc"><i>21</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>22</i>&nbsp;            System.err.println(&quot;Unable to open the server socket.&quot;);</b>
+<b class="nc"><i>23</i>&nbsp;            System.exit(1);</b>
+<i>24</i>&nbsp;            return;
+<b class="nc"><i>25</i>&nbsp;        }</b>
+<b class="nc"><i>26</i>&nbsp;        System.out.println(&quot;SERVER: The server is running&quot;);</b>
+<i>27</i>&nbsp;        while (true) { //waiting for a client to connect
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;
+<b class="nc"><i>30</i>&nbsp;            Socket clientIncoming = socket.accept(); //get the client socket</b>
+<b class="nc"><i>31</i>&nbsp;            String clientIpAddress = clientIncoming.getInetAddress().toString().substring(1);</b>
+<b class="nc"><i>32</i>&nbsp;            System.out.println(&quot;SERVER: New client accepted:\tIPAddress: &quot; + clientIpAddress + &quot;\tPort: &quot; + clientIncoming.getPort());</b>
+<b class="nc"><i>33</i>&nbsp;            String threadID = clientIpAddress + &quot;@&quot; + clientIncoming.getPort();</b>
+<b class="nc"><i>34</i>&nbsp;            SantoriniServerClientHandler handler = new SantoriniServerClientHandler(clientIncoming,threadID);</b>
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;            //Starts a new thread to handle this client
+<b class="nc"><i>37</i>&nbsp;            Thread t = new Thread(handler, &quot;santorini_server_&quot; + threadID);</b>
+<b class="nc"><i>38</i>&nbsp;            t.start();</b>
+<b class="nc"><i>39</i>&nbsp;            System.out.println(&quot;SERVER: Client &quot; + clientIpAddress + &quot; in thread: &quot; + threadID);</b>
+<b class="nc"><i>40</i>&nbsp;        }</b>
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    }
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-27 18:27</div>
+</div>
+</body>
+</html>
