@@ -175,7 +175,6 @@ public class GUI extends Application implements ViewListener {
      */
     public void roomSizeResponse(int result) {
         roomSizeStage.close();
-        System.out.println(result);
         VC_RoomSizeResponseGameEvent responseEvent = new VC_RoomSizeResponseGameEvent("", result);
         sendEvent(responseEvent);
     }
@@ -372,7 +371,6 @@ public class GUI extends Application implements ViewListener {
      */
     @Override
     public void handleEvent(PlayerDisconnectedViewEvent event) {
-        //Message.show(event.getDisconnectedUsername() + event.getReason(), stage); old message pop up
         disconnectionHandle(event.getDisconnectedUsername() + event.getReason());
         alreadyDisconnectedRecently = true;
     }
@@ -384,7 +382,6 @@ public class GUI extends Application implements ViewListener {
     @Override
     public void handleEvent(CV_RoomUpdateGameEvent event) {
         resetDisconnectionBoolean();
-        System.out.println("Room Update received");
         lobbySceneController.update(event);
         if (!stage.getScene().equals(lobbyScene)) {
             changeScene(lobbyScene);
@@ -398,7 +395,6 @@ public class GUI extends Application implements ViewListener {
      */
     @Override
     public void handleEvent(CV_PreGameStartedGameEvent event) {
-        System.out.println("Pregame started, Challenger: " + event.getChallenger());
 
         try {
             setNewPreGameScene();
@@ -429,7 +425,6 @@ public class GUI extends Application implements ViewListener {
      */
     @Override
     public void handleEvent(CV_CardChoiceRequestGameEvent event) {
-        System.out.println("I have to choose my card!");
         preGameSceneController.update(event);
     }
 
@@ -440,7 +435,6 @@ public class GUI extends Application implements ViewListener {
      */
     @Override
     public void handleEvent(CV_ChallengerChooseFirstPlayerRequestEvent event) {
-        System.out.println("Choose the first player!");
         preGameSceneController.update(event);
     }
 
@@ -461,7 +455,6 @@ public class GUI extends Application implements ViewListener {
      */
     @Override
     public void handleEvent(CV_ChallengerChosenEvent event) {
-        System.out.println("I'm the challenger");
         preGameSceneController.update(event);
     }
 
@@ -472,7 +465,6 @@ public class GUI extends Application implements ViewListener {
      */
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        System.out.println("Wait received");
         preGameSceneController.update(event);
         if (!stage.getScene().equals(boardScene)) {
             changeScene(preGameScene);
@@ -494,7 +486,6 @@ public class GUI extends Application implements ViewListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("DEBUG: worker placement update event has arrived");
         boardSceneController.handle(event);
         boardSceneController.init(event);
         changeScene(boardScene);
@@ -531,7 +522,6 @@ public class GUI extends Application implements ViewListener {
     public void handleEvent(CV_GameOverEvent event) {
         if (event.getWinner() != null) {
             //someone won
-            System.out.println("DEBUG: game is over, loading outcome scene.");
             boardSceneController.setWaitingView();
 
             try {
@@ -546,7 +536,6 @@ public class GUI extends Application implements ViewListener {
             List<String> losers = event.getLosers();
             if (losers.size() == 1 && losers.get(0).equals(username)) {
                 //you lost the game
-                System.out.println("I've lost");
                 try {
                     setOutcomeScene();
                     outcomeSceneController.initAndFillSpectator(this);
@@ -555,7 +544,7 @@ public class GUI extends Application implements ViewListener {
                     e.printStackTrace();
                 }
             } else {
-                System.out.println(username.toUpperCase() + "has lost.");
+                Message.show(250, 200,username.toUpperCase() + "has lost.",stage);
             }
         }
 

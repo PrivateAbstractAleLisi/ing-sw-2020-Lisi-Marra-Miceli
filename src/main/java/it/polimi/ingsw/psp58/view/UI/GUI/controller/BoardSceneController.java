@@ -222,7 +222,6 @@ public class BoardSceneController {
         StackPane source = (StackPane) mouseEvent.getSource();
         Integer colIndex = GridPane.getColumnIndex(source);
         Integer rowIndex = GridPane.getRowIndex(source);
-        System.out.printf("Mouse clicked cell [%d, %d]%n", colIndex, rowIndex);
         currentStateInstance.handleClick(colIndex, rowIndex);
     }
 
@@ -464,7 +463,6 @@ public class BoardSceneController {
      * @param event {@link CV_CommandExecutedGameEvent} means that the command has been executed
      */
     public void handle(CV_CommandExecutedGameEvent event) {
-        System.out.println("DEBUG: CV_CommandExecutedGameEvent event has arrived");
         currentStateInstance.updateFromServer(event);
     }
 
@@ -561,7 +559,6 @@ public class BoardSceneController {
         }
 
         if (enable) {
-            System.out.println("DEBUG: setButtonGlow on " + buttonToSet);
 
             DropShadow dropShadow = new DropShadow();
             dropShadow.setRadius(14.5);
@@ -619,7 +616,6 @@ public class BoardSceneController {
         }
 
         if (enable) {
-            System.out.println("DEBUG: setButtonGlow on " + blockToSet);
 
             DropShadow dropShadow = new DropShadow();
             dropShadow.setRadius(14.5);
@@ -878,8 +874,6 @@ public class BoardSceneController {
                     url = url + "L3";
                     break;
                 }
-                default:
-                    System.out.println("ERROR");
             }
             if (domeOnTop) {
                 url = url + "_DOME";
@@ -974,7 +968,6 @@ public class BoardSceneController {
      */
     public void setWorkerGlow(boolean enable, int x, int y) {
         Node node = getNodeByRowColumnIndex(x, y);
-        System.out.println("DEBUG: setWorkerGlow " + enable + " " + x + " " + y);
         setGlowByNode(enable, node);
     }
 

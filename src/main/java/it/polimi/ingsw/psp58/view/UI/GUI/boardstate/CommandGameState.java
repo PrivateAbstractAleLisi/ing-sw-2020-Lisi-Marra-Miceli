@@ -139,7 +139,6 @@ public class CommandGameState implements GameStateAbstract {
                     boardSceneController.setWorkerGlow(true, x, y);
                     state = WORKER_SELECTED;
                 } catch (WorkerLockedException e) {
-                    System.out.println("Worker already locked");
                     state = WORKER_LOCKED;
                 }
             } else {
@@ -172,7 +171,6 @@ public class CommandGameState implements GameStateAbstract {
                     boardSceneController.setWorkerGlow(true, x, y);
                     state = WORKER_SELECTED;
                 } catch (WorkerLockedException e) {
-                    System.out.println("Worker already locked");
                     state = WORKER_LOCKED;
                 }
             }

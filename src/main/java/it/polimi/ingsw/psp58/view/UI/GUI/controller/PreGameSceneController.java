@@ -3,6 +3,7 @@ package it.polimi.ingsw.psp58.view.UI.GUI.controller;
 import it.polimi.ingsw.psp58.event.gameEvents.gamephase.CV_PreGameStartedGameEvent;
 import it.polimi.ingsw.psp58.event.gameEvents.prematch.*;
 import it.polimi.ingsw.psp58.model.CardEnum;
+import it.polimi.ingsw.psp58.view.UI.GUI.ErrorPopUp;
 import it.polimi.ingsw.psp58.view.UI.GUI.GUI;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -553,7 +554,7 @@ public class PreGameSceneController {
                 }
                 actualNode++;
             } else {
-                System.out.println("ERROR TOO MUCH CARDS");
+                new ErrorPopUp().show("Too many cards selected!", gui.getStage());
                 break;
             }
         }
@@ -720,7 +721,7 @@ public class PreGameSceneController {
             disableConfirmButton();
             challengerSelectedCards = new ArrayList<>();
         } else {
-            System.out.println("Error");
+            new ErrorPopUp().show("Too many cards selected!", gui.getStage());
         }
     }
 
@@ -870,9 +871,8 @@ public class PreGameSceneController {
             disableConfirmButton();
             playerSelectedCard = null;
         } else {
-            System.out.println("Error");
+            new ErrorPopUp().show("Error!",gui.getStage());
         }
-
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -1012,9 +1012,8 @@ public class PreGameSceneController {
             disableConfirmButton();
             firstPlayerSelected = null;
         } else {
-            System.out.println("Error");
+            new ErrorPopUp().show("Select a player first!", gui.getStage());
         }
-
     }
 
     /* ----------------------------------------------------------------------------------------------
@@ -1047,8 +1046,6 @@ public class PreGameSceneController {
             rightHBoxesMapByCard = new HashMap<>();
             rightHBoxesMapByName = new HashMap<>();
             firstPlayerCardByName = new HashMap<>();
-        } else {
-            System.out.println("Not enough HBoxes");
         }
     }
 
@@ -1203,8 +1200,6 @@ public class PreGameSceneController {
             case "FIRST_PLAYER_CHOICE":
                 sendFirstPlayerChosenEvent();
                 break;
-            default:
-                System.out.println("ERROR - CASE NOT YET DEFINED");
         }
     }
 

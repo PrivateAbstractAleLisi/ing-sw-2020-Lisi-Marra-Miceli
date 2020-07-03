@@ -91,7 +91,7 @@
                                                 <Font name="Avenir Book" size="13.0" />
                                             </font>
                                         </Text>
-                                        <TextField fx:id="userField" prefHeight="27.0" prefWidth="161.0" promptText="MastroLindo" />
+                                        <TextField fx:id="userField" prefHeight="27.0" prefWidth="161.0" promptText="username" />
                                     </children>
                                     <padding>
                                         <Insets left="15.0" right="15.0" />
