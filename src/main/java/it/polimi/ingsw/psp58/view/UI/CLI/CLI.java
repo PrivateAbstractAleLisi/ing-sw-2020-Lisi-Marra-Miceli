@@ -555,7 +555,7 @@ public class CLI extends EventSource implements ViewListener {
      */
     @Override
     public void handleEvent(CV_WaitPreMatchGameEvent event) {
-        if (!event.getActingPlayer().equals(myUsername)) {
+        if (event.getRecipient().equals(myUsername)) {
             clearScreen();
             System.out.println("⌛   WAITING   ⌛");
             System.out.println(event.getActingPlayer().toUpperCase() + " " + event.getEventDescription());
@@ -599,7 +599,7 @@ public class CLI extends EventSource implements ViewListener {
      */
     @Override
     public void handleEvent(CV_WaitMatchGameEvent event) {
-        if (!event.getActingPlayer().equals(myUsername)) {
+        if (event.getRecipient().equals(myUsername)) {
             System.out.println("\n⌛   WAITING   ⌛");
             System.out.println(event.getEventDescription() + " " + event.getActingPlayer().toUpperCase() + "\n");
             printOpponentsInfo();
@@ -911,9 +911,7 @@ public class CLI extends EventSource implements ViewListener {
         }
         String currentPlayerUsername = event.getTurnRotation().get(0);
 
-
         boolean yourTurn = yourUsername.equalsIgnoreCase(currentPlayerUsername);
-
 
         clearScreen();
         System.out.println("GAME:");
