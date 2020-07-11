@@ -1,4 +1,9 @@
 # ing-sw-2020-Lisi-Marra-Miceli - Group SPS58
+
+This game was developed as a computer game for the final examination of the Software engineering course at Politecnico di Milano (A.Y. 2019/2020) - Bachelor of Science thesis project.
+<br>
+<br>
+Final score was ***30 cum laude / 30*** - (A+)
 ## Group members
 - **Alessandro Lisi** ([@PrivateAbstractAleLisi](https://github.com/PrivateAbstractAleLisi)) <br>
 - **Gabriele Marra** ([@gabrielemarra](https://github.com/gabrielemarra)) <br>
