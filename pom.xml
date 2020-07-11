@@ -1,0 +1,309 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.polimi.ingsw.psp58</groupId>
+    <artifactId>SantoriniOnline</artifactId>
+    <version>2.0.0</version>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>11.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>11.0.2</version>
+        </dependency>
+
+        <!--JAVAFX FOR ALL OS-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.openjfx</groupId>-->
+        <!--            <artifactId>javafx-graphics</artifactId>-->
+        <!--            <version>11.0.2</version>-->
+        <!--            <classifier>mac</classifier>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.openjfx</groupId>-->
+        <!--            <artifactId>javafx-graphics</artifactId>-->
+        <!--            <version>11.0.2</version>-->
+        <!--            <classifier>win</classifier>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.openjfx</groupId>-->
+        <!--            <artifactId>javafx-graphics</artifactId>-->
+        <!--            <version>11.0.2</version>-->
+        <!--            <classifier>linux</classifier>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>Client-Win</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <dependencies>
+                <!--JAVAFX FOR ALL OS - WINDOWS FIRST-->
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>11.0.2</version>
+                    <classifier>win</classifier>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>11.0.2</version>
+                    <classifier>mac</classifier>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>11.0.2</version>
+                    <classifier>linux</classifier>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.2.3</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <finalName>client</finalName>
+                                    <transformers>
+                                        <transformer
+                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>it.polimi.ingsw.psp58.ClientMain</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>it/polimi/ingsw/psp58/controller/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/model/gods/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/networking/server/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/exceptions/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/view/VirtualView.class</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>Client-Mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <dependencies>
+                <!--JAVAFX FOR ALL OS - WINDOWS FIRST-->
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>11.0.2</version>
+                    <classifier>mac</classifier>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>11.0.2</version>
+                    <classifier>win</classifier>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>11.0.2</version>
+                    <classifier>linux</classifier>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.2.3</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <finalName>client</finalName>
+                                    <transformers>
+                                        <transformer
+                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>it.polimi.ingsw.psp58.ClientMain</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>it/polimi/ingsw/psp58/controller/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/model/gods/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/networking/server/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/exceptions/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/view/VirtualView.class</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>Server</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.2.3</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <finalName>server</finalName>
+                                    <transformers>
+                                        <transformer
+                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>it.polimi.ingsw.psp58.SantoriniServer</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>it/polimi/ingsw/psp58/view/UI/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/view/exceptions/**</exclude>
+                                <exclude>it/polimi/ingsw/psp58/networking/client/**</exclude>
+                                <exclude>images/**</exclude>
+                                <exclude>scenes/*.*</exclude>
+                                <exclude>sounds/*.*</exclude>
+                                <exclude>style.css</exclude>
+                                <exclude>style 2.css</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- display active profile in compile phase -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>show-profiles</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>active-profiles</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
+
+

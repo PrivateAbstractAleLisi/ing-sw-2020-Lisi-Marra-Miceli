@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane minHeight="768.0" minWidth="1280.0" style="-fx-background-image: url('/images/background/island_backgound_cutted.png')" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.psp58.view.UI.GUI.controller.BoardSceneController">
+    <children>
+        <BorderPane minHeight="768.0" minWidth="1280.0" prefHeight="768.0" prefWidth="1280.0" style="-fx-background-color: transparent;" stylesheets="@../style.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <left>
+                <VBox spacing="5.0" styleClass="game-beige-pane" BorderPane.alignment="CENTER">
+                    <children>
+                        <HBox alignment="TOP_CENTER">
+                            <children>
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="YOUR CARD" textAlignment="CENTER">
+                                    <font>
+                                        <Font size="25.0" />
+                                    </font>
+                                </Text>
+                            </children>
+                        </HBox>
+                        <VBox fx:id="myCardInfo" prefHeight="200.0" prefWidth="100.0">
+                            <children>
+                                <StackPane>
+                                    <children>
+                                        <ImageView fitHeight="90.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/background/panel_heroPower.png" />
+                                            </image>
+                                        </ImageView>
+                                        <Label alignment="CENTER" blendMode="COLOR_BURN" text="CIAO123" textFill="#ff0011">
+                                            <font>
+                                                <Font size="25.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </StackPane>
+                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="12.0">
+                                    <children>
+                                        <ImageView fitHeight="473.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/gods/05_Demer.png" />
+                                            </image>
+                                        </ImageView>
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="150.0">
+                                            <font>
+                                                <Font size="20.0" />
+                                            </font>
+                                        </Text>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Line endX="280.0" strokeLineCap="ROUND" />
+                        <VBox fx:id="turnInfo">
+                            <children>
+                                <Label prefHeight="33.0" prefWidth="297.0" text="THIS TURN">
+                                    <font>
+                                        <Font name="Avenir Book" size="33.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="33.0" prefWidth="297.0" text="can climb: YES">
+                                    <font>
+                                        <Font name="Avenir Book" size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="33.0" prefWidth="297.0" text="available MOVE: 99">
+                                    <font>
+                                        <Font name="Avenir Book" size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="33.0" prefWidth="297.0" text="available BUILD: 99">
+                                    <font>
+                                        <Font name="Avenir Book" size="20.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <Line endX="280.0" strokeLineCap="ROUND" />
+                        <VBox alignment="TOP_CENTER">
+                            <children>
+                                <Label alignment="CENTER" text="YOUR WORKERS:" textAlignment="CENTER">
+                                    <font>
+                                        <Font name="Avenir Next Condensed Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER" spacing="20.0">
+                                    <children>
+                                        <ImageView fx:id="workerSlotA" fitHeight="80.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/WorkerPink.png" />
+                                            </image>
+                                            <effect>
+                                                <Glow level="0.36" />
+                                            </effect>
+                                        </ImageView>
+                                        <ImageView fx:id="workerSlotB" fitHeight="80.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/WorkerPink.png" />
+                                            </image>
+                                            <effect>
+                                                <Glow level="0.36" />
+                                            </effect>
+                                        </ImageView>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                    <BorderPane.margin>
+                        <Insets bottom="10.0" left="10.0" top="10.0" />
+                    </BorderPane.margin>
+                    <padding>
+                        <Insets left="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </left>
+            <center>
+                <VBox spacing="20.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <GridPane fx:id="board" alignment="CENTER" hgap="12.0" style="-fx-background-repeat: no-repeat; -fx-background-image: url('/images/Board.png'); -fx-background-size: contain; -fx-background-position: center center;" vgap="12.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <padding>
+                                <Insets bottom="20.0" left="21.0" right="20.0" top="20.0" />
+                            </padding>
+                        </GridPane>
+                        <StackPane fx:id="commandGameButtonPane" prefHeight="150.0" prefWidth="200.0">
+                            <children>
+                                <HBox alignment="CENTER" spacing="30.0">
+                                    <children>
+                                        <StackPane>
+                                            <children>
+                                                <Button fx:id="moveButton" mnemonicParsing="false" onAction="#moveButtonClick" prefHeight="88.0" prefWidth="88.0" text="MOVE" />
+                                            </children>
+                                        </StackPane>
+                                        <StackPane layoutX="397.0" layoutY="10.0">
+                                            <children>
+                                                <Button fx:id="buildButton" mnemonicParsing="false" onAction="#buildButtonClick" prefHeight="88.0" prefWidth="88.0" text="BUILD" />
+                                            </children>
+                                        </StackPane>
+                                        <StackPane layoutX="295.0" layoutY="10.0">
+                                            <children>
+                                                <Button fx:id="passButton" mnemonicParsing="false" onAction="#passButtonClick" prefHeight="88.0" prefWidth="88.0" text="PASS" />
+                                            </children>
+                                        </StackPane>
+                                    </children>
+                                </HBox>
+                                <Button disable="true" mnemonicParsing="false" onAction="#exitSpectatorModeClick" prefHeight="88.0" text="EXIT SPECTATOR MODE" visible="false" />
+                            </children>
+                        </StackPane>
+                    </children>
+                    <BorderPane.margin>
+                        <Insets bottom="20.0" top="10.0" />
+                    </BorderPane.margin>
+                </VBox>
+            </center>
+            <top>
+                <BorderPane styleClass="game-beige-pane" BorderPane.alignment="CENTER">
+                    <left>
+                        <VBox fx:id="turnSequenceVBox" BorderPane.alignment="CENTER">
+                            <children>
+                                <Label text="TURN SEQUENCE:">
+                                    <font>
+                                        <Font name="Avenir Next Condensed Bold" size="13.0" />
+                                    </font>
+                                    <VBox.margin>
+                                        <Insets left="14.0" />
+                                    </VBox.margin>
+                                </Label>
+                                <Label fx:id="turnSequence" contentDisplay="CENTER" text="CURRENT &lt; NEXT &lt; NEXT2">
+                                    <font>
+                                        <Font size="27.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </left>
+                    <right>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0" BorderPane.alignment="CENTER">
+                            <children>
+                                <Label contentDisplay="RIGHT" text="AVAILABLE BLOCKS">
+                                    <font>
+                                        <Font name="Avenir Next Condensed Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <HBox fx:id="l1Box" onMouseClicked="#level1Click">
+                                    <children>
+                                        <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/cellcluster/L1.png" />
+                                            </image>
+                                            <HBox.margin>
+                                                <Insets />
+                                            </HBox.margin>
+                                        </ImageView>
+                                    </children>
+                                </HBox>
+                                <HBox fx:id="l2Box" onMouseClicked="#level2Click">
+                                    <children>
+                                        <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/cellcluster/L2.png" />
+                                            </image>
+                                            <HBox.margin>
+                                                <Insets />
+                                            </HBox.margin>
+                                        </ImageView>
+                                    </children>
+                                </HBox>
+                                <HBox fx:id="l3Box" onMouseClicked="#level3Click">
+                                    <children>
+                                        <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/cellcluster/L3.png" />
+                                            </image>
+                                            <HBox.margin>
+                                                <Insets />
+                                            </HBox.margin>
+                                        </ImageView>
+                                    </children>
+                                </HBox>
+                                <HBox fx:id="domeBox" onMouseClicked="#domeClick">
+                                    <children>
+                                        <ImageView fitHeight="68.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/cellcluster/L0_DOME.png" />
+                                            </image>
+                                            <HBox.margin>
+                                                <Insets />
+                                            </HBox.margin>
+                                        </ImageView>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                    </right>
+                    <BorderPane.margin>
+                        <Insets left="10.0" right="10.0" top="12.0" />
+                    </BorderPane.margin>
+                    <padding>
+                        <Insets bottom="7.0" left="10.0" right="10.0" top="7.0" />
+                    </padding>
+                </BorderPane>
+            </top>
+            <right>
+                <BorderPane styleClass="game-beige-pane" BorderPane.alignment="CENTER">
+                    <top>
+                        <VBox prefHeight="463.0" prefWidth="110.0" BorderPane.alignment="CENTER">
+                            <children>
+                                <Label text="OTHER PLAYERS CARDS">
+                                    <font>
+                                        <Font size="25.0" />
+                                    </font>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </Label>
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <VBox fx:id="cardInfo1">
+                                            <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                                      <Label text="example">
+                                                          <font>
+                                                              <Font size="32.0" />
+                                                          </font>
+                                                      </Label>
+                                          <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/WorkerBlue.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </HBox>
+                                                <HBox alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <ImageView fitHeight="150.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../images/gods/00_Random.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <VBox>
+                                                            <padding>
+                                                                <Insets left="20.0" right="20.0" />
+                                                            </padding>
+                                                            <children>
+                                                                <Label text="Label">
+                                                                    <font>
+                                                                        <Font size="23.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="150.0">
+                                                                    <font>
+                                                                        <Font size="18.0" />
+                                                                    </font>
+                                                                </Text>
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                        <VBox fx:id="cardInfo2" layoutX="10.0" layoutY="10.0">
+                                            <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                          <Label text="EXAMPLE">
+                                             <font>
+                                                <Font size="32.0" />
+                                             </font>
+                                          </Label>
+                                          <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/WorkerBlue.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </HBox>
+                                                <HBox alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <ImageView fitHeight="150.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../images/gods/00_Random.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <VBox fx:id="cardInfo21">
+                                                            <padding>
+                                                                <Insets left="20.0" right="20.0" />
+                                                            </padding>
+                                                            <children>
+                                                                <Label text="Label">
+                                                                    <font>
+                                                                        <Font size="23.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="150.0">
+                                                                    <font>
+                                                                        <Font size="18.0" />
+                                                                    </font>
+                                                                </Text>
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+                    </top>
+                    <bottom>
+                        <VBox alignment="CENTER" prefHeight="125.0" BorderPane.alignment="CENTER">
+                            <children>
+                                <Text fx:id="rightMessage" strokeType="OUTSIDE" strokeWidth="0.0" text="WELCOME!!" textAlignment="CENTER" wrappingWidth="265.0">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                    <VBox.margin>
+                                        <Insets bottom="10.0" />
+                                    </VBox.margin>
+                                </Text>
+                            </children>
+                        </VBox>
+                    </bottom>
+                    <BorderPane.margin>
+                        <Insets bottom="10.0" right="10.0" top="10.0" />
+                    </BorderPane.margin>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                    <center>
+                        <Line endX="260.0" strokeLineCap="ROUND" BorderPane.alignment="CENTER" />
+                    </center>
+                </BorderPane>
+            </right>
+        </BorderPane>
+    </children>
+</AnchorPane>
