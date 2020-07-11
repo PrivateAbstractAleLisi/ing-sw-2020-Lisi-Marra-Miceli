@@ -30,7 +30,7 @@ public class GUI extends Application implements ViewListener {
     private Stage stage;
 
     private static final int SOCKET_PORT = 7557;
-    private static final String GAME_VERSION = "2.0.0";
+    private static final String GAME_VERSION = "2.1.0";
     private static final String ONLINE_SERVER_IP = "23.23.52.127";
 
     private boolean enablePing = true;
