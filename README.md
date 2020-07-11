@@ -1,9 +1,8 @@
 # ing-sw-2020-Lisi-Marra-Miceli - Group SPS58
 ## Group members
-- **Alessandro Lisi** ([@PrivateAbstractAleLisi](https://github.com/PrivateAbstractAleLisi)) <br>*Codice Persona*: 10621058 - *Matricola*: 887426 <br>*Email Polimi*: alessandro.lisi@mail.polimi.it
-- **Gabriele Marra** ([@gabrielemarra](https://github.com/gabrielemarra)) <br>*Codice Persona*: 10572983 - *Matricola*: 887167<br>*Email Polimi*: gabriele.marra@mail.polimi.it
-- **Matteo Miceli** ([@micelimatteo](https://github.com/micelimatteo)) <br>*Codice Persona*: 10560901 - *Matricola*: 888156 <br>*Email Polimi*: matteo.miceli@mail.polimi.it
-
+- **Alessandro Lisi** ([@PrivateAbstractAleLisi](https://github.com/PrivateAbstractAleLisi)) <br>
+- **Gabriele Marra** ([@gabrielemarra](https://github.com/gabrielemarra)) <br>
+- **Matteo Miceli** ([@micelimatteo](https://github.com/micelimatteo)) <br>
 ## Functionality
 
 | Functionality | State |
