@@ -1,4 +1,4 @@
-# ing-sw-2020-Lisi-Marra-Miceli - Group SPS58
+# Board Game - Software Engineering Project 
 
 This game was developed as a computer game for the final examination of the Software engineering course at Politecnico di Milano (A.Y. 2019/2020) - Bachelor of Science thesis project.
 <br>
@@ -8,7 +8,30 @@ Final score was ***30 cum laude / 30*** (A+)
 - **Alessandro Lisi** ([@PrivateAbstractAleLisi](https://github.com/PrivateAbstractAleLisi)) <br>
 - **Gabriele Marra** ([@gabrielemarra](https://github.com/gabrielemarra)) <br>
 - **Matteo Miceli** ([@micelimatteo](https://github.com/micelimatteo)) <br>
-## Functionality
+## Project Requirements
+Develop an online multiplayer board game with Java using MVC pattern.<br>
+We developed the server and the client, with both CLI and GUI (JavaFX) interfaces.<br>
+To transmit data we used TCP protocol between server and clients along with JSON format and Java serialization.<br>
+The server supports multiple matches at the same time and waiting players are handled in a lobby.<br><br>
+For the full specification visit this link: [Specification (Italian only)](github_readme_media/Requisiti_Progetto.pdf)
+
+## Screenshots
+### Homepage
+![Homepage](github_readme_media/1_Homepage.jpg?raw=true)
+### Match creation
+![Match creation](github_readme_media/2_NumberPlayersSelection.jpg?raw=true)
+### Character Selection
+![Character Selection](github_readme_media/3_CharactersSelection.jpg?raw=true)
+### Character Selection - 2
+![Character Selection - 2](github_readme_media/4_CharactersSelection-2.jpg?raw=true)
+### Move Phase
+![Move Command](github_readme_media/5_Moving.jpg?raw=true)
+### Build Phase
+![Build Command](github_readme_media/6_Building.jpg?raw=true)
+### Win!
+![Win!](github_readme_media/7_WinningPage.jpg?raw=true)
+
+## Functionalities Implemented
 
 | Functionality | State |
 |:-----------------------|:------------------------------------:|
@@ -40,7 +63,7 @@ java -jar client.jar -gui
 
 To execute the **Client with CLI** download the *client.jar* and execute the following command into the terminal:
 ```
-java -jar client.jar -cli
+java -jar client.jar -clicccccccccccccccc
 ``` 
 
 If you want, you can also select the desired UI at the start of the program. To select the UI during runtime please execute this command:
