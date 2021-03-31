@@ -9,7 +9,7 @@ Final score was ***30 cum laude / 30*** (A+)
 - **Gabriele Marra** ([@gabrielemarra](https://github.com/gabrielemarra)) <br>
 - **Matteo Miceli** ([@micelimatteo](https://github.com/micelimatteo)) <br>
 ## Project Requirements
-Develop an online multiplayer board game with Java using MVC pattern.<br>
+Develop an online multiplayer board game with Java using the MVC pattern.<br>
 We developed the server and the client, with both CLI and GUI (JavaFX) interfaces.<br>
 To transmit data we used TCP protocol between server and clients along with JSON format and Java serialization.<br>
 The server supports multiple matches at the same time and waiting players are handled in a lobby.<br><br>
@@ -63,7 +63,7 @@ java -jar client.jar -gui
 
 To execute the **Client with CLI** download the *client.jar* and execute the following command into the terminal:
 ```
-java -jar client.jar -clicccccccccccccccc
+java -jar client.jar -cli
 ``` 
 
 If you want, you can also select the desired UI at the start of the program. To select the UI during runtime please execute this command:
